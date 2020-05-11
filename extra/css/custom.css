@@ -1,0 +1,41 @@
+.select2-selection__rendered {
+			  margin: 10px;
+			}
+			.select2-container--default .select2-selection--single
+			{
+				border:none !important;
+			}
+			 img.lazy2{
+         min-width:175px;
+		 min-height:80px;
+        display: block;
+      
+        /* optional way, set loading as background */
+        background-image: url('https://koofamilies.com/img/logo.png');
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+    } 
+	.shop_close{
+		position: relative;
+	}
+	.shop_close:after{
+		content:'';
+		position: absolute;
+		height: 100%;
+		width: 100%;
+
+		  z-index: 10;
+
+		  top: 0;
+
+		  left: 0;
+
+		  background-image: url(../../images/close5.png);
+
+		  background-repeat: no-repeat;
+
+		  background-size: 75%;
+
+		  background-position: left top;
+
+		}

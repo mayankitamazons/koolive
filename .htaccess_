@@ -1,0 +1,187 @@
+# Redirect non-www to www
+RewriteEngine On
+
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?(.+)$ [NC]
+RewriteRule ^ https://www.%1%{REQUEST_URI} [L,NE,R=301]
+
+ErrorDocument 404   /404.html
+<IfModule mod_deflate.c>
+  # Compress HTML, CSS, JavaScript, Text, XML and fonts
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/rss+xml
+  AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
+  AddOutputFilterByType DEFLATE application/x-font
+  AddOutputFilterByType DEFLATE application/x-font-opentype
+  AddOutputFilterByType DEFLATE application/x-font-otf
+  AddOutputFilterByType DEFLATE application/x-font-truetype
+  AddOutputFilterByType DEFLATE application/x-font-ttf
+  AddOutputFilterByType DEFLATE application/x-javascript
+  AddOutputFilterByType DEFLATE application/xhtml+xml
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE font/opentype
+  AddOutputFilterByType DEFLATE font/otf
+  AddOutputFilterByType DEFLATE font/ttf
+  AddOutputFilterByType DEFLATE image/svg+xml
+  AddOutputFilterByType DEFLATE image/x-icon
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/javascript
+  AddOutputFilterByType DEFLATE text/plain
+  AddOutputFilterByType DEFLATE text/xml
+
+  # Remove browser bugs (only needed for really old browsers)
+  BrowserMatch ^Mozilla/4 gzip-only-text/html
+  BrowserMatch ^Mozilla/4\.0[678] no-gzip
+  BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+  Header append Vary User-Agent
+</IfModule>
+
+<ifModule mod_gzip.c>
+mod_gzip_on Yes
+mod_gzip_dechunk Yes
+mod_gzip_item_include file .(html?|txt|css|js|php|pl)$
+mod_gzip_item_include handler ^cgi-script$
+mod_gzip_item_include mime ^text/.*
+mod_gzip_item_include mime ^application/x-javascript.*
+mod_gzip_item_exclude mime ^image/.*
+mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
+</ifModule>
+
+
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Images
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+
+  # Video
+  ExpiresByType video/mp4 "access plus 1 year"
+  ExpiresByType video/mpeg "access plus 1 year"
+
+  # CSS, JavaScript
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+
+  # Others
+  ExpiresByType application/pdf "access plus 1 month"
+  ExpiresByType application/x-shockwave-flash "access plus 1 month"
+</IfModule>
+
+<IfModule mod_deflate.c>
+    <filesMatch "\.(js|css|html|php)$">
+        SetOutputFilter DEFLATE
+    </filesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css text/javascript application/javascript
+</IfModule>
+
+<FilesMatch "\.(ttf|otf|eot|woff|woff2)$">
+  <IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+  </IfModule>
+</FilesMatch>
+
+# BEGIN cPanel-generated php ini directives, do not edit
+# Manual editing of this file may result in unexpected behavior.
+# To make changes to this file, use the cPanel MultiPHP INI Editor (Home >> Software >> MultiPHP INI Editor)
+# For more information, read our documentation (https://go.cpanel.net/EA4ModifyINI)
+<IfModule php5_module>
+   php_flag engine On
+   php_flag short_open_tag Off
+   php_value precision 14
+   php_value output_buffering 4096
+   php_flag zlib.output_compression Off
+   php_flag implicit_flush Off
+   php_value serialize_precision -1
+   php_flag zend.enable_gc On
+   php_value max_execution_time 30
+   php_value max_input_time 60
+   php_value memory_limit 128M
+   php_value error_reporting E_ALL & ~E_DEPRECATED & ~E_STRICT
+   php_flag display_errors On
+   php_flag display_startup_errors On
+   php_flag log_errors On
+   php_value log_errors_max_len 1024
+   php_flag ignore_repeated_errors Off
+   php_flag ignore_repeated_source Off
+   php_flag report_memleaks On
+   php_flag track_errors On
+   php_flag html_errors On
+   php_value variables_order "GPCS"
+   php_value request_order "GP"
+   php_flag register_argc_argv Off
+   php_flag auto_globals_jit On
+   php_value post_max_size 8M
+   php_value default_mimetype "text/html"
+   php_value default_charset "UTF-8"
+   php_value include_path "C:\xampp\php\PEAR"
+   php_value upload_max_filesize 2M
+   php_value default_socket_timeout 60
+   php_flag asp_tags Off
+   php_flag display_startup_errors On
+   php_flag track_errors Off
+   php_value error_log "C:\xampp\php\logs\php_error_log"
+   php_flag register_long_arrays Off
+   php_flag magic_quotes_sybase Off
+   php_flag cli_server.color On
+   php_value SMTP "localhost"
+   php_value smtp_port 25
+   php_flag mail.add_x_header On
+   php_value odbc.defaultlrl 4096
+   php_value odbc.defaultbinmode 1
+   php_value ibase.timestampformat "%Y-%m-%d %H:%M:%S"
+   php_value ibase.dateformat "%Y-%m-%d"
+   php_value ibase.timeformat "%H:%M:%S"
+   php_value mysqli.default_port 3306
+   php_value pgsql.ignore_notice 0
+   php_value pgsql.log_notice 0
+   php_value bcmath.scale 0
+   php_value session.save_handler "files"
+   php_value session.save_path "/var/tmp/php"
+   php_flag session.use_strict_mode Off
+   php_flag session.use_cookies On
+   php_flag session.use_only_cookies On
+   php_value session.name "PHPSESSID"
+   php_flag session.auto_start Off
+   php_value session.cookie_lifetime 0
+   php_value session.cookie_path "/"
+   php_value session.serialize_handler "php"
+   php_value session.gc_probability 1
+   php_value session.gc_divisor 1000
+   php_value session.gc_maxlifetime 1440
+   php_value session.cache_limiter "nocache"
+   php_value session.cache_expire 180
+   php_flag session.use_trans_sid Off
+   php_flag tidy.clean_output Off
+   php_flag soap.wsdl_cache_enabled On
+   php_value soap.wsdl_cache_dir "/tmp"
+   php_value soap.wsdl_cache_ttl 86400
+   php_value soap.wsdl_cache_limit 5
+   php_value date.timezone "Europe/Berlin"
+   php_value mysql.default_port "3306"
+   php_value mysql.default_socket "MySQL"
+   php_value mysql.connect_timeout 3
+   php_flag mysql.trace_mode Off
+   php_value mssql.min_error_severity 10
+   php_value mssql.min_message_severity 10
+   php_flag mssql.compatability_mode Off
+</IfModule>
+# END cPanel-generated php ini directives, do not edit
+
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(ttf|ttc|otf|eot|woff|woff2|font.css|css|js)$">
+    Header set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+</IfModule>

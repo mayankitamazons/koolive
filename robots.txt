@@ -1,0 +1,4 @@
+User-agent: *
+
+#standart disallows
+Disallow: /cgi-bin

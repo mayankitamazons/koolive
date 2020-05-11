@@ -1,0 +1,44 @@
+[02-Apr-2018 01:31:13 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/fpx/MepsFpx.class.php on line 158
+[02-Apr-2018 01:31:13 America/Chicago] PHP Notice:  socket_create() failed: Connection refused in /home/admintallgreen/public_html/B277/fpx/MepsFpx.class.php on line 160
+[02-Apr-2018 01:32:24 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 158
+[02-Apr-2018 01:32:24 America/Chicago] PHP Notice:  socket_create() failed: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 160
+[02-Apr-2018 01:36:10 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[02-Apr-2018 01:36:35 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[02-Apr-2018 01:37:06 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[02-Apr-2018 01:37:37 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[02-Apr-2018 01:37:55 America/Chicago] PHP Notice:  socket_create() failed: Success in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 158
+[02-Apr-2018 01:37:55 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[02-Apr-2018 01:38:13 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[02-Apr-2018 01:52:14 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[02-Apr-2018 01:57:03 America/Chicago] PHP Parse error:  syntax error, unexpected 'return' (T_RETURN) in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 43
+[02-Apr-2018 01:57:49 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[02-Apr-2018 01:57:49 America/Chicago] PHP Notice:  socket_create() failed: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 163
+[02-Apr-2018 01:59:04 America/Chicago] PHP Fatal error:  Cannot redeclare MepsFpx::initializeSocket() in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 172
+[02-Apr-2018 01:59:24 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 40
+[02-Apr-2018 01:59:24 America/Chicago] PHP Notice:  socket_create() failed: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 42
+[02-Apr-2018 01:59:44 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 160
+[02-Apr-2018 01:59:44 America/Chicago] PHP Notice:  socket_create() failed: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 162
+[02-Apr-2018 02:24:19 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[02-Apr-2018 02:24:19 America/Chicago] PHP Notice:  socket_create() failed: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 163
+[02-Apr-2018 02:35:48 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[02-Apr-2018 02:35:48 America/Chicago] PHP Notice:  socket_create() failed: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 163
+[02-Apr-2018 02:47:51 America/Chicago] PHP Warning:  socket_connect(): unable to connect [2]: No such file or directory in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 162
+[02-Apr-2018 02:47:51 America/Chicago] PHP Notice:  socket_create() failed: No such file or directory in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 164
+[02-Apr-2018 02:50:34 America/Chicago] PHP Parse error:  syntax error, unexpected '0' (T_LNUMBER) in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 156
+[02-Apr-2018 02:50:49 America/Chicago] PHP Warning:  socket_create() expects exactly 3 parameters, 5 given in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 156
+[02-Apr-2018 02:50:49 America/Chicago] PHP Warning:  socket_connect() expects parameter 1 to be resource, null given in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 162
+[02-Apr-2018 02:50:49 America/Chicago] PHP Notice:  socket_create() failed: Success in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 164
+[02-Apr-2018 02:51:13 America/Chicago] PHP Warning:  socket_create() expects exactly 3 parameters, 4 given in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 156
+[02-Apr-2018 02:51:13 America/Chicago] PHP Warning:  socket_connect() expects parameter 1 to be resource, null given in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 162
+[02-Apr-2018 02:51:13 America/Chicago] PHP Notice:  socket_create() failed: Success in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 164
+[02-Apr-2018 02:51:51 America/Chicago] PHP Warning:  socket_create(): Unable to create socket [93]: Protocol not supported in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 156
+[02-Apr-2018 02:51:51 America/Chicago] PHP Warning:  socket_connect() expects parameter 1 to be resource, boolean given in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 162
+[02-Apr-2018 02:51:51 America/Chicago] PHP Notice:  socket_create() failed: Protocol not supported in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 164
+[02-Apr-2018 02:52:14 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[02-Apr-2018 02:52:14 America/Chicago] PHP Notice:  socket_create() failed: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 163
+[02-Apr-2018 03:46:39 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[02-Apr-2018 03:46:39 America/Chicago] PHP Notice:  socket_create() failed: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 163
+[04-Apr-2018 04:10:59 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[04-Apr-2018 04:10:59 America/Chicago] PHP Notice:  socket_create() failed: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 163
+[12-Apr-2018 01:43:40 America/Chicago] PHP Warning:  socket_connect(): unable to connect [111]: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 161
+[12-Apr-2018 01:43:40 America/Chicago] PHP Notice:  socket_create() failed: Connection refused in /home/admintallgreen/public_html/B277/mepsfpx/MepsFpx.class.php on line 163
