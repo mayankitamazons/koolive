@@ -53,7 +53,6 @@ if($s_id)
 		$date=$row['created_on'];
 		
 		$msg_str.="Date :".date("d/m/Y h:i A",strtotime($date));
-		$msg_str.='</br>Order from';
 		$special_delivery_amount=$row['special_delivery_amount'];
 		if($row['remark_extra'])
 		{
@@ -98,9 +97,9 @@ if($s_id)
 		if($row['coupon_discount']=='')
 			$row['coupon_discount']=0;
 		if($row['special_delivery_amount']==0)
-		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."".$user_location."</br> Order Detail:</br>";
+		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br>Order from:</br>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."".$user_location."</br> Order Detail:</br>";
 		else
-		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']."+".$row['special_delivery_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."".$user_location."</br> Order Detail:</br>";
+		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']."+".$row['special_delivery_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br> Order from:</b>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."".$user_location."</br> Order Detail:</br>";
 	
 		foreach ($product_ids as $key )
         {  
@@ -131,7 +130,7 @@ if($s_id)
 		   
 			$i++;
 		}
-		$msg_str.="Total qty :".$total_qun."</br>";
+		$msg_str.="Total qty : ".$total_qun."</br>";
 		
 		echo $msg_str;   
 	}

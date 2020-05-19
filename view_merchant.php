@@ -92,10 +92,10 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 // print_r($_SESSION);
 
 // die;   
-if(empty($_GET['vs']))
+if(empty($_GET['ms']))
 {
 	$sid=$_GET['sid'];
-	$url="view_merchant.php?sid=".$sid."&vs=".md5(rand());
+	$url="view_merchant.php?sid=".$sid."&ms=".md5(rand());
 
 header("Location:$url");
 exit();
@@ -331,7 +331,7 @@ $nature_image = array(
         "b2b.jpg"
 
     );
-
+$share_url="https://www.koofamilies.com/"."view_merchant.php?sid=".$sid."&vs=".md5(rand());
 ?>
 <?php 
 		if(isset($_GET['data']))
@@ -398,7 +398,10 @@ $nature_image = array(
 
 	<meta http-equiv="expires" content="0" />
 
-	
+	<meta property="og:title" content="KooFamilies - Discover & Book the best restaurants at the best price">
+		<meta property="og:description" content="KooFamilies - Discover & Book the best restaurants at the best price">
+		<meta property="og:image" content="https://koofamilies.sirv.com/logo_yellow.jpg">
+		<meta property="og:url" content="<?php echo $share_url; ?>">   
 
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 
@@ -2639,13 +2642,13 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
             $go_ahead=true;
 
-            // if($merchant_detail['shop_open']=="0")
+            if($merchant_detail['shop_open']=="0")
 
-            // {
+            {
 
-                 // $go_ahead=false;
+                 $go_ahead=false;
 
-            // }
+            }
 
               if($go_ahead==true){  
 
@@ -3187,7 +3190,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
 
 
-    <small>
+    <small style="color:red;">
 
    <?php echo $language['we_can_contact'];  ?>
 

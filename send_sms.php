@@ -60,9 +60,11 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 			$url="https://www.koofamilies.com/orderview.php?did=".$m_id."&vs=".$rand."&oid=".$order_id;    
 			 // echo  $_POST['message'] = $client.', Koofamilies alert! Your order has exceeded timeframe, please investigate. Kitchen Jam? If Internet problem, please contact 012-3115670 for assistance';
 			if($row['newuser']=="y")
-			 $message= $_POST['message'] = $url." ".$client.",1st time user,Koofamilies alert ! Your order (".$invoice_no.") has exceeded timeframe,please ACCEPT the order";
+			 // $message= $_POST['message'] = $url." ".$client.",1st time user,Koofamilies alert ! Your order (".$invoice_no.") has exceeded timeframe,please ACCEPT the order";
+			 $message= $_POST['message'] = $url." ".$client.",1st time user, KooFamilies alert. Please Accept New order (".$invoice_no."). After finishing, please Done the order";
 			else
-			$message=$_POST['message'] = $url." ".$client.",Koofamilies alert! Your order (".$invoice_no.") has exceeded timeframe,please ACCEPT the order,";   	       
+			// $message=$_POST['message'] = $url." ".$client.",Koofamilies alert! Your order (".$invoice_no.") has exceeded timeframe,please ACCEPT the order,";   	       
+			$message= $_POST['message'] = $url." ".$client.",KooFamilies alert. Please Accept New order (".$invoice_no."). After finishing, please Done the order";
 			   
 		$order_id=$row['order_id'];
 	// die;

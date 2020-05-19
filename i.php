@@ -870,7 +870,7 @@ map = new google.maps.Map($("#map")[0], {
 			
 		?>
 	    var clas_name="<?php echo $cl ?>";
-		alert(clas_name);
+		// alert(clas_name);
 		   <?php } ?>
 		var s_token=generatetokenno(16);
 	var r_url="https://koofamilies.com/index.php?vs="+s_token;

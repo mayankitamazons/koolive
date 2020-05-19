@@ -83,7 +83,7 @@ if(!isset($_SESSION['login']))
 							if($category_id!='-1')
 							{
 							  $query="select arrange_system.*,products.product_name from arrange_system inner join products on arrange_system.entity_id=products.id where 
-							arrange_system.category_id='$category_id' and arrange_system.page_type='p' and arrange_system.user_id='".$user_id."' order by arrange_system.shift_pos asc limit 0,100";
+							arrange_system.category_id='$category_id' and arrange_system.page_type='p' and arrange_system.user_id='".$user_id."' and products.status='0' order by arrange_system.shift_pos asc limit 0,100";
 							// die;
 						   $productquery = mysqli_query($conn,$query);
 						     $num_rows = mysqli_num_rows($productquery);
@@ -219,8 +219,8 @@ if(!isset($_SESSION['login']))
                                         <div class="modal-content catelog_plan_body">
                                            <?php if(isset($_POST['category_id'])){ 
 										       $category_id=$_POST['category_id'];
-												 $query="select arrange_system.shift_pos,products.id as product_id,products.product_name,products.product_type,products.product_price from products  left join  arrange_system on products.id=arrange_system.entity_id
-											   where products.category_id='$category_id' and products.status='0'  and products.user_id='".$_SESSION['login']."' order by shift_pos limit 0,50";
+												  $query="select arrange_system.shift_pos,products.id as product_id,products.product_name,products.product_type,products.product_price from products  left join  arrange_system on products.id=arrange_system.entity_id
+											   where products.category_id='$category_id' and products.status='0' and  products.user_id='".$_SESSION['login']."' order by shift_pos limit 0,50";
 												 $listq = mysqli_query($conn,$query);
 												$num_rows = mysqli_num_rows($listq);
 												?>

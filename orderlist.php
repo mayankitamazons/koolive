@@ -1214,21 +1214,33 @@ input[name='p_total[]'],input[name='p_price[]']{
                         <!--  -->
 						<td>
                        <?php
-                        $status = $row['status'];  
-						if($status==0)
-						{
-							$sta="Pending";
-							$s_color="red";
-						} else if($status==1)
-						{
-							$sta="Done";
-							$s_color="green";
-						}
-						else if($status==2)
-						{
-							$sta="Accepted";
-							$s_color="";
-						}
+                        	$n_status='';  
+                                if($row['status'] == 0)
+								{
+									$sta =$language['pending'];
+									$s_color="red";
+									$n_status=1;
+								}
+                                else if($row['status'] == 1) 
+								{
+									
+									$sta =$language['done_in_delivery'];
+									$s_color="green";
+									$n_status=4;
+								}
+								else if($row['status'] == 4 || $row['status']==5) 
+								{
+									$sta =$language['done_in_delivery'];
+									$s_color="green";
+								}
+                                else 
+								{
+									$n_status=1;
+									$sta =$language['accepted'];
+									// $sta = "Accepted";
+									$s_color="";
+								}
+								
 						?>
                         <?php if($row['popup']==0 && $row['status'] == 1 )
                         {
@@ -1400,11 +1412,11 @@ input[name='p_total[]'],input[name='p_price[]']{
 								<label class="dp_lab"  data-id="<?php echo $merchant_name['id'];  ?>" data-oid="<?php echo $total;?>" data-orid="<?php echo $row['id']; ?>">Click Here</label>
 								<?php// }   ?>
 							</td>                
-                     <?php if($sta == "Done"){?>
-                        <?php $merchant = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM order_list WHERE id ='".$row['id']."'"));	?>
-                      <td><a target="_blank" href="print.php?id=<?php echo $row['id'];?>&merchant=<?php echo $merchant['merchant_id']?>">Print</a></td>
+                     <?php if($row['status'] == 4 || $row['status']==5){ ?>
+                       
+                      <td><a target="_blank" href="print.php?id=<?php echo $row['id'];?>&merchant=<?php echo $row['merchant_id']?>">Print</a></td>
                       <!--td><?php echo $user_name['account_type']; ?></td!-->
-                      <?php }?>
+                      <?php }?>   
                   </tr>
                   <?php  	 $i++; ?>
 
@@ -2176,6 +2188,11 @@ input[name='p_total[]'],input[name='p_price[]']{
 		</small>
       <img id="loader-credentials" src="<?php echo $site_url;?>img/loader.gif" style="display:none;width:40px;height:40px;grid-column-start: 2;grid-column-end: 3;"/>
     </div>
+	<div class="row">
+	   <p style="font-size: 16px;margin-bottom: 0px;margin-left:1%;">Download our app for future easy ordering</p>
+		<a href="https://play.google.com/store/apps/details?id=com.app.koofamily" target="_blank">
+			  <img src="assets/img/google-play-button.png"/></a>
+			</div>
 			  
           </div>  
           <div class="modal-footer login_footer">
@@ -2201,6 +2218,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 				 <small  class="reg_pending register_skip skip" style="color:#e6614f;font-size:14px;display:none;min-width:50px">
                   <u class="btn btn-primary">Got it !</u>
                 </small>
+			
           </div>
 		  
       </div>

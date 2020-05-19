@@ -369,6 +369,9 @@ $language['grand_total'] ="累计";
 $language['review'] ="评论";
 $language['detail'] ="详情"; 
 $language['difficulty'] ="Have difficulty in placing order? place through whatapp";   
+$language['search_by_location'] ="寻找附近餐厅";   
+$language['near_by_shop_2'] ="附近商店";  
+$language['rider_info'] ="Rider info";         
 
 
 ?>

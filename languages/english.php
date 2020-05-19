@@ -190,7 +190,7 @@ $language["option_menu_3"] ='Hardware, such as household, building, renovation t
 $language["option_menu_4"] ='Grocery Shop such as bread, fish, etc retails shops';
 $language["option_menu_5"] ='Clothes such as T-shirt, Pants, Bra, socks,etc';
 $language["option_menu_6"] ='Business to Business (B2B) including all kinds of businesses';
-$language["we_can_contact"] ='We can contact you if anything wrong with the order.We promise that we will not use it for other purpose.';
+$language["we_can_contact"] ='By confirming the order, i agree to the terms and conditions and authorise Koo Family Sdn. Bhd. to order on my behalf.';
 $language["add_more_order"] ='Add more order';
  $language["enter_ur_phone"] ='Enter your phone number';
 //$language["enter_ur_phone"] ='Please key in your membership phone number';
@@ -354,6 +354,9 @@ $language['grand_total'] ="Grand total";
 $language['review'] ="Review";        
 $language['detail'] ="Detail";        
 $language['difficulty'] ="Have difficulty in placing order? </br>place through whatapp";        
+$language['search_by_location'] ="Search by location"; 
+$language['near_by_shop_2'] ="Nearby shops";        
+$language['rider_info'] ="Rider info";        
 
 
 

@@ -255,6 +255,72 @@ if(isset($_POST['submit']))
 	{
 		$filenamess = $bank_data['company_doc'];
 	}
+	$old_image=$bank_data['old_image'];
+	  if(isset($_FILES["banner_image"]) && $_FILES["banner_image"]["error"] == 0){
+        $allowed = array("jpg" => "image/jpg", "jpeg" => "image/jpeg", "gif" => "image/gif", "png" => "image/png");
+        $filename = $_FILES["banner_image"]["name"];
+        $filetype = $_FILES["banner_image"]["type"];
+        $filesize = $_FILES["banner_image"]["size"];
+ 
+        // Verify file extension
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+        if(!array_key_exists($ext, $allowed)) die("Error: Please select a valid file format.");    
+        
+        // Verify MYME type of the file
+        if(in_array($filetype, $allowed)){
+			// Check whether file exists before uploading it
+					$uniquesavename=time().uniqid(rand(1000,9999)).".png";
+					
+					$destFile = "banner_image/".$uniquesavename;
+					require_once('sirv.api.class.php');
+					$sirvClient = new SirvClient(
+					  // S3 bucket
+					  'koofamilies',
+					  // S3 Access Key
+					  'click4mayank@gmail.com',
+					  // S3 Secret Key
+					  'iFOyO1LVMp7EOYIW3IP9VOn76UBFFWdxGaDzuJGj2tHlHMP0'
+					);
+					if ($sirvClient->testConnection()) {  
+					  // Connection SUCCEEDED
+					  // echo "connected";
+						$res = $sirvClient->uploadFile(
+						  // File path on Sirv
+						  $destFile,
+						  // Local file name
+						 $_FILES["banner_image"]["tmp_name"] 
+						);
+						if($old_image)
+							{
+								$old_image_path="banner_image/".$old_image;  
+								$sirvClient->deleteFile($old_image_path);  
+							}
+						if($res['full_url']=='')
+						{
+							$destFile = "/home/koofamilies/public_html/images/banner_image/".$uniquesavename;
+							move_uploaded_file($_FILES["banner_image"]["tmp_name"],$destFile); 
+						}
+						else
+						{
+							$banner_cdn_url=$res['full_url'];
+						}
+
+					} else {
+					  // Connection FAILED
+						$destFile = "/home/koofamilies/public_html/images/banner_image/".$uniquesavename;
+						move_uploaded_file($_FILES["banner_image"]["tmp_name"],$destFile); 
+					}
+        } else{
+            echo "Error: There was a problem uploading your file. Please try again."; 
+        }
+    } 
+	else
+	{
+		if($about['image'])
+		{
+			$uniquesavename=$about['image'];
+		}
+	}
 	$order_extra_charge=$_POST['order_extra_charge'];
 	$delivery_rate=$_POST['delivery_rate'];
 	$order_min_charge=$_POST['order_min_charge'];
@@ -270,13 +336,13 @@ if(isset($_POST['submit']))
 	   
 	if($flag == false)
 	{
-		$qur="UPDATE users SET shortcut_icon='$shortcut_icon',paypal_enable='$paypal_enable',business_nature='$business_nature',special_coin_min='$special_coin_min',special_coin_max='$special_coin_max',unrecognize_coin='$unrecognize_coin',special_coin_name='$special_coin_name',fund_password='$fund_password',delivery_plan='$delivery_plan',membership_plan='$membership_plan',coupon_offer='$coupon_offer',custom_msg_image='$custom_msg_image',section_on_orderlist='$section_on_orderlist',table_on_orderlist='$table_on_orderlist',order_min_charge='$order_min_charge',order_extra_charge='$order_extra_charge',delivery_rate='$delivery_rate',spassword_need='$spassword_need',discounted_product='$discounted_product',setup_shop='$setup_shop',shop_open='$shop_open',printer_profile='$printer_profile',usb_name='$usb_name',printer_style='$printer_style',merchant_code='$merchant_code', merchant_url='$merchant_address', name='$realname',latitude='$latitude', longitude='$longitude', company='$company',register='$register',address='$address',gst='$gst', sst='$sst',sst_rate='$sst_rate',print_ip_address='$print_ip_address', order_print_setting='$order_print_setting', facsimile_number='$facsimile',referred_by='$referred_by', business1='$business1', business2='$business2', name_card='$name_card',card_number='$card_number',expiry_date='$expiry_date',cvv='$cvv',bank_name='$bankname',name_accoundholder='$name_accoundholder',bank_ac_num='$ac_num',charge='$charge',nric_number='$nric_number',address_person='$address_person',hand_phone='$hand_phone',google_map='$google_map',doc_copy='$filename',company_doc='$filenamess',number_lock='$number_lock', handphone_number='$handphone_number', created_at='$date', account_type='$account_type', k_date='$k_date', k_lock='$k_lock', guest_permission='$guest_permission',voice_recognition='$voice_recognition', 
+		 $qur="UPDATE users SET banner_image='$uniquesavename',shortcut_icon='$shortcut_icon',paypal_enable='$paypal_enable',business_nature='$business_nature',special_coin_min='$special_coin_min',special_coin_max='$special_coin_max',unrecognize_coin='$unrecognize_coin',special_coin_name='$special_coin_name',fund_password='$fund_password',delivery_plan='$delivery_plan',membership_plan='$membership_plan',coupon_offer='$coupon_offer',custom_msg_image='$custom_msg_image',section_on_orderlist='$section_on_orderlist',table_on_orderlist='$table_on_orderlist',order_min_charge='$order_min_charge',order_extra_charge='$order_extra_charge',delivery_rate='$delivery_rate',spassword_need='$spassword_need',discounted_product='$discounted_product',setup_shop='$setup_shop',shop_open='$shop_open',printer_profile='$printer_profile',usb_name='$usb_name',printer_style='$printer_style',merchant_code='$merchant_code', merchant_url='$merchant_address', name='$realname',latitude='$latitude', longitude='$longitude', company='$company',register='$register',address='$address',gst='$gst', sst='$sst',sst_rate='$sst_rate',print_ip_address='$print_ip_address', order_print_setting='$order_print_setting', facsimile_number='$facsimile',referred_by='$referred_by', business1='$business1', business2='$business2', name_card='$name_card',card_number='$card_number',expiry_date='$expiry_date',cvv='$cvv',bank_name='$bankname',name_accoundholder='$name_accoundholder',bank_ac_num='$ac_num',charge='$charge',nric_number='$nric_number',address_person='$address_person',hand_phone='$hand_phone',google_map='$google_map',doc_copy='$filename',company_doc='$filenamess',number_lock='$number_lock', handphone_number='$handphone_number', created_at='$date', account_type='$account_type', k_date='$k_date', k_lock='$k_lock', guest_permission='$guest_permission',voice_recognition='$voice_recognition', 
 		next_pending_time='$next_pending_time',pending_time='$pending_time',menu_type='$menu_type', custom_message='$custom_message',custom_msg_time='$custom_msg_time',
 		section_required='$section_required',table_required='$table_required',cash_check='$cash_check',credit_check='$credit_check',
 		wallet_check='$wallet_check',boost_check='$boost_check',grab_check='$grab_check',wechat_check='$wechat_check',touch_check='$touch_check',service_id='$service',
 		fpx_check='$fpx_check',discount='$discounts',mian_merchant='$main_merchant_id',location_order='$location_order',location_range='$location_range',free_delivery='$free_delivery'
 		,delivery_address_exit='$delivery_address_exit',section_exit='$section_exit',table_exit='$table_exit',pre_fill_delivery_address='$pre_fill_delivery_address' WHERE id='".$_SESSION['login']."'";
-		// die;  
+		// die;                                  
 		$test_test = mysqli_query($conn,$qur);
 		$error .= "Successfully Updated profile Details.<br>";
 		if($expired_flag == false){
@@ -601,7 +667,7 @@ audio {
 
 
 	</style>
-	
+	<script src="https://scripts.sirv.com/sirv.js" defer></script>  
 </head>
 <body class="header-light sidebar-dark sidebar-expand pace-done">
     <div class="pace  pace-inactive">
@@ -1054,18 +1120,31 @@ audio {
 									<!--fourth part--->
 									
 										<div class="form-group">
-										<label>Add to Home Screen Logo (512*512)</label><br>
-										<input type="file" name="shortcut_icon">
-										<?php
-										if(isset($bank_data['shortcut_icon']) && $bank_data['shortcut_icon'] != "")
-										{
-										?>
-										<a href="<?php echo $site_url."/images/shortcut_icon/".$bank_data['shortcut_icon']; ?>" target="_blank"> <?php echo $bank_data['shortcut_icon']; ?></a>
-										<img src="<?php echo $site_url."/images/shortcut_icon/".$bank_data['shortcut_icon']; ?>"/>
-										<?php
-										}
-										?>
-									</div>
+											<label>Add to Home Screen Logo (512*512)</label><br>
+											<input type="file" name="shortcut_icon">
+											<?php
+											if(isset($bank_data['shortcut_icon']) && $bank_data['shortcut_icon'] != "")
+											{
+											?>
+											
+											<img src="<?php echo $site_url."/images/shortcut_icon/".$bank_data['shortcut_icon']; ?>"/>
+											<?php
+											}
+											?>
+										</div>
+										<div class="form-group">
+											<label> Home Screen Banner (512*512)</label><br>
+											<input type="file" name="banner_image">
+											<?php
+											if(isset($bank_data['banner_image']) && $bank_data['banner_image'] != "")
+											{
+											?>
+											
+											<img  class="img-responsive Sirv"  src="<?php echo $image_cdn."banner_image/".$bank_data['banner_image']; ?>"/>   
+											<?php
+											}
+											?>
+										</div>   
 									<div class="form-group">
 										<label>Upload of the picture of NRIC of the person</label><br>
 										<input type="file" name="doc_copy" <?php if(isset($profile_pic) && $profile_pic == ""){ 

@@ -20,14 +20,15 @@ if($_GET['c_id'])
 else
 {
 	$update=0;
-}
+}   
 
 if(isset($_POST['add_merchant'])){
  extract($_POST);
  if($classification_name)
  {
-	 $i="INSERT INTO `classfication_service` (`classification_name`, `classification_name_chiness`, `classification_name_mal`) VALUES
-	 ('$classification_name','$classification_name_chiness','$classification_name_mal')";
+	 if($mal_version =="on"){ $mal_version = 'y';} else {$mal_version='n';}
+	 $i="INSERT INTO `classfication_service` (`classification_name`, `classification_name_chiness`, `classification_name_mal`,`mal_version`) VALUES
+	 ('$classification_name','$classification_name_chiness','$classification_name_mal','mal_version')";
 	 $insert=mysqli_query($conn,$i);
 	if($insert)
 	{
@@ -40,14 +41,14 @@ if(isset($_POST['update_merchant'])){
  extract($_POST);
  if($classification_name)
  {
-	
-	 $i="UPDATE `classfication_service` SET `classification_name_chiness` = '$classification_name_chiness',`classification_name` = '$classification_name',`classification_name_mal` = '$classification_name_mal'  WHERE `classfication_service`.`id` ='$c_id'";
+	if($mal_version =="on"){ $mal_version = 'y';} else {$mal_version='n';}
+	 $i="UPDATE `classfication_service` SET `mal_version` = '$mal_version',`classification_name_chiness` = '$classification_name_chiness',`classification_name` = '$classification_name',`classification_name_mal` = '$classification_name_mal'  WHERE `classfication_service`.`id` ='$c_id'";
 	 $insert=mysqli_query($conn,$i);
 	if($insert)
 	{
 		$_SESSION['show_msg']="Record Updated Successfully";
 		header('Location:classficationmerchant.php');
-	}		
+	}		   
  }
 }
 	
@@ -98,6 +99,10 @@ $a_m="agents";
 							<div class="col-md-3 col-sm-8">
 								<label for="generate-button">Malaysian Name</label>
 								<input type="text" class="form-control" name="classification_name_mal"  value="<?php echo $classification_name_mal; ?>"  id="classification_name_mal"/>
+							</div>
+							<div class="col-md-3 col-sm-8">
+								<label for="generate-button">Malaysian version</label>
+								<input type="checkbox" <?php if($mal_version!="n"){  echo "checked";}?>  class="form-control" name="mal_version"/>
 							</div>
 
 

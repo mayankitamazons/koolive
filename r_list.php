@@ -149,7 +149,7 @@ if($sort_by=="sort_distance" && $type=="all")
 					<div class="main_title version_2">
 						<span><em></em></span>
 						<div class="row">
-							  <div class="col-md-8"><h2><?php echo $language['restaurant']; ?> (68)</h2></div>
+							  <div class="col-md-8"><h2><?php echo $language['near_by_shop_2']; ?> (68)</h2></div>
 							
 							  <div style="margin: 20px 0 0 0;float: right;" class="col-md-2">
 							  <select class="form-control all_restro_sort">

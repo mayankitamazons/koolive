@@ -1,8 +1,7 @@
 <?php
-
-session_start();
-$conn = mysqli_connect("localhost", "koofamil_B277", "rSFihHas];1P", "koofamil_B277");
+include('config.php');
 extract($_POST);
+// print_R($_POST);
 if($_POST['user_id'])
 {   
 
@@ -11,10 +10,13 @@ if($logout_type && isset($_SESSION['login']))
 {
 	 $id=$_SESSION['login'];
 	// q
-	if($logout_type=="shop_close")
+	if($id=='')
+		$id=$_POST['user_id'];
+if($logout_type=="shop_close" || $logout_type=="button")
 	{
 		// $id=$_SESSION['login'];
-	    $sql = "UPDATE users SET shop_open = '0',active_login='n' WHERE id = '$id'";	
+	     $sql = "UPDATE users SET shop_open = '0',active_login='n' WHERE id = '$id'";	
+	   // die;   
 	   mysqli_query($conn,$sql);
 	  
 	}

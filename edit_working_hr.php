@@ -114,77 +114,15 @@ header('Location: set_workinghours.php');
 									<label>Set Work days</label>
 										<select class="form-control" name="start_day">
 												<option>Select Day</option>
-											<?php
-											 if ($start_day == "Monday" )
-											{
- 												echo '<option value="Monday" selected>Monday</option>
-											<option value="Tuesday">Tuesday</option>
-											<option value="Wednesday">Wednesday</option>
-											<option value="Thursday">Thursday</option>
-											<option value="Friday">Friday</option>
-											<option value="Saturday">Saturday</option>
-											<option value="Sunday">Sunday</option>';
-											} else if($start_day == "Tuesday")
-											{
-												echo '<option value="Monday">Monday</option>
-											<option value="Tuesday" selected>Tuesday</option>
-											<option value="Wednesday">Wednesday</option>
-											<option value="Thursday">Thursday</option>
-											<option value="Friday">Friday</option>
-											<option value="Saturday">Saturday</option>
-											<option value="Sunday">Sunday</option>';
-											}else if($start_day == "Wednesday")
-											{
-												echo '<option value="Monday">Monday</option>
-											<option value="Tuesday">Tuesday</option>
-											<option value="Wednesday" selected>Wednesday</option>
-											<option value="Thursday">Thursday</option>
-											<option value="Friday">Friday</option>
-											<option value="Saturday">Saturday</option>
-											<option value="Sunday">Sunday</option>';
-											}
-											else if( $start_day == "Thursday")
-											{
-												echo '<option value="Monday">Monday</option>
-											<option value="Tuesday">Tuesday</option>
-											<option value="Wednesday">Wednesday</option>
-											<option value="Thursday" selected>Thursday</option>
-											<option value="Friday">Friday</option>
-											<option value="Saturday">Saturday</option>
-											<option value="Sunday">Sunday</option>';
-											}
-											else if($start_day == "Friday")
-											{
-												echo '<option value="Monday">Monday</option>
-											<option value="Tuesday">Tuesday</option>
-											<option value="Wednesday">Wednesday</option>
-											<option value="Thursday">Thursday</option>
-											<option value="Friday" selected>Friday</option>
-											<option value="Saturday">Saturday</option>
-											<option value="Sunday">Sunday</option>';
-											}
-											else if($start_day == "Saturday")
-											{
-												echo '<option value="Monday">Monday</option>
-											<option value="Tuesday">Tuesday</option>
-											<option value="Wednesday">Wednesday</option>
-											<option value="Thursday">Thursday</option>
-											<option value="Friday" >Friday</option>
-											<option value="Saturday" selected>Saturday</option>
-											<option value="Sunday">Sunday</option>';
-											}
-											else if($start_day == "Sunday")
-											{
-												echo '<option value="Monday">Monday</option>
-											<option value="Tuesday">Tuesday</option>
-											<option value="Wednesday">Wednesday</option>
-											<option value="Thursday">Thursday</option>
-											<option value="Friday" >Friday</option>
-											<option value="Saturday">Saturday</option>
-											<option value="Sunday" selected>Sunday</option>';
-											}
-
-											?>
+												
+												<option value="Monday" <?php if($start_day=="Monday"){ echo "selected";} ?>>Monday</option>
+											<option value="Tuesday" <?php if($start_day=="Tuesday"){ echo "selected";} ?>> Tuesday</option>
+											<option value="Wednesday" <?php if($start_day=="Wednesday"){ echo "selected";} ?>>Wednesday</option>
+											<option value="Thursday" <?php if($start_day=="Thursday"){ echo "selected";} ?>>Thursday</option>
+											<option value="Friday" <?php if($start_day=="Friday"){ echo "selected";} ?>>Friday</option>
+											<option value="Saturday" <?php if($start_day=="Saturday"){ echo "selected";} ?>>Saturday</option>
+											<option value="Sunday" <?php if($start_day=="Sunday"){ echo "selected";} ?>>Sunday</option>';
+											
 
 		
 											
@@ -201,77 +139,15 @@ header('Location: set_workinghours.php');
 										<label>Set Work days</label>
 										<select class="form-control" name="end_day">
 											<option>Select Day</option>
-											<?php
-											 if ($end_day == "Monday" )
-											{
- 												echo '<option value="Monday" selected>Monday</option>
-											<option value="Tuesday">Tuesday</option>
-											<option value="Wednesday">Wednesday</option>
-											<option value="Thursday">Thursday</option>
-											<option value="Friday">Friday</option>
-											<option value="Saturday">Saturday</option>
-											<option value="Sunday">Sunday</option>';
-											} else if($end_day == "Tuesday")
-											{
-												echo '<option value="Monday">Monday</option>
-											<option value="Tuesday" selected>Tuesday</option>
-											<option value="Wednesday">Wednesday</option>
-											<option value="Thursday">Thursday</option>
-											<option value="Friday">Friday</option>
-											<option value="Saturday">Saturday</option>
-											<option value="Sunday">Sunday</option>';
-											}else if($end_day == "Wednesday")
-											{
-												echo '<option value="Monday">Monday</option>
-											<option value="Tuesday">Tuesday</option>
-											<option value="Wednesday" selected>Wednesday</option>
-											<option value="Thursday">Thursday</option>
-											<option value="Friday">Friday</option>
-											<option value="Saturday">Saturday</option>
-											<option value="Sunday">Sunday</option>';
-											}
-											else if($end_day == "Thursday")
-											{
-												echo '<option value="Monday">Monday</option>
-											<option value="Tuesday">Tuesday</option>
-											<option value="Wednesday">Wednesday</option>
-											<option value="Thursday" selected>Thursday</option>
-											<option value="Friday">Friday</option>
-											<option value="Saturday">Saturday</option>
-											<option value="Sunday">Sunday</option>';
-											}
-											else if($end_day == "Friday")
-											{
-												echo '<option value="Monday">Monday</option>
-											<option value="Tuesday">Tuesday</option>
-											<option value="Wednesday">Wednesday</option>
-											<option value="Thursday">Thursday</option>
-											<option value="Friday" selected>Friday</option>
-											<option value="Saturday">Saturday</option>
-											<option value="Sunday">Sunday</option>';
-											}
-											else if($end_day == "Saturday")
-											{
-												echo '<option value="Monday">Monday</option>
-											<option value="Tuesday">Tuesday</option>
-											<option value="Wednesday">Wednesday</option>
-											<option value="Thursday">Thursday</option>
-											<option value="Friday" >Friday</option>
-											<option value="Saturday" selected>Saturday</option>
-											<option value="Sunday">Sunday</option>';
-											}
-											else if($end_day == "Sunday")
-											{
-												echo '<option value="Monday">Monday</option>
-											<option value="Tuesday">Tuesday</option>
-											<option value="Wednesday">Wednesday</option>
-											<option value="Thursday">Thursday</option>
-											<option value="Friday" >Friday</option>
-											<option value="Saturday">Saturday</option>
-											<option value="Sunday" selected>Sunday</option>';
-											}
+											<option value="Monday" <?php if($end_day=="Monday"){ echo "selected";} ?>>Monday</option>
+											<option value="Tuesday" <?php if($end_day=="Tuesday"){ echo "selected";} ?>> Tuesday</option>
+											<option value="Wednesday" <?php if($end_day=="Wednesday"){ echo "selected";} ?>>Wednesday</option>
+											<option value="Thursday" <?php if($end_day=="Thursday"){ echo "selected";} ?>>Thursday</option>
+											<option value="Friday" <?php if($end_day=="Friday"){ echo "selected";} ?>>Friday</option>
+											<option value="Saturday" <?php if($end_day=="Saturday"){ echo "selected";} ?>>Saturday</option>
+											<option value="Sunday" <?php if($end_day=="Sunday"){ echo "selected";} ?>>Sunday</option>';
+											
 
-											?>
 											
 										</select>
 									</div>

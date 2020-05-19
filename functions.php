@@ -40,6 +40,16 @@ if(isset($_POST['method']) && ($_POST['method'] == "directlogin")){
     echo json_encode($res);
 	die;
 }
+if(isset($_POST['method']) && ($_POST['method'] == "riderdetailsave")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set rider_info='$rider_info' where id='$order_id'");
+	 if($up)
+		$res = array('msg'=>"Rider detail updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
 if(isset($_POST['method']) && ($_POST['method'] == "adminfeedbacksave")){
 	 extract($_POST);
 	 $user_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM feedback WHERE  feedback_id='".$selected_id."'"));

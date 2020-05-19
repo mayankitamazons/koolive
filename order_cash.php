@@ -269,6 +269,10 @@ if(isset($_POST))
 				$order_extra_charge=2.99;
 			}
 		}
+		if($merchant_id==7634)
+		{
+			$order_extra_charge=0;  
+		}
 		if($w_type=='')
 		{
 			$w_type="cash";

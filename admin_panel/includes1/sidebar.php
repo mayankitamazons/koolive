@@ -41,7 +41,14 @@ $profile_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM admins WHE
 				 <li><a href="user.php" class="<?php if($a_m=="member"){ echo "active";} ?>">Member</a></li>
 		  <li><a href="classficationmerchant.php"><span class="hide-menu <?php if($a_m=="classfication_merchant"){ echo "active";} ?>">Classfication Merchant</span></a></li>      
 		  <li><a href="smspush.php"><span class="hide-menu <?php if($a_m=="send_push"){ echo "active";} ?>">Send push msg</span></a></li>      
-		  <li><a href="feedback.php"><span class="hide-menu <?php if($a_m=="feedback"){ echo "active";} ?>">Feedback</span></a></li>      
+		  <li><a href="feedback.php"><span class="hide-menu <?php if($a_m=="feedback"){ echo "active";} ?>">Feedback</span></a></li>     
+        <li class="menu-item-has-children">
+			<a href="javascript:void(0);" class="ripple"><span class="color-color-scheme"><span class="hide-menu">Jobs</span></span></a>
+			<ul class="list-unstyled sub-menu collapse" aria-expanded="true">
+				 <li><a href="job_category.php">Jobs Category</a></li>
+				 <li><a href="jobs_list.php">Job list</a></li>
+			</ul>
+        </li>		  
 		  <li><a href="apartnerlist.php"><span class="hide-menu <?php if($a_m=="a_c_l"){ echo "active";} ?>">Accepting coin list</span></a></li>   
 		  <li><a href="partnerlist.php"><span class="hide-menu <?php if($a_m=="a_p_l"){ echo "active";} ?>">Associated  Partner List</span></a></li>   
         <li><a href="agents.php"><span class="hide-menu <?php if($a_m=="agents"){ echo "active";} ?>">Agents</span></a></li>   
@@ -60,13 +67,7 @@ $profile_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM admins WHE
 				 <li><a href="view_sub.php" class="<?php if($a_m=="p_v_s"){ echo "active";} ?>">View Subscription</a></li>
 			</ul>
         </li>
-        <!--<li class="menu-item-has-children">
-			<a href="javascript:void(0);" class="ripple"><span class="color-color-scheme"><span class="hide-menu">Referral List</span></span></a>
-			<ul class="list-unstyled sub-menu collapse" aria-expanded="true">
-				 <li><a href="referral_merchant.php">Merchant</a></li>
-				 <li><a href="referral_member.php">Member</a></li>
-			</ul>
-        </li>-->
+
         <li><a href="referral_merchant.php"><span class="hide-menu">Referral List</span></a></li>
         <li><a href="community_merchant.php"><span class="hide-menu">Community Fund</span></a></li>
         <!--<li class="menu-item-has-children">

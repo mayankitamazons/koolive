@@ -10,7 +10,18 @@ if(empty($_GET['vs']))
 
 header("Location:$url");
 exit();
+} 
+if(isset($_POST['merchant_select_form']))
+{
+	if($_POST['merchant_select'])
+	{
+		$sid=$_POST['merchant_select'];
+		
+		$url="https://www.koofamilies.com/view_merchant.php?sid=".$sid."&ms=".md5(rand());
+		header("Location:$url");
+		exit();
 }
+}	
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,11 +30,8 @@ exit();
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta property="og:title" content="KooFamilies - Discover & Book the best restaurants at the best price">
-		<meta property="og:description" content="KooFamilies - Discover & Book the best restaurants at the best price">
-		<meta property="og:image" content="https://koofamilies.sirv.com/logo_512x512.png">
-		<meta property="og:url" content="https://www.koofamilies.com/index.php">
-
+    <meta name="description" content="KooFamilies - Discover & Book the best restaurants at the best price">
+    <meta name="author" content="Ansonika">
     <title>KooFamilies - One stop centre for your everything</title>
 
     <!-- Favicons-->
@@ -49,6 +57,15 @@ exit();
 	<link rel="stylesheet" type="text/css" href="css/sweetalert.css">
    <link rel="manifest" id="my-manifest-placeholder">
     <meta name="theme-color" content="#317EFB"/>
+	<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+<script>
+  var OneSignal = window.OneSignal || [];
+  OneSignal.push(function() {
+    OneSignal.init({
+      appId: "0aaae6ba-5f53-47e7-b314-a50637085fb6",
+    });
+  });
+</script>
 </head>
 
 <body>
@@ -209,14 +226,15 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 									<div class="row no-gutters custom-search-input">
 										<div class="col-lg-10">
 											<div class="form-group">
+											<span id="please_wait" style="color:red;display:none;">Please wait.....</span>
 												<select class="merchant_select form-control" name="merchant_select">
 												   <option value="-1"><?php echo $language['search_by_company']; ?></option>
 													<?php
-														$select =mysqli_query($conn,"SELECT SQL_NO_CACHE  name,id FROM users WHERE name LIKE isLocked='0' and show_merchant=1  and user_roles=2");
+														$select =mysqli_query($conn,"SELECT SQL_NO_CACHE  name,id,mobile_number FROM users WHERE name LIKE isLocked='0' and show_merchant=1  and user_roles=2");
 														while ($row=mysqli_fetch_assoc($select)) 
 														{
 														 ?>
-														 <option value="<?php echo $row['id']; ?>"><?php echo $row['name'];?></option>
+														 <option value="<?php echo $row['mobile_number']; ?>"><?php echo $row['name'];?></option>
 														<?php }   
 													?>
 												</select>
@@ -225,7 +243,8 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 										</div>   
 										
 										<div class="col-lg-2">
-											<input type="submit" value="<?php echo $language['search']; ?>" style="margin-top: 0px;">
+											
+											<input type="submit" id="merchant_select_form" name="merchant_select_form" value="<?php echo $language['search']; ?>" style="margin-top: 0px;">
 										</div>
 									</div>
 								
@@ -233,11 +252,21 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 						</div>
 					</div> 
 					<!-- /row -->
+					<div style="margin-top: 20px;">
+					
+					<button type="button"  id="search_location" style="margin-top:2%;background-color: #589442;padding: 13px;width: 100%;color: white;border-radius: 4px;" class="btn btn-primary"><?php echo $language['search_by_location']; ?></button>
+					<!--span id="search_location" style="margin-top: 2%;background-color: #589442;padding: 13px;" class="btn btn-primary">Search by location</span!--> 
+					</div>
 					<div class="container" style="margin-top: 27px;">
 					 <?php 
-                  $sql  = "SELECT SQL_NO_CACHE  set_working_hr.*,users.mobile_number,users.name,users.address,users.login_status,users.id,about.image,users.shop_open FROM `users` 
-                LEFT JOIN about on  users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where users.user_roles = 2 and users.popular_restro=1 and users.shop_open=1 group by users.id
-                ORDER BY users.popular_sort_order  ASC  limit 20";   
+					 $sql="select SQL_NO_CACHE set_working_hr.*,users.mobile_number,users.name,users.address,users.login_status,users.id,about.image,users.shop_open,cs.shift_pos 
+					 from classification_arrange_system as cs inner join users on users.id=cs.merchant_id LEFT JOIN about on  users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where cs.classfication_id='3' and users.user_roles = 2  and users.shop_open=1 group by users.id
+                ORDER BY cs.shift_pos  ASC  limit 20";
+
+
+				// $sql  = "SELECT SQL_NO_CACHE  set_working_hr.*,users.mobile_number,users.name,users.address,users.login_status,users.id,about.image,users.shop_open FROM `users` 
+                // LEFT JOIN about on  users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where users.user_roles = 2 and users.popular_restro=1 and users.shop_open=1 group by users.id
+                // ORDER BY users.popular_sort_order  ASC  limit 20";   
                 $result = mysqli_query($conn,$sql);                  
                 $totalpo=mysqli_num_rows($result);
                  if($totalpo>0){ 
@@ -325,16 +354,120 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 			</div>
 				
 		</div>
-		
+		<?php 
+		// list all classfication business 
+		if($_SESSION["langfile"]=="malaysian")
+		 $l_q="select sql_no_cache * from classfication_service where status='y' and id!='3' and mal_version='y'";
+		else
+		$l_q="select sql_no_cache * from classfication_service where status='y' and id!='3'";    
+	 
+		$l_query=mysqli_query($conn,$l_q);
+		 $current_lang=$_SESSION["langfile"];
+		 $classi_name=[];
+		 $classi_count=[];
+		while($l_r=mysqli_fetch_assoc($l_query))
+		{
+			$classi_name[]="classi_".$l_r['id'];
+			
+			$c_id=$l_r['id'];
+			  $sql="select SQL_NO_CACHE users.name, users.address,service.short_name,about.image,users.mobile_number,set_working_hr.*,users.order_extra_charge,users.delivery_plan,users.not_working_text,users.not_working_text_chiness from classification_arrange_system as cs   inner join users on users.id=cs.merchant_id left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where cs.classfication_id='$c_id' 
+			  and users.user_roles = 2 and users.shop_open=1 group by users.id ORDER BY cs.shift_pos ASC limit 20 ";
+			 $classification_name=$l_r['classification_name']; 
+			if($current_lang=="chinese" && $l_r['classification_name_chiness'])
+			{
+				$classification_name=$l_r['classification_name_chiness']; 
+			} if($current_lang=="malaysian" && $l_r['classification_name_mal'])
+			{
+			   $classification_name=$l_r['classification_name_mal']; 	
+			}
+			$result = mysqli_query($conn, $sql);
+			$count= mysqli_num_rows($result);
+			
+			if($count>0)
+			{
+		?>
+		<div class="container <?php echo "classi_".$l_r['id']; ?>" style="margin-top:5px;">
+				
+			<div class="main_title">
+				<span><em></em></span>
+				<div class="row">
+				  <div class="col-md-8"><h2 style="text-align: left;"><?php echo $classification_name; ?></h2></div>
+				  <div style="margin: 20px 0 0 0;float: right;" class="col-md-2">
+				  <!--select class="form-control popular_filter">
+					<option value="sort_name">Sort By Name</option>
+					   <option value="sort_distance">Search nearby</option>
+				  </select!-->
+				</div>
+				 
+				</div>
+				
+            </div>
+           
+			
+			<div class="owl-carousel owl-theme carousel_4">
+            
+			<?php if(mysqli_num_rows($result)>0){
+                while($rd=mysqli_fetch_assoc($result)){
+                     // print_r($rd);
+					$working="y";
+					 if($rd['start_day']){
+						 $time_detail['starday']=$rd['start_day'];
+						 $time_detail['endday']=$rd['end_day'];
+						 $time_detail['starttime']=$rd['start_time'];
+						 $time_detail['endttime']=$rd['end_time'];
+						$work_str=$rd['start_day']." ".$rd['start_time']." to ".$rd['end_day']." ".$rd['end_time']; 
+						 $working=checktimestatus($time_detail);
+						 // $work_str="Working Time :".$rd['start_day']." ".$rd['start_time']." to "." ".$rd['end_day']." ".$rd['end_time'];
+					 } 
+					// $working="y";
+					if($working=="y"){
+					
+                    ?>
+                    
+                    <div class="item <?php echo "classi_".$l_r['id']."_child";?>">
+			        <div class="strip">
+			            <figure>
+			                <!-- <span class="ribbon off">-30%</span> -->
+							<?php if($rd['image']==""){ ?>
+							<img src="images/logo_new.jpg" data-src="images/logo_new.jpg" class="owl-lazy" alt=""> <?php
+							}else{ ?> <img src="<?php echo $image_cdn; ?>about_images/<?php echo $rd['image']?>?w=200" data-src="<?php echo $image_cdn; ?>about_images/<?php echo $rd['image']?>?w=200" class="owl-lazy lazy2" alt=""> <?php }?>
+			                
+			                <a href="view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $rd['mobile_number'];?>" class="strip_info">
+			                    <!-- <small>Pizza</small> -->
+			                    <div class="item_title">
+                                      <h3><?php echo $rd['name']?></h3>
+									
+			                        <small><?php if($work_str==""){
+										echo "<br>";
+									}else{ echo $work_str;}?></small>
+									<?php if($rd[12] || $rd[13]){ if($rd[13]){ $d_str="Flexible Delivery";} else { $d_str="MYR ".number_format($rd[12],2);} } else { $d_str="Free Delivery";} ?>
+									
+			                    </div>
+			                </a>
+							
+			            </figure>
+						
+			        </div>   
+                </div>
+					<?php }
+                }
+            } ?>
+			    
+			  
+			</div>
+				
+			
+		</div>
+			<?php }} ?>
 		<!-- /bg_gray -->
 		<!-- popular restaurants  -->
-		<div class="container margin_60_40">
+		<div class="container margin_60_40 search_location_div">
 			<div class="row all_merchant_list">
 				<div class="col-12">
 					<div class="main_title version_2">
 						<span><em></em></span>
 						<div class="row">
-							  <div class="col-md-8"><h2><?php echo $language['restaurant']; ?> (68)</h2></div>
+							  <div class="col-md-8"><h2><?php echo $language['near_by_shop_2']; ?> (68)</h2></div>
 							
 							  <div style="margin: 20px 0 0 0;float: right;" class="col-md-2">
 							  <select class="form-control all_restro_sort">
@@ -361,7 +494,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
                         $result = mysqli_query($conn, $sql);
                         $count= mysqli_num_rows($result);
                         $rd = mysqli_fetch_all($result);   
-                        // print_r($rd);die;
+                        // print_r($rd);
 						$condition = round($count/2);
 						//echo $condition;
 						$langfile=$_SESSION['langfile'];
@@ -457,7 +590,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 										<img src="images/logo_new.jpg" data-src="images/logo_new.jpg" alt="" class="lazy">
 									<?php } else {  ?><img src="<?php echo $image_cdn; ?>about_images/<?php echo $rd[$i][3]?>?w=200" data-src="<?php echo $image_cdn; ?>about_images/<?php echo $rd[$i][3]?>?w=200" alt="" class="lazy lazy2"><?php } ?>
 									</figure>
-									<!-- <div class="score"><strong>9.5</strong></div> --
+									<!-- <div class="score"><strong>9.5</strong></div> -->
 									<!--em>Italian</em!-->
 									<h3><?php echo $rd[$i][0];?></h3>
 									<!--small><?php echo $rd[$i][2]?></small!-->
@@ -711,327 +844,31 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
         </div>
 
  </div>
-	<link href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
+ <link href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
 
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script type="text/javascript" src="js/sweetalert.min.js" defer></script>
-    <script src="extra/js/common_scripts.min.js" defer></script>
-    <script src="extra/js/common_func.js" defer></script>
-    
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script type="text/javascript" src="js/sweetalert.min.js" defer></script>
+  <script src="extra/js/common_scripts.min.js" defer></script>
+  <script src="extra/js/common_func.js" defer></script>
+  
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <script src="extra/js/select2.min_da99e0cfb43d832f77954298a0557ca5.js" defer></script>
-    <!-- SPECIFIC SCRIPTS -->
-    <script src="extra/js/modernizr.min.js" defer></script>
-    
-	 	<script type="text/javascript">
+  <!-- SPECIFIC SCRIPTS -->
+  <script src="extra/js/modernizr.min.js" defer></script>
+  
+	   <script type="text/javascript">
 var map;
 function initMap() {
 var mapCenter = new google.maps.LatLng(47.6145, -122.3418); //Google map Coordinates
 map = new google.maps.Map($("#map")[0], {
-		center: mapCenter,
-		zoom: 8
-	  });
+	  center: mapCenter,
+	  zoom: 8
+	});
 }
 
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4BfDrt-mCQCC1pzrGUAjW_2PRrGNKh_U&libraries=places" async defer></script> 
 
-	<script>
-	function generatetokenno(length) {
-
-   var result           = '';
-
-   var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-   var charactersLength = characters.length;
-
-   for ( var i = 0; i < length; i++ ) {
-
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-
-   }
-
-   return result;
-
-} 
-	$(document).ready(function() {
-		var s_token=generatetokenno(16);
-	var r_url="https://koofamilies.com/index.php?vs="+s_token;
-
-	 var myDynamicManifest = {
-
-   "gcm_sender_id": "540868316921",
-
-   "icons": [
-
-		{
-
-		"src": "https://koofamilies.com/img/logo_512x512.png",
-
-		"type": "image/png",
-
-		"sizes": "512x512"
-
-	  }
-
-	  ],
-
-	  "short_name":'koofamilies Pos System',
-
-	  "name": "koofamilies Pos System",
-
-	  "background_color": "#4A90E2",
-
-	  "theme_color": "#317EFB",
-
-	  "orientation":"any",
-
-	  "display": "standalone",
-
-	  "start_url":r_url
-
-	} 
-	const stringManifest = JSON.stringify(myDynamicManifest);
-
-	const blob = new Blob([stringManifest], {type: 'application/json'});
-
-	const manifestURL = URL.createObjectURL(blob);
-
-	document.querySelector('#my-manifest-placeholder').setAttribute('href', manifestURL);
-
-	
-	
-	
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw_new.js').then(function(registration) {
-      // Registration was successful
-      console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    }, function(err) {
-      // registration failed :(
-      console.log('ServiceWorker registration failed: ', err);
-    });
-  });
-}
-		var show_flash="<?php echo $show_flash; ?>";
-		  // alert(errror);
-		  if(show_flash)
-		  {
-			  swal("Welcome to KooFamilies!",show_flash, "success");
-			  setTimeout(function(){ 
-			  window.location.href = "index.php";
-			  },5000); 
-		  }
-
-		  $('.lazy2').lazy({
-		   
-            placeholder: "https://koofamilies.com/img/logo.png"
-        });
-		if ("geolocation" in navigator){ //check geolocation available 
-			navigator.geolocation.watchPosition(function(position) {
-
-			
-			},
-
-			function(error) {
-
-			if (error.code == error.PERMISSION_DENIED)
-
-			{
-
-			  // $('#location_model').modal('show');
-
-
-			}
-
-			});
-		//try to get user current location using getCurrentPosition() method
-		navigator.geolocation.getCurrentPosition(function(position){ 
-			var latitude=position.coords.latitude;
-			var longitude=position.coords.longitude;
-           var sort_by="sort_distance";
-			if(latitude && longitude)
-			{
-				$.ajax({
-				  type: "POST",
-				  url: "r_list.php",
-				  data: {latitude:latitude, longitude:longitude,sort_by:sort_by,type:"all"},
-				  cache: false,
-				  success: function(data) {
-					 $('.all_merchant_list').html(data);     
-				  }
-				  });	
-			}
-			else
-			{
-				// $('#location_model').modal('show');
-
-			}
-		});
-			}else{
-				console.log("Browser doesn't support geolocation!");
-			}
-    $('.merchant_select').select2();
-	   $('.merchant_select').on('change', function(){
-		  // alert(this.value);
-		  var selected_merchant_id=this.value;
-		  if(selected_merchant_id!='-1')
-		  {
-			  var s_token=generatetokenno(6);
-			var m_url="https://koofamilies.com/view_merchant.php?m_id="+selected_merchant_id+"&vs="+s_token;
-			window.location.href =m_url;			
-		  }
-		});
-		
-		$( ".popular_filter" ).change(function() {
-		 var sort_by=this.value;
-		 if(sort_by=="sort_name")
-		 {
-			var sort_by="sort_name";
-			$.ajax({
-				  type: "POST",
-				  url: "r_list.php",
-				  data: {sort_by:sort_by,type:"sort_name"},
-				  cache: false,
-				  success: function(data) {
-					 $('.all_merchant_list').html(data);     
-				  }
-				  });
-		 }
-		 else  if(sort_by=="sort_distance")
-		 {
-			if ("geolocation" in navigator){ //check geolocation available 
-			navigator.geolocation.watchPosition(function(position) {
-
-			
-			},
-
-			function(error) {
-
-			if (error.code == error.PERMISSION_DENIED)
-
-			{
-
-			  // $('#location_model').modal('show');
-
-
-			}
-
-			});
-		//try to get user current location using getCurrentPosition() method
-		navigator.geolocation.getCurrentPosition(function(position){ 
-			var latitude=position.coords.latitude;
-			var longitude=position.coords.longitude;
-
-			if(latitude && longitude)
-			{
-				$.ajax({
-				  type: "POST",
-				  url: "r_list.php",
-				  data: {latitude:latitude, longitude:longitude,sort_by:sort_by,type:"popular"},
-				  cache: false,
-				  success: function(data) {
-					 $('.owl-stage').html(data);   
-				  }
-				  });	
-			}
-			else
-			{
-				// $('#location_model').modal('show');
-
-			}
-		});
-			}else{
-				console.log("Browser doesn't support geolocation!");
-			}
-		 }
-		}); 
-		$( ".all_restro_sort" ).change(function() {
-		 var sort_by=this.value;
-		 // alert(sort_by);
-		 // return false;
-		 if(sort_by=="sort_name")
-		 {   
-			// location.reload(true);	
-			var sort_by="sort_name";
-			$.ajax({
-				  type: "POST",
-				  url: "r_list.php",
-				  data: {sort_by:sort_by,type:"sort_name"},
-				  cache: false,
-				  success: function(data) {
-					 $('.all_merchant_list').html(data);     
-				  }
-				  });
-		 }  
-		 else  if(sort_by=="sort_distance")
-		 {
-			if ("geolocation" in navigator){ //check geolocation available 
-			navigator.geolocation.watchPosition(function(position) {
-
-			
-			},
-
-			function(error) {
-
-			if (error.code == error.PERMISSION_DENIED)
-
-			{
-
-			  // $('#location_model').modal('show');
-
-
-			}
-
-			});
-		//try to get user current location using getCurrentPosition() method
-		navigator.geolocation.getCurrentPosition(function(position){ 
-			var latitude=position.coords.latitude;
-			var longitude=position.coords.longitude;
-
-			if(latitude && longitude)
-			{
-				$.ajax({
-				  type: "POST",
-				  url: "r_list.php",
-				  data: {latitude:latitude, longitude:longitude,sort_by:sort_by,type:"all"},
-				  cache: false,
-				  success: function(data) {
-					 $('.all_merchant_list').html(data);     
-				  }
-				  });	
-			}
-			else
-			{
-				// $('#location_model').modal('show');
-
-			}
-		});
-			}else{
-				console.log("Browser doesn't support geolocation!");
-			}
-		 }
-		}); 
-		});
-	</script>
-	<!-- Facebook Pixel Code -->
-<script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window, document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '229277018358702');
-  fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-  src="https://www.facebook.com/tr?id=229277018358702&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Facebook Pixel Code -->
 		 <script type="text/javascript" src="extra/js/jquery.lazy.min_74facba505554b93155d59a4d2d7e78b.js" defer></script>
  <a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
 

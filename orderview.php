@@ -693,7 +693,7 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
                     <?php if (count($pending_data) > 0){?>
                         <h5 style="color: red;"><?php echo $language['invoice_not_yet']; ?></h5>   
                         <div style="width: 380px; max-height: 300px; overflow: auto;">
-                        
+                        <input type="hidden" id="write_up_input"/>
                             <table class="table table-striped" >
                               <thead>
                                 <tr>
@@ -1689,7 +1689,7 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 
 						 
 						  <div class="col-md-6">
-						   <button  type="button" class="btn btn-primary logout" type="shop_close" data-dismiss="modal" style="margin-left:19%;width:50%;margin-bottom: 3%;text-align: center;color:black"><?php echo $language['yes']; ?></button>
+						   <button  type="button" class="btn btn-primary logout" t_type="shop_close" data-dismiss="modal" style="margin-left:19%;width:50%;margin-bottom: 3%;text-align: center;color:black"><?php echo $language['yes']; ?></button>
 						 
 						  </div>  
 						  
@@ -2506,6 +2506,14 @@ var qtyno = $("input[name='qtyno[]']")
 							// alert(data);
 							// $(this).text(data);
 							document.getElementById(input_id).innerHTML =data;
+							$('#write_up_input').val("write up test");
+							  var copyText = document.getElementById("write_up_input");
+							// alert(copyText);
+						  // copyText.select();
+						  // copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+						 
+						  // document.execCommand("copy");
 							// var aux = document.createElement("div");
 						  // aux.setAttribute("contentEditable", true);
 						  // aux.innerHTML = document.getElementById(input_id).innerHTML;

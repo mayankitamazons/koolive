@@ -180,6 +180,7 @@ if (move_uploaded_file($_FILES['file']['tmp_name'], "/home/koofamilies/public_ht
 		box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
 	}
 	</style>
+	<script src="https://scripts.sirv.com/sirv.js" defer></script>  
 </head>
 
 <body class="header-light sidebar-dark sidebar-expand pace-done">
@@ -222,10 +223,14 @@ if (move_uploaded_file($_FILES['file']['tmp_name'], "/home/koofamilies/public_ht
 										<label>Welcome Note</label>
 										<textarea class="welcome text_about" name="welcome_note" rows="10" cols="30"> <?php echo $about['welcome_note']; ?></textarea>
 										<div class="form-group">
-										<label>Company logo</label><br>
+										<label>Company logo (512*512)</label><br>
 										<input type="file" name="image_pic">
 										<input type="hidden" name = "image_up" value="<?php echo $about['image'] ?>" />
-										<label><?php echo $about['image'] ?></label>
+										<label>
+										   
+											  <img class="img-responsive Sirv" style="margin:0 auto;" data-src="<?php echo $image_cdn; ?>about_images/<?php echo $about['image'];?>" alt="<?php echo $merchant_message; ?>">
+   
+										</label>
 									</div>
 										<label>Description</label>
 										

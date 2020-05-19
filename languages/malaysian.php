@@ -350,7 +350,7 @@
 	$language['full_address'] ="Full Address";
 	$language['chinese_delivery'] ="Chinese man delivery";
 	$language['chinese_delivery_text'] ="If you spend more than RM100, we will automactically allocate chinese man delivery for you free of charge.";
-	$language['key_in_phone'] ="key in phone number";\
+	$language['key_in_phone'] ="key in phone number";
 	$language['subject_availability'] ="Subject to availability";
 	$language['edit_product'] ="Edit Product";
 	$language['accepted'] ="Accepted";
@@ -364,7 +364,8 @@
 	$language['review'] ="Review";
 	$language['detail'] ="Detail"; 
 	$language['difficulty'] ="Have difficulty in placing order? place through whatapp";   
-
-
+	$language['search_by_location'] ="Search by location"; 
+$language['near_by_shop_2'] ="Nearby shops"; 
+$language['rider_info'] ="Rider info";        
 
 ?>

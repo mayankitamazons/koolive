@@ -214,7 +214,7 @@ if(isset($_POST['forget']))
     </div>
     <!--//main -->
     <div class="copyright">
-        <p> &copy; 2015 | All rights reserved | Developed by <a href="#" target="_blank">WebDealSoft Technology</a></p>
+        <p> &copy; 2015 | All rights reserved | Developed by <a href="#" target="_blank">Koofamilies</a></p>
     </div>	
 </body>
 

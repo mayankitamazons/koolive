@@ -10,7 +10,7 @@
 		$profile = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE id ='".$merchant."'"));
 		
 		$order = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM order_list WHERE id ='".$order_id."'"));
-	    
+	    $row=$order;
 		$pdf->SetMargins(4, 10, 4);
 		$pdf->AddPage();
 		$pdf->Ln();
@@ -155,8 +155,94 @@
 		$pdf->SetFont("Arial", "", 6);
 		$pdf->Write(6, number_format($sum, 2));
 		$pdf->Ln();
+		if($row['deliver_tax_amount'])
+		{
+		$pdf->SetX(35);
+		$pdf->SetFont("Arial", "", 6);
+		$pdf->Write(6, "Delivery tax:");
+		$pdf->SetX(59);
+		$pdf->SetFont("Arial", "", 6);
+		$pdf->Write(6, number_format($row['deliver_tax_amount'], 2));
+		$pdf->Ln();
+		}
+		if($row['order_extra_charge'] || $row['special_delivery_amount'])
+		{
+			if($row['special_delivery_amount'])
+			{
+				$total_delivery_charge=@number_format($row['order_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)";
+			}
+			else
+			{
+				$total_delivery_charge=@number_format($row['order_extra_charge'],2);
+			}
+		$pdf->SetX(35);
+		$pdf->SetFont("Arial", "", 6);
+		$pdf->Write(6, "Delivery charges:");
+		$pdf->SetX(59);
+		$pdf->SetFont("Arial", "", 6);
+		$pdf->Write(6,$total_delivery_charge);
+		$pdf->Ln();
+		}
+		if($row['membership_discount'])
+		{
+		  $pdf->SetX(35);
+			$pdf->SetFont("Arial", "", 6);
+			$pdf->Write(6, "Membership discount:");
+			$pdf->SetX(59);
+			$pdf->SetFont("Arial", "", 6);
+			$pdf->Write(6, number_format($row['membership_discount'], 2));
+			$pdf->Ln();	
+		}   
+		if($row['coupon_discount'])
+		{
+		   $pdf->SetX(35);
+			$pdf->SetFont("Arial", "", 6);
+			$pdf->Write(6, "Coupon discount:");
+			$pdf->SetX(59);
+			$pdf->SetFont("Arial", "", 6);
+			$pdf->Write(6, number_format($row['coupon_discount'], 2));
+			$pdf->Ln();	
+		}
+
+	   $sstper=$profile['sst_rate'];
+	   $total=$sum;
+	   if($sstper>0){
+							$incsst = ($sstper / 100) * $total;
+							    $incsst=@number_format($incsst, 2);
+								// $incsst=($incsst,0.05);
+								// $significance=0.05;
+								// $incsst=( is_numeric($incsst) && is_numeric($significance) ) ? (ceil(round($incsst/$significance))*$significance);
+								  $incsst=@number_format($incsst, 2);
+							     $g_total=@number_format($total+$incsst, 2);
+								} else { $g_total=$total;} 
+		$g_final=@number_format(($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount'])-($row['membership_discount']+$row['coupon_discount']),2);
+		        $pdf->SetX(35);
+			$pdf->SetFont("Arial", "", 6);
+			$pdf->Write(6, "Grand Total:");
+			$pdf->SetX(59);
+			$pdf->SetFont("Arial", "", 6);
+			$pdf->Write(6,$g_final);
+			$pdf->Ln();	
+		if($row['wallet_paid_amount'])
+		{
+		   $pdf->SetX(35);
+			$pdf->SetFont("Arial", "", 6);
+			$pdf->Write(6, "Paid by wallet:");
+			$pdf->SetX(59);
+			$pdf->SetFont("Arial", "", 6);
+			$pdf->Write(6, number_format($row['wallet_paid_amount'], 2));
+			$pdf->Ln();	
+		}
+		$g_total2=@number_format(($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount'])-($row['wallet_paid_amount']+$row['membership_discount']+$row['coupon_discount']), 2);
+		   $pdf->SetX(35);
+			$pdf->SetFont("Arial", "", 8);
+			$pdf->Write(6, "Balance payment:");
+			$pdf->SetX(59);
+			$pdf->SetFont("Arial", "", 8);
+			$pdf->Write(6,$g_total2);
+			$pdf->Ln();	
 		
-		$pdf->SetX(31);
+		$pdf->SetX(20);
 		$pdf->Write(6, "Mode Of Payment Credit:");
 		$pdf->SetX(56);
 		$pdf->Write(6, $order["wallet"]);

@@ -98,9 +98,9 @@ if(isset($_POST['submit']))
 									<div class="form-group">
 										<label>mater category list</label>
 										<input type="text" name="categoryname[]" class="form-control" value="<?php echo  @$M_Cat_array[0] ?>" required /> <br/>
-										<input type="text" name="categoryname[]" class="form-control" value="<?php echo  @$M_Cat_array[1] ?>" required /><br/>
-										<input type="text" name="categoryname[]" class="form-control" value="<?php echo  @$M_Cat_array[2] ?>" required /><br/>
-										<input type="text" name="categoryname[]" class="form-control" value="<?php echo  @$M_Cat_array[3] ?>" required /><br/>
+										<input type="text" name="categoryname[]" class="form-control" value="<?php echo  @$M_Cat_array[1] ?>"  /><br/>
+										<input type="text" name="categoryname[]" class="form-control" value="<?php echo  @$M_Cat_array[2] ?>" /><br/>
+										<input type="text" name="categoryname[]" class="form-control" value="<?php echo  @$M_Cat_array[3] ?>"  /><br/>
 									</div>
 									<br>
 									<input type="submit" class="btn btn-block btn-primary" name="submit" value="Submit">
