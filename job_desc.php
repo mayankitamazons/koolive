@@ -2,42 +2,6 @@
 ?>
 <!DOCTYPE html>
 <html lang="en">
-	<?php
-		// Find out how many items are in the table
-		$totalQuery = mysqli_query($conn,"select count(id) as totalRecord from jobs");
-		$totalFetch = mysqli_fetch_assoc($totalQuery);
-		$numrows = $totalFetch['totalRecord'];
-
-		// number of rows to show per page
-		$rowsperpage = 10;
-		// find out total pages
-		$totalpages = ceil($numrows / $rowsperpage);
-		// get the current page or set a default
-		if (isset($_GET['currentpage']) && is_numeric($_GET['currentpage'])) {
-			// cast var as int
-			$currentpage = (int) $_GET['currentpage'];
-		} else {
-			// default page num
-			$currentpage = 1;
-		} // end if
-		// if current page is greater than total pages...
-		if ($currentpage > $totalpages) {
-			// set current page to last page
-			$currentpage = $totalpages;
-		} // end if
-		// if current page is less than first page...
-		if ($currentpage < 1) {
-			// set current page to first page
-			$currentpage = 1;
-		} // end if
-		// find out total pages
-		$totalpages = ceil($numrows / $rowsperpage);
-		// the offset of the list, based on current page 
-		$offset = ($currentpage - 1) * $rowsperpage;
-		// get the info from the db 
-		$sql = "SELECT id, number FROM numbers LIMIT $offset, $rowsperpage";
-        
-	?>
 
 <head>
     <meta charset="utf-8">
@@ -186,24 +150,32 @@
 		</nav>
 	</div>
 	</header>
-	<!-- /header -->
-	
-	<main class="mt-5">
+    <!-- /header -->
+    <?php 
+        	if(isset($_GET['id'])){
+                $id = $_GET['id'];
+                $query = mysqli_query($conn, "SELECT jobs.*, job_category.category_name FROM `jobs` INNER JOIN job_category on jobs.job_category_id = job_category.id where jobs.id = '$id'");
+                $row = mysqli_fetch_assoc($query);
+            }
+    ?>
+
+		
+	<main>
 		<div class="page_header element_to_stick">
 		    <div class="container">
 		    	<div class="row">
 		    		<div class="col-xl-8 col-lg-7 col-md-7 d-none d-md-block">
 		    			<div class="breadcrumbs blog">
 				            <ul>
-				                <li><a href="index.php?vs=<?php echo md5(rand()); ?>">Home</a></li>
+				                <li><a href="#">Home</a></li>
 				                <li><a href="#">Jobs</a></li>
-				                
+				                <li>Job Details</li>
 				            </ul>
 		       	 		</div>
 		    		</div>
 		    		<div class="col-xl-4 col-lg-5 col-md-5">
 		    			<div class="search_bar_list">
-							<input type="text" class="form-control" placeholder="Search in Job...">
+							<input type="text" class="form-control" placeholder="Search in blog...">
 							<input type="submit" value="Search">
 						</div>
 		    		</div>
@@ -216,117 +188,62 @@
 		<div class="container margin_30_40">			
 			<div class="row">
 				<div class="col-lg-9">
-					<div class="row">
-						<?php 
-						if($_GET['catid']){
-							$cId = $_GET['catid'];
-							echo $cId;
-							$sql = "SELECT jobs.*, job_category.category_name FROM `jobs` INNER JOIN job_category on jobs.job_category_id = job_category.id where jobs.view = '1' and jobs.job_category_id = '$cId'";
-						}else{
-							$sql = "SELECT jobs.*, job_category.category_name FROM `jobs` INNER JOIN job_category on jobs.job_category_id = job_category.id where jobs.view = '1'";
-						}
-							$jobs = mysqli_query($conn, "$sql");
-							while($row=mysqli_fetch_assoc($jobs)){
-						?>
-						<div class="col-md-12">
-							<article class="blog">
-								<div class="post_info">
-									
-									<h2><a href="job_desc.php?id=<?php echo $row['id']?>"><?php echo $row['title']?></a></h2>
-									<small><?php echo $row['category_name']?> - <?php echo Date("d M Y", $row['expire_date_utc'])?></small>
-									<p><?php echo $row['job_desc']?></p>
-									
-								</div>
-							</article>
-							<!-- /article -->
+					<div class="singlepost">
+						<!-- <figure><img alt="" class="img-fluid" src="img/blog-single.jpg"></figure> -->
+						<h1><?php echo $row['title']?></h1>
+						<div class="postmeta">
+							<ul>
+								<li><i class="icon_folder-alt"></i><?php echo $row['category_name']?></li>
+								<li><i class="icon_calendar"></i><?php echo Date("d M Y", $row['expire_date_utc'])?></li>
+								<!-- <li><a href="#"><i class="icon_pencil-edit"></i> Admin</a></li> -->
+								<!-- <li><a href="#"><i class="icon_comment_alt"></i> (14) Comments</a></li> -->
+							</ul>
 						</div>
-						<!-- /col -->
-						<?php }?>
-						
-					</div>
-					<!-- /row -->
-					<?php
-					// if not on page 1, don't show back links
-					if ($currentpage > 1) {
-						// show << link to go back to page 1
-						echo " <a href='{$_SERVER['PHP_SELF']}?currentpage=1'><<</a> ";
-						// get previous page num
-						$prevpage = $currentpage - 1;
-						// show < link to go back to 1 page
-						echo " <a href='{$_SERVER['PHP_SELF']}?currentpage=$prevpage'><</a> ";
-						} // end if
-						// loop to show links to range of pages around current page
-						for ($x = ($currentpage - $range); $x < (($currentpage + $range) + 1); $x++) {
-							// if it's a valid page number...
-							if (($x > 0) && ($x <= $totalpages)) {
-							// if we're on current page...
-							if ($x == $currentpage) {
-								// 'highlight' it but don't make a link
-								echo " [<b>$x</b>] ";
-							// if not current page...
-							} else {
-								// make it a link
-								echo " <a href='{$_SERVER['PHP_SELF']}?currentpage=$x'>$x</a> ";
-							} // end else
-							} // end if 
-						} // end for
-						
-						// if not on last page, show forward and last page links        
-						if ($currentpage != $totalpages) {
-							// get next page
-							$nextpage = $currentpage + 1;
-							// echo forward link for next page 
-							echo " <a href='{$_SERVER['PHP_SELF']}?currentpage=$nextpage'>></a> ";
-							// echo forward link for lastpage
-							echo " <a href='{$_SERVER['PHP_SELF']}?currentpage=$totalpages'>>></a> ";
-						} // end if
-						/****** end build pagination links ******/
- ?>
-					
+						<!-- /post meta -->
+						<div class="post-content">
+							<div >
+								<p><?php echo $row['job_desc']?></p>
+							</div>
 
-					<!-- <div class="pagination_fg">
-					  <a href="#">&laquo;</a>
-					  <a href="#" class="active">1</a>
-					  <a href="#">2</a>
-					  <a href="#">3</a>
-					  <a href="#">4</a>
-					  <a href="#">5</a>
-					  <a href="#">&raquo;</a>
+							
+						</div>
+						<!-- /post -->
+					</div>
+					<!-- /single-post -->
+
+				
+					<hr>
+
+					<!-- <h5>Leave a comment</h5>
+					<div class="row">
+						<div class="col-md-4 col-sm-6">
+							<div class="form-group">
+								<input type="text" name="name" id="name2" class="form-control" placeholder="Name">
+							</div>
+						</div>
+						<div class="col-md-4 col-sm-6">
+							<div class="form-group">
+								<input type="text" name="email" id="email2" class="form-control" placeholder="Email">
+							</div>
+						</div>
+						<div class="col-md-4 col-sm-12">
+							<div class="form-group">
+								<input type="text" name="email" id="website3" class="form-control" placeholder="Website">
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<textarea class="form-control" name="comments" id="comments2" rows="6" placeholder="Comment"></textarea>
 					</div> -->
+					<div class="form-group">
+					<a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank">	<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['delivery_hotline']; ?><button type="submit" id="submit2" class="btn_1 add_bottom_15">Interested</button></a>
+					</div>
 
 				</div>
 				<!-- /col -->
 
 				<aside class="col-lg-3">
-					<!-- <div class="widget">
-						<div class="widget-title first">
-							<h4>Latest Post</h4>
-						</div>
-						<ul class="comments-list">
-							<li>
-								<div class="alignleft">
-									<a href="#0"><img src="img/blog-5.jpg" alt=""></a>
-								</div>
-								<small>Category - 11.08.2016</small>
-								<h3><a href="#" title="">Verear qualisque ex minimum...</a></h3>
-							</li>
-							<li>
-								<div class="alignleft">
-									<a href="#0"><img src="img/blog-6.jpg" alt=""></a>
-								</div>
-								<small>Category - 11.08.2016</small>
-								<h3><a href="#" title="">Verear qualisque ex minimum...</a></h3>
-							</li>
-							<li>
-								<div class="alignleft">
-									<a href="#0"><img src="img/blog-4.jpg" alt=""></a>
-								</div>
-								<small>Category - 11.08.2016</small>
-								<h3><a href="#" title="">Verear qualisque ex minimum...</a></h3>
-							</li>
-						</ul>
-					</div> -->
-					<!-- /widget -->
+					
 					<div class="widget">
 						<div class="widget-title">
 							<h4>Categories</h4>
@@ -338,24 +255,10 @@
 										<!-- jobs.php?catid =<?php echo $catRow['id'];?> -->
 							<?php	}
 							?>
+							
 						</ul>
 					</div>
-					<!-- /widget -->
-					<!-- <div class="widget">
-						<div class="widget-title">
-							<h4>Popular Tags</h4>
-						</div>
-						<div class="tags">
-							<a href="#">Food</a>
-							<a href="#">Bars</a>
-							<a href="#">Cooktails</a>
-							<a href="#">Shops</a>
-							<a href="#">Best Offers</a>
-							<a href="#">Transports</a>
-							<a href="#">Restaurants</a>
-						</div>
-					</div> -->
-					<!-- /widget -->
+					
 				</aside>
 				<!-- /aside -->
 			</div>
@@ -364,8 +267,7 @@
 		<!-- /container -->
 		
 	</main>
-
-<!-- main end -->
+	<!-- /main -->
 
 
 

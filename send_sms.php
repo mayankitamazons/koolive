@@ -151,6 +151,41 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 
 
 }     
-
+// 
+$query="SELECT order_list.rider_info,order_list.invoice_no,order_list.rider_alert,order_list.newuser,order_list.id as order_id,order_list.status,order_list.merchant_id, order_list.created_on,users.id,users.name,users.handphone_number,users.whatapp_group_name  FROM order_list inner join users on order_list.merchant_id = users.id WHERE order_list.merchant_id not in('5401')  AND DATE(`created_on`) ='$cur_date' and rider_alert='n' and rider_info=''  order by order_list.created_on  DESC ";
+// die;  
+$total_rows = mysqli_query($conn,$query);
+while ($row=mysqli_fetch_assoc($total_rows)){
+	$m_id = $row['merchant_id'];
+	$date = $row['created_on'];
+    $client = $row['name'];	
+	$createdate = strtotime($date);
+ $diffrence = time() - $createdate;
+     echo "<br/>Rider Time ".$min = $diffrence/60;
+	 if($min >20){
+		if($row['rider_alert']=="n" && $row['rider_info']=='')
+		{
+			// echo "dd";
+			 $order_id=$row['order_id'];
+			 $invoice_no=$row['id'];
+			 
+			 $query2="UPDATE `order_list` SET `rider_alert` = 'y' WHERE `order_list`.`id` ='$order_id'";   
+			 $update=mysqli_query($conn,$query2);
+			 $rand= substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),1,4);
+			$url="https://www.koofamilies.com/orderview.php?did=".$m_id."&vs=".$rand."&oid=".$order_id;    
+		  	       
+			$message= $_POST['message'] = $url." ".$client.",KooFamilies alert.Rider has not been assigned for Invoice no: (".$invoice_no.").";
+			$sms_to = '+60123115670,'.$row['handphone_number'];
+			// $sms_to = '+60123115670';
+			// $sms_to = '+919001025477';
+			$sms_msg = $_POST['message'];
+			$smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg);   
+			
+				$whatapp_group_name="Koo Support Team";
+				whatappgroupmsg($whatapp_group_name,$sms_msg);
+			
+		}
+	 }
+}
 			
 ?>

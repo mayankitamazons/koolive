@@ -1096,7 +1096,9 @@ input[name='p_total[]'],input[name='p_price[]']{
 					 <th class="test_product" style="min-width:240px;"><?php echo $language["merchant_name"];?></th>
 					 <th><?php echo $language["status"];?></th>
 					 <th style="color:#09caab;"><?php echo "Order Details";?></th>
+					
 					 <th style="color:#09caab;"><?php echo "Merchant Bank Detail";?></th>
+					  <th><?php echo $language["rider_info"];?></th>
 					   <th>Section</th>
 					 <th><?php echo $language["table_number"];?></th>
 					 <th>Invoice Number</th>
@@ -1251,6 +1253,7 @@ input[name='p_total[]'],input[name='p_price[]']{
                      </td> 
 					 <td style="font-size:18px;" class="s_order_detail btn btn-blue" order_id='<?php echo $row['id']; ?>'> Detail</td>
 					  <td><span class="btn btn-yellow bank_detail" style="color:black;">Bank Detail</span></td>
+					  <td><?php echo $row['rider_info']; ?></td>
 					   <td><?php echo $section_type['name'];?></td>
                          <td><?php echo $row['table_type'];?></td>
                          <td><?php echo ($row['invoice_no']%1000);?></td>

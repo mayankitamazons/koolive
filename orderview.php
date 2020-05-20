@@ -802,6 +802,7 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
                            
                             <th><?php echo $language["status"];?></th>
                             <th><?php echo $language["detail"];?></th>
+                            <th><?php echo $language["rider_info"];?></th>
 							
 							<th><?php echo $language['write_up']; ?></th>
 							  <th class="order_remark"><?php echo $language['order_remark'];?></th>
@@ -1048,7 +1049,7 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
                               
 							</td>
 							<td  style="font-size:18px;" class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></td>
-							 
+						<td style="min-width:167px;"><textarea  style="border:1px solid gray !important;" rows="2" cols="10" order_id="<?php echo $row['id']; ?>" class="form-control rider_info"><?php echo $row['rider_info']; ?></textarea></td>
 							<td class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i></td>
 								 <td><?php echo $row['remark_extra']; ?></td>
 							   <td class="table_number_<?php echo $row['id']?>"><?php echo $row['section_name'];?></td>
@@ -2417,7 +2418,30 @@ var qtyno = $("input[name='qtyno[]']")
 		// alert(cash_id);
 		if(cash_match=="y")
 		$('#ShiftModel').modal('show');
-		
+ 	$(".rider_info").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var rider_text=this.value;
+		if(rider_text!='' && order_id)
+		{  
+		  $.ajax({
+						url :'functions.php',
+						 type:"post",
+						 data:{rider_info:rider_text,method:"riderdetailsave",order_id:order_id},     
+						 dataType:'json',
+						 success:function(result){  
+							var data = JSON.parse(JSON.stringify(result));   
+							if(data.status==true)
+							{
+							  // location.reload(true);
+							// alert('Updated');
+							}
+							else
+							{alert('Failed to update');	}
+							
+							}
+				});      
+		} 
+	});
 	$('.logout_show').click(function() {
 		$('#logout_model').modal('show');
 	});

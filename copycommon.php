@@ -90,11 +90,11 @@
 			}
 			}   
 			// auto fill arrange system too 
-			$total_rows = mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM category WHERE user_id ='".$c_id."' and common_category='y' and status=0");
+			$total_rows = mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM category WHERE user_id ='$c_id' and common_category='y' and status=0");
 			$total_num_rows = mysqli_num_rows($total_rows);
 			if($total_num_rows>0)
 			{
-				// $category_id=$catdata['id'];
+				// $category_id=$catdata['id'];    
 				
 				$shift_pos=1;
 				while ($row1=mysqli_fetch_assoc($total_rows)){   
@@ -103,7 +103,7 @@
 					$entity_id=$row1['id'];
 					$category_id=$row1['id'];
 					$cat_name=$row1['category_name'];
-					$query="delete from arrange_system where entity_id='$entity_id' and page_type='c' and user_id='".$c_id."'";
+					$query="delete from arrange_system where entity_id='$entity_id' and page_type='c' and user_id='$c_id'";
 					// die;
 					$listq = mysqli_query($conn,$query);
 					// copy category postion from past merchant 

@@ -89,6 +89,11 @@ if($s_id)
 		{
 			echo "Pickup Type: Delivery";
 		}
+		if($row['id'])
+		{
+			echo "</br>Order id : ".$row['id'];
+		}
+		
       
 	}
 }

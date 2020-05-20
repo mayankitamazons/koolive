@@ -3007,7 +3007,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
  <!--span class="plastic_remark" style="color:red;font-size:12px;"><?php  echo $language['food_package']; ?></span!-->
  <?php if($merchant_detail['id']!=6805){ ?>
- <div class="plastic_remark">
+ <!--div class="plastic_remark">
 
           <div style="display:grid;grid-template-columns:.2fr 2fr;grid-column-gap: 10px;vertical-align: middle;align-content:center;>
            
@@ -3037,7 +3037,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
       </div>
 
-      </div>   
+      </div!-->   
  <?php } ?>
  </br>
 
@@ -6922,9 +6922,10 @@ $stime =    '';
       // alert(varient_type); 
 
 	  var remark_lable='<?php echo $language["remarks"]?>';
-
-    $("#test").append("<tr class='producttr'>  <td><button type='button' class='removebutton'>X</button> </td><td class='pro1_name'>"+name+"</td><td><input type='hidden' name='rebate_amount[]' class='rebate_amount' value="+rebate_amount+" id='"+id+"rebate_amount'><input type='hidden' name='rebate_per[]' value="+rebate_per+" id='"+id+"rebate_per'><input style='width:50px;'  onchange='UpdateTotal("+id+","+product_price+")'  type=number name='qty[]' min='1' maxlength='3' class='product_qty quatity'  value="+quantity+" id='"+id+"_test_athy'><input type= hidden name='p_id[]' value= "+s_id+"><input type= hidden name='p_code[]' value= "+code+"><input type='hidden' name='ingredients' value='" + single_remarks + "'/></td><td>"+code+"</td><td><a href='#remarks_area' data-rid='"+id+"' role='button' class='introduce-remarks btn btn-large btn-primary' data-toggle='modal'>" + ((single_remarks == '') ? remark_lable : single_remarks) +  "</a><input type='hidden' id='"+extra_child_id+"' name='extra' value='"+extra_price+"'></td><td><input style='width:70px;text-align:right;' type='text' name='p_extra' id='"+extra_child_id+"' value='" + extra_price.toFixed(2) + "' readonly></td><td><input style='width:70px;' type='text' name='p_price[]' value='"+product_price+"' readonly></td><td><input type='text' style='width:70px;' class='p_total' name='p_total[]' value= "+ p_total + " readonly  id='"+id+"_cat_total'><input type='hidden' name='varient_type[]' value="+varient_type+"></td> </tr>");
-
+	if(product_price>0)
+	{
+		$("#test").append("<tr class='producttr'>  <td><button type='button' class='removebutton'>X</button> </td><td class='pro1_name'>"+name+"</td><td><input type='hidden' name='rebate_amount[]' class='rebate_amount' value="+rebate_amount+" id='"+id+"rebate_amount'><input type='hidden' name='rebate_per[]' value="+rebate_per+" id='"+id+"rebate_per'><input style='width:50px;'  onchange='UpdateTotal("+id+","+product_price+")'  type=number name='qty[]' min='1' maxlength='3' class='product_qty quatity'  value="+quantity+" id='"+id+"_test_athy'><input type= hidden name='p_id[]' value= "+s_id+"><input type= hidden name='p_code[]' value= "+code+"><input type='hidden' name='ingredients' value='" + single_remarks + "'/></td><td>"+code+"</td><td><a href='#remarks_area' data-rid='"+id+"' role='button' class='introduce-remarks btn btn-large btn-primary' data-toggle='modal'>" + ((single_remarks == '') ? remark_lable : single_remarks) +  "</a><input type='hidden' id='"+extra_child_id+"' name='extra' value='"+extra_price+"'></td><td><input style='width:70px;text-align:right;' type='text' name='p_extra' id='"+extra_child_id+"' value='" + extra_price.toFixed(2) + "' readonly></td><td><input style='width:70px;' type='text' name='p_price[]' value='"+product_price+"' readonly></td><td><input type='text' style='width:70px;' class='p_total' name='p_total[]' value= "+ p_total + " readonly  id='"+id+"_cat_total'><input type='hidden' name='varient_type[]' value="+varient_type+"></td> </tr>");
+	}
      
 
 	  // alert('The product added');
