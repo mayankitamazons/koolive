@@ -6,7 +6,7 @@ if (empty($_SESSION["langfile"])) { $_SESSION["langfile"] = "english"; }
     require_once ("languages/".$_SESSION["langfile"].".php");
 if(empty($_GET['vs']))
 {
-	$url="index.php?vs=".md5(rand());
+	$url="mobile.php?vs=".md5(rand());
 
 header("Location:$url");
 exit();
@@ -169,7 +169,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 	<header class="header clearfix element_to_stick">
 		<div class="container">
 		<div id="logo">
-			<a href="index.php?vs=<?php echo md5(rand()); ?>">
+			<a href="mobile.php?vs=<?php echo md5(rand()); ?>">
                 <!-- koofamilies logo -->
 				 <img src="svgLog_second.svg" width="140" height="35" alt="" class="logo_normal">
                 <img src="svgLog_first.svg" width="140" height="35" alt="" class="logo_sticky">
@@ -246,7 +246,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 														<?php }   
 													?>
 												</select>
-											 <!--input type="text" id="one_player_id"/!-->
+											 <input type="text" id="one_player_id"/>
 											</div>
 										</div>   
 										

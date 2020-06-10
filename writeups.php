@@ -4,15 +4,15 @@ function ceiling($number, $significance = 1)
 								{
 									return ( is_numeric($number) && is_numeric($significance) ) ? (ceil(round($number/$significance))*$significance) : false;
 								}
-$s_id=$_POST['s_id'];
+$s_id=$_GET['s_id'];
 // $s_id=22657;
 if($s_id)
 {
-	$row = mysqli_fetch_assoc(mysqli_query($conn, "SELECT  SQL_NO_CACHE order_list.*,users.name,users.isLocked,users.otp_verified,users.mobile_number 
+	$row = mysqli_fetch_assoc(mysqli_query($conn, "SELECT order_list.*,users.name,users.isLocked,users.otp_verified,users.mobile_number 
 	FROM order_list inner join users on order_list.user_id=users.id WHERE order_list.id='".$s_id."'"));
 	
 	$m_id=$row['merchant_id'];
-	$merchant_name=mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE id='".$m_id."'"));
+	$merchant_name=mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE id='".$m_id."'"));
 	$sstper=$merchant_name['sst_rate'];
 	if($row)
 	{
@@ -58,10 +58,6 @@ if($s_id)
 		if($row['remark_extra'])
 		{
 			$msg_str.="</br>Order Remark:".$row['remark_extra'];
-		}
-		if($merchant_name['merchant_remark'])
-		{
-			$msg_str.="</br>Merchant Remark:".$merchant_name['merchant_remark'];
 		}
 		if($row['plastic_box'])
 		{

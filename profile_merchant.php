@@ -333,10 +333,12 @@ if(isset($_POST['submit']))
 	$special_coin_min=$_POST['special_coin_min'];
 	$service=$_POST['service'];
 	$business_nature=$_POST['business_nature'];
+	$invoice_company=$_POST['invoice_company'];
+	$merchant_remark=$_POST['merchant_remark'];
 	   
 	if($flag == false)
 	{
-		 $qur="UPDATE users SET banner_image='$uniquesavename',shortcut_icon='$shortcut_icon',paypal_enable='$paypal_enable',business_nature='$business_nature',special_coin_min='$special_coin_min',special_coin_max='$special_coin_max',unrecognize_coin='$unrecognize_coin',special_coin_name='$special_coin_name',fund_password='$fund_password',delivery_plan='$delivery_plan',membership_plan='$membership_plan',coupon_offer='$coupon_offer',custom_msg_image='$custom_msg_image',section_on_orderlist='$section_on_orderlist',table_on_orderlist='$table_on_orderlist',order_min_charge='$order_min_charge',order_extra_charge='$order_extra_charge',delivery_rate='$delivery_rate',spassword_need='$spassword_need',discounted_product='$discounted_product',setup_shop='$setup_shop',shop_open='$shop_open',printer_profile='$printer_profile',usb_name='$usb_name',printer_style='$printer_style',merchant_code='$merchant_code', merchant_url='$merchant_address', name='$realname',latitude='$latitude', longitude='$longitude', company='$company',register='$register',address='$address',gst='$gst', sst='$sst',sst_rate='$sst_rate',print_ip_address='$print_ip_address', order_print_setting='$order_print_setting', facsimile_number='$facsimile',referred_by='$referred_by', business1='$business1', business2='$business2', name_card='$name_card',card_number='$card_number',expiry_date='$expiry_date',cvv='$cvv',bank_name='$bankname',name_accoundholder='$name_accoundholder',bank_ac_num='$ac_num',charge='$charge',nric_number='$nric_number',address_person='$address_person',hand_phone='$hand_phone',google_map='$google_map',doc_copy='$filename',company_doc='$filenamess',number_lock='$number_lock', handphone_number='$handphone_number', created_at='$date', account_type='$account_type', k_date='$k_date', k_lock='$k_lock', guest_permission='$guest_permission',voice_recognition='$voice_recognition', 
+		 $qur="UPDATE users SET merchant_remark='$merchant_remark',invoice_company='$invoice_company',banner_image='$uniquesavename',shortcut_icon='$shortcut_icon',paypal_enable='$paypal_enable',business_nature='$business_nature',special_coin_min='$special_coin_min',special_coin_max='$special_coin_max',unrecognize_coin='$unrecognize_coin',special_coin_name='$special_coin_name',fund_password='$fund_password',delivery_plan='$delivery_plan',membership_plan='$membership_plan',coupon_offer='$coupon_offer',custom_msg_image='$custom_msg_image',section_on_orderlist='$section_on_orderlist',table_on_orderlist='$table_on_orderlist',order_min_charge='$order_min_charge',order_extra_charge='$order_extra_charge',delivery_rate='$delivery_rate',spassword_need='$spassword_need',discounted_product='$discounted_product',setup_shop='$setup_shop',shop_open='$shop_open',printer_profile='$printer_profile',usb_name='$usb_name',printer_style='$printer_style',merchant_code='$merchant_code', merchant_url='$merchant_address', name='$realname',latitude='$latitude', longitude='$longitude', company='$company',register='$register',address='$address',gst='$gst', sst='$sst',sst_rate='$sst_rate',print_ip_address='$print_ip_address', order_print_setting='$order_print_setting', facsimile_number='$facsimile',referred_by='$referred_by', business1='$business1', business2='$business2', name_card='$name_card',card_number='$card_number',expiry_date='$expiry_date',cvv='$cvv',bank_name='$bankname',name_accoundholder='$name_accoundholder',bank_ac_num='$ac_num',charge='$charge',nric_number='$nric_number',address_person='$address_person',hand_phone='$hand_phone',google_map='$google_map',doc_copy='$filename',company_doc='$filenamess',number_lock='$number_lock', handphone_number='$handphone_number', created_at='$date', account_type='$account_type', k_date='$k_date', k_lock='$k_lock', guest_permission='$guest_permission',voice_recognition='$voice_recognition', 
 		next_pending_time='$next_pending_time',pending_time='$pending_time',menu_type='$menu_type', custom_message='$custom_message',custom_msg_time='$custom_msg_time',
 		section_required='$section_required',table_required='$table_required',cash_check='$cash_check',credit_check='$credit_check',
 		wallet_check='$wallet_check',boost_check='$boost_check',grab_check='$grab_check',wechat_check='$wechat_check',touch_check='$touch_check',service_id='$service',
@@ -358,6 +360,8 @@ else
 	
 	$realname = $bank_data['name'];
 	$company = $bank_data['company'];
+	$invoice_company = $bank_data['invoice_company'];
+	$merchant_remark = $bank_data['merchant_remark'];
 	$register = $bank_data['register'];
 	$address = $bank_data['address'];
 	$gst = $bank_data['gst'];
@@ -568,6 +572,14 @@ if(isset($_POST['submit_fundpass']))
 		$error = "Fund Password Successfully Changed.";
 	}
 }
+if(empty($_GET['ms']))
+{
+	$ms=$_GET['ms'];
+	$url="profile_merchant.php?ms=".md5(rand());
+
+header("Location:$url");
+exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en" style="" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths">
@@ -710,6 +722,15 @@ audio {
 									<div class="form-group">
 										<label>Name Of Company</label>
 										<input type="text" name="company" class="form-control" value="<?php if(isset($company)){ echo $company; }?>">
+									</div>
+									<div class="form-group">
+										<label>Merchant Remark</label>
+										<input type="text" name="merchant_remark" class="form-control" value="<?php if(isset($merchant_remark)){ echo $merchant_remark; }?>">
+									</div>
+									<div class="form-group">
+										<label>Name Of Company For invoice</label>
+										<input type="text" name="invoice_company" class="form-control" value="<?php if(isset($invoice_company)){ echo $invoice_company; }?>">
+										<small>Suggest you to write English name of company</small>
 									</div>
 									<div class="form-group">
 										<label>Merchant Code<br></label>
@@ -1133,7 +1154,7 @@ audio {
 											?>
 										</div>
 										<div class="form-group">
-											<label> Home Screen Banner (512*512)</label><br>
+											<label> Home Screen Banner (800*400)</label><br>
 											<input type="file" name="banner_image">
 											<?php
 											if(isset($bank_data['banner_image']) && $bank_data['banner_image'] != "")

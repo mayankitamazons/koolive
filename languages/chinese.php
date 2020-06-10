@@ -202,7 +202,7 @@ $language["option_menu_3"] ='Hardware, such as household, building, renovation t
 $language["option_menu_4"] ='Grocery Shop such as bread, fish, etc retails shops';
 $language["option_menu_5"] ='Clothes such as T-shirt, Pants, Bra, socks,etc';
 $language["option_menu_6"] ='Business to Business (B2B) including all kinds of businesses';   
-$language["we_can_contact"] ='我们会通过这个号码联系你，如果你的订单有任何问题。我们不会用做其他用途';
+$language["we_can_contact"] ='通过按下确定购买，我愿意接受购买条款和委托Koo Family 购买';
 $language["add_more_order"] ='增加订单';
 $language["enter_ur_phone"] ='请输入联络方式';
 $language["confirm_wallet"] ='确认（电子钱包）'; 
@@ -368,10 +368,11 @@ $language['delivery_tax'] ="送货税";
 $language['grand_total'] ="累计";
 $language['review'] ="评论";
 $language['detail'] ="详情"; 
-$language['difficulty'] ="Have difficulty in placing order? place through whatapp";   
+$language['difficulty'] ="如果还是有困难下单，可以通过 whatapp 这里下单";   
 $language['search_by_location'] ="寻找附近餐厅";   
 $language['near_by_shop_2'] ="附近商店";  
-$language['rider_info'] ="Rider info";         
+$language['rider_info'] ="Rider info";     
+$language['new_timing_working'] ="Multiple Working";      
 
 
 ?>

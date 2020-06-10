@@ -759,6 +759,24 @@ border:
 	font-size: 1em;
 }
         
+		#forgot_divOuter{
+  width:190px; 
+  overflow:hidden
+} 
+ #forgot_partitioned {
+  padding-left: 15px;
+  letter-spacing: 42px;
+  border: 0;
+  background-image: linear-gradient(to left, black 70%, rgba(255, 255, 255, 0) 0%);
+  background-position: bottom;
+  background-size: 50px 1px;
+  background-repeat: repeat-x;
+  background-position-x: 35px;
+  width: 220px;
+  min-width:220px;
+-webkit-box-shadow: inset 0px 100px 0px 0px rgba(255, 255, 255, 0.5);
+box-shadow: inset 0px 100px 0px 0px rgba(255, 255, 255, 0.5);
+} 
         </style>
     <!--js-->
  
@@ -963,9 +981,9 @@ border:
 								</form>
                             </div>
 							<div class="tab-1 resp-tab-content" aria-labelledby="tab_item-2">
-                                <form method="post">
+                               
 									
-								<div class="login-top sign-top">
+								<div class="login-top sign-top forgot_form_2">
 									<label>User Login Password</label> <br>
 									
 									 <div class="select_optionss">
@@ -975,17 +993,72 @@ border:
 									
 								   
                                         <input type="text" id="forgot_mobile_number" class="mobile_number intlTelInput" style="width:250px !important;" placeholder="<?php $language["telephone_number"];?>" name="mobile_number" required />
- 
-                                    <div class="forgot-bottom">
-                                        <div class="submit res_submit" style="margin-top:67px;">
-                                                <input type="submit" value="<?php echo $language["submit"];?>" name="forget" style="padding:14px;" />
+										<input type="hidden"  value='0' id="otp_count"/>
+										<input type="hidden" id="system_otp"/>
+                                    <div class="forgot-bottom" style="margin:0px;">
+                                        <div class="submit res_submit" style="margin-top:27px;">
+                                                <input type="submit" value="<?php echo $language["submit"];?>" class="forgot_reset" style="padding:14px;" />
                                         </div><br/>
                                         <br />
                                         <br />
                                         <div class="clear" ></div>
                                     </div>
                                 </div>
-								</form>
+								<p id="forgot_msg_new" style="font-size: 16px;color: red;display:none;"><span style='font-size:20px;'>&#128512;</span> 
+
+									Enter otp to reset password 
+
+								</p>  
+									<div class="form-group forgot_otp_form" style="display:none;margin-top: 7%;margin-left: 6%;">
+								
+					<div id="forgot_divOuter" style="margin-top: 7%;margin-left: 6%;">
+
+						<div id="forgot_divInner">
+
+							<small style="margin-left:20%;">Otp code</small>
+
+							<input id="forgot_partitioned" type="Number" maxlength="4" />
+
+							   <!--small style="float:right;color:#28a745;display:none;" class="resend send_otp">Resend</small!-->
+
+							 <small class="forgot_otp_error" style="display: none;color:#e6614f;margin-left:20%;">
+
+								Invalid Otp code
+
+							</small>
+
+						</div>
+
+					</div>
+
+					</div>
+					  <div class="form-group forgot_register_password" style="display:none;margin-top: 7%;margin-left: 6%;">
+             
+							  <div class="passwd_field">
+								
+								<input type="password" id="forgot_register" placeholder="Enter New Password" class="form-control" name="forgot_register"/>
+											
+					   <i  onclick="myFunctionforgot()" id="eye_slash_forgot" class="fa fa-eye-slash" aria-hidden="true"></i>
+					  <span id="eye_pass_forgot" onclick="myFunctionforgot()" > <?php echo $language['show_password']; ?> 
+					 </span>
+					  <small style="color:red;">(Please set passwords at least  6 digits and above)</small>
+					   <small id="forgot_register_error" style="display: none;color:#e6614f;">
+                 
+                </small>
+				
+				<small id="forgot_reset_password_error" style="font-size:16px;display:none;color:#e6614f;"></small>
+										
+							  </div>
+							  <div class="col forgot_password_submit" style="padding: 0;margin: 5px;display:none;">
+
+							<input type="submit" class="btn btn-primary forgot_reset_password"  name="login_ajax" value="Change Password" style="float: right;display:none;"/>
+
+							
+
+						</div>  
+				</div>
+				<small id="forgot_reset_password_done" style="font-size:20px;display:none;color:black;margin-top: 7%;margin-left: 6%;"></small>
+							
 									
                             </div>
 						
@@ -993,7 +1066,7 @@ border:
                         </div>
                     </div>
                 </div>
-            </div>
+				     </div>
             <div class="clear"> </div>
         </div>
     </div>
@@ -1062,6 +1135,21 @@ window.intlTelInput(input3, {
    
   </script>
    <script>
+   function myFunctionforgot() {
+  var x = document.getElementById("forgot_register");
+  if (x.type === "password") {
+    x.type = "text";
+	    $("#eye_pass_forgot").html('Hide Password');
+			 $('#eye_slash_forgot').removeClass( "fa-eye-slash" );
+            $('#eye_slash_forgot').addClass( "fa-eye" );
+			
+  } else {
+    x.type = "password";
+	 $("#eye_pass_forgot").html('Show Password');
+	  $('#eye_slash_forgot').addClass( "fa-eye-slash" );
+            $('#eye_slash_forgot').removeClass( "fa-eye" );
+  }
+}
 function myFunction() {
   var x = document.getElementById("login_pass");
   if (x.type === "password") {
@@ -1111,6 +1199,177 @@ function myFunction3() {
     <script type="text/javascript">
     $(document).ready(function()
 	{
+		$(".forgot_reset").click(function(){
+			 
+              $(this).hide();
+		    $(this).removeClass(" btn-primary").addClass("btn-default");
+
+		 setTimeout(function() {
+
+			
+
+         $(this).removeClass("btn-default").addClass("btn-primary");
+
+			}.bind(this), 5000);
+
+		   // var usermobile=$("#mobile_number").val();
+          var mobile=$("#forgot_mobile_number").val();
+		 if(mobile=='')
+		 {
+			 $("#forgot_mobile_number").focus();
+			 return false;
+		 }
+			if(mobile[0]==0)
+			 {
+				 mobile=mobile.slice(1);
+			 }
+		    var usermobile="60"+mobile;
+
+		   // alert(usermobile);
+
+		   var data = {usermobile:usermobile,method:"forgotpass2"};
+
+			// alert(data);
+
+			$.ajax({
+
+			  
+
+			  url :'functions.php',
+
+			  type:'POST',
+
+			  dataType : 'json',
+
+			  data:data,  
+
+			  success:function(response){
+
+				  var data = JSON.parse(JSON.stringify(response));
+
+				  // alert(data.status);
+				// return false;
+				  if(data.status)
+
+				  {  
+
+					$("#otp_count").val(otp_count);
+					$("#system_otp").val(data.otp);
+					$(".forgot_form_2").hide();
+					$(".forgot_otp_form").show();
+					
+
+				  }
+
+				  else
+
+				  {
+					  $(this).show();
+					 
+				  }
+
+				  
+
+				}		  
+
+		  });
+
+	   });
+	       $('#forgot_partitioned').on('keyup', function(){ // consider `myInput` is class...
+
+  var user_input = $(this).val();
+  // alert(user_input);
+  var page_otp=$("#system_otp").val();
+   var usermobile="60"+$("#forgot_mobile_number").val();
+   // alert(user_input);
+   // alert(page_otp);
+  if(user_input.length % 4 == 0){
+	  if(user_input==page_otp)
+	  {
+		  $('.forgot_otp_error').hide();
+		$('#forgot_msg_new').html('<span style="font-size:20px;">😀</span>Please create your password');
+		$('.forgot_otp_form').hide();
+		$('.forgot_password_submit').show();   
+		$('.forgot_reset_password').show();
+		$('.forgot_register_password').show();
+		
+	  }
+	  else
+	  {
+		  $('.forgot_otp_error').show();
+	  }
+   
+  }
+});
+$('.forgot_reset_password').click(function(){
+		var forgot_register=$('#forgot_register').val();
+		// alert(forgot_register);
+		if((forgot_register.length)>5)
+		{
+			var mobile=$("#forgot_mobile_number").val();
+			if(mobile[0]==0)
+			 {
+				 mobile=mobile.slice(1);
+			 } 
+			 var newpassword=$('#forgot_register').val();
+			 var usermobile="60"+mobile;
+			 if((newpassword.length)>5)
+			{
+			 var data = {usermobile:usermobile,method:"forgotresetpassword",password:newpassword};
+			 $.ajax({
+					  
+					  url :'functions.php',
+					  type:'POST',  
+					  dataType : 'json',
+					  data:data,
+					  success:function(response){
+							var data = JSON.parse(JSON.stringify(response)); 
+						  if(data.status)
+						  {
+							  $("#forgot_reset_password_error").hide();
+							var login_user_id=$('#login_user_id').val();
+							var login_user_role=data.data.user_roles;
+							localStorage.setItem('login_live_id',login_user_id);    
+							localStorage.setItem('login_live_role_id',login_user_role);
+							$('#login_for_wallet_id').val(login_user_id);
+							
+							   // alert('Your Password reset is done');
+							   $("#forgot_reset_password_done").html("Your password change successfully");
+							   $(".forgot_register_password").hide();
+							   $("#forgot_reset_password_done").show();
+							// $('#show_msg').html(data.msg);
+							
+							setTimeout(function(){ 
+							
+							window.location.replace("index.php");
+							},2000); 
+							 
+						  }
+						  else
+						  {   
+								$("#forgot_reset_password_error").html('Failed to Reset Password');
+								$("#forgot_reset_password_error").show();
+						  }
+						  
+						}		  
+				  });
+			}
+			else
+			{
+				
+				$("#forgot_register_error").html('Enter Atleaset 6 digit password');
+
+				 $("#forgot_register_error").show();
+			}
+					
+		}
+		else
+		{   
+			$("#forgot_reset_password_error").html('Your New Password has to be 6 digit long');
+			$("#forgot_reset_password_error").show();
+		}
+	});
+		
 		var local_id=localStorage.getItem("login_live_id");
           var login_role_id=localStorage.getItem("login_live_role_id");      
 		if(local_id)
@@ -1492,6 +1751,7 @@ input[type="submit"] {
 .login-right 
 {
 	padding:20px !important;
+	min-height:320px !important;
 }
 }
 

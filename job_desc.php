@@ -39,67 +39,7 @@
 </head>
 
 <body>
-	<?php
-	 
-      function checktimestatus($time_detail)
-	  {
-		extract($time_detail);
-		switch ($starday) {
-			case "Monday":
-				$s_day=1;
-				break;
-			case "Tuesday":
-				$s_day=2;
-				break;
-			case "Wednesday":
-				$s_day=3;
-				break;
-			case "Thursday":
-				$s_day=4;
-				break;
-			case "Friday":
-				$s_day=5;
-				break;
-			case "Saturday":
-				$s_day=6;
-				break;
-			default:
-				$s_day=7;
-		}
-		switch ($endday) {
-			case "Monday":
-				$e_day=1;
-				break;
-			case "Tuesday":
-				$e_day=2;
-				break;
-			case "Wednesday":
-				$e_day=3;
-				break;
-			case "Thursday":
-				$e_day=4;
-				break;
-			case "Friday":
-				$e_day=5;
-				break;
-			case "Saturday":
-				$e_day=6;
-				break;
-			default:
-				$e_day=7;
-		}  
-	 	$currenttime=date("H:i");
-		$n=date("N");
-		    if(($currenttime >$starttime && $currenttime < $endttime) && ($s_day<=$n && $e_day>=$n)){
-			  $shop_close_status="y";
-		  }
-		  else
-		  {
-			  $shop_close_status="n";
-		  }
-		return $shop_close_status;
-	  }	
-?>
+	
 	<header class="header_in clearfix">
 		<div class="container">
 		<div id="logo">
@@ -154,7 +94,7 @@
     <?php 
         	if(isset($_GET['id'])){
                 $id = $_GET['id'];
-                $query = mysqli_query($conn, "SELECT jobs.*, job_category.category_name FROM `jobs` INNER JOIN job_category on jobs.job_category_id = job_category.id where jobs.id = '$id'");
+                $query = mysqli_query($conn, "SELECT jobs.*, job_category.category_name,job_category.id as category_id FROM `jobs` INNER JOIN job_category on jobs.job_category_id = job_category.id where jobs.id = '$id'");
                 $row = mysqli_fetch_assoc($query);
             }
     ?>
@@ -175,8 +115,7 @@
 		    		</div>
 		    		<div class="col-xl-4 col-lg-5 col-md-5">
 		    			<div class="search_bar_list">
-							<input type="text" class="form-control" placeholder="Search in blog...">
-							<input type="submit" value="Search">
+						<a href="postJob.php"><button class="btn_1 add_bottom_15 pull-right">POST JOB</button></a>
 						</div>
 		    		</div>
 		    	</div>
@@ -190,72 +129,74 @@
 				<div class="col-lg-9">
 					<div class="singlepost">
 						<!-- <figure><img alt="" class="img-fluid" src="img/blog-single.jpg"></figure> -->
-						<h1><?php echo $row['title']?></h1>
+						<div class="row">
+							<div class="col-9">
+								<h1><?php echo $row['title']?></h1>
+							</div>
+							<div class="col-3">
+								<a href="https://api.whatsapp.com/send?phone=<?php echo $row['whatsAppGroup']?>" target="_blank"><img src="images/whatapp.png" style="max-width:40px;"/></a>
+							</div>
+						</div>
+						
 						<div class="postmeta">
 							<ul>
-								<li><i class="icon_folder-alt"></i><?php echo $row['category_name']?></li>
-								<li><i class="icon_calendar"></i><?php echo Date("d M Y", $row['expire_date_utc'])?></li>
-								<!-- <li><a href="#"><i class="icon_pencil-edit"></i> Admin</a></li> -->
-								<!-- <li><a href="#"><i class="icon_comment_alt"></i> (14) Comments</a></li> -->
+								<li><a href="jobs.php?catID=<?php echo $row['category_id'];?>"><i class="icon_folder-alt"></i><?php echo $row['category_name']?></a></li>
+								<!--li><i class="icon_calendar"></i><?php echo Date("d M Y", $row['expire_date_utc'])?></li!-->
+								
 							</ul>
 						</div>
 						<!-- /post meta -->
 						<div class="post-content">
 							<div >
-								<p><?php echo $row['job_desc']?></p>
+								<p><?php echo $row['job_desc']?>
+									</br>Expired date: <?php echo Date("d m Y", $row['expire_date_utc'])?>
+									</br> <?php $salaryType=$row['salaryType'];
+										if($salaryType=="monthly")
+										{
+											echo "Salery :"." Rm ".number_format($row['price'],2)." (fixed)";
+										}
+										else if($salaryType=="hour")
+										{
+											echo "Salery :"." Rm ".number_format($row['price'],2)."/hour";
+										}
+									?>
+									</p>
 							</div>
 
 							
 						</div>
+						
 						<!-- /post -->
+						<hr>
+						<div style="margin-bottom:20px;text-align:right;">
+					<a  href="https://api.whatsapp.com/send?phone=<?php echo $row['whatsAppGroup']?>" target="_blank">	 <button type="submit" id="submit2" class="btn_1 add_bottom_15"><img src="images/whatapp.png" style="max-width:32px;"/>Interested</button></a>
+					</div>
 					</div>
 					<!-- /single-post -->
 
 				
-					<hr>
-
-					<!-- <h5>Leave a comment</h5>
-					<div class="row">
-						<div class="col-md-4 col-sm-6">
-							<div class="form-group">
-								<input type="text" name="name" id="name2" class="form-control" placeholder="Name">
-							</div>
-						</div>
-						<div class="col-md-4 col-sm-6">
-							<div class="form-group">
-								<input type="text" name="email" id="email2" class="form-control" placeholder="Email">
-							</div>
-						</div>
-						<div class="col-md-4 col-sm-12">
-							<div class="form-group">
-								<input type="text" name="email" id="website3" class="form-control" placeholder="Website">
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<textarea class="form-control" name="comments" id="comments2" rows="6" placeholder="Comment"></textarea>
-					</div> -->
-					<div class="form-group">
-					<a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank">	<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['delivery_hotline']; ?><button type="submit" id="submit2" class="btn_1 add_bottom_15">Interested</button></a>
-					</div>
+					
+					
+					
+					
 
 				</div>
 				<!-- /col -->
 
 				<aside class="col-lg-3">
-					
+				
 					<div class="widget">
 						<div class="widget-title">
-							<h4>Categories</h4>
+							<h4>Categories</h4>   
 						</div>
 						<ul class="cats">
+						   <li><a href="jobs.php?vs=<?php echo rand(); ?>">View all</a></li>
 							<?php $catName = mysqli_query($conn, "select * from job_category");
 								while($catRow = mysqli_fetch_assoc($catName)){?>
-										<li><a href="javascript:void(0)"><?php echo $catRow['category_name']?> <span>(<?php $catID = $catRow['id'];$count = mysqli_query($conn,"select * from jobs where job_category_id ='$catID'"); echo mysqli_num_rows($count); ?>)</span></a></li>
+										<li><a href="jobs.php?catid=<?php echo $catRow['id']; ?>&vs=<?php echo rand(); ?>"><?php echo $catRow['category_name']?> <span>(<?php $catID = $catRow['id'];$count = mysqli_query($conn,"select * from jobs where job_category_id ='$catID' and jobs.view = '1'"); echo mysqli_num_rows($count); ?>)</span></a></li>
 										<!-- jobs.php?catid =<?php echo $catRow['id'];?> -->
 							<?php	}
 							?>
-							
 						</ul>
 					</div>
 					

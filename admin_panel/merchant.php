@@ -5,14 +5,14 @@ if(!isset($_SESSION['admin']))
 {
 	header("location:login.php");
 }
-$rec_limit = 200;
+$rec_limit = 500;
 
 /* end  for limit  */
 
  $sql = "select count(id) as total_count from users Where user_roles = 2";
 
 $row = mysqli_fetch_assoc(mysqli_query($conn,$sql));
-$rec_limit = 200;
+$rec_limit = 500;
   $rec_count = $row['total_count'];
 
 if( isset($_GET{'page'} ) ) {
@@ -117,7 +117,7 @@ $a_m="merchant";
             <main class="main-wrapper clearfix" style="min-height: 522px;">
                 <div class="container-fluid" id="main-content" style="padding-top:25px">
 					<h2 class="text-center wallet_h">Merchant List</h2>
-					<button type="button" class="btn btn-danger" onclick="window.location.href='./user.php'">Clear Page</button>
+					<button type="button" class="btn btn-danger" onclick="window.location.href='./merchant.php'">Clear Page</button>
 					<button type="button" class="btn btn-danger" onclick="window.location.href='./addmerchant.php'">Add Merchant</button>
 				<h3> Total Records <?php  echo $rec_count;?></h3>
 				<h4> Total Pages <?php  echo floor($rec_count/$rec_limit);?></h4>
@@ -160,6 +160,7 @@ $a_m="merchant";
 							<th>Vendor Comission (%) </th>
 							<th>Chiness Delivery </th>
 							<th>Price Hike </th>
+							<th> Time of the pop-up </th>
 							<th>Popular Merchant </th>
 							<th>Show Merchant </th>
 							
@@ -224,6 +225,7 @@ $a_m="merchant";
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="vendor_comission" placeholder="%" class="form-control vendor_comission" value="<?php echo $row['vendor_comission'];?>"></td>   
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="special_price_value" placeholder="" class="form-control special_price_value" value="<?php echo $row['special_price_value'];?>"></td>   
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="price_hike" placeholder="" class="form-control price_hike" value="<?php echo $row['price_hike'];?>"></td>   
+								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="custom_msg_time" placeholder="" class="form-control custom_msg_time" value="<?php echo $row['custom_msg_time'];?>"></td>   
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="popular_restro" placeholder="" class="form-control popular_restro" value="<?php echo $row['popular_restro'];?>"></td>   
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="show_merchant" placeholder="" class="form-control show_merchant" value="<?php echo $row['show_merchant'];?>"></td>   
 								<!--td>

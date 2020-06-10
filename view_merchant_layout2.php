@@ -1,4 +1,13 @@
-<?php 
+<?php
+if($sid)
+{
+ $merchant_detail = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE mobile_number='$sid' and user_roles='2'")); 
+}
+else
+{
+ $merchant_id = $_SESSION['mm_id'];
+ $merchant_detail = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE id='$merchant_id' and user_roles='2'"));
+}
 $hike_per=$merchant_detail['price_hike'];    
 $_SESSION['price_hike']=$hike_per;
 function ceiling($number, $significance = 1)
@@ -343,7 +352,7 @@ if($product['pro_ct'] > 0) { ?>
                                             <?php 
                                             if(!empty($row['image'])){
                                                 if(isActive($row['active_time']) && $row['on_stock']){ ?>
-                                                    <p id="product_child_<?php echo $row['id']?>"  data-rebate='<?php echo $row['product_discount'];?>' class="pro_status text_add_cart <?php echo $cart_class ?>"  data_varient_must='<?php echo $row['varient_must']; ?>' data-id = "<?php echo $row['id'] ?>" data-code = "<?php echo $row['product_type'] ?>"  data-pr = "<?php echo $new_price; ?>" data-name = "<?php echo $row['product_name'] ?>">
+                                                    <p id="product_child_<?php echo $row['id']?>" style="<?php if($row['add_to_cart_button']=='0'){echo "display:none;";} ?>" data-rebate='<?php echo $row['product_discount'];?>' class="pro_status text_add_cart <?php echo $cart_class ?>"  data_varient_must='<?php echo $row['varient_must']; ?>' data-id = "<?php echo $row['id'] ?>" data-code = "<?php echo $row['product_type'] ?>"  data-pr = "<?php echo $new_price; ?>" data-name = "<?php echo $row['product_name'] ?>">
 												    <i  id="child_<?php echo $row['id']?>" class="fa fa-plus"></i></p>
                                                     <p class="quantity">
                                                         <input type="hidden" value="1" class="quatity" name="quatity">
@@ -352,7 +361,7 @@ if($product['pro_ct'] > 0) { ?>
                                                     if(isActive($row['active_time'])){
                                                         if($row['on_stock']){
                                                 ?>
-                                                    <p  id="product_child_<?php echo $row['id']?>" class="pro_status text_add_cart <?php echo $cart_class ?>" data-rebate='<?php echo $row['product_discount'];?>' data_varient_must='<?php echo $row['varient_must']; ?>'  data-id = "<?php echo $row['id'] ?>" data-code = "<?php echo $row['product_type'] ?>"  data-pr = "<?php echo $new_price; ?>" data-name = "<?php echo $row['product_name'] ?>">
+                                                    <p  id="product_child_<?php echo $row['id']?>" style="<?php if($row['add_to_cart_button']=='0'){echo "display:none;";} ?>" class="pro_status text_add_cart <?php echo $cart_class ?>" data-rebate='<?php echo $row['product_discount'];?>' data_varient_must='<?php echo $row['varient_must']; ?>'  data-id = "<?php echo $row['id'] ?>" data-code = "<?php echo $row['product_type'] ?>"  data-pr = "<?php echo $new_price; ?>" data-name = "<?php echo $row['product_name'] ?>">
 												    <i  id="child_<?php echo $row['id']?>" class="fa fa-plus"></i></p>
                                                     <p class="quantity">
                                                         <input type="hidden" value="1" class="quatity" name="quatity">

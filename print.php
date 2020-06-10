@@ -1,4 +1,8 @@
 <?php
+   function ceiling($number, $significance = 1)
+								{
+									return ( is_numeric($number) && is_numeric($significance) ) ? (ceil(round($number/$significance))*$significance) : false;
+								}
 	include("config.php"); 
 	require("fpdf17/fpdf.php");
 	$pdf = new FPDF("P", "mm", array(72.1, 3268));
@@ -7,16 +11,19 @@
 	if(isset($_GET['id'])){
 		$order_id = $_GET['id'];
         $merchant = $_GET['merchant'];
-		$profile = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE id ='".$merchant."'"));
+		$profile = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE id ='".$merchant."'"));
 		
-		$order = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM order_list WHERE id ='".$order_id."'"));
+		$order = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM order_list WHERE id ='".$order_id."'"));
 	    $row=$order;
 		$pdf->SetMargins(4, 10, 4);
 		$pdf->AddPage();
 		$pdf->Ln();
 		$pdf->SetX(20);
 		$pdf->SetFont("Arial", "", 8);
-		$pdf->Write(4, $profile['company']);
+		if($profile['invoice_company'])
+		$pdf->Write(4, $profile['invoice_company']);
+		else 
+		$pdf->Write(4, $profile['company']);     
 		$pdf->Ln();
 		$pdf->SetFont("Arial", "", 6);
 		$pdf->SetX(22);
@@ -121,17 +128,7 @@
 			$pdf->Cell(7, 3, $product_code[$i],1, 0, 'C');
 			$product_id = $product_ids[$i];
 			$products = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM products WHERE id ='".$product_id."'"));
-			if(count($products) > 0){
-    			$pdf->SetFont("Arial", "", 4);
-    			$pdf->Cell(21, 3, $products['product_name'], 1, 0, 'C');
-    			$pdf->SetFont("Arial", "", 5);
-    			$pdf->Cell(8, 3, $remarks[$i], 1, 0, 'C');
-    			$pdf->Cell(4, 3, $product_qtys[$i], 1, 0, 'C');
-    			$pdf->Cell(9, 3, number_format($products['product_price'],2), 1, 0, 'C');
-    			$pdf->Cell(11, 3, number_format($products['product_price'] * $product_qtys[$i], 2) , 1, 0, 'C');
-    			$sum_qty += $product_qtys[$i];
-    			$sum += $products['product_price'] * $product_qtys[$i];    
-			} else {
+			 
 			    $pdf->SetFont("Arial", "", 4);
     			$pdf->Cell(21, 3, $product_ids[$i], 1, 0, 'C');
     			$pdf->SetFont("Arial", "", 5);
@@ -141,7 +138,7 @@
     			$pdf->Cell(11, 3, number_format($proudct_amounts[$i] * $product_qtys[$i], 2) , 1, 0, 'C');
     			$sum_qty += $product_qtys[$i];
     			$sum += $proudct_amounts[$i] * $product_qtys[$i];
-			}
+			
 			
 			$pdf->Ln();
 		}
@@ -213,8 +210,19 @@
 								// $significance=0.05;
 								// $incsst=( is_numeric($incsst) && is_numeric($significance) ) ? (ceil(round($incsst/$significance))*$significance);
 								  $incsst=@number_format($incsst, 2);
+								  $incsst=ceiling($incsst,0.05);
 							     $g_total=@number_format($total+$incsst, 2);
 								} else { $g_total=$total;} 
+		if($sstper)
+		{
+			 $pdf->SetX(35);
+			$pdf->SetFont("Arial", "", 6);
+			$pdf->Write(6, "Service fee $sstper %:");
+			$pdf->SetX(59);
+			$pdf->SetFont("Arial", "", 6);
+			$pdf->Write(6,$incsst);
+			$pdf->Ln();	
+		}
 		$g_final=@number_format(($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount'])-($row['membership_discount']+$row['coupon_discount']),2);
 		        $pdf->SetX(35);
 			$pdf->SetFont("Arial", "", 6);
@@ -234,10 +242,10 @@
 			$pdf->Ln();	
 		}
 		$g_total2=@number_format(($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount'])-($row['wallet_paid_amount']+$row['membership_discount']+$row['coupon_discount']), 2);
-		   $pdf->SetX(35);
+		   $pdf->SetX(25);
 			$pdf->SetFont("Arial", "", 8);
 			$pdf->Write(6, "Balance payment:");
-			$pdf->SetX(59);
+			$pdf->SetX(48);
 			$pdf->SetFont("Arial", "", 8);
 			$pdf->Write(6,$g_total2);
 			$pdf->Ln();	

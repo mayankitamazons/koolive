@@ -9,7 +9,7 @@ $rec_limit = 40;
 
 /* end  for limit  */
 
- $sql = "select count(id) as total_count from jobs where view='1'";
+ $sql = "select count(id) as total_count from jobs ";
 
 $row = mysqli_fetch_assoc(mysqli_query($conn,$sql));
 $rec_limit = 40;
@@ -24,7 +24,7 @@ if( isset($_GET{'page'} ) ) {
          }
          
 $left_rec = $rec_count - ($page * $rec_limit);
-     $query="select SQL_NO_CACHE * from jobs order by id desc LIMIT $offset, $rec_limit";
+     $query="select SQL_NO_CACHE * from jobs order by title desc LIMIT $offset, $rec_limit";
 
 $user = mysqli_query($conn,$query);
 $total_rows = mysqli_num_rows($user);
@@ -40,26 +40,13 @@ if(isset($_GET['jobData']) && $_GET['jobData']=="data"){
 	echo json_encode($res);
 	die();
 }
-if(isset($_POST['update-job'])){
-	extract($_POST);
-	print_r($_POST);
-	if($exDate==''){
-		$finalExDate = $exExDate;
-	}else{$finalExDate =strtotime($exDate);}
-	
-	$query = mysqli_query($conn,"UPDATE `jobs` SET `title`='$title',`job_desc`='$jobDesc',`price`='$jPrice',`posted_date_utc`='$postDate',`expire_date_utc`='$finalExDate',`job_category_id`='$category',`job_provider_name`='$jProname',`job_provide_mobile`='$jProNo',`job_provider_desc`='$jobProDesc'  WHERE id = '$id'");
-	header('Location: jobs_list.php');
-	
-}
-if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
-	$id = $_GET['id'];
-	$query = mysqli_query($conn,"UPDATE `jobs` SET `view`='0' WHERE id='$id'");
-	if($query){echo true;}else{die();}
-}
-// to change status in db
-	//  $edate = $row['expire_date_utc'];
-	//  $cdate = strtotime(Date("Y-m-d"));
-	// if($cdate>$edate){$upQuery=mysqli_query($conn,"update jobs set status='Expired'") }
+
+// if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
+// 	$id = $_GET['id'];
+// 	$query = mysqli_query($conn,"UPDATE `jobs` SET `view`='0' WHERE id='$id'");
+// 	if($query){echo true;}else{die();}
+// }
+
 									
 ?>
 <!DOCTYPE html>
@@ -145,7 +132,7 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
             <main class="main-wrapper clearfix" style="min-height: 522px;">
                 <div class="container-fluid" id="main-content" style="padding-top:25px">
 					<h2 class="text-center wallet_h">Jobs List</h2>
-					<!-- <button type="button" class="btn btn-danger" onclick="window.location.href='./user.php'">Clear Page</button> -->
+					
 					<button type="button" class="btn btn-danger pull-right" onclick="window.location.href='./addjobs.php'">Add Jobs</button>
 				<h3> Total Records <?php  echo $rec_count;?></h3>
 				<h4> Total Pages <?php  echo floor($rec_count/$rec_limit);?></h4>
@@ -178,13 +165,13 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
                                 <th>Price</th>
                                 <th>Posted Date</th>
                                 <th>Expire Date</th>
-								 <th>Advance salery</th>
-								 <th>Salery Type</th>
+                                <th>Advance salery</th>
+                                <th>Salery Type</th>
                                 <th>Job Category</th>
 
                                 <th>Job Provider Name</th>
                                 <th>Job Provider Mobile</th>
-                                <th>Job Provider Desc</th>
+                                
                                 <th>Status</th>
 							    <th>Action</th>
 						  </tr>
@@ -192,7 +179,7 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 					   <tbody>
                     	<?php
                         $i=1;
-						$jobs = mysqli_query($conn, "SELECT jobs.*, job_category.category_name FROM `jobs` INNER JOIN job_category on jobs.job_category_id = job_category.id where jobs.view = '1' order by jobs.id desc");
+						$jobs = mysqli_query($conn, "SELECT jobs.*, job_category.category_name FROM `jobs` INNER JOIN job_category on jobs.job_category_id = job_category.id where jobs.postedStatus = '0' order by id desc");
 					
                     	while($row=mysqli_fetch_assoc($jobs)){
 							 ?>
@@ -208,7 +195,7 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
                                 <td><?php echo isset($row['category_name'])?$row['category_name']:'';?></td>
                                 <td><?php echo isset($row['job_provider_name'])?$row['job_provider_name']:'';?></td>
                                 <td><?php echo isset($row['job_provide_mobile'])?$row['job_provide_mobile']:'';?></td>
-                                <td><?php echo isset($row['job_provider_desc'])?$row['job_provider_desc']:'';?></td>
+                                
                                 <td>
 									<?php 
 									 $edate = $row['expire_date_utc'];
@@ -218,8 +205,7 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 									?>
 								</td>
                         		 <td>
-                                     <a href="javascript:void(0)" class="deleteRecord" jId="<?php echo $row['id']?>">Delete</a>
-                                     <a href="editJob.php?id=<?php echo $row['id']?>"  >Edit</a>
+                                     <a href="javascript:void(0)" class="acceptRecord" uid="<?php echo $row['id']?>">Accept</a>
                                  </td>
                               </tr>
                     	<?php
@@ -249,7 +235,7 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 				</div>
 			</main>
         </div>
-	
+  
         <!-- /.widget-body badge -->
     </div>
     <!-- /.widget-bg -->
@@ -267,7 +253,37 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
 	
 
-
+    <div class="modal fade" id="edit_info" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Accept Job</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+                <form action="postedJob.php" method="POST">
+                    <div class="form-group">
+                        <label for="title">WhatsApp Group<span style="color:red;">*</span></label>
+                        <input type="text"   name="wGNo" class="form-control"  placeholder="Whatsapp Group">
+                        <input type="hidden" name="id" id="aid" >
+                    </div>
+                    <div class="form-group">
+                        <label for="comment">Job Provider Description</label>
+						<textarea name="jobProDesc" class="form-control" required  placeholder="Job Provide Description" rows="5" ></textarea>
+						<span style="color:red;font-weight:600;" id="error"></span>
+                    </div>
+                
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" name="accept-Job" class="btn btn-primary save_close">Save changes</button>
+                </form>
+			</div>
+			</div>
+		</div>
+	</div>
 
 
 
@@ -291,61 +307,52 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 				]
 				});
 				
-	
-		
-	
-//   $(".editJob").click(function(){
-// 	  var id = $(this).attr('jId');
-// 	  $.get("./jobs_list.php", {
-// 		jobData: "data",
-// 			id: id
-// 		}, function(data){
-// 			data = JSON.parse(data);
-// 			console.log(data);
-// 			$('#id').val(data['id']);
-// 			$("#title").val(data['title']);
-// 			$("#jPrice").val(data['price']);
-// 			$("#jobDesc").val(data['job_desc']);
-// 			$("#wGNo").val(data['whatsAppGroup']);
-// 			$('#postDate').val(data['posted_date_utc']);
-// 			$("#exExDate").val(data['expire_date_utc']);
-// 			$("#jProname").val(data['job_provider_name']);
-// 			$("#jProNo").val(data['job_provide_mobile']);
-// 			$("#jobProDesc").val(data['job_provider_desc']);
-			
-// 			$("#category").prop("selected", false);
-// 			$("#category option[value='" + data['job_category_id'] + "']").prop("selected", true);
-// 			$("#edit_info").modal("show");
-			
 
-			
-
-// 		});
-		
-	 
-//   });
-  $(".deleteRecord").click(function(){
-
-	var id = $(this).attr('jId');
-	var cnfrmDelete = confirm("Are You Sure Delete This Job ?");
-	if(cnfrmDelete==true){
-		  $.ajax({
-				url:'jobs_list.php',
-				method:'GET',
-				data:{data:'deleteRecord',id:id},
-				success:function(res){location.reload(true);}
-		  });	
-	}
-  });
+            $(".deleteRecord").click(function(){
+                var id = $(this).attr('jId');
+                //   alert(id+"deleteRecord called");
+                $.ajax({
+                        url:'postedJob.php',
+                        method:'GET',
+                        data:{data:'deleteRecord',id:id},
+                        success:function(res){location.reload(true);}
+                });
+                
+                
+            });
 	
-	
+            $(".acceptRecord").on("click", function(){
+                 var id = $(this).attr('uid');
+                //  alert(id);
+                $('#aid').val(id);
+                 $("#edit_info").modal("show");
+            });
 				
 				
 	});
 	  
 	  
 	</script>
+
 	
 </body>
 
 </html>
+<?php
+if(isset($_POST['accept-Job'])){
+	extract($_POST);
+	// print_r($_POST);
+	if($wGno==''){
+        $wn = 60123945670;
+    }else{
+        $wn = $wGNo;
+    }
+   
+	$query = mysqli_query($conn,"UPDATE `jobs` SET `job_provider_desc`='$jobProDesc',`whatsAppGroup`='$wn',`view`='1',`postedStatus`='1'  WHERE id = '$id'");
+	if($query){
+        header('Location: jobs_list.php');
+    }
+	
+}
+
+?>

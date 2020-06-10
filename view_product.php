@@ -27,7 +27,14 @@ $categories = mysqli_query($conn, "SELECT * FROM category WHERE user_id ='".$log
 //$bank_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE id='".$_SESSION['login']."'"));
 // $current_id = $bank_data['id'];
 	$total_rows = mysqli_query($conn, "SELECT * FROM products WHERE user_id ='".$loginidset."' and status=0 order by product_name asc");
- 
+ if(empty($_GET['ms']))
+{
+	$ms=$_GET['ms'];
+	$url="view_product.php?ms=".md5(rand());
+
+header("Location:$url");
+exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -120,6 +127,26 @@ td.del {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
 $(document).ready(function(){
+		 $('.add_to_cart_button').change(function() {
+			 var selected_product_id= $(this).attr('pro_id');
+			if(this.checked) {
+				var cart_status=1;
+			}
+			else
+			{
+				var cart_status=0;
+			}
+			$.ajax({
+						url :'functions.php',
+						 type:"post",
+						 data:{product_id:selected_product_id,cart_status:cart_status,method:"productcartupdate"},     
+						 dataType:'json',
+						 success:function(result){  
+							// var data = JSON.parse(JSON.stringify(result));   
+							// alert(data.msg);
+						 }
+				});
+		});
 		$('#remove_image').click(function(){
     var id=$('#id').val();
 	// alert(id);
@@ -180,6 +207,7 @@ $(document).ready(function(){
 		   <th>Vairent Must</th>
         <th>Image</th>
         <th>Code</th>
+        <th>Cart Button</th>
        
         <th>Action</th>
       </tr>
@@ -202,6 +230,7 @@ $(document).ready(function(){
 		{
 			$color="";
 		}
+		$add_to_cart_button=$row['add_to_cart_button'];
 	?>
   
 	<tr style="<?php if($color){ echo "color:".$color;} ?>">
@@ -249,6 +278,7 @@ $(document).ready(function(){
 
    <?php }
       ?>
+	  <td><input class="form-control add_to_cart_button" pro_id="<?php echo $row['id']; ?>" type="checkbox" name="add_to_cart_button" <?php if($add_to_cart_button == '1') echo "checked='checked'";?>><br></td>
       <td class="pop_up" data-id="<?php echo $row['id']; ?>">Edit</td> 
       <td class="stock_check" data-id="<?php echo $row['id']; ?>">Stock</td> 
    <td class="sub_product" data-del="<?php echo $row['id']; ?>"><a href="<?php echo $site_url; ?>/sub_product.php?p_id=<?php echo $row['id']; ?>">Product Varieties</a></td>

@@ -40,6 +40,26 @@ if(isset($_POST['method']) && ($_POST['method'] == "directlogin")){
     echo json_encode($res);
 	die;
 }
+if(isset($_POST['method']) && ($_POST['method'] == "productcartupdate")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update products set add_to_cart_button='$cart_status' where id='$product_id'");
+	 if($up)
+		$res = array('msg'=>"Prodcut Cart Updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}   
+if(isset($_POST['method']) && ($_POST['method'] == "onesingalidsave")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update users set onesignal_player_id='$onesignal_player_id' where id='$user_id'");
+	 if($up)
+		$res = array('msg'=>"Player id Updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}  
 if(isset($_POST['method']) && ($_POST['method'] == "riderdetailsave")){ 
 	 extract($_POST);
 	 $up=mysqli_query($conn,"update order_list set rider_info='$rider_info' where id='$order_id'");
@@ -104,12 +124,14 @@ if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){
 		if($special_price_value=='')
 			$special_price_value=$user_data['special_price_value'];
 		if($price_hike=='')
-		$price_hike=$user_data['price_hike'];  
+		$price_hike=$user_data['price_hike']; 
+		if($custom_msg_time=='')
+		$custom_msg_time=$user_data['custom_msg_time'];  
 		if($popular_restro=='')
 		$popular_restro=$user_data['popular_restro'];
 		if($show_merchant=='')
 		$show_merchant=$user_data['show_merchant'];
-        $s=mysqli_query($conn,"update users set price_hike='$price_hike',popular_restro='$popular_restro',show_merchant='$show_merchant',special_price_value='$special_price_value',vendor_comission='$vendor_comission',delivery_rate='$delivery_rate',delivery_take_up='$delivery_take_up',delivery_dive_in='$delivery_dive_in' where id='$selected_user_id'");
+        $s=mysqli_query($conn,"update users set custom_msg_time='$custom_msg_time',price_hike='$price_hike',popular_restro='$popular_restro',show_merchant='$show_merchant',special_price_value='$special_price_value',vendor_comission='$vendor_comission',delivery_rate='$delivery_rate',delivery_take_up='$delivery_take_up',delivery_dive_in='$delivery_dive_in' where id='$selected_user_id'");
 		if($s)
 		$res = array('msg'=>"Updated",'status'=>true);  
 		else
@@ -1111,7 +1133,7 @@ if( isset( $_POST['method']) && ( $_POST['method'] == "forgotpass2" )  ) {
 	$otp = generatePIN();
 	// $cm="+919001025477";
 	$user_role=1;
-	$data = mysqli_query($conn, "SELECT  password,isLocked FROM users WHERE mobile_number='$cm' AND user_roles = '$user_role' ");
+	$data = mysqli_query($conn, "SELECT  password,isLocked FROM users WHERE mobile_number='$cm' ");
 	//~ $data = mysqli_query($conn, "SELECT password,isLocked FROM users WHERE email='$email'");
 	$count = mysqli_num_rows($data);
 	if($count == 0)
@@ -1137,7 +1159,7 @@ if( isset( $_POST['method']) && ( $_POST['method'] == "forgotpass2" )  ) {
 	{  
 		$rand =mt_rand();
 		// $forgot_url = "https://".$_SERVER['HTTP_HOST']."/forgot_password.php?rand=".$rand."&mn=".$cm;
-		 mysqli_query($conn, "UPDATE users SET user_otp='$otp',rand_num='$rand',resetdate='".time()."' WHERE mobile_number='$cm' AND user_roles = '$user_role' ");
+		 mysqli_query($conn, "UPDATE users SET user_otp='$otp',rand_num='$rand',resetdate='".time()."' WHERE mobile_number='$cm'");
 		 // $cm="+919001025477";
 		  gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm", "$otp is your otp code for Koo Families Account Reset");  
 		   // gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm", "Password for your Account ($cm) : $forgot_url");

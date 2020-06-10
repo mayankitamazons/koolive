@@ -220,4 +220,31 @@ a:link {
 <!-- Edited by Sumit  -->
 
 </style>
-
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+<script>
+  var session_login="<?php echo $_SESSION['login']; ?>";
+  var onesignal_player_id="<?php echo $_SESSION['onesignal_player_id']; ?>";
+  
+  var OneSignal = window.OneSignal || [];
+  OneSignal.push(function() {
+    OneSignal.init({
+      appId: "57f21ad6-a531-4cb6-9ecd-08fe4dd3b4f5",
+    });
+	if(session_login && onesignal_player_id=='')
+	{
+		 OneSignal.getUserId().then(function(userId) {
+		console.log("OneSignal User ID:", userId);
+		  $.ajax({
+				url: 'functions.php',
+				type:'POST',
+				dataType : 'json',
+				data:{user_id:session_login,onesignal_player_id:userId,method:"onesingalidsave"},
+				success: function (res) {
+					console.log('Update Onesign');
+			}
+			});
+		// (Output) OneSignal User ID: 270a35cd-4dda-4b3f-b04e-41d7463a2316    
+	  });
+	}
+  });
+</script>

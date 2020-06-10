@@ -35,7 +35,7 @@
 		// the offset of the list, based on current page 
 		$offset = ($currentpage - 1) * $rowsperpage;
 		// get the info from the db 
-		$sql = "SELECT id, number FROM numbers LIMIT $offset, $rowsperpage";
+		// $sql = "SELECT id, number FROM numbers LIMIT $offset, $rowsperpage";
         
 	?>
 
@@ -75,67 +75,7 @@
 </head>
 
 <body>
-	<?php
-	 
-      function checktimestatus($time_detail)
-	  {
-		extract($time_detail);
-		switch ($starday) {
-			case "Monday":
-				$s_day=1;
-				break;
-			case "Tuesday":
-				$s_day=2;
-				break;
-			case "Wednesday":
-				$s_day=3;
-				break;
-			case "Thursday":
-				$s_day=4;
-				break;
-			case "Friday":
-				$s_day=5;
-				break;
-			case "Saturday":
-				$s_day=6;
-				break;
-			default:
-				$s_day=7;
-		}
-		switch ($endday) {
-			case "Monday":
-				$e_day=1;
-				break;
-			case "Tuesday":
-				$e_day=2;
-				break;
-			case "Wednesday":
-				$e_day=3;
-				break;
-			case "Thursday":
-				$e_day=4;
-				break;
-			case "Friday":
-				$e_day=5;
-				break;
-			case "Saturday":
-				$e_day=6;
-				break;
-			default:
-				$e_day=7;
-		}  
-	 	$currenttime=date("H:i");
-		$n=date("N");
-		    if(($currenttime >$starttime && $currenttime < $endttime) && ($s_day<=$n && $e_day>=$n)){
-			  $shop_close_status="y";
-		  }
-		  else
-		  {
-			  $shop_close_status="n";
-		  }
-		return $shop_close_status;
-	  }	
-?>
+	
 	<header class="header_in clearfix">
 		<div class="container">
 		<div id="logo">
@@ -196,15 +136,14 @@
 		    			<div class="breadcrumbs blog">
 				            <ul>
 				                <li><a href="index.php?vs=<?php echo md5(rand()); ?>">Home</a></li>
-				                <li><a href="#">Jobs</a></li>
+				                <li><a href="jobs.php">Jobs</a></li>
 				                
 				            </ul>
 		       	 		</div>
 		    		</div>
 		    		<div class="col-xl-4 col-lg-5 col-md-5">
 		    			<div class="search_bar_list">
-							<input type="text" class="form-control" placeholder="Search in Job...">
-							<input type="submit" value="Search">
+						<a href="postJob.php"><button class="btn_1 add_bottom_15 pull-right">POST JOB</button></a>
 						</div>
 		    		</div>
 		    	</div>
@@ -212,30 +151,59 @@
 		    </div>
 		</div>
 		<!-- /page_header -->
-
-		<div class="container margin_30_40">			
+		<?php if($_GET['catid']){ 
+		$catid=$_GET['catid'];
+		$catName = mysqli_query($conn, "select * from job_category where id='$catid'");
+		$catdetail=mysqli_fetch_array($catName);
+		// print_R($catdetail);
+		
+		?>
+		<h2 style="margin-left:3%;"><?php echo "Job for ".$catdetail['category_name']; ?></h2>
+		<div></div>
+		<?php }?>
+		<div class="container margin_30_40" style="min-height:500px;">			
 			<div class="row">
 				<div class="col-lg-9">
 					<div class="row">
 						<?php 
 						if($_GET['catid']){
 							$cId = $_GET['catid'];
-							echo $cId;
-							$sql = "SELECT jobs.*, job_category.category_name FROM `jobs` INNER JOIN job_category on jobs.job_category_id = job_category.id where jobs.view = '1' and jobs.job_category_id = '$cId'";
+							// echo $cId;
+							$sql = "SELECT jobs.*, job_category.category_name FROM `jobs` INNER JOIN job_category on jobs.job_category_id = job_category.id where jobs.view = '1' and jobs.job_category_id = '$cId' order by jobs.id desc ";
 						}else{
-							$sql = "SELECT jobs.*, job_category.category_name FROM `jobs` INNER JOIN job_category on jobs.job_category_id = job_category.id where jobs.view = '1'";
+							$sql = "SELECT jobs.*, job_category.category_name FROM `jobs` INNER JOIN job_category on jobs.job_category_id = job_category.id where jobs.view = '1' order by jobs.id desc";
 						}
 							$jobs = mysqli_query($conn, "$sql");
 							while($row=mysqli_fetch_assoc($jobs)){
 						?>
 						<div class="col-md-12">
 							<article class="blog">
-								<div class="post_info">
+								<div class="post_info row" style="border:1px solid;">
+									<div class="col-md-8">
 									
-									<h2><a href="job_desc.php?id=<?php echo $row['id']?>"><?php echo $row['title']?></a></h2>
-									<small><?php echo $row['category_name']?> - <?php echo Date("d M Y", $row['expire_date_utc'])?></small>
-									<p><?php echo $row['job_desc']?></p>
+										<h2><a href="job_desc.php?id=<?php echo $row['id']?>"><?php echo $row['title']?></a></h2>
+										<small><?php echo $row['category_name']?></small>
+									<p><?php echo substr($row['job_desc'],0,50)?>
 									
+									</br>Expired date: <?php echo Date("d m Y", $row['expire_date_utc'])?>
+									</br> <?php $salaryType=$row['salaryType'];
+										if($salaryType=="monthly")
+										{
+											echo "Salery :"." Rm ".number_format($row['price'],2)." (fixed)";
+										}
+										else if($salaryType=="hour")
+										{
+											echo "Salery :"." Rm ".number_format($row['price'],2)."/hour";
+										}
+									?>
+									</p>
+									</div>
+									<div class="col-md-4">
+									<!-- <a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank">	 -->
+									<a href="job_desc.php?id=<?php echo $row['id']?>">
+									<button type="button"  class="btn_1 add_bottom_15">  Details</button></a>
+					
+									</div>
 								</div>
 							</article>
 							<!-- /article -->
@@ -298,64 +266,22 @@
 				<!-- /col -->
 
 				<aside class="col-lg-3">
-					<!-- <div class="widget">
-						<div class="widget-title first">
-							<h4>Latest Post</h4>
-						</div>
-						<ul class="comments-list">
-							<li>
-								<div class="alignleft">
-									<a href="#0"><img src="img/blog-5.jpg" alt=""></a>
-								</div>
-								<small>Category - 11.08.2016</small>
-								<h3><a href="#" title="">Verear qualisque ex minimum...</a></h3>
-							</li>
-							<li>
-								<div class="alignleft">
-									<a href="#0"><img src="img/blog-6.jpg" alt=""></a>
-								</div>
-								<small>Category - 11.08.2016</small>
-								<h3><a href="#" title="">Verear qualisque ex minimum...</a></h3>
-							</li>
-							<li>
-								<div class="alignleft">
-									<a href="#0"><img src="img/blog-4.jpg" alt=""></a>
-								</div>
-								<small>Category - 11.08.2016</small>
-								<h3><a href="#" title="">Verear qualisque ex minimum...</a></h3>
-							</li>
-						</ul>
-					</div> -->
-					<!-- /widget -->
+				
 					<div class="widget">
 						<div class="widget-title">
 							<h4>Categories</h4>
 						</div>
 						<ul class="cats">
+						   <li><a href="jobs.php?vs=<?php echo rand(); ?>">View all</a></li>
 							<?php $catName = mysqli_query($conn, "select * from job_category");
 								while($catRow = mysqli_fetch_assoc($catName)){?>
-										<li><a href="javascript:void(0)"><?php echo $catRow['category_name']?> <span>(<?php $catID = $catRow['id'];$count = mysqli_query($conn,"select * from jobs where job_category_id ='$catID'"); echo mysqli_num_rows($count); ?>)</span></a></li>
+										<li><a href="jobs.php?catid=<?php echo $catRow['id']; ?>&vs=<?php echo rand(); ?>"><?php echo $catRow['category_name']?> <span>(<?php $catID = $catRow['id'];$count = mysqli_query($conn,"select * from jobs where job_category_id ='$catID' and jobs.view = '1'"); echo mysqli_num_rows($count); ?>)</span></a></li>
 										<!-- jobs.php?catid =<?php echo $catRow['id'];?> -->
 							<?php	}
 							?>
 						</ul>
 					</div>
-					<!-- /widget -->
-					<!-- <div class="widget">
-						<div class="widget-title">
-							<h4>Popular Tags</h4>
-						</div>
-						<div class="tags">
-							<a href="#">Food</a>
-							<a href="#">Bars</a>
-							<a href="#">Cooktails</a>
-							<a href="#">Shops</a>
-							<a href="#">Best Offers</a>
-							<a href="#">Transports</a>
-							<a href="#">Restaurants</a>
-						</div>
-					</div> -->
-					<!-- /widget -->
+					
 				</aside>
 				<!-- /aside -->
 			</div>

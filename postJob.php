@@ -2,6 +2,7 @@
 ?>
 <!DOCTYPE html>
 <html lang="en">
+	
 
 <head>
     <meta charset="utf-8">
@@ -34,72 +35,38 @@
 	<link rel="stylesheet" type="text/css" href="css/sweetalert.css">
    <link rel="manifest" id="my-manifest-placeholder">
     <meta name="theme-color" content="#317EFB"/>
-	<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
-
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <style>
+        .radiocontainer{
+            display : inline-block;
+            position : relative;
+            cursor: pointer;
+            font-size : 16px;
+            user-select : none;
+            padding-left : 30px;
+        }
+        .radiocontainer input{
+            display: none;
+        }
+        .radiocontainer .circle{
+            display: inline-block;
+            width:16px;
+            height: 16px;
+            border:2px solid aqua;
+            position: absolute;
+            left: 10px;
+            top: 4px;
+            border-radius: 50%;
+        }
+        .radiocontainer input:checked + .circle{
+             background-color: #0075ff;
+        }
+        
+</style>
 </head>
 
 <body>
-	<?php
-	 
-      function checktimestatus($time_detail)
-	  {
-		extract($time_detail);
-		switch ($starday) {
-			case "Monday":
-				$s_day=1;
-				break;
-			case "Tuesday":
-				$s_day=2;
-				break;
-			case "Wednesday":
-				$s_day=3;
-				break;
-			case "Thursday":
-				$s_day=4;
-				break;
-			case "Friday":
-				$s_day=5;
-				break;
-			case "Saturday":
-				$s_day=6;
-				break;
-			default:
-				$s_day=7;
-		}
-		switch ($endday) {
-			case "Monday":
-				$e_day=1;
-				break;
-			case "Tuesday":
-				$e_day=2;
-				break;
-			case "Wednesday":
-				$e_day=3;
-				break;
-			case "Thursday":
-				$e_day=4;
-				break;
-			case "Friday":
-				$e_day=5;
-				break;
-			case "Saturday":
-				$e_day=6;
-				break;
-			default:
-				$e_day=7;
-		}  
-	 	$currenttime=date("H:i");
-		$n=date("N");
-		    if(($currenttime >$starttime && $currenttime < $endttime) && ($s_day<=$n && $e_day>=$n)){
-			  $shop_close_status="y";
-		  }
-		  else
-		  {
-			  $shop_close_status="n";
-		  }
-		return $shop_close_status;
-	  }	
-?>
+	
 	<header class="header_in clearfix">
 		<div class="container">
 		<div id="logo">
@@ -160,15 +127,14 @@
 		    			<div class="breadcrumbs blog">
 				            <ul>
 				                <li><a href="index.php?vs=<?php echo md5(rand()); ?>">Home</a></li>
-				                <li><a href="#">Jobs</a></li>
+				                <li><a href="#">Post Job</a></li>
 				                
 				            </ul>
 		       	 		</div>
 		    		</div>
 		    		<div class="col-xl-4 col-lg-5 col-md-5">
 		    			<div class="search_bar_list">
-							<input type="text" class="form-control" placeholder="Search in Job...">
-							<input type="submit" value="Search">
+						<a href="jobs.php"><button class="btn_1 add_bottom_15 pull-right">JOBS</button></a>
 						</div>
 		    		</div>
 		    	</div>
@@ -176,109 +142,155 @@
 		    </div>
 		</div>
 		<!-- /page_header -->
-
-		<div class="container margin_30_40">			
-			<div class="row">
-				<div class="col-lg-9">
-					<div class="row">
-						<?php 
-							$jobs = mysqli_query($conn, "SELECT jobs.*, job_category.category_name FROM `jobs` INNER JOIN job_category on jobs.job_category_id = job_category.id where jobs.view = '1'");
-							while($row=mysqli_fetch_assoc($jobs)){
-						?>
-						<div class="col-md-12">
-							<article class="blog">
-								<div class="post_info">
-									
-									<h2><a href="job_desc.php?id=<?php echo $row['id']?>"><?php echo $row['title']?></a></h2>
-									<small><?php echo $row['category_name']?> - <?php echo Date("d M Y", $row['expire_date_utc'])?></small>
-									<p><?php echo $row['job_desc']?></p>
-									
-								</div>
-							</article>
-							<!-- /article -->
+		<div class="container margin_60_40" style="padding:0px;">
+			
+				<div class="row justify-content-center">
+					<div class="col-lg-5">
+						<div class="text-center add_bottom_15">
+							<h4>Post Job</h4>
+							
 						</div>
-						<!-- /col -->
-						<?php }?>
-						
-					</div>
-					<!-- /row -->
+						<div id="message-register"></div>
+							<form method="post" action="postJob.php">
+								
+								<div class="row">
+									<div class="col-lg-12">
+										<div class="form-group">
+                                            <label for="title">Job Title <span style="color:red;">*</span></label>
+                                            <input type="text" name="title" class="form-control" required="" placeholder="Job Title">
+										</div>
+									</div>
+								</div>
+								
+								<div class="form-group">
+                                    <label for="title">Job Category<span style="color:red;">*</span></label>
+                                    <select name="category" class="form-control" required>
+                                        <option value="">--select job category--</option>
+                                        <?php $catQuery = mysqli_query($conn,"select * from job_category where status ='y'");
+                                            while($row=mysqli_fetch_assoc($catQuery)){?>
+                                                <option value="<?php echo $row['id']?>" > <?php echo $row['category_name'];?> </option>
+                                    <?php }?>
+                                    </select>
+                                </div>
+								<!-- /row -->
+								
+								<div class="row">
+									<div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label for="title">Job Price <span style="color:red;">*</span></label>
+                                            <input type="number" required="" name="jPrice" min="1" class="form-control" placeholder="Price">
+                                        </div>
+									</div>
+								</div>
+								<!-- /row -->
+								<div class="row">
+									<div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label for="comment">Detailed Job Description<span style="color:red;">*</span></label>
+											<textarea name="jobDesc" class="form-control" placeholder="Job Description" rows="5" id="comment"></textarea>
+											<span style="color:red;font-weight:600;" id="error"></span>
+                                        </div>
+									</div>  
+								</div>
+								<!-- /row -->
+								<div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label for="">Salary Type<span style="color:red;">*</span></label>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <!-- <label class="radio-inline " style="margin-right:3%;">Fixed fee</label><input type="radio" name="salaryType" value="monthly" required=""> -->
+                                                <label class="radiocontainer">Fixed fee<input type="radio" name="salaryType" value="monthly" required=""><span class="circle"></span></label>
+                                                
+                                            </div>
+                                            <div class="col-6">
+                                                <!-- <label class="radio-inline " style="margin-right:3%;">Per Hours</label><input type="radio" name="salaryType" value="hour" required=""> -->
+                                                <label class="radiocontainer">Per Hours<input type="radio" name="salaryType" value="hour" required=""><span class="circle"></span></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
 
-					<div class="pagination_fg">
-					  <a href="#">&laquo;</a>
-					  <a href="#" class="active">1</a>
-					  <a href="#">2</a>
-					  <a href="#">3</a>
-					  <a href="#">4</a>
-					  <a href="#">5</a>
-					  <a href="#">&raquo;</a>
-					</div>
+                              
 
+                                
+                                <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label for="">Are you willing to pay milestone in advance?<span style="color:red;">*</span></label>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <!-- <label class="radio-inline" style="margin-right:3%;">Yes</label><input type="radio" name="advance_salery" value="yes" required=""> -->
+                                                <label class="radiocontainer">Yes<input type="radio" name="advance_salery" value="yes" required=""><span class="circle"></span></label>
+                                            </div>
+                                            <div class="col-6">
+                                                <!-- <label class="radio-inline" style="margin-right:3%;">No</label><input type="radio" name="advance_salery" value="no" required=""> -->
+                                                <label class="radiocontainer">No<input type="radio" name="advance_salery" value="no" required=""><span class="circle"></span></label>
+                                            </div>
+                                        </div>
+                                        <p>Note: milestone will only be released to freelancer only when employer has 100 % satisfied with the job.</p>
+                                    </div>
+                                </div>
+								</div>
+								<!-- /row -->
+								
+								<div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label for="">Salary Status</label>
+                                        <div class="row">
+                                            
+                                            <div class="col-6">
+												<!-- <input type="radio" name="salaryStatus" value="1" required="">
+                                                <label class="radio-inline " style="margin-right:3%">Negotiable</label> -->
+                                                <label class="radiocontainer">Negotiable<input type="radio" name="salaryStatus" value="1" required=""><span class="circle"></span></label>
+                                            </div>
+                                            <div class="col-6">
+											<!-- <input type="radio" name="salaryStatus" value="0" required="">
+                                                <label class="radio-inline " style="margin-right:3%">Not Negotiable</label> -->
+                                                <label class="radiocontainer">Not Negotiable<input type="radio" name="salaryStatus" value="0" required=""><span class="circle"></span></label>
+												
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                                
+                                <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label for="birthday">Expire Date</label>
+                                        <input type="date" class="form-control" name="exDate" required="">
+                                    </div>
+                                </div>
+                                </div>
+
+                                <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label for="title">Your Name <span style="color:red;">*</span></label>
+                                        <input type="text" required="" name="jProname" class="form-control" placeholder="Enter Your Name">
+                                    </div>
+                                </div>
+                                </div>
+                                <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label for="title">Your Contact <span style="color:red;">*</span></label>
+                                        <input type="tel" required="" name="jProNo" class="form-control" placeholder="Enter Mobile No">
+                                    </div>
+                                </div>
+                                </div>
+
+                                <hr>
+								<!-- /row -->
+								<div class="form-group text-center"><input type="submit" id="submitForm" name="post-job" class="btn_1" value="Submit"></div>
+                            </form>
+                            
+					</div>
 				</div>
-				<!-- /col -->
-
-				<aside class="col-lg-3">
-					<!-- <div class="widget">
-						<div class="widget-title first">
-							<h4>Latest Post</h4>
-						</div>
-						<ul class="comments-list">
-							<li>
-								<div class="alignleft">
-									<a href="#0"><img src="img/blog-5.jpg" alt=""></a>
-								</div>
-								<small>Category - 11.08.2016</small>
-								<h3><a href="#" title="">Verear qualisque ex minimum...</a></h3>
-							</li>
-							<li>
-								<div class="alignleft">
-									<a href="#0"><img src="img/blog-6.jpg" alt=""></a>
-								</div>
-								<small>Category - 11.08.2016</small>
-								<h3><a href="#" title="">Verear qualisque ex minimum...</a></h3>
-							</li>
-							<li>
-								<div class="alignleft">
-									<a href="#0"><img src="img/blog-4.jpg" alt=""></a>
-								</div>
-								<small>Category - 11.08.2016</small>
-								<h3><a href="#" title="">Verear qualisque ex minimum...</a></h3>
-							</li>
-						</ul>
-					</div> -->
-					<!-- /widget -->
-					<div class="widget">
-						<div class="widget-title">
-							<h4>Categories</h4>
-						</div>
-						<ul class="cats">
-							<li><a href="#">Food <span>(12)</span></a></li>
-							<li><a href="#">Places to visit <span>(21)</span></a></li>
-							<li><a href="#">New Places <span>(44)</span></a></li>
-							<li><a href="#">Suggestions and guides <span>(31)</span></a></li>
-						</ul>
-					</div>
-					<!-- /widget -->
-					<!-- <div class="widget">
-						<div class="widget-title">
-							<h4>Popular Tags</h4>
-						</div>
-						<div class="tags">
-							<a href="#">Food</a>
-							<a href="#">Bars</a>
-							<a href="#">Cooktails</a>
-							<a href="#">Shops</a>
-							<a href="#">Best Offers</a>
-							<a href="#">Transports</a>
-							<a href="#">Restaurants</a>
-						</div>
-					</div> -->
-					<!-- /widget -->
-				</aside>
-				<!-- /aside -->
 			</div>
-			<!-- /row -->	
-		</div>
-		<!-- /container -->
 		
 	</main>
 
@@ -395,52 +407,6 @@
 	
 	<div class="layer"></div><!-- Opacity Mask Menu Mobile -->
 	
-	<!-- Sign In Modal -->
-	<div id="sign-in-dialog" class="zoom-anim-dialog mfp-hide">
-		<div class="modal_header">
-			<h3>Sign In</h3>
-		</div>
-		<form>
-			<div class="sign-in-wrapper">
-				<a href="#0" class="social_bt facebook">Login with Facebook</a>
-				<a href="#0" class="social_bt google">Login with Google</a>
-				<div class="divider"><span>Or</span></div>
-				<div class="form-group">
-					<label>Email</label>
-					<input type="email" class="form-control" name="email" id="email">
-					<i class="icon_mail_alt"></i>
-				</div>
-				<div class="form-group">
-					<label>Password</label>
-					<input type="password" class="form-control" name="password" id="password" value="">
-					<i class="icon_lock_alt"></i>
-				</div>
-				<div class="clearfix add_bottom_15">
-					<div class="checkboxes float-left">
-						<label class="container_check">Remember me
-						  <input type="checkbox">
-						  <span class="checkmark"></span>
-						</label>
-					</div>
-					<div class="float-right mt-1"><a id="forgot" href="javascript:void(0);">Forgot Password?</a></div>
-				</div>
-				<div class="text-center">
-					<input type="submit" value="Log In" class="btn_1 full-width mb_5">
-					Don’t have an account? <a href="login.php">Sign up</a>
-				</div>
-				<div id="forgot_pw">
-					<div class="form-group">
-						<label>Please confirm login email below</label>
-						<input type="email" class="form-control" name="email_forgot" id="email_forgot">
-						<i class="icon_mail_alt"></i>
-					</div>
-					<p>You will receive an email containing a link allowing you to reset your password to a new preferred one.</p>
-					<div class="text-center"><input type="submit" value="Reset Password" class="btn_1"></div>
-				</div>
-			</div>
-		</form>
-		<!--form -->
-	</div>
 	<!-- /Sign In Modal -->
 		  <div class="modal fade" id="location_model" role="dialog">
 
@@ -516,6 +482,11 @@ map = new google.maps.Map($("#map")[0], {
 }
 
 </script>
+<script type="text/javascript">
+	 $(document).ready(function(){
+		
+	 });
+ </script> 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4BfDrt-mCQCC1pzrGUAjW_2PRrGNKh_U&libraries=places" async defer></script> 
 
 		 <script type="text/javascript" src="extra/js/jquery.lazy.min_74facba505554b93155d59a4d2d7e78b.js" defer></script>
@@ -523,3 +494,29 @@ map = new google.maps.Map($("#map")[0], {
 
 </body>
 </html>
+<?php
+		if(isset($_POST['post-job'])){
+            extract($_POST);
+            // print_r($_POST);
+            // die;
+            
+            $post_date = strtotime(Date("Y-m-d"));
+            $expire_date = strtotime($exDate);
+           
+            $query = mysqli_query($conn, "INSERT INTO `jobs`(`title`, `job_desc`, `price`, `posted_date_utc`, `expire_date_utc`, `job_category_id`, `job_provider_name`, `job_provide_mobile`, `salaryType`, `salaryStatus`,`advance_salery`,`view`,`postedStatus`) 
+            VALUES ('$title','$jobDesc','$jPrice','$post_date','$expire_date','$category','$jProname','$jProNo','$salaryType','$salaryStatus','$advance_salery','0','0')");
+            
+            if($query){
+				$msg_str='';
+				$msg_str.="New Job Posted !"."\r\n";
+				$msg_str.="Posted By:".$jProname.",".$jProNo."\r\n";
+				$msg_str.="Job title:".$title."\r\n";
+				$msg_str.="Desc:".$jobDesc."\r\n";
+				$whatapp_group_name="Koo Support Team";
+				whatappgroupmsg($whatapp_group_name,$msg_str);
+                header('Location:jobs.php');
+            }else{
+                header('location:postJob.php');
+            }
+        }
+	?>

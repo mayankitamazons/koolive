@@ -31,8 +31,7 @@
   // die;   
   // function checkSession(){
   // $conn = $GLOBALS['conn'];
-  // $session = $_COOKIE['session_id'];
-  
+  // $session = $_COOKIE['session_id']; 
   // $rw = mysqli_fetch_row(mysqli_query($conn, "SELECT id FROM users WHERE session = '$session'"));
   // if($rw > 0){
     // return true;
@@ -1092,16 +1091,17 @@ input[name='p_total[]'],input[name='p_price[]']{
                      <th><?php echo $language["items"];?></th>
                      <th><?php echo $language["date_of_order"];?></th>
                      <th>No</th>
+					 <th>Invoice Number</th>
             <!--th>Agent code</th!-->
 					 <th class="test_product" style="min-width:240px;"><?php echo $language["merchant_name"];?></th>
 					 <th><?php echo $language["status"];?></th>
 					 <th style="color:#09caab;"><?php echo "Order Details";?></th>
-					
+					 <th><?php echo $language["rider_info"];?></th>
 					 <th style="color:#09caab;"><?php echo "Merchant Bank Detail";?></th>
-					  <th><?php echo $language["rider_info"];?></th>
+					 
 					   <th>Section</th>
 					 <th><?php echo $language["table_number"];?></th>
-					 <th>Invoice Number</th>
+
 					 <th class="location_head"><?php echo $language["location"];?></th>
 					 <th><?php echo $language["chat"];?></th>
 					 <th><?php echo $language["telephone_number"];?></th>
@@ -1195,14 +1195,16 @@ input[name='p_total[]'],input[name='p_price[]']{
                          $i1++;
                         }
                         ?></td>   
+						 <td><?php echo ($row['invoice_no']%1000);?></td>
                     <!--td><?=mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM order_list WHERE id ='".$row['id']."'"))['agent_code'] ?></td!-->  
                     <td>
 					<a  style="text-decoration:underline;font-weight:bold;font-size:16px;" href="<?php echo $site_url; ?>/view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $merchant_name['mobile_number'];?>&oid=<?php echo $row['id']; ?>"><?php echo $merchant_name['name'];  ?>
 					
 					</br></br>
+					<?php $chat_merchant_list = array(6958,6956, 7634,7785,7799,7839,7808,7818,7846,7912,7953,7837,7209,7462,7209,7723,7674,7663,7726,7703,7554,6960,7658,7662,7462); 
+					   if (in_array($merchant_name['id'], $chat_merchant_list)) { ?>
 					
-					 <?php if($merchant_name['id']==6958 || $merchant_name['id']==6956) {  ?>
-                      <a href="https://api.whatsapp.com/send?phone=60123115670" target="_blank">
+                      <a href="https://chat.whatsapp.com/J4wcS4riADaBBrvY60c8f3" target="_blank">
 					   <?php } else { ?>
 					    <a href="https://api.whatsapp.com/send?phone=<?php  echo $merchant_name['mobile_number']?>" target="_blank">
 					   <?php } ?>  
@@ -1210,7 +1212,8 @@ input[name='p_total[]'],input[name='p_price[]']{
 							
 							<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['merchant_hotline']; ?></a>
 							<!--/br> </br>  <a href="https://chat.whatsapp.com/KeUcnzasq2M1x5AUBsjJGF" target="_blank">	<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['delivery_hotline']; ?></a!-->
-							</br> </br>  <a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank">	<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['delivery_hotline']; ?></a>
+							<!--/br> </br>  <a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank">	<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['delivery_hotline']; ?></a!-->
+							</br> </br>  <a href="https://chat.whatsapp.com/LdvomJRqXoIG6aXqsf5PgX" target="_blank">	<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['delivery_hotline']; ?></a>
 							</br> </br>  <a href="https://api.whatsapp.com/send?phone=60137285670" target="_blank">	<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo "Feedback/complaint"; ?></a>
 					</td>  
                         <!--  -->
@@ -1252,11 +1255,12 @@ input[name='p_total[]'],input[name='p_price[]']{
                         <label class= "btn btn-primary status" data-id="<?php echo $row['id']; ?>" style="cursor:pointer;background-color:<?php echo $s_color;?>"> <?php echo $sta; ?></label>
                      </td> 
 					 <td style="font-size:18px;" class="s_order_detail btn btn-blue" order_id='<?php echo $row['id']; ?>'> Detail</td>
-					  <td><span class="btn btn-yellow bank_detail" style="color:black;">Bank Detail</span></td>
-					  <td><?php echo $row['rider_info']; ?></td>
+					 <td><?php echo $row['rider_info']; ?></td>
+					  <td><span class="btn btn-yellow bank_detail" merchant_name="<?php echo $merchant_name['name']; ?>" style="color:black;">Bank Detail</span></td>
+					  
 					   <td><?php echo $section_type['name'];?></td>
                          <td><?php echo $row['table_type'];?></td>
-                         <td><?php echo ($row['invoice_no']%1000);?></td>
+                        
                         <td class="location_<?php echo $row['id']; ?> new_tablee">
 							<a class="" target="_blank" href="http://maps.google.com/maps?q=<?php echo  $row['location']; ?>">  
 						
@@ -1415,7 +1419,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 								<label class="dp_lab"  data-id="<?php echo $merchant_name['id'];  ?>" data-oid="<?php echo $total;?>" data-orid="<?php echo $row['id']; ?>">Click Here</label>
 								<?php// }   ?>
 							</td>                
-                     <?php if($row['status'] == 4 || $row['status']==5){ ?>
+                     <?php if($row['status'] == 4 || $row['status']==5 || $row['status'] ==2 ){ ?>
                        
                       <td><a target="_blank" href="print.php?id=<?php echo $row['id'];?>&merchant=<?php echo $row['merchant_id']?>">Print</a></td>
                       <!--td><?php echo $user_name['account_type']; ?></td!-->
@@ -2067,7 +2071,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 									<b style="font-size:18px;">Boostpay Number 6012-3115670</b>  
 									</br>
 									<?php if($_SESSION["langfile"]=="chinese"){ echo "请写商家店名在“银行参考”";} else {?>
-									    (Please write <?php echo $merchant_detail['name']; ?> in "bank reference")
+									    (Please write <span id="bank_merchant_name"></span>   in "bank reference")
 									 <?php } ?>
 								</br>
 									 Enquiry:  <a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank"> 60123945670 <img src="images/whatapp.png" style="max-width:32px;"/> </a>
@@ -2840,6 +2844,8 @@ if ('serviceWorker' in navigator) {
 				  });
 	   });
 	   $(".bank_detail").click(function(e){
+		    var merchant_name = $(this).attr('merchant_name');
+			$('#bank_merchant_name').html(merchant_name);   
 		    $("#InternetModel").modal("show"); 
 	   });
 	    $(".s_order_detail").click(function(e){

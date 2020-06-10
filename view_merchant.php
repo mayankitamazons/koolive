@@ -2568,8 +2568,10 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 					<?php }?>
 
                     <h4 class="favorite_name" style="display: inline-blick;">
-                       <?php if($merchant_detail['id']==6958 || $merchant_detail['id']==6956 || $merchant_detail['id']==7634) {  ?>
-                      <a href="https://api.whatsapp.com/send?phone=60123115670" target="_blank">Chat with <?php echo $merchant_detail['name']; ?>
+                       <?php
+						$chat_merchant_list = array(6958,6956, 7634,7785,7799,7839,7808,7818,7846,7912,7953,7837,7209,7462,7209,7723,7674,7663,7726,7703,7554,6960,7658,7662,7462); 
+					   if (in_array($merchant_detail['id'], $chat_merchant_list)) { ?>
+                      <a href="https://chat.whatsapp.com/J4wcS4riADaBBrvY60c8f3" target="_blank">Chat with <?php echo $merchant_detail['name']; ?>
 					   <?php } else { ?>
 					    <a href="https://api.whatsapp.com/send?phone=<?php  echo $merchant_detail['mobile_number']?>" target="_blank">Chat with <?php echo $merchant_detail['name']; ?>
 					   <?php } ?>  
@@ -2988,7 +2990,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
             </div>
 
           <div style="float:left;display:none;"><img src="images/worldwide-location.png"></div>
-           <small id="location_error" style="display:none;color:red;font-size:16px;">Location is Required</small>
+           <small id="location_error" style="display:none;color:red;font-size:16px;">Delivery place is required</small>
         </div>
 
              
@@ -3068,7 +3070,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
       </div>
 
       </div>
-<?php if($merchant_detail['special_price_value']){ ?>
+<?php if($merchant_detail['special_price_value'] && $_SESSION['langfile']!='malaysian'){ ?>
 			<div class="row" style="min-height: 41px;margin:2%;padding-bottom: 1%;">
 
 				<div class="special_price_value" style="max-width:60%;box-shadow: rgba(0, 0, 0, 0.16) 0px 2px 5px 0px, rgba(0, 0, 0, 0.12) 0px 2px 10px 0px; font-weight: bold; border-right: 1px solid black; padding-top: 2%; padding-bottom: 1%; background:rgb(81, 210, 183) none repeat scroll 0% 0%; color: rgb(85,85,85);">
@@ -3375,8 +3377,10 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 			 <input type="hidden" name="membership_applicable" id="membership_applicable" value="<?php if($plan_label){ echo "y";} ?>" />
 
 			             <input type="hidden" name='varient_must' id='varient_must'/>
-
-        <input type="hidden" name='delivery_charges' value='2.99' id='delivery_charges'/> 
+				<?php if($merchant_detail['order_extra_charge']) {?>
+        <input type="hidden" name='delivery_charges' value='<?php echo $merchant_detail['order_extra_charge']; ?>' id='delivery_charges'/>
+				<?php  } else {?>		
+				<input type="hidden" name='delivery_charges' value='2.99' id='delivery_charges'/> <?php } ?>
 
   <input type="hidden" id="deliver_tax_amount" name="deliver_tax_amount" value="0">
 
@@ -3554,7 +3558,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
           </div>
         </div>
 		<?php  }?>
-		<span id="cash_order_process" style="color:red;display:none;">Please wait......., we are processing your order..</span>
+		<span id="cash_order_process" style="color:red;display:none;font-weight:bold;">Please wait......., we are processing your order..</span>
         <div class="container">
       <div class="row">
         <div class="col-md-12" style="padding: 10px 0px;">
@@ -3727,7 +3731,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
                     ?>
 
-                    <input type="text" name="remark" id="remark_input" class="form-control" style="margin: 10px 0" placeholder="Write here your remarks"/>
+                    <input type="hidden" name="remark" id="remark_input" class="form-control" style="margin: 10px 0" placeholder="Write here your remarks"/>
 
                     <div id="small_text" style="position:relative;margin-top:2em;width:100%;">
 
@@ -3755,7 +3759,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
           <?php if($merchant_detail['mobile_number']!="60172669613"){ ?>
 
-                    <!--button type="button" class="btn btn-default manual_input"><?php echo $language['manual_input']; ?></button!-->
+                    <button type="button" class="btn btn-default manual_input"><?php echo $language['manual_input']; ?></button>
 
           <?php } ?>
 
@@ -4945,7 +4949,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                             <div class="form-group no-wallet">  
 
                                 <p style="text-align: center;" id="interent_or"><?php echo $language['or']; ?></p>
-								<span id="process_internet_order" style="color:red;"></span>
+								<span id="process_internet_order" style="color:red;font-weight:bold;"></span>   
                                 <span class="btn btn-block btn-primary back_to_last"><?php echo $language['back_to_last_page']; ?> 
 
 								</span>
@@ -5207,7 +5211,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
 								</span>
 
-					<span id="wallet_order_process" style="color:red;display:none;">Please wait......., we are processing your order..</span>
+					<span id="wallet_order_process" style="color:red;display:none;font-weight:bold;">Please wait......., we are processing your order..</span>
 
 					 </div> <?php } ?>
 
@@ -6744,7 +6748,8 @@ $stime =    '';
    var varient_must=$('#varient_must').val();
 
     var last_added_id = $(".producttr").length;
-
+	
+  var last_added_id=0;
    var go_ahead="y";
 
    if(varient_must=="y")
@@ -6852,9 +6857,13 @@ $stime =    '';
       var s_id=$(this).data("id");
 
       var id=$(this).data("id")+last_added_id;
-
+      
 	  // alert(id);
-
+     var qty_id_check=id+"_test_athy";
+	  if (document.getElementById(qty_id_check)) {
+		   var id=id+randomNumber(1, 10000);
+			//object already exists
+		}   
 	  var rebate_per=$(this).data("rebate");
 
       var child_id="child_"+id;
@@ -6866,6 +6875,7 @@ $stime =    '';
       var product_child_id="product_child_"+id;
 
       var extra_child_id="extra_child_"+id;
+     
 
       var extra_price = 0;
 
@@ -7133,7 +7143,7 @@ $stime =    '';
 
     // alert(p_name);
 
-    if (ui.item == null) {
+    if (ui.item == null && ui.item!='') {
 
       var p_name=document.getElementById(p_name).value;
 
@@ -7782,7 +7792,9 @@ p.no_stock_add_to_cart{
 <script>
 
   var showModal = true;
-
+function randomNumber(min, max) {  
+    return Math.floor(Math.random() * (max - min) + min); 
+} 
 function toSeconds(date){
 
   var a = date.split(':'); 
@@ -8830,7 +8842,8 @@ if(p_status=="paypalcancel")
 
      // $( "#confmpayment" ).prop( "disabled", true ); 
 
-    $('#error_label').html("Sorry, we are currently experiencing some internet connection issue. If you want to place any order, please contact our waiter for placing order.");
+    // $('#error_label').html("Sorry, we are currently experiencing some internet connection issue. If you want to place any order, please contact our waiter for placing order.");
+    $('#error_label').html("We are temporary closed due to excessive orders or other reasons. Please visit us later or chat with us through whatapp for lastest update.  Sorry for inconvenience caused.");
 
     $('#shop_model').modal('show');
 
@@ -9812,21 +9825,25 @@ $('.forgot_reset_password').click(function(){
 			}
 
 		  }   
-		 // if(pickup_type=="takein")
-		 // {
-			 // var mapSearch=$('#mapSearch').val();
+		 if(pickup_type=="takein")
+		 {
+			 var mapSearch=$('#mapSearch').val();
 
-			 // if(mapSearch=='')
-			 // {
-				 // $('#location_error').hide();
-				// $('#mapSearch').focus();
-				// var s_flag=false; 
-			 // }
-		 // }   
-		 // else
-		 // {
-			 // $('#location_error').hide();
-		 // }
+			 if(mapSearch=='')
+			 {
+				 $('#location_error').show();
+				$('#mapSearch').focus();
+				var s_flag=false; 
+			 }
+			 else
+			 {
+				 $('#location_error').hide();
+			 }
+		 }   
+		 else
+		 {
+			 $('#location_error').hide();
+		 }
 		 // alert(s_flag);
 		 // return false;
 		if(s_flag)
@@ -10025,6 +10042,10 @@ $('.forgot_reset_password').click(function(){
 
 				
 
+		   }
+		   else
+		   {
+			   return false;
 		   }
 
 	});
@@ -10723,7 +10744,9 @@ $('.forgot_reset_password').click(function(){
 	 $("#mapSearch").change(function(e){
 
 		var address=$('#mapSearch').val();
-
+		if(address!='')
+		{
+			$('#location_error').hide();
 		var geocoder = new google.maps.Geocoder();
 
 		
@@ -10758,6 +10781,7 @@ $('.forgot_reset_password').click(function(){
 
 		}); 
 			});
+		}
 		
 
 	});
@@ -10858,6 +10882,7 @@ $('.forgot_reset_password').click(function(){
       	   
 	   });
        $(".internet_banking").click(function(e) {
+		   totalcart();
     var product_qty = $('.product_qty').val();
 	var table_type = $('#table_type').val();
 	var membership_discount_input = $('#membership_discount_input').val();
@@ -10865,6 +10890,7 @@ $('.forgot_reset_password').click(function(){
 	var already_login = $('#login_for_wallet_id').val();
 	var total_rebate = 0;
 	var total_amount = 0;
+	 var pickup_type=$('#pickup_type').val();
 	var s_flag = true;
 	if ((product_qty == null) || (product_qty == '')) {
 		$('#show_msg').html("<?php echo $language['no_product_added']; ?>");
@@ -10892,6 +10918,26 @@ $('.forgot_reset_password').click(function(){
 			var s_flag = false;
 		}
 	}
+	if(pickup_type=="takein")
+		 {
+			 var mapSearch=$('#mapSearch').val();
+
+			 if(mapSearch=='')
+			 {
+				 $('#location_error').show();
+				$('#mapSearch').focus();
+				$('html, body').animate({ scrollTop: $("#mapSearch").offset().top }, 2000);
+				var s_flag=false; 
+			 }
+			 else
+			 {
+				 $('#location_error').hide();
+			 }
+		 }   
+		 else
+		 {
+			 $('#location_error').hide();
+		 }
 	if (s_flag)
 	{
 		totalcart();
@@ -11056,6 +11102,10 @@ $('.forgot_reset_password').click(function(){
 	$('input[type=submit]', this).attr('disabled', 'disabled');
 	
 	}
+	else
+	{
+		return false;
+	}
 
 });
 $(".online_pay").click(function(e) {
@@ -11069,7 +11119,7 @@ $(".online_pay").click(function(e) {
     var total_rebate = 0;
 
     var total_amount = 0;
-
+   var pickup_type=$('#pickup_type').val();
     var s_flag = true;
 
     if ((product_qty == null) || (product_qty == '')) {
@@ -11113,6 +11163,26 @@ $(".online_pay").click(function(e) {
         }
 
     }
+	 if(pickup_type=="takein")
+		 {
+			 var mapSearch=$('#mapSearch').val();
+
+			 if(mapSearch=='')
+			 {
+				 $('#location_error').show();
+				$('#mapSearch').focus();
+				$('html, body').animate({ scrollTop: $("#mapSearch").offset().top }, 2000);
+				var s_flag=false; 
+			 }
+			 else
+			 {
+				 $('#location_error').hide();
+			 }
+		 }   
+		 else
+		 {
+			 $('#location_error').hide();
+		 }
 
     if (s_flag)
 
@@ -11586,6 +11656,10 @@ $(".online_pay").click(function(e) {
         totalcart();
 
     }
+	else
+	{
+		return false;
+	}
 
 });
 
@@ -12394,7 +12468,7 @@ $(".online_pay").click(function(e) {
 		
 
 		
-
+		var fix_delivery_val="<?php echo $merchant_detail['delivery_charges']; ?>";
 		var user_lat=$('#user_lat').val();
 
 		if(!user_lat)
@@ -12418,9 +12492,12 @@ $(".online_pay").click(function(e) {
 			if(dine_in=="n")
 			{
 				$('#delivery_label').show();
+				if(fix_delivery_val)
+					var delivery_charges=fix_delivery_val;
+				else 
 				var delivery_charges=2.99;
 				$('#delivery_charges').val(delivery_charges);
-				$('#order_extra_charge').val(delivery_charges);
+				$('#order_extra_charge').val(delivery_charges);    
 			}
 			$('#delivery_info_label').show();
 			$('#delivery_info_label').html("</br>"+msg);
@@ -13117,7 +13194,7 @@ function totalcart()
 	var special_delivery_amount=$('#special_delivery_amount').val();
 	var pickup_type=$('#pickup_type').val();
 
-	// alert(special_delivery_amount);    
+	// alert(delivery_charges);    
 	if(special_delivery_amount>0)
 	{
 		$("#special_delivery_label").show();
@@ -13135,6 +13212,7 @@ function totalcart()
 		$('#delivery_label').show();
   
    }
+   // alert(pickup_type);
 	if(pickup_type=="divein")
 
 	{
@@ -13170,7 +13248,14 @@ function totalcart()
 	else if(pickup_type=="takein")
 
 	{
-
+		if(delivery_charges==0)
+		{
+			if(fix_delivery_val)
+			var delivery_charges=fix_delivery_val;
+			else 
+			var delivery_charges=2.99;    
+		}
+			
 		// alert(delivery_take_up);
 
 		if(delivery_take_up=='1')
@@ -13198,6 +13283,8 @@ function totalcart()
 		}
 
 	} 
+	// alert(pickup_type);    
+	// alert(delivery_charges);    
 
 	var coupon_discount_amount=$('#coupon_discount_rate').val();
 	// alert(coupon_discount_amount);
@@ -13252,7 +13339,7 @@ function totalcart()
 
 						var coupon_discount=totalsale;
 
-					var final_charge=parseFloat(totalsale)+parseFloat(delivery_charges)-parseFloat(coupon_discount);
+					var final_charge=parseFloat(totalsale)+parseFloat(delivery_charges)+parseFloat(special_delivery_amount)-parseFloat(coupon_discount);
 
 					
 
@@ -13381,7 +13468,7 @@ function totalcart()
 
 			$('.final_amount_label').show();
 
-			var final_charge=(parseFloat(totalsale)+parseFloat(delivery_charges))-parseFloat(membership_discount)-parseFloat(coupon_discount);
+			var final_charge=(parseFloat(totalsale)+parseFloat(delivery_charges))+parseFloat(special_delivery_amount)-parseFloat(membership_discount)-parseFloat(coupon_discount);
 
 			$('.final_amount_value').html(parseFloat(final_charge).toFixed(2));   
 
@@ -13722,16 +13809,16 @@ $('.section-dropdown').on('change', function(e) {
 				sum += parseFloat(inp.value);
 
 			}  
-
+			var merchant_id="<?php echo $merchant_detail['id'];?>";
 			var total_amount = sum;
-			// alert(total_amount);
+			// alert(merchant_id);
 			$.ajax({
 
 				url: 'apply_coupon.php',
 
 				type: 'POST',
 
-				data:{coupon:coupon,user:userID, amount:total_amount,user_mobile:number},
+				data:{coupon:coupon,user:userID, amount:total_amount,user_mobile:number,merchant_id:merchant_id},
 
 				dataType:'json',
 
@@ -13749,7 +13836,7 @@ $('.section-dropdown').on('change', function(e) {
 
 						$('#coupon_min_value').val(result.min);   
 
-						$('#coupon_discount_rate').val(result.coupon_rate);
+						$('#coupon_discount_rate').val(result.price);
 						$('#coupon_discount_amount').val(result.price);
 						$('#coupon_discount').val(result.price);
 

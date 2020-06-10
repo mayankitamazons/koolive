@@ -2,7 +2,7 @@
 include('config.php');
 extract($_POST);
 // print_R($_POST);
-if($_POST['user_id'])
+if($_SESSION['login'])
 {   
 
   // echo $logout_type;

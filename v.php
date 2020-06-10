@@ -112,7 +112,7 @@ if(isset($_POST['login']))
 		$time=time();	
 		// echo $q="SELECT user_roles,id,isLocked,referral_id,name, mobile_number,setup_shop FROM users WHERE mobile_number='$cm' AND password='$password' AND user_roles = '$user_role'";
 		
-		$user_row = mysqli_fetch_assoc(mysqli_query($conn, "SELECT user_roles,id,isLocked,referral_id,name, mobile_number,setup_shop FROM users WHERE mobile_number='$cm' AND password='$password' AND user_roles = '$user_role'"));
+		$user_row = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE onesignal_player_id,user_roles,id,isLocked,referral_id,name, mobile_number,setup_shop FROM users WHERE mobile_number='$cm' AND password='$password' AND user_roles = '$user_role'"));
 		
 		 $id = $user_row['id'];
 		 $user_roles = $user_row['user_roles'];
@@ -139,7 +139,8 @@ if(isset($_POST['login']))
 						$_SESSION['name'] = $name;
 						$_SESSION['login_user_role'] = $user_role;
 						$_SESSION['mobile'] = $mobile_number;
-						
+						$_SESSION['onesignal_player_id'] = $user_row['onesignal_player_id'];
+						  
 					}
 					else
 					{

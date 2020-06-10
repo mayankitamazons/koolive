@@ -25,8 +25,9 @@ if( isset( $_POST['method']) && ( $_POST['method'] == "updatePrinted" )  ) {
         $order_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id,user_id,user_mobile  FROM order_list WHERE id='".$id."'"));
         $user_id=$order_data['user_id'];
         $order_id=$order_data['id'];
-        $user_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT moengage_unique_id FROM users WHERE id='".$user_id."'"));
+        $user_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT moengage_unique_id,onesignal_player_id FROM users WHERE id='".$user_id."'"));
         $push_id=$user_data['moengage_unique_id'];
+        $user_onesignal_player_id=$user_data['onesignal_player_id'];
 		$rand= substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),1,4);
 			$url="https://www.koofamilies.com/orderlist.php?did=".$user_id."&vs=".$rand."&oid=".$order_id;
 		
@@ -36,6 +37,7 @@ if( isset( $_POST['method']) && ( $_POST['method'] == "updatePrinted" )  ) {
 			// $whatappno=$order_data['user_mobile'];
 			// whatappmsg($whatappno,$sms_msg);
 		// } 
+		$sms_msg= $data['message']='Your food is ready, we are delivering foods to you now';
         if ($push_id) {
             $result=exec("/usr/bin/python myscript.py");
             $resultarray=explode(",",$result);
@@ -54,6 +56,16 @@ if( isset( $_POST['method']) && ( $_POST['method'] == "updatePrinted" )  ) {
                 // die;
             }
         }
+		if($user_onesignal_player_id)
+					{
+						
+						 include 'onetest.php';
+						 $onesignal = new Onetest();
+						$data['push_id']=$user_onesignal_player_id;
+						$data['message']=$sms_msg;
+						$data['redirectURL']=$url;
+						$resultpush = $onesignal->sendMessage($data);
+					}
     }
 }
 ?>

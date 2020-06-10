@@ -14,10 +14,13 @@ if($p_name)
 {
 	$search=$p_name;
 }
-if($search)
+if($search && $search!='+')
 {
-$product = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM products WHERE product_type ='".$search."'"));	
-$hike_per = $_SESSION['price_hike'];
+ $user_id = $_SESSION['mm_id'];
+$product = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM products WHERE user_id='$user_id'  and product_type ='".$search."'"));	
+$merchant_detail = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE id='$user_id' and user_roles='2'")); 
+
+$hike_per=$merchant_detail['price_hike'];  
 
 $product_price=$product['product_price'];
 		if($hike_per)

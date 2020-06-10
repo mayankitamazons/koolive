@@ -367,5 +367,6 @@
 	$language['search_by_location'] ="Search by location"; 
 $language['near_by_shop_2'] ="Nearby shops"; 
 $language['rider_info'] ="Rider info";        
+$language['new_timing_working'] ="Multiple Working";  
 
 ?>

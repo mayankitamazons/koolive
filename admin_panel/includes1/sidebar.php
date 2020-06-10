@@ -42,11 +42,13 @@ $profile_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM admins WHE
 		  <li><a href="classficationmerchant.php"><span class="hide-menu <?php if($a_m=="classfication_merchant"){ echo "active";} ?>">Classfication Merchant</span></a></li>      
 		  <li><a href="smspush.php"><span class="hide-menu <?php if($a_m=="send_push"){ echo "active";} ?>">Send push msg</span></a></li>      
 		  <li><a href="feedback.php"><span class="hide-menu <?php if($a_m=="feedback"){ echo "active";} ?>">Feedback</span></a></li>     
+		    
         <li class="menu-item-has-children">
 			<a href="javascript:void(0);" class="ripple"><span class="color-color-scheme"><span class="hide-menu">Jobs</span></span></a>
 			<ul class="list-unstyled sub-menu collapse" aria-expanded="true">
 				 <li><a href="job_category.php">Jobs Category</a></li>
 				 <li><a href="jobs_list.php">Job list</a></li>
+				 <li><a href="postedJob.php">Job Request</a></li>
 			</ul>
         </li>		  
 		  <li><a href="apartnerlist.php"><span class="hide-menu <?php if($a_m=="a_c_l"){ echo "active";} ?>">Accepting coin list</span></a></li>   

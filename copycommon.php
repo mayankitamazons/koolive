@@ -23,23 +23,24 @@
 			    $u="update cat_mater set CatName='$update_cat_str' where CMasterID='$CMasterID'";
 			// die;   
 				$update_cat_str=mysqli_query($conn,$u);
-			$query = mysqli_query($conn,"select  SQL_NO_CACHE* from category  where user_id='$m_id' and status='0' and id 
+			$query = mysqli_query($conn,"select  SQL_NO_CACHE* from category  where user_id='$m_id' and catparent='1' and status='0' and id 
 			in(select entity_id from arrange_system where user_id='$m_id' and page_type='c')");
-			while ($row=mysqli_fetch_assoc($query)){
+			while ($row=mysqli_fetch_assoc($query)){   
 				$cat_id=$row['id'];
 				
 				$category_name=$row['category_name'];
 				$catparent=$row['catparent'];
 				$catparent_name=$row['catparent_name'];
 				$status=$row['status'];
-				$created_date=$row['created_date'];
+				// $created_date=$row['created_date'];
+				$created_date=date('Y-m-d h:i:s');
 				mysqli_query($conn, "INSERT INTO  category SET common_category='y',category_name='$category_name', catparent='4', user_id='$c_id',status= '0',created_date='$created_date'");
 	
 			}
 			//product copy 
 			$query = mysqli_query($conn,"select  SQL_NO_CACHE* from products  where user_id='$m_id' and status='0' and id 
-			in(select entity_id from arrange_system where user_id='$m_id' and page_type='p')");
-			while ($row=mysqli_fetch_assoc($query)){
+			in(select entity_id from arrange_system where user_id='$m_id' and page_type='p')");   
+			while ($row=mysqli_fetch_assoc($query)){   
 				$cat_id=$row['id'];
 				// $user_id=$row['user_id'];
 				$productname=$row['product_name'];
@@ -134,7 +135,7 @@
 							mysqli_query($conn,$q);
 							$shift_pos_p++;
 						}
-						echo "product updated ";
+						echo "product updated ";   
 					}  
 				}
 				

@@ -49,6 +49,7 @@ if(isset($_POST['submit']))
 		$printer_profile=$_POST['printer_profile'];
 		$usb_name=$_POST['usb_name'];
 		$product_discount=$_POST['product_discount'];
+		$add_to_cart_button=$_POST['add_to_cart_button'];
 		$image = $_FILES["image_pic"]["name"];	
 		$code = $_FILES["code_pic"]["name"];
       if($category)
@@ -173,7 +174,9 @@ if(isset($_POST['submit']))
 }
 
     $current_date= date("Y/m/d");  
-	mysqli_query($conn, "INSERT INTO products SET image_cdn_url='$image_cdn_url',product_discount='$product_discount',product_name='$productname',user_id='$current_id', category='$category',category_id='$category_id',product_type='$product_type',product_price='$product_price', remark = '$remark', image='$uniquesavename', code='$code',created_date='$current_date',print_ip_address='$print_ip_address',printer_ip_2='$printer_ip_2',printer_profile='$printer_profile',usb_name='$usb_name'");
+	if($add_to_cart_button =="on") $add_to_cart_button = '1';
+	else $add_to_cart_button = "0";
+	mysqli_query($conn, "INSERT INTO products SET add_to_cart_button='$add_to_cart_button',image_cdn_url='$image_cdn_url',product_discount='$product_discount',product_name='$productname',user_id='$current_id', category='$category',category_id='$category_id',product_type='$product_type',product_price='$product_price', remark = '$remark', image='$uniquesavename', code='$code',created_date='$current_date',print_ip_address='$print_ip_address',printer_ip_2='$printer_ip_2',printer_profile='$printer_profile',usb_name='$usb_name'");
 
 }
 ?>
@@ -319,6 +322,10 @@ if(isset($_POST['submit']))
 											echo "<span style='color:red;'>".$image_code_error."</span>";
 										}
 										?>
+									</div>
+									<div class="form-group">
+									  <label>Add to Cart Button</label>
+									  <input type="checkbox" class="form-control" name="add_to_cart_button" checked/>
 									</div>
 									<br>
 									<input type="submit" class="btn btn-block btn-primary" name="submit" value="Submit">

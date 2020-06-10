@@ -846,6 +846,7 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
                            
                             <th><?php echo $language["mode_of_payment"];?></th>
                             <th class="location_head"><?php echo $language["location"];?></th>
+                            <th class="location_head"><?php echo "Merchant Location";?></th>
                           
                             <th><?php echo $language["phone"];?></th>
 							 <th><?php echo $language["username"];?></th>
@@ -1200,6 +1201,10 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 							<a class="" target="_blank" href="http://maps.google.com/maps?q=<?php echo  $row['location']; ?>">  
 						
 							<?php echo $row['location'];?></a></td>
+							  <td>
+							<a class="" target="_blank" href="http://maps.google.com/maps?q=<?php echo  $merchant_name['google_map']; ?>">  
+						
+							<?php echo $merchant_name['google_map'];?></a></td>
 							
                               <td><?php echo $row['user_mobile']; ?></td>
 							   <td class="username_<?php echo $row['id'];?>"><?php echo $row['user_name']; ?></td>
