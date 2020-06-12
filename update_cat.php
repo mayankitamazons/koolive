@@ -1,6 +1,6 @@
 <?php
 include("config.php");
-
+   extract($_POST);
 	$current_date= date("Y/m/d"); 
 	$id=$_POST['id'];
 	$categoryname = $_POST['categoryname'];

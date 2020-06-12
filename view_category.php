@@ -171,6 +171,26 @@ td.del {
 
       
       </div>
+    <div class="form-group">
+										<label>Whatsapp 1</label>
+										<input type="text" name="rider1" id="rider1" class="form-control">
+									</div>
+									<div class="form-group">
+										<label>Whatsapp  2</label>
+										<input type="text" name="rider2" id="rider2" class="form-control">
+									</div>
+									<div class="form-group">
+										<label>Whatsapp  3</label>
+										<input type="text" name="rider3" id="rider3" class="form-control">
+									</div>
+									<div class="form-group">
+										<label>Whatsapp  4</label>
+										<input type="text" name="rider4" id="rider4" class="form-control">
+									</div>
+									<div class="form-group">
+										<label>Whatsapp 5</label>
+										<input type="text" name="rider5" id="rider5" class="form-control">
+									</div>
         </div>
 		</div>
         <div class="modal-footer" style="padding-bottom:2px;">
@@ -232,6 +252,11 @@ td.del {
       // alert(response.catparent);
       $("#id").val(response.id);
       $("#categoryname").val(response.category_name); 
+      $("#rider1").val(response.rider1); 
+      $("#rider2").val(response.rider2); 
+      $("#rider3").val(response.rider3); 
+      $("#rider4").val(response.rider4); 
+      $("#rider5").val(response.rider5); 
       $("#category_name").val(response.category_name); 
        $("#catparent").val(response.catparent); 
       console.log(response);          

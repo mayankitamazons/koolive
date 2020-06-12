@@ -13,9 +13,10 @@ $bank_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE i
    $current_date= date("Y/m/d");
 if(isset($_POST['submit']))
 {
+	extract($_POST);
 	$categoryname = addslashes($_POST['categoryname']);
 	$catparent = $_POST['catparent'] ;
-	mysqli_query($conn, "INSERT INTO  category SET category_name='$categoryname', catparent='$catparent', user_id='$current_id',status= '0',created_date='$current_date'");
+	mysqli_query($conn, "INSERT INTO  category SET rider1='$rider1',rider2='$rider2',rider3='$rider3',rider4='$rider4',rider5='$rider5',category_name='$categoryname', catparent='$catparent', user_id='$current_id',status= '0',created_date='$current_date'");
 	header("location:view_category.php");
 }
 ?>
@@ -99,6 +100,26 @@ if(isset($_POST['submit']))
 									<div class="form-group">
 										<label>category Name</label>
 										<input type="text" name="categoryname" class="form-control" value="" required>
+									</div>
+									<div class="form-group">
+										<label>Whatsapp 1</label>
+										<input type="text" name="rider1" class="form-control">
+									</div>
+									<div class="form-group">
+										<label>Whatsapp  2</label>
+										<input type="text" name="rider2" class="form-control">
+									</div>
+									<div class="form-group">
+										<label>Whatsapp  3</label>
+										<input type="text" name="rider3" class="form-control">
+									</div>
+									<div class="form-group">
+										<label>Whatsapp  4</label>
+										<input type="text" name="rider4" class="form-control">
+									</div>
+									<div class="form-group">
+										<label>Whatsapp 5</label>
+										<input type="text" name="rider5" class="form-control">
 									</div>
 									<br>
 									<input type="submit" class="btn btn-block btn-primary" name="submit" value="Submit">
