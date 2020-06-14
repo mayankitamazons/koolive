@@ -3381,7 +3381,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
         <input type="hidden" name='delivery_charges' value='<?php echo $merchant_detail['order_extra_charge']; ?>' id='delivery_charges'/>
 				<?php  } else {?>		
 				<input type="hidden" name='delivery_charges' value='2.99' id='delivery_charges'/> <?php } ?>
-
+  	<input type="hidden" name='additonal_delivery_charges' value='2.99' id='additonal_delivery_charges'/> 
   <input type="hidden" id="deliver_tax_amount" name="deliver_tax_amount" value="0">
 
 					
@@ -8439,8 +8439,7 @@ $(window).on('load', function(){
 	 
    
 	 $('.merchant_select').click(function(e) {
-
-		// alert(3);
+		// getLocation();
 
 		$('.divert').css("background-color", "#51D2B7");
 
@@ -8464,7 +8463,7 @@ $(window).on('load', function(){
 
 		  if(section_check=='1' || table_check=='1')
 
-		 {
+		 {   
 
 			 $('#sec_table_show').show();
 
@@ -12913,7 +12912,7 @@ function calculatedisatace(to_lat,to_long)
 						// alert('paid');
 
 						$('#delivery_charges').val(delivery_charges);
-
+						$('#additonal_delivery_charges').val(delivery_charges);
 						$('#order_extra_charge').val(delivery_charges);
 						if(dine_in=="n")
 						$('#delivery_label').show();
@@ -12926,6 +12925,7 @@ function calculatedisatace(to_lat,to_long)
 
 						  // alert('free');
 
+						$('#additonal_delivery_charges').val(delivery_charges);
 						$('#delivery_charges').val(delivery_charges);
 
 						$('#order_extra_charge').val(delivery_charges);
@@ -13248,12 +13248,20 @@ function totalcart()
 	else if(pickup_type=="takein")
 
 	{
+       var fix_delivery_val="<?php echo $merchant_detail['delivery_charges']; ?>";
 		if(delivery_charges==0)
 		{
 			if(fix_delivery_val)
 			var delivery_charges=fix_delivery_val;
 			else 
-			var delivery_charges=2.99;    
+			{
+				var additonal_delivery_charges=$('#additonal_delivery_charges').val();
+				if(additonal_delivery_charges)
+				var delivery_charges=additonal_delivery_charges; 	
+				else
+				var delivery_charges=2.99;    
+			}
+			
 		}
 			
 		// alert(delivery_take_up);

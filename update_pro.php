@@ -159,6 +159,7 @@ $old_image=$pro_data['image'];
 						  // Connection FAILED
 							$destFile = "/home/koofamilies/public_html/images/product_images/".$uniquesavename;
 							move_uploaded_file($_FILES["image_pic"]["tmp_name"],$destFile); 
+							$image_cdn_url="http://koofamilies.com/images/product_images/".$uniquesavename;
 						}
 			} else{
 				echo "Error: There was a problem uploading your file. Please try again."; 

@@ -1256,7 +1256,7 @@ input[name='p_total[]'],input[name='p_price[]']{
                      </td> 
 					 <td style="font-size:18px;" class="s_order_detail btn btn-blue" order_id='<?php echo $row['id']; ?>'> Detail</td>
 					 <td><?php echo $row['rider_info']; ?></td>
-					  <td><span class="btn btn-yellow bank_detail" merchant_name="<?php echo $merchant_name['name']; ?>" style="color:black;">Bank Detail</span></td>
+					  <td><span class="btn btn-yellow bank_detail" merchant_id="<?php echo $merchant_name['id']; ?>"  merchant_name="<?php echo $merchant_name['name']; ?>" style="color:black;">Bank Detail</span></td>
 					  
 					   <td><?php echo $section_type['name'];?></td>
                          <td><?php echo $row['table_type'];?></td>

@@ -805,7 +805,7 @@ if(isset($_POST))
 							   
 								$i++;
 							}        
-							$msg_str.="\r\nTotal qty : ".$total_qun."\r\n";
+							$msg_str.="\r\nTotal qty : ".$total_qun." --End-- \r\n";
 							whatappgroupmsg($whatapp_group_name,$msg_str);
 						// send write up to merchant 
 					   

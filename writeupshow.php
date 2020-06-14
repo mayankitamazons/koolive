@@ -135,7 +135,7 @@ if($s_id)
 		   
 			$i++;
 		}
-		$msg_str.="Total qty : ".$total_qun."</br>";
+		$msg_str.="Total qty : ".$total_qun." --End--</br>";
 		
 		echo $msg_str;   
 	}

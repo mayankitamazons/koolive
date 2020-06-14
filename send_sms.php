@@ -166,7 +166,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
  $diffrence = time() - $createdate;
      echo "<br/>Rider Time ".$min = $diffrence/60;
 	  $order_id=$row['order_id'];
-	 if($min >20){
+	 if($min >10){
 		if($row['rider_alert']=="n" && $row['rider_info']=='')
 		{
 			
