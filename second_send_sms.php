@@ -65,7 +65,8 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 			else
 			 $_POST['message'] = $url." ".$client.',please mark "Pending" to "Accepted", so that the customer know the status of order.';     
 			
-			$sms_to = '+60123115670,'.$row['handphone_number'];
+			// $sms_to = '+60123115670,'.$row['handphone_number'];
+			$sms_to = '+60123115670,'.$row['handphone_number'].","."+60127500913";
 			// $sms_to = '+60123115670';
 			// $sms_to = '+919001025477';   
 			$sms_msg = $_POST['message'];

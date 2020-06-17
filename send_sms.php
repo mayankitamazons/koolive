@@ -27,7 +27,7 @@ function gw_send_sms($user,$pass,$sms_from,$sms_to,$sms_msg){
 // die;
  $cur_date=date('Y-m-d');
  $cur_utc=strtotime(date('Y-m-d h:i:s'));  
-  echo  $query="SELECT order_list.invoice_no,order_list.order_alert_done,order_list.newuser,order_list.id as order_id,order_list.status,order_list.merchant_id, order_list.created_on,users.id,users.name,users.handphone_number,users.pending_time,users.whatapp_group_name  FROM order_list inner join users on order_list.merchant_id = users.id WHERE order_list.merchant_id not in('5401') and users.pending_time!=0 AND status =0 AND DATE(`created_on`) ='$cur_date' and order_alert_done='n'  order by order_list.created_on  DESC ";
+    $query="SELECT order_list.invoice_no,order_list.order_alert_done,order_list.newuser,order_list.id as order_id,order_list.status,order_list.merchant_id, order_list.created_on,users.id,users.name,users.handphone_number,users.pending_time,users.whatapp_group_name  FROM order_list inner join users on order_list.merchant_id = users.id WHERE order_list.merchant_id not in('5401') and users.pending_time!=0 AND status =0 AND DATE(`created_on`) ='$cur_date' and order_alert_done='n'  order by order_list.created_on  DESC ";
 // die;  
 $total_rows = mysqli_query($conn,$query);
 while ($row=mysqli_fetch_assoc($total_rows)){
@@ -66,7 +66,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 			   
 		$order_id=$row['order_id'];
 	// die;
-    	$sms_to = '+60123115670,'.$row['handphone_number'];
+    	$sms_to = '+60127500913'.',+60123115670,'.$row['handphone_number'];
     	// $sms_to = '+60123115670';
     	// $sms_to = '+919001025477';
     	$sms_msg = $_POST['message'];
@@ -130,7 +130,8 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 			   
 		// die;  0123945670
 			// $sms_to = '+60123945670,'.$row['handphone_number'];
-			$sms_to = '+60123115670,'.$row['handphone_number'];  
+			// $sms_to = '+60123115670,'.$row['handphone_number'];  
+			$sms_to = '+60123115670,'.$row['handphone_number'].","."+60127500913";
 			// $sms_to = '+60123115670';
 			// $sms_to = '+919001025477';
 			$sms_msg = $_POST['message'];
@@ -180,6 +181,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 		  	       
 			$message= $_POST['message'] = $url." ".$client.",KooFamilies alert.Rider has not been assigned for Invoice no: (".$invoice_no.").";
 			$sms_to = '+60123115670,'.$row['handphone_number'];
+				$sms_to = '+60127500913'.',+60123115670,'.$row['handphone_number'];
 			
 			$sms_msg = $_POST['message'];   
 			// $smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg);   
