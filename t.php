@@ -141,15 +141,16 @@ inner join users on order_list.merchant_id = users.id
 		$CLIENT_ID = "mayank.mangalgroup@gmail.com";  // TODO: Replace it with your Forever Green client ID here
 		$CLIENT_SECRET = "a16236d83f1b43f38310e3cd393293af";   // TODO: Replace it with your Forever Green client secret here
 	   // $whatapp_group_name="chao shan Delivery"; 
-		$INSTANCE_ID = "25";  // TODO: Replace it with your gateway instance ID here
-		$CLIENT_ID = "woijoonchong@gmail.com";  // TODO: Replace it with your Forever Green client ID here
-		$CLIENT_SECRET = "1df7f3075a7e490689e9bf1c469960a0";   // TODO: Replace it with your Forever Green client secret here
+		// $INSTANCE_ID = "25";  // TODO: Replace it with your gateway instance ID here
+		// $CLIENT_ID = "woijoonchong@gmail.com";  // TODO: Replace it with your Forever Green client ID here
+		// $CLIENT_SECRET = "1df7f3075a7e490689e9bf1c469960a0";   // TODO: Replace it with your Forever Green client secret here
+	   $whatapp_group_name="New order for rider group";
 	   $whatapp_group_name="error group";
 	   // $sms_msg="Welcome";   
 		$postData = array(
 		  'group_admin' => '60123115670',  // TODO: Specify the WhatsApp number of the group creator, including the country code
 		  'group_name' => $whatapp_group_name,    // TODO: Specify the name of the group
-		  'message' => $sms_msg  // TODO: Specify the content of your message
+		  'message' =>"test"  // TODO: Specify the content of your message
 		);
 
 		$headers = array(

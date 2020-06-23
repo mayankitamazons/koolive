@@ -573,6 +573,31 @@ if(isset($_POST))
 						$data['redirectURL']=$m_url;
 						$resultpush = $adminpush->sendMessage($data);
 					}
+					$rider_order_send="y";
+					if($rider_order_send)
+					{
+						include 'riderpush.php';
+						$adminpush = new Riderpush();
+						$client_msg="New Order on ".$merchant_data['name'];
+						$data['push_id']=$admin_one_signal_id;
+						$data['message']=$client_msg;
+						
+						$rand= substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),1,4);
+						
+						$m_url= $site_url .'/norder.php?vs='.$rand."&s_id=".$order_id;
+						$data['redirectURL']=$m_url;
+						$r_msg=$client_msg."\r\n".$m_url;
+						$r_msg.="\r\n"."Invoice No:".$invoice_no; 
+						if($remark_extra)
+						$r_msg.="\r\n"."Order remark: ".$remark_extra;
+						if($merchant_data['merchant_remark'])
+						$r_msg.="\r\n"."Merchant Remark:".$merchant_data['merchant_remark'];  
+						$location_m=rawurlencode($merchant_data['google_map']);
+						$r_msg.="\r\n"."Merchant Address: "."http://maps.google.com/maps?q=".$location_m;
+						whatappgroupmsg("New order for rider group",$r_msg);
+						$resultpush = $adminpush->sendMessage($data);
+
+					}
 					// update coupon status 
 					if($coupon_id)
 					{
@@ -772,10 +797,30 @@ if(isset($_POST))
 							$wallet=$row['wallet'];
 							if($row['coupon_discount']=='')
 								$row['coupon_discount']=0;
+							$m_map='';
+							$u_map='';
+							if($merchant_data['google_map'])
+								{
+									$location_m=rawurlencode($merchant_data['google_map']);
+									$m_map.="\r\n"."Merchant Address: "."http://maps.google.com/maps?q=".$location_m;
+								}
+							if($row['location'])
+							{
+								$location_u=rawurlencode($row['location']);
+								$u_map.="\r\n"."User Address: "."http://maps.google.com/maps?q=".$location_u;
+							}
 							if($row['special_delivery_amount']==0)
-							$msg_str.="\r\n"."Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."\r\n".$inv_str."\r\nPickup Type:".$row['pickup_type']."\r\nOrder from:\r\n".$row['merchant_name'].",\r\n".$row['google_map']." ,\r\n Mobile - ".$row['mobile_number']."\r\n  To: ".$row['user_name']." \r\n,".$row['user_mobile'].$otp_str."".$user_location."\r\n Order Detail:";
+							{
+								
+								
+							  $msg_str.="\r\n"."Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."\r\n".$inv_str."\r\nPickup Type:".$row['pickup_type']."\r\nOrder from:\r\n";
+							  $msg_str.=$row['merchant_name'].",\r\n".$row['google_map'].$m_map." ,\r\n Mobile - ".$row['mobile_number']."\r\n  To: ".$row['user_name']." \r\n,".$row['user_mobile'].$otp_str."".$user_location.$u_map."\r\n Order Detail:";
+							}
 							else
-							$msg_str.="\r\n"."Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']."+".$row['special_delivery_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."\r\n".$inv_str."\r\nPickup Type:".$row['pickup_type']."\r\n Order from:*".$row['merchant_name'].",\r\n".$row['google_map']." ,\r\n Mobile - ".$row['mobile_number']."\r\n  To: ".$row['user_name']." \r\n,".$row['user_mobile'].$otp_str."".$user_location."\r\n Order Detail:";
+							{
+							  $msg_str.="\r\n"."Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']."+".$row['special_delivery_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."\r\n".$inv_str."\r\nPickup Type:".$row['pickup_type']."\r\n Order from:\r\n";
+							  $msg_str="*".$row['merchant_name'].",\r\n".$row['google_map'].$m_map.",\r\n Mobile - ".$row['mobile_number']."\r\n  To: ".$row['user_name']." \r\n,".$row['user_mobile'].$otp_str."".$user_location.$u_map."\r\n Order Detail:";
+							}
 							 foreach ($product_ids as $key )
 							{  
 								if(is_numeric($key))
