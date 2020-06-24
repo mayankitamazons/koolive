@@ -44,7 +44,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
      echo "</br>";
     $pending_time = $row['pending_time'];
 
-     $pending_time1 = $pending_time+10;  
+     $pending_time1 = $pending_time+6;  
 	// die;
     if($min > $pending_time && $min < $pending_time1){
     // if($pending_time){
@@ -75,6 +75,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 		if($row['whatapp_group_name'])
 		{
 			$whatapp_group_name=$row['whatapp_group_name'];
+			// whatappgroupmsg("Urgent Group",$sms_msg);
 			whatappgroupmsg($whatapp_group_name,$sms_msg);
 		} 
 		echo $smsend;
@@ -187,6 +188,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 			// $smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg);   
 			
 				$whatapp_group_name="Koo Support Team";
+				$whatapp_group_name="Urgent Group";
 				whatappgroupmsg($whatapp_group_name,$sms_msg);
 			
 		}

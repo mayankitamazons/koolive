@@ -180,12 +180,13 @@ if(isset($_GET['q']) && isset($_GET['cr'])){
                     'table'         =>   'order_list.table_type'
                     ];
     $field = $fields_list[$field_raw];
-	$query="SELECT users.isLocked,users.otp_verified,order_list.*, sections.name as section_name FROM order_list 
-	left join sections on order_list.section_type = sections.id left join users on order_list.user_id=users.id WHERE merchant_id ='".$loginidset."' AND $field LIKE '%$get_query%' ORDER BY order_list.created_on DESC LIMIT $offset, $rec_limit";
+	$query="SELECT riders.name as rider_name,users.isLocked,users.otp_verified,order_list.*, sections.name as section_name FROM order_list 
+	left join sections on order_list.section_type = sections.id left join users on order_list.user_id=users.id left join riders on order_list.rider_id=riders.id WHERE merchant_id ='".$loginidset."' AND $field LIKE '%$get_query%' ORDER BY order_list.created_on DESC LIMIT $offset, $rec_limit";
 }else{
-	  $query="SELECT  users.isLocked,users.otp_verified,order_list.*, sections.name as section_name FROM order_list 
-	  left join sections on order_list.section_type = sections.id left join users on order_list.user_id=users.id  WHERE merchant_id ='".$loginidset."' ORDER BY order_list.created_on DESC LIMIT $offset, $rec_limit";
+	  $query="SELECT  riders.name as rider_name,users.isLocked,users.otp_verified,order_list.*, sections.name as section_name FROM order_list 
+	  left join sections on order_list.section_type = sections.id left join users on order_list.user_id=users.id  left join riders on order_list.rider_id=riders.id  WHERE merchant_id ='".$loginidset."' ORDER BY order_list.created_on DESC LIMIT $offset, $rec_limit";
 }
+
 $total_rows = mysqli_query($conn,$query);
 $total_rows1 = mysqli_query($conn,$query);
 $last_id = mysqli_fetch_assoc(mysqli_query($conn, "SELECT max(id) as max_id FROM order_list WHERE merchant_id ='".$loginidset."'"))['max_id'];
@@ -1050,7 +1051,7 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
                               
 							</td>
 							<td  style="font-size:18px;" class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></td>
-						<td style="min-width:167px;"><textarea  style="border:1px solid gray !important;" rows="2" cols="10" order_id="<?php echo $row['id']; ?>" class="form-control rider_info"><?php echo $row['rider_info']; ?></textarea></td>
+						<td style="min-width:167px;"><textarea  style="border:1px solid gray !important;" rows="2" cols="10" order_id="<?php echo $row['id']; ?>" class="form-control rider_info"><?php echo $row['rider_info']." ".$row['rider_name']; ?></textarea></td>
 							<td class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i></td>
 								 <td><?php echo $row['remark_extra']; ?></td>
 							   <td class="table_number_<?php echo $row['id']?>"><?php echo $row['section_name'];?></td>

@@ -594,7 +594,7 @@ if(isset($_POST))
 						$r_msg.="\r\n"."Merchant Remark:".$merchant_data['merchant_remark'];  
 						$location_m=rawurlencode($merchant_data['google_map']);
 						$r_msg.="\r\n"."Merchant Address: "."http://maps.google.com/maps?q=".$location_m;
-						whatappgroupmsg("New order for rider group",$r_msg);
+						whatappgroupmsg("Kulai-New order rider",$r_msg);
 						$resultpush = $adminpush->sendMessage($data);
 
 					}

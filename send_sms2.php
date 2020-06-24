@@ -74,8 +74,8 @@ while ($row=mysqli_fetch_assoc($total_rows)){
         $smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg);   
 		if($row['whatapp_group_name'])
 		{
-			$whatapp_group_name=$row['whatapp_group_name'];
-			whatappgroupmsg($whatapp_group_name,$sms_msg);
+			// $whatapp_group_name=$row['whatapp_group_name'];
+			// whatappgroupmsg($whatapp_group_name,$sms_msg);
 		} 
 		echo $smsend;
 		echo "</br>";          

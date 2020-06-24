@@ -11,8 +11,8 @@ exit();
 }
 if (empty($_SESSION["langfile"])) { $_SESSION["langfile"] = "english"; }
     require_once ("languages/".$_SESSION["langfile"].".php");
-$query="select order_list.*,u.merchant_remark,u.google_map as merchant_map,u.name as merchant_name,u.mobile_number as merchant_mobile_number from order_list inner join 
-users as u on u.id=order_list.merchant_id     order by order_list.id desc limit 0,30";
+$query="select riders.name as rider_name,order_list.*,u.merchant_remark,u.google_map as merchant_map,u.name as merchant_name,u.mobile_number as merchant_mobile_number from order_list inner join 
+users as u on u.id=order_list.merchant_id  left join riders on order_list.rider_id=riders.id   order by order_list.id desc limit 0,30";
 $current_time = date('Y-m-d H:i:s');
 function ceiling($number, $significance = 1)
 {
@@ -40,16 +40,17 @@ function ceiling($number, $significance = 1)
       <tr>
         <th>S.No</th>
 		<th>Rider info</th>
+		<th>Rider name</th>
         
      <th>Order Remark</th>
-       
+         <th>Order Status</th>
         
 			<th>Merchant Detail</th>
 			
 			<th>Merchant Remark</th>
 			<th>DATE OF ORDER</th>
         <th>Merchant Address </th>
-        <th>Order Status</th>
+      
 		
 		   
       </tr>
@@ -113,8 +114,11 @@ function ceiling($number, $significance = 1)
 		<?php } else {  echo $r['rider_info'];}?>
 		
 		</td>
+		<td><?php echo $r['rider_name']; ?></td>
 		<td><?php echo $r['remark_extra']; ?></td>
-		                           
+		 <td><input type="button" next_status="<?php echo $n_status; ?>" style="background-color:<?php echo $s_color;?>" class= "status btn btn-primary" value="<?php  echo $sta;?>" status="<?php echo $row['status'];?>" data-invoce='<?php echo $row['invoice_no'];?>' data-id="<?php echo $row['id']; ?>"/>
+	
+</td>                             
 		
 		
 		<td><?php echo $r['merchant_name']." / ".$r['merchant_mobile_number']; ?></td>
@@ -125,12 +129,10 @@ function ceiling($number, $significance = 1)
                                   if($row['status'] == 0){?>
                                     <p style="color: red;"><?php echo $diff_time; ?></p> <?php 
                                   }?>
-                            </td>
+                            </td>   
 		
         <td><a href="<?php echo $m_map; ?>" target="_blank"><?php echo $r['merchant_map']; ?></a></td>
-        <td><input type="button" next_status="<?php echo $n_status; ?>" style="background-color:<?php echo $s_color;?>" class= "status btn btn-primary" value="<?php  echo $sta;?>" status="<?php echo $row['status'];?>" data-invoce='<?php echo $row['invoice_no'];?>' data-id="<?php echo $row['id']; ?>"/>
-	
-</td>   
+        
 
 
 
