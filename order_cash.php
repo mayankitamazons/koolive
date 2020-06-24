@@ -35,6 +35,8 @@ if(isset($_POST))
 	 $guest_permission=$merchant_data['guest_permission'];
 	 $referral_by=$merchant_data['referral_id'];
 	 $price_hike=$merchant_data['price_hike'];
+	 $write_up_share=$merchant_data['write_up_share'];
+	 $auto_accept_order=$merchant_data['auto_accept_order'];
 	 $online_pay=0;
 	 if($merchant_data['credit_check'] || $merchant_data['wallet_check'] || $merchant_data['boost_check'] || $merchant_data['grab_check']
 	 || $merchant_data['wechat_check'] || $merchant_data['touch_check'] || $merchant_data['fpx_check'])
@@ -514,8 +516,12 @@ if(isset($_POST))
 			 
 			$vendor_total = ($vendor_comission / 100) * $total_cart_amount;  
 			if($login_for_wallet_id=='')
-				$membership_applicable="n";    
-			 	  $sqlFinalIns = "INSERT INTO order_list SET special_delivery_amount='$special_delivery_amount',price_hike='$price_hike',pickup_type='$show_pick_up',vendor_comission=$vendor_total,plastic_box='$plastic_box',deliver_tax_amount='$deliver_tax_amount',rebate_applicable='$rebate_applicable',membership_discount_input='$membership_discount_input',membership_applicable='$membership_applicable',order_extra_charge='$order_extra_charge',remark_extra='$remark_extra',rebate_amount='$rebate_amount',prepaid='$prepaid',membership_discount='".$discount."',coupon_id='$coupon_id',coupon_discount='".$coupon_discount."',coupon_code='".$coupon_code."',membership_plan_id='$membership_plan_id',total_cart_amount='$total_cart_amount',total_rebate_amount='$total_rebate_amount',wallet_paid_amount='$wallet_paid_amount',online_pay='$online_pay',payment_alert='$payment_alert',user_name='$user_name',user_mobile='$user_mobile',wallet='$w_type',varient_type='$v_str',product_id='$pro_id',  user_id='$user_id', merchant_id='$m_id', quantity='$qty_list', amount='$p_price',product_code='$p_code', remark='$option', location='".$location."', table_type='".$table_type."',section_type='$section_type',created_on='$date', invoice_no='$invoice_no',newuser='$newuser',show_alert='$show_alert',section_saved='$section_saved',agent_code='$agent_code'";
+				$membership_applicable="n";  
+			if($auto_accept_order=='1')
+				$status=2;
+			else
+				$status=0;
+			 	  $sqlFinalIns = "INSERT INTO order_list SET status='$status',special_delivery_amount='$special_delivery_amount',price_hike='$price_hike',pickup_type='$show_pick_up',vendor_comission=$vendor_total,plastic_box='$plastic_box',deliver_tax_amount='$deliver_tax_amount',rebate_applicable='$rebate_applicable',membership_discount_input='$membership_discount_input',membership_applicable='$membership_applicable',order_extra_charge='$order_extra_charge',remark_extra='$remark_extra',rebate_amount='$rebate_amount',prepaid='$prepaid',membership_discount='".$discount."',coupon_id='$coupon_id',coupon_discount='".$coupon_discount."',coupon_code='".$coupon_code."',membership_plan_id='$membership_plan_id',total_cart_amount='$total_cart_amount',total_rebate_amount='$total_rebate_amount',wallet_paid_amount='$wallet_paid_amount',online_pay='$online_pay',payment_alert='$payment_alert',user_name='$user_name',user_mobile='$user_mobile',wallet='$w_type',varient_type='$v_str',product_id='$pro_id',  user_id='$user_id', merchant_id='$m_id', quantity='$qty_list', amount='$p_price',product_code='$p_code', remark='$option', location='".$location."', table_type='".$table_type."',section_type='$section_type',created_on='$date', invoice_no='$invoice_no',newuser='$newuser',show_alert='$show_alert',section_saved='$section_saved',agent_code='$agent_code'";
 				
 				$test_method = mysqli_query($conn, $sqlFinalIns);
 				$order_id = mysqli_insert_id($conn); 
@@ -704,8 +710,8 @@ if(isset($_POST))
 					$creaed_on=strtotime(date('Y-m-d H:i:s'));
 					if($wallet_paid_amount>0)
 					mysqli_query($conn,"INSERT INTO tranfer (`sender_id`, `amount`, `receiver_id`, `wallet`, `created_on`, `status`, `details`,`invoice_no`,`type_method`,`coin_merchant_id`) VALUES ('$user_id', '$wallet_paid_amount', '$m_id', '$wal_label', '$creaed_on', '1', 'ewallet used for order','$invoice_no','ewallet','$m_id')");
-		
-				  if ($whatapp_group_name) {
+					
+				  if ($whatapp_group_name && $write_up_share=='1') {
 					    $query="SELECT order_list.*,users.id,users.name,users.handphone_number,
 					users.pending_time,users.whatapp_group_name,users.name as merchant_name,users.mobile_number,users.sst_rate,users.merchant_remark,users.google_map 
 						FROM order_list 
@@ -815,7 +821,7 @@ if(isset($_POST))
 								
 							  $msg_str.="\r\n"."Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."\r\n".$inv_str."\r\nPickup Type:".$row['pickup_type']."\r\nOrder from:\r\n";
 							  $msg_str.=$row['merchant_name'].",\r\n".$row['google_map'].$m_map." ,\r\n Mobile - ".$row['mobile_number']."\r\n  To: ".$row['user_name']." \r\n,".$row['user_mobile'].$otp_str."".$user_location.$u_map."\r\n Order Detail:";
-							}
+							} 
 							else
 							{
 							  $msg_str.="\r\n"."Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']."+".$row['special_delivery_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."\r\n".$inv_str."\r\nPickup Type:".$row['pickup_type']."\r\n Order from:\r\n";

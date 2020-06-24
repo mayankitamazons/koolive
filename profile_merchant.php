@@ -21,6 +21,7 @@ if($bank_data['referred_by'] == "")
 $user_mobile = mysqli_fetch_assoc(mysqli_query($conn, "SELECT mobile_number FROM users WHERE id='".$_SESSION['login']."'"))['mobile_number'];
 if(isset($_POST['submit']))
 {
+	extract($_POST);
 	$ref_result = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id, created_at, referred_by, k_date, account_type FROM users WHERE id='".$_SESSION['login']."'"));
 	$user_id = $ref_result['id'];
 	if(($ref_result['created_at'] != null) || ($ref_result['created_at'] != "")){
@@ -255,6 +256,10 @@ if(isset($_POST['submit']))
 	{
 		$filenamess = $bank_data['company_doc'];
 	}
+	if($write_up_share =="on") $write_up_share = '1';
+	else $write_up_share = "0";
+	if($auto_accept_order =="on") $auto_accept_order = '1';
+	else $auto_accept_order = "0";
 	$old_image=$bank_data['old_image'];
 	  if(isset($_FILES["banner_image"]) && $_FILES["banner_image"]["error"] == 0){
         $allowed = array("jpg" => "image/jpg", "jpeg" => "image/jpeg", "gif" => "image/gif", "png" => "image/png");
@@ -335,16 +340,26 @@ if(isset($_POST['submit']))
 	$business_nature=$_POST['business_nature'];
 	$invoice_company=$_POST['invoice_company'];
 	$merchant_remark=$_POST['merchant_remark'];
+	
 	   
 	if($flag == false)
 	{
-		 $qur="UPDATE users SET merchant_remark='$merchant_remark',invoice_company='$invoice_company',banner_image='$uniquesavename',shortcut_icon='$shortcut_icon',paypal_enable='$paypal_enable',business_nature='$business_nature',special_coin_min='$special_coin_min',special_coin_max='$special_coin_max',unrecognize_coin='$unrecognize_coin',special_coin_name='$special_coin_name',fund_password='$fund_password',delivery_plan='$delivery_plan',membership_plan='$membership_plan',coupon_offer='$coupon_offer',custom_msg_image='$custom_msg_image',section_on_orderlist='$section_on_orderlist',table_on_orderlist='$table_on_orderlist',order_min_charge='$order_min_charge',order_extra_charge='$order_extra_charge',spassword_need='$spassword_need',discounted_product='$discounted_product',setup_shop='$setup_shop',shop_open='$shop_open',printer_profile='$printer_profile',usb_name='$usb_name',printer_style='$printer_style',merchant_code='$merchant_code', merchant_url='$merchant_address', name='$realname',latitude='$latitude', longitude='$longitude', company='$company',register='$register',address='$address',gst='$gst', sst='$sst',sst_rate='$sst_rate',print_ip_address='$print_ip_address', order_print_setting='$order_print_setting', facsimile_number='$facsimile',referred_by='$referred_by', business1='$business1', business2='$business2', name_card='$name_card',card_number='$card_number',expiry_date='$expiry_date',cvv='$cvv',bank_name='$bankname',name_accoundholder='$name_accoundholder',bank_ac_num='$ac_num',charge='$charge',nric_number='$nric_number',address_person='$address_person',hand_phone='$hand_phone',google_map='$google_map',doc_copy='$filename',company_doc='$filenamess',number_lock='$number_lock', handphone_number='$handphone_number', created_at='$date', account_type='$account_type', k_date='$k_date', k_lock='$k_lock', guest_permission='$guest_permission',voice_recognition='$voice_recognition', 
+		$qur="UPDATE users SET merchant_remark='$merchant_remark',invoice_company='$invoice_company',banner_image='$uniquesavename',shortcut_icon='$shortcut_icon',paypal_enable='$paypal_enable',
+		 business_nature='$business_nature',special_coin_min='$special_coin_min',special_coin_max='$special_coin_max',unrecognize_coin='$unrecognize_coin',special_coin_name='$special_coin_name',
+		 fund_password='$fund_password',delivery_plan='$delivery_plan',membership_plan='$membership_plan',coupon_offer='$coupon_offer',custom_msg_image='$custom_msg_image',section_on_orderlist='$section_on_orderlist',
+		 table_on_orderlist='$table_on_orderlist',order_min_charge='$order_min_charge',order_extra_charge='$order_extra_charge',spassword_need='$spassword_need',discounted_product='$discounted_product',
+		 setup_shop='$setup_shop',shop_open='$shop_open',printer_profile='$printer_profile',usb_name='$usb_name',printer_style='$printer_style',merchant_code='$merchant_code', merchant_url='$merchant_address', 
+		 name='$realname',latitude='$latitude', longitude='$longitude', company='$company',register='$register',address='$address',gst='$gst', sst='$sst',print_ip_address='$print_ip_address',
+		 order_print_setting='$order_print_setting', facsimile_number='$facsimile',referred_by='$referred_by', business1='$business1', business2='$business2', name_card='$name_card',card_number='$card_number',
+		 expiry_date='$expiry_date',cvv='$cvv',bank_name='$bankname',name_accoundholder='$name_accoundholder',bank_ac_num='$ac_num',charge='$charge',nric_number='$nric_number',address_person='$address_person',
+		 hand_phone='$hand_phone',google_map='$google_map',doc_copy='$filename',company_doc='$filenamess',number_lock='$number_lock', handphone_number='$handphone_number', created_at='$date', account_type='$account_type',
+		 k_date='$k_date', k_lock='$k_lock', guest_permission='$guest_permission',voice_recognition='$voice_recognition', 
 		next_pending_time='$next_pending_time',pending_time='$pending_time',menu_type='$menu_type', custom_message='$custom_message',custom_msg_time='$custom_msg_time',
 		section_required='$section_required',table_required='$table_required',cash_check='$cash_check',credit_check='$credit_check',
 		wallet_check='$wallet_check',boost_check='$boost_check',grab_check='$grab_check',wechat_check='$wechat_check',touch_check='$touch_check',service_id='$service',
 		fpx_check='$fpx_check',discount='$discounts',mian_merchant='$main_merchant_id',location_order='$location_order',location_range='$location_range',free_delivery='$free_delivery'
-		,delivery_address_exit='$delivery_address_exit',section_exit='$section_exit',table_exit='$table_exit',pre_fill_delivery_address='$pre_fill_delivery_address' WHERE id='".$_SESSION['login']."'";
-		// die;                                  
+		,delivery_address_exit='$delivery_address_exit',section_exit='$section_exit',table_exit='$table_exit',pre_fill_delivery_address='$pre_fill_delivery_address',write_up_share='$write_up_share',auto_accept_order='$auto_accept_order' WHERE id='".$_SESSION['login']."'";
+		// die;                                     
 		$test_test = mysqli_query($conn,$qur);
 		$error .= "Successfully Updated profile Details.<br>";
 		if($expired_flag == false){
@@ -514,7 +529,7 @@ if(isset($_POST['submit_pass']))
 	{
 		$flag = true;
 		$error .= "New Password does not match.<br>";
-	}
+	}   
 	
 		
 	
@@ -937,11 +952,11 @@ audio {
 										<input type="text" name="discounts" placeholder="%" class="form-control" value="<?php if(isset($discounts)){ echo $discounts; }?>" > 
 										
 									</div>
-									<div class="form-group">
+									<!--div class="form-group">
 										<label>Set SST Rate (%) </label><br>
 										<input type="text" name="sst_rate" placeholder="%" class="form-control" value="<?php if(isset($sst_rate)){ echo $sst_rate; }?>" > 
 										
-									</div>
+									</div!-->
 
 									<div class="form-group">
 										<label>Telephone Number<br>
@@ -1288,6 +1303,14 @@ audio {
 											<label>Partner Coin list</label><br>
 											<input type="checkbox" name="unrecognize_coin" <?php if($profile_data['unrecognize_coin']=='1') echo "checked";?>/> 
 										</div>  
+										<div class="form-group">
+											<label>Write up share</label><br>
+											<input type="checkbox" name="write_up_share" <?php if($profile_data['write_up_share']=='1') echo "checked";?>/> 
+										</div> 
+										<div class="form-group">
+											<label>Order Auto Accept</label><br>
+											<input type="checkbox" name="auto_accept_order" <?php if($profile_data['auto_accept_order']=='1') echo "checked";?>/> 
+										</div>  										
 									</div>
 									<input type="submit" class="btn btn-block btn-primary" name="submit" value="Update Details">
 								</div>
