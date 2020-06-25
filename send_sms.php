@@ -27,13 +27,17 @@ function gw_send_sms($user,$pass,$sms_from,$sms_to,$sms_msg){
 // die;
  $cur_date=date('Y-m-d');
  $cur_utc=strtotime(date('Y-m-d h:i:s'));  
-    $query="SELECT order_list.invoice_no,order_list.order_alert_done,order_list.newuser,order_list.id as order_id,order_list.status,order_list.merchant_id, order_list.created_on,users.id,users.name,users.handphone_number,users.pending_time,users.whatapp_group_name  FROM order_list inner join users on order_list.merchant_id = users.id WHERE order_list.merchant_id not in('5401') and users.pending_time!=0 AND status =0 AND DATE(`created_on`) ='$cur_date' and order_alert_done='n'  order by order_list.created_on  DESC ";
+    $query="SELECT order_list.invoice_no,order_list.order_alert_done,order_list.newuser,order_list.id as order_id,order_list.status,order_list.merchant_id, 
+	order_list.created_on,users.id,users.name,users.handphone_number,users.write_up_link_share,users.pending_time,users.whatapp_group_name  FROM order_list inner join users on 
+	order_list.merchant_id = users.id WHERE order_list.merchant_id not in('5401') and users.pending_time!=0 and users.write_up_link_share='1'
+	AND status =0 AND DATE(`created_on`) ='$cur_date' and order_alert_done='n'  order by order_list.created_on  DESC ";
 // die;  
 $total_rows = mysqli_query($conn,$query);
 while ($row=mysqli_fetch_assoc($total_rows)){
 	// print_R($row);
 	// die;  
     $m_id = $row['merchant_id'];
+    $write_up_link_share = $row['write_up_link_share'];
     $status = $row['status'];
     $date = $row['created_on']; 
     $client = $row['name'];
@@ -46,6 +50,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 
      $pending_time1 = $pending_time+6;  
 	// die;
+	
     if($min > $pending_time && $min < $pending_time1){
     // if($pending_time){
 		
@@ -185,7 +190,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 				$sms_to = '+60127500913'.',+60123115670,'.$row['handphone_number'];
 			
 			$sms_msg = $_POST['message'];   
-			// $smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg);   
+			$smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg);  
 			
 				$whatapp_group_name="Koo Support Team";
 				$whatapp_group_name="Urgent Group";

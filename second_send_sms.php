@@ -70,7 +70,8 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 			// $sms_to = '+60123115670';
 			// $sms_to = '+919001025477';   
 			$sms_msg = $_POST['message'];
-			$smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg);   
+			$smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg);
+			whatappgroupmsg("Urgent Group",$sms_msg);
 			if($row['whatapp_group_name'])
 			{
 				$whatapp_group_name=$row['whatapp_group_name'];

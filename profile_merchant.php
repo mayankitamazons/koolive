@@ -258,6 +258,8 @@ if(isset($_POST['submit']))
 	}
 	if($write_up_share =="on") $write_up_share = '1';
 	else $write_up_share = "0";
+	if($write_up_link_share =="on") $write_up_link_share = '1';
+	else $write_up_link_share = "0";
 	if($auto_accept_order =="on") $auto_accept_order = '1';
 	else $auto_accept_order = "0";
 	$old_image=$bank_data['old_image'];
@@ -358,7 +360,7 @@ if(isset($_POST['submit']))
 		section_required='$section_required',table_required='$table_required',cash_check='$cash_check',credit_check='$credit_check',
 		wallet_check='$wallet_check',boost_check='$boost_check',grab_check='$grab_check',wechat_check='$wechat_check',touch_check='$touch_check',service_id='$service',
 		fpx_check='$fpx_check',discount='$discounts',mian_merchant='$main_merchant_id',location_order='$location_order',location_range='$location_range',free_delivery='$free_delivery'
-		,delivery_address_exit='$delivery_address_exit',section_exit='$section_exit',table_exit='$table_exit',pre_fill_delivery_address='$pre_fill_delivery_address',write_up_share='$write_up_share',auto_accept_order='$auto_accept_order' WHERE id='".$_SESSION['login']."'";
+		,delivery_address_exit='$delivery_address_exit',section_exit='$section_exit',table_exit='$table_exit',pre_fill_delivery_address='$pre_fill_delivery_address',write_up_share='$write_up_share',auto_accept_order='$auto_accept_order',write_up_link_share='$write_up_link_share' WHERE id='".$_SESSION['login']."'";
 		// die;                                     
 		$test_test = mysqli_query($conn,$qur);
 		$error .= "Successfully Updated profile Details.<br>";
@@ -1306,6 +1308,10 @@ audio {
 										<div class="form-group">
 											<label>Write up share</label><br>
 											<input type="checkbox" name="write_up_share" <?php if($profile_data['write_up_share']=='1') echo "checked";?>/> 
+										</div> 
+										<div class="form-group">
+											<label>Order Link share</label><br>
+											<input type="checkbox" name="write_up_link_share" <?php if($profile_data['write_up_link_share']=='1') echo "checked";?>/> 
 										</div> 
 										<div class="form-group">
 											<label>Order Auto Accept</label><br>

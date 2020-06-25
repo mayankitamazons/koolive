@@ -39,6 +39,7 @@ function ceiling($number, $significance = 1)
     <thead>
       <tr>
         <th>S.No</th>
+        <th>Order id</th>
 		<th>Rider info</th>
 		<th>Rider name</th>
         
@@ -108,6 +109,7 @@ function ceiling($number, $significance = 1)
 	?>
       <tr>  
         <td><?php echo $i; ?></td>
+        <td><?php echo $r['id']; ?></td>
 		<td>
 		<?php if($r['rider_info']==''){ ?>
 		<span class="btn btn-primary assign_order" order_id="<?php echo $r['id']; ?>" style="font-size:16px;">Assign</span>
