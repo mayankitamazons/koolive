@@ -100,6 +100,14 @@ if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){
 		{
 			$delivery_rate=$user_data['delivery_rate'];
 		}
+		if($sst_rate!='')
+		{
+		
+		}
+		else
+		{
+			$sst_rate=$user_data['sst_rate'];
+		}
 		if($delivery_take_up)
 		{
 			if($delivery_take_up =="on") $delivery_take_up = '1';
@@ -131,7 +139,7 @@ if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){
 		$popular_restro=$user_data['popular_restro'];
 		if($show_merchant=='')
 		$show_merchant=$user_data['show_merchant'];
-        $s=mysqli_query($conn,"update users set custom_msg_time='$custom_msg_time',price_hike='$price_hike',popular_restro='$popular_restro',show_merchant='$show_merchant',special_price_value='$special_price_value',vendor_comission='$vendor_comission',delivery_rate='$delivery_rate',delivery_take_up='$delivery_take_up',delivery_dive_in='$delivery_dive_in' where id='$selected_user_id'");
+        $s=mysqli_query($conn,"update users set sst_rate='$sst_rate',custom_msg_time='$custom_msg_time',price_hike='$price_hike',popular_restro='$popular_restro',show_merchant='$show_merchant',special_price_value='$special_price_value',vendor_comission='$vendor_comission',delivery_rate='$delivery_rate',delivery_take_up='$delivery_take_up',delivery_dive_in='$delivery_dive_in' where id='$selected_user_id'");
 		if($s)
 		$res = array('msg'=>"Updated",'status'=>true);  
 		else

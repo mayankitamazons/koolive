@@ -156,6 +156,7 @@ $a_m="merchant";
 							<th>Whatapp Group Name</th>
 							<th>Status</th>
 							<th>Merchant Status</th>
+							<th>Service tax (%) </th>
 							<th>Set Delivery Rate (%) </th>
 							<th>Vendor Comission (%) </th>
 							<th>Chiness Delivery </th>
@@ -220,7 +221,8 @@ $a_m="merchant";
                                 	    <option value='1' <?php echo $row['show_business']=='1' ? 'selected' : ''?>>Show</option>
                                 	    <option value='0' <?php echo $row['show_business']=='0' ? 'selected' : ''?>>Hide</option>
                         	        </select>
-                        	    </td>
+                        	    </td>   
+								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="sst_rate" placeholder="%" class="form-control sst_rate" value="<?php echo $row['sst_rate'];?>"></td>   
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="delivery_rate" placeholder="%" class="form-control delivery_rate" value="<?php echo $row['delivery_rate'];?>"></td>   
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="vendor_comission" placeholder="%" class="form-control vendor_comission" value="<?php echo $row['vendor_comission'];?>"></td>   
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="special_price_value" placeholder="" class="form-control special_price_value" value="<?php echo $row['special_price_value'];?>"></td>   
@@ -370,7 +372,30 @@ $a_m="merchant";
 		});
 		
 	});
-
+    $(".sst_rate").focusout(function(e){
+		var selected_user_id= $(this).attr('selected_user_id');
+		var sst_rate=this.value;
+		if(sst_rate!='' && selected_user_id)
+		{  
+		  $.ajax({
+						url :'../functions.php',
+						 type:"post",
+						 data:{sst_rate:sst_rate,method:"adminprofilesave",selected_user_id:selected_user_id},     
+						 dataType:'json',
+						 success:function(result){  
+							var data = JSON.parse(JSON.stringify(result));   
+							if(data.status==true)
+							{
+							  // location.reload(true);
+								
+							}
+							else
+							{alert('Failed to update');	}
+							
+							}
+				});      
+		} 
+	});
 	$(".delivery_rate").focusout(function(e){
 		var selected_user_id= $(this).attr('selected_user_id');
 		var delivery_rate=this.value;

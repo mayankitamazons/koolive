@@ -600,7 +600,9 @@ if(isset($_POST))
 						$r_msg.="\r\n"."Merchant Remark:".$merchant_data['merchant_remark'];  
 						$location_m=rawurlencode($merchant_data['google_map']);
 						$r_msg.="\r\n"."Merchant Address: "."http://maps.google.com/maps?q=".$location_m;
-						whatappgroupmsg("Kulai-New order rider",$r_msg);
+						if($special_delivery_amount)
+						$r_msg.="\r\n"."Chinese man delivery ".number_format($special_delivery_amount,2);
+						whatappgroupmsg("Kulai-New order rider",$r_msg);  
 						$resultpush = $adminpush->sendMessage($data);
 
 					}

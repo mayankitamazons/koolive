@@ -1103,7 +1103,6 @@ input[name='p_total[]'],input[name='p_price[]']{
 					 <th><?php echo $language["table_number"];?></th>
 
 					 <th class="location_head"><?php echo $language["location"];?></th>
-					 <th><?php echo $language["chat"];?></th>
 					 <th><?php echo $language["telephone_number"];?></th>
                      <th><?php echo $language["product_code"];?></th>
                      <th class="product_name test_product"><?php echo $language["product_name"];?></th>
@@ -1126,7 +1125,7 @@ input[name='p_total[]'],input[name='p_price[]']{
                             <th><?php echo $language['bal_payment'];?></th>
                      <th><?php echo $language["mode_of_payment"];?></th>
                      <th><?php echo $language["rating_comment"];?></th>
-                     <th><?php echo $language["print"];?></th>
+                     <th><?php echo $language["print"];?></th>   
                      <!--th>K1/K2</th!-->
                   </tr>
                </thead>
@@ -1156,7 +1155,7 @@ input[name='p_total[]'],input[name='p_price[]']{
                     //var_dump($amount_val);
 					// $order_list = mysqli_query($conn, "SELECT * FROM order_list WHERE user_id ='".$_SESSION['login']."' ORDER BY `created_on` DESC");
                     $user_namess = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE id ='".$row['user_id']."'"));
-                    $merchant_name = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE id ='".$row['merchant_id']."'"));
+                    $merchant_name = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE id ='".$row['merchant_id']."'"));
                     $created =$row['created_on'];
                     $date=date_create($created);
 					$section_type=$row['section_type'];
@@ -1201,16 +1200,33 @@ input[name='p_total[]'],input[name='p_price[]']{
 					<a  style="text-decoration:underline;font-weight:bold;font-size:16px;" href="<?php echo $site_url; ?>/view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $merchant_name['mobile_number'];?>&oid=<?php echo $row['id']; ?>"><?php echo $merchant_name['name'];  ?>
 					
 					</br></br>
-					<?php $chat_merchant_list = array(6958,6956, 7634,7785,7799,7839,7808,7818,7846,7912,7953,7837,7209,7462,7209,7723,7674,7663,7726,7703,7554,6960,7658,7662,7462); 
-					   if (in_array($merchant_name['id'], $chat_merchant_list)) { ?>
-					
-                      <a href="https://chat.whatsapp.com/J4wcS4riADaBBrvY60c8f3" target="_blank">
-					   <?php } else { ?>
-					    <a href="https://api.whatsapp.com/send?phone=<?php  echo $merchant_name['mobile_number']?>" target="_blank">
-					   <?php } ?>  
-							
-							
+						<?php 
+						if($merchant_name['chat_with_merchant'])
+							{
+							if($merchant_name['chat_group'])
+							{
+								?>
+							<a href="<?php echo $merchant_name['chat_with_merchant']; ?>" target="_blank"><img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['merchant_hotline']; ?></a>
+							<?php }
+							else
+							{
+							  ?>
+							 	<a href="https://api.whatsapp.com/send?phone=<?php  echo $merchant_name['chat_with_merchant']?>" target="_blank"><img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['merchant_hotline']; ?></a>
+							<?php }
+							}
+							else
+							{
+						   $chat_merchant_list = array(6958,6956, 7634,7785,7799,7839,7808,7818,7846,7912,7953,7837,7209,7462,7209,7723,7674,7663,7726,7703,7554,6960,7658,7662,7462); 
+						   if (in_array($merchant_name['id'], $chat_merchant_list)) { ?>
+						
+						  <a href="https://chat.whatsapp.com/J4wcS4riADaBBrvY60c8f3" target="_blank"><img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['merchant_hotline']; ?></a>
+						   <?php } else { ?>
+							<a href="https://api.whatsapp.com/send?phone=<?php  echo $merchant_name['mobile_number']?>" target="_blank">
 							<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['merchant_hotline']; ?></a>
+							<?php } } ?>  
+							
+							
+							
 							<!--/br> </br>  <a href="https://chat.whatsapp.com/KeUcnzasq2M1x5AUBsjJGF" target="_blank">	<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['delivery_hotline']; ?></a!-->
 							<!--/br> </br>  <a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank">	<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['delivery_hotline']; ?></a!-->
 							</br> </br>  <a href="https://chat.whatsapp.com/LdvomJRqXoIG6aXqsf5PgX" target="_blank">	<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['delivery_hotline']; ?></a>
@@ -1265,15 +1281,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 							<a class="" target="_blank" href="http://maps.google.com/maps?q=<?php echo  $row['location']; ?>">  
 						
 							<?php echo $row['location'];?></a></td>
-							<td>
-							 <?php if($merchant_name['id']==6958 || $merchant_name['id']==6956) {  ?>
-                      <a href="https://api.whatsapp.com/send?phone=60123115670" target="_blank">
-					   <?php } else { ?>
-					    <a href="https://api.whatsapp.com/send?phone=<?php  echo $merchant_name['mobile_number']?>" target="_blank">
-					   <?php } ?>  
-							
-							
-							<img src="images/whatapp.png" style="max-width:32px;"></a></td>
+
 
                          <?php if($merchant_name['number_lock'] == 0){?>
                             <td><?php echo $merchant_name['mobile_number'];?></td>

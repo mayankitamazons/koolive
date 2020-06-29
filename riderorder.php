@@ -51,6 +51,7 @@ function ceiling($number, $significance = 1)
 			<th>Merchant Remark</th>
 			<th>DATE OF ORDER</th>
         <th>Merchant Address </th>
+        <th>User Address </th>
       
 		
 		   
@@ -106,6 +107,11 @@ function ceiling($number, $significance = 1)
 			$location_m=rawurlencode($r['merchant_map']);
 			$m_map="http://maps.google.com/maps?q=".$location_m;
 		}
+		 if($r['location'])
+		{
+			$location_u=rawurlencode($r['location']);
+			$u_map="http://maps.google.com/maps?q=".$location_u;
+		}
 	?>
       <tr>  
         <td><?php echo $i; ?></td>
@@ -134,6 +140,7 @@ function ceiling($number, $significance = 1)
                             </td>   
 		
         <td><a href="<?php echo $m_map; ?>" target="_blank"><?php echo $r['merchant_map']; ?></a></td>
+        <td><a href="<?php echo $u_map; ?>" target="_blank"><?php echo $r['location']; ?></a></td>
         
 
 

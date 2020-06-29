@@ -190,7 +190,7 @@
 							else
 							{
 							  $msg_str.="</br>"."Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']."+".$row['special_delivery_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br> Order from:</br>";
-							  $msg_str="*".$merchant_name['name'].",</br><a target='_blank' href='$m_map'>".$merchant_name['google_map']."</a>,</br> Mobile - ".$row['mobile_number']."</br>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."<a target='_blank' href='$u_map'>".$user_location."</a></br> Order Detail:";
+							  $msg_str.="*".$merchant_name['name'].",</br><a target='_blank' href='$m_map'>".$merchant_name['google_map']."</a>,</br> Mobile - ".$row['mobile_number']."</br>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."<a target='_blank' href='$u_map'>".$user_location."</a></br> Order Detail:";
 			  				}  
 						foreach ($product_ids as $key )
 						{  

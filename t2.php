@@ -7,13 +7,14 @@
     // $INSTANCE_ID = "25";  // TODO: Replace it with your gateway instance ID here
 		// $CLIENT_ID = "woijoonchong@gmail.com";  // TODO: Replace it with your Forever Green client ID here
 	// $CLIENT_SECRET = "1df7f3075a7e490689e9bf1c469960a0";   // TODO: Replace it with your Forever Green client secret here
-   $whatapp_group_name="error group";
+   $whatapp_group_name="macdonald delivery";
    $sms_msg="https://www.koofamilies.com/orderview.php?did=5326&vs=OTRX&oid=21345 C&M Foods Court,Koofamilies alert! Your order (532) has exceeded timeframe,please ACCEPT the order,";
+   $sms_msg="test msg";
 	$postData = array(
 	  'group_admin' => '60123115670',  // TODO: Specify the WhatsApp number of the group creator, including the country code
 	  'group_name' => $whatapp_group_name,    // TODO: Specify the name of the group
 	  'message' => $sms_msg  // TODO: Specify the content of your message
-	);
+	);   
 
 	$headers = array(
 	  'Content-Type: application/json',

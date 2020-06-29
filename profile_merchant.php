@@ -55,6 +55,7 @@ if(isset($_POST['submit']))
     $location_range=$_POST['location_range'];
 	
     $free_delivery=$_POST['free_delivery'];
+    $chat_with_merchant=$_POST['chat_with_merchant'];
 	$realname = addslashes($_POST['realname']);
 	$company = addslashes($_POST['company']);
 	$register = addslashes($_POST['register']);
@@ -262,6 +263,8 @@ if(isset($_POST['submit']))
 	else $write_up_link_share = "0";
 	if($auto_accept_order =="on") $auto_accept_order = '1';
 	else $auto_accept_order = "0";
+	if($chat_group =="on") $chat_group = '1';
+	else $chat_group = "0";
 	$old_image=$bank_data['old_image'];
 	  if(isset($_FILES["banner_image"]) && $_FILES["banner_image"]["error"] == 0){
         $allowed = array("jpg" => "image/jpg", "jpeg" => "image/jpeg", "gif" => "image/gif", "png" => "image/png");
@@ -360,7 +363,8 @@ if(isset($_POST['submit']))
 		section_required='$section_required',table_required='$table_required',cash_check='$cash_check',credit_check='$credit_check',
 		wallet_check='$wallet_check',boost_check='$boost_check',grab_check='$grab_check',wechat_check='$wechat_check',touch_check='$touch_check',service_id='$service',
 		fpx_check='$fpx_check',discount='$discounts',mian_merchant='$main_merchant_id',location_order='$location_order',location_range='$location_range',free_delivery='$free_delivery'
-		,delivery_address_exit='$delivery_address_exit',section_exit='$section_exit',table_exit='$table_exit',pre_fill_delivery_address='$pre_fill_delivery_address',write_up_share='$write_up_share',auto_accept_order='$auto_accept_order',write_up_link_share='$write_up_link_share' WHERE id='".$_SESSION['login']."'";
+		,delivery_address_exit='$delivery_address_exit',section_exit='$section_exit',table_exit='$table_exit',pre_fill_delivery_address='$pre_fill_delivery_address',write_up_share='$write_up_share'
+		,auto_accept_order='$auto_accept_order',write_up_link_share='$write_up_link_share',chat_with_merchant='$chat_with_merchant',chat_group='$chat_group' WHERE id='".$_SESSION['login']."'";
 		// die;                                     
 		$test_test = mysqli_query($conn,$qur);
 		$error .= "Successfully Updated profile Details.<br>";
@@ -404,6 +408,7 @@ else
 	$profile_pic = $bank_data['doc_copy'];
 	$custom_msg_image = $bank_data['custom_msg_image'];
 	$company_doc = $bank_data['company_doc'];
+	$chat_with_merchant = $bank_data['chat_with_merchant'];
 	$handphone_number = $bank_data['handphone_number'];
 	//$referral_id = $bank_data['referred_by'];
 	$number_lock = $bank_data['number_lock'];
@@ -1316,8 +1321,17 @@ audio {
 										<div class="form-group">
 											<label>Order Auto Accept</label><br>
 											<input type="checkbox" name="auto_accept_order" <?php if($profile_data['auto_accept_order']=='1') echo "checked";?>/> 
-										</div>  										
+										</div>
+										<div class="form-group">
+											
+											<label>Chat with merchant link<br></label>
+											<input type="text" name="chat_with_merchant"   class="form-control" value="<?php if(isset($chat_with_merchant)){ echo $chat_with_merchant; }?>">
+			
 									</div>
+									<div class="form-group">
+											<label>is Chat link is whatsapp group ??</label><br>
+											<input type="checkbox" name="chat_group" <?php if($profile_data['chat_group']=='1') echo "checked";?>/> 
+										</div>
 									<input type="submit" class="btn btn-block btn-primary" name="submit" value="Update Details">
 								</div>
 							</form>

@@ -2569,12 +2569,27 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
                     <h4 class="favorite_name" style="display: inline-blick;">
                        <?php
+					    if($merchant_detail['chat_with_merchant'])
+						{
+							if($merchant_detail['chat_group'])
+							{
+								?>
+							<a href="<?php echo $merchant_detail['chat_with_merchant']; ?>" target="_blank">Chat with <?php echo $merchant_detail['name']; ?></a>
+							<?php }
+							else
+							{
+							  ?>
+							 	<a href="https://api.whatsapp.com/send?phone=<?php  echo $merchant_detail['chat_with_merchant']?>" target="_blank">Chat with <?php echo $merchant_detail['name']; ?></a>
+							<?php }
+						}
+						else
+						{
 						$chat_merchant_list = array(6958,6956, 7634,7785,7799,7839,7808,7818,7846,7912,7953,7837,7209,7462,7209,7723,7674,7663,7726,7703,7554,6960,7658,7662,7462); 
 					   if (in_array($merchant_detail['id'], $chat_merchant_list)) { ?>
                       <a href="https://chat.whatsapp.com/J4wcS4riADaBBrvY60c8f3" target="_blank">Chat with <?php echo $merchant_detail['name']; ?>
 					   <?php } else { ?>
 					    <a href="https://api.whatsapp.com/send?phone=<?php  echo $merchant_detail['mobile_number']?>" target="_blank">Chat with <?php echo $merchant_detail['name']; ?>
-					   <?php } ?>  
+						<?php } } ?>  
 
 					<img src="images/whatapp.png" style="max-width:32px;"/></a>
 					</br>
@@ -11428,8 +11443,7 @@ $(".online_pay").click(function(e) {
             // var delivery_charges=delivery_charges.toFixed(2);
 
             $('#delivery_cart_amount').val(delivery_charges);
-
-            var final_charge = parseFloat(total_amount) + parseFloat(delivery_charges);
+			var final_charge = parseFloat(total_amount) + parseFloat(delivery_charges);
 
             $('#final_cart_amount').val(final_charge);
 
@@ -11961,6 +11975,9 @@ $(".online_pay").click(function(e) {
 							var total_amount=(parseFloat(total_amount)+parseFloat(deliver_tax_amount));
 
 						}    
+					var special_delivery_amount=$('#special_delivery_amount').val();
+					var total_amount=(parseFloat(total_amount)+parseFloat(special_delivery_amount));
+					// alert(total_amount);
 					var part_payment="<?php echo $merchant_detail['part_payment']?>";
 					if(part_payment==0)
 					{
@@ -11983,7 +12000,7 @@ $(".online_pay").click(function(e) {
 
 							var p_bal=total_amount;
 
-							// alert()
+							// alert(total_amount);
 
 						   p_bal = (parseInt(p_bal * 10)/10).toFixed(2);
 
@@ -11993,7 +12010,7 @@ $(".online_pay").click(function(e) {
 
 							//$('#bal_payment_label').show();
 
-						   $('#wallet_payment_label').html(" Paying By Wallet Rm: <span style='color:black;font-weight:bold;'>"+p_bal+"</span></br>");
+						   $('#wallet_payment_label').html("<br/>Paying By Wallet Rm: <span style='color:black;font-weight:bold;'>"+p_bal+"</span></br>");
 
 						
 
@@ -12010,7 +12027,7 @@ $(".online_pay").click(function(e) {
 							 selected_wallet_bal = (parseInt(selected_wallet_bal * 10)/10).toFixed(2);
 
 							var rem=0;
-
+							// alert(total_amount);   
 							if(parseFloat(selected_wallet_bal)<parseFloat(total_amount))
 
 							{
@@ -12034,7 +12051,7 @@ $(".online_pay").click(function(e) {
 							{
 
 								var total_amount=parseFloat(total_amount).toFixed(2);
-
+								// alert(total_amount);
 							  var p_msg="You are going to pay Rm "+total_amount+" throught your wallet";	
 
 							  var payable_amount=total_amount;
@@ -12331,7 +12348,11 @@ $(".online_pay").click(function(e) {
 			$('.delivery_tax_amount_value').html('');  	
 
 		}
-
+        var special_delivery_amount=$('#special_delivery_amount').val();
+		if(parseFloat(special_delivery_amount)>0)
+		{
+			var total_amount=(parseFloat(total_amount)+parseFloat(special_delivery_amount));
+		}
 		// alert(deliver_tax_amount);
 
       $('#deliver_tax_amount').val(deliver_tax_amount);		
@@ -12365,7 +12386,7 @@ $(".online_pay").click(function(e) {
 		{
 
 			var total_amount=parseFloat(total_amount).toFixed(2);
-
+		 // p_bal = (parseInt(total_amount * 10)/10).toFixed(2);
 		  var p_msg="You are going to pay Rm <span style='color:black;font-weight:bold;'>"+total_amount+"</span> through your wallet";	
 
 		  var payable_amount=total_amount;
@@ -13189,12 +13210,12 @@ function totalcart()
         totalsale += +$(this).val();
 
     });
-
+	
 	var delivery_charges=$('#delivery_charges').val();
 	var special_delivery_amount=$('#special_delivery_amount').val();
 	var pickup_type=$('#pickup_type').val();
 
-	// alert(delivery_charges);    
+	// alert(special_delivery_amount);    
 	if(special_delivery_amount>0)
 	{
 		$("#special_delivery_label").show();
@@ -13301,7 +13322,7 @@ function totalcart()
 
 	var final_charge=parseFloat(totalsale)+parseFloat(delivery_charges)+parseFloat(special_delivery_amount);  
 
-	
+	// alert(final_charge); 
 
 	if(coupon_discount_amount>0)
 
@@ -13405,6 +13426,7 @@ function totalcart()
 	$('#final_cart_amount').val(final_charge);
 
 	var final_charge=parseFloat(final_charge).toFixed(2);
+	
 
 	if(delivery_charges>0)
 
