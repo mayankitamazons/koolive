@@ -1536,7 +1536,8 @@ audio {
     <!-- /.widget-bg -->
     <!-- /.content-wrapper -->
     <?php include("includes1/footer.php"); ?>
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4BfDrt-mCQCC1pzrGUAjW_2PRrGNKh_U&libraries=places" async defer></script> 
+	<!--script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4BfDrt-mCQCC1pzrGUAjW_2PRrGNKh_U&libraries=places" async defer></script!-->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqkgFdbQUhomdTY88R2OhkAKe57dnf9Kc&libraries=places" async defer></script>
 	<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
   	<script src="js/sketch.js"></script>
 </body>

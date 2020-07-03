@@ -27,8 +27,8 @@ if(isset($_POST['submit']))
 	$merchant_id=$_SESSION['login'];
 
 			mysqli_query($conn, "INSERT INTO `delivery_plan` (`merchant_id`, `min_distance`, `max_distance`, `charge`) VALUES ('$merchant_id', '$min_distance', '$max_distance', '$charge')");
-
-			header('Location: deliveryplan.php');
+			$u="deliveryplan.php?vs=".md5(rand());
+			header('Location:'.$u);
 
 }
 
