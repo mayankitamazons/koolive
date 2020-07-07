@@ -135,6 +135,28 @@ if(isset($_POST['merchant_select_form']))
 		  }
 		return $shop_close_status;
 	  }	
+		$shopclose=[];
+		function checktimestatusnew($time_detail)
+		{ 
+			global $shopclose;
+			extract($time_detail);
+// 			 echo "day=$day n=$n";
+// 		 	echo "ctime:".date("H:i");
+			$day=strtolower($day);
+			$currenttime=date("H:i");
+			$n=strtolower(date("l"));
+			if(($currenttime >$starttime && $currenttime < $endttime) && ($day==$n)){
+				  //$shop_close_status="y";
+				   array_push($shopclose,"y");
+			}
+			else
+			{ 
+			  //$shop_close_status="n";
+			  array_push($shopclose,"n");
+			}
+			return $shopclose;//$shop_close_status;
+		}		  
+	   
 if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 {
 	// print_r($_GET);
@@ -268,8 +290,8 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 					</div>
 					<div class="container" style="margin-top: 27px;">
 					 <?php 
-					 $sql="select SQL_NO_CACHE set_working_hr.*,users.mobile_number,users.name,users.address,users.login_status,users.id,about.image,users.shop_open,cs.shift_pos 
-					 from classification_arrange_system as cs inner join users on users.id=cs.merchant_id LEFT JOIN about on  users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where cs.classfication_id='3' and users.user_roles = 2  and users.shop_open=1 group by users.id
+					     $sql="select SQL_NO_CACHE timings.*,users.mobile_number,users.name,users.address,users.login_status,users.id,about.image,users.shop_open,cs.shift_pos 
+					 from classification_arrange_system as cs inner join users on users.id=cs.merchant_id LEFT JOIN about on  users.id=about.userid left join timings on  users.id=timings.merchant_id where cs.classfication_id='3' and users.user_roles = 2  and users.shop_open=1 group by users.id
                 ORDER BY cs.shift_pos  ASC  limit 20";
 
 
@@ -278,7 +300,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
                 // ORDER BY users.popular_sort_order  ASC  limit 20";   
                 $result = mysqli_query($conn,$sql);                  
                 $totalpo=mysqli_num_rows($result);
-                 if($totalpo>0){ 
+                 if($totalpo>0){   
             
             ?>
 			<div class="main_title">
@@ -299,22 +321,34 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
             </div>
            
 			
-			<div class="owl-carousel owl-theme carousel_4">
+			<div class="owl-carousel owl-theme carousel_4">   
             
 			<?php if(mysqli_num_rows($result)>0){
                 while($rd=mysqli_fetch_assoc($result)){
                      // print_r($rd);
-					$working="y";
-					 if($rd['start_day']){
-						 $time_detail['starday']=$rd['start_day'];
-						 $time_detail['endday']=$rd['end_day'];
-						 $time_detail['starttime']=$rd['start_time'];
-						 $time_detail['endttime']=$rd['end_time'];
-						
-						 $working=checktimestatus($time_detail);
-						 // $work_str="Working Time :".$rd['start_day']." ".$rd['start_time']." to "." ".$rd['end_day']." ".$rd['end_time'];
-					 }   
-					 if($working=="y")
+					 $working="n";
+					if($rd['day']){
+        					 $sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd['merchant_id'];
+        					$result1 = mysqli_query($conn,$sql1);
+                            while($ti=mysqli_fetch_assoc($result1))
+                                { 
+									$time_detail['day']=$ti['day'];
+									$time_detail['starttime']=$ti['start_time'];
+									$time_detail['endttime']=$ti['end_time'];
+									// print_R($time_detail);
+									$tworking=checktimestatusnew($time_detail);
+        						}
+							// print_R($tworking);
+							// echo "</br>Merchant Gap ";
+							foreach($tworking as $w)
+					        {
+					            if($w=="y")
+					            {$working="y";}
+							}
+					       $shopclose=[];
+					}  
+				    // echo "</br>".$working;
+					if($working=="y")
 					 {
                     ?>
                     
@@ -379,7 +413,9 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 			$classi_name[]="classi_".$l_r['id'];
 			
 			$c_id=$l_r['id'];
-			  $sql="select SQL_NO_CACHE users.banner_image,users.name, users.address,service.short_name,about.image,users.mobile_number,set_working_hr.*,users.order_extra_charge,users.delivery_plan,users.not_working_text,users.not_working_text_chiness from classification_arrange_system as cs   inner join users on users.id=cs.merchant_id left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where cs.classfication_id='$c_id' 
+			  $sql="select SQL_NO_CACHE users.banner_image,users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,
+			  users.not_working_text,users.not_working_text_chiness from classification_arrange_system as cs   inner join users on users.id=cs.merchant_id left 
+			  JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id where cs.classfication_id='$c_id' 
 			  and users.user_roles = 2 and users.shop_open=1 group by users.id ORDER BY cs.shift_pos ASC limit 20 ";
 			 $classification_name=$l_r['classification_name']; 
 			if($current_lang=="chinese" && $l_r['classification_name_chiness'])
@@ -418,17 +454,28 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 			<?php if(mysqli_num_rows($result)>0){
                 while($rd=mysqli_fetch_assoc($result)){
                      // print_r($rd);
-					$working="y";
-					 if($rd['start_day']){
-						 $time_detail['starday']=$rd['start_day'];
-						 $time_detail['endday']=$rd['end_day'];
-						 $time_detail['starttime']=$rd['start_time'];
-						 $time_detail['endttime']=$rd['end_time'];
-						$work_str=$rd['start_day']." ".$rd['start_time']." to ".$rd['end_day']." ".$rd['end_time']; 
-						 $working=checktimestatus($time_detail);
-						 // $work_str="Working Time :".$rd['start_day']." ".$rd['start_time']." to "." ".$rd['end_day']." ".$rd['end_time'];
-					 } 
-					// $working="y";
+					$working="n";
+					if($rd['day']){
+        					 $sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd['merchant_id'];
+        					$result1 = mysqli_query($conn,$sql1);
+                            while($ti=mysqli_fetch_assoc($result1))
+                                { 
+									$time_detail['day']=$ti['day'];
+									$time_detail['starttime']=$ti['start_time'];
+									$time_detail['endttime']=$ti['end_time'];
+									// print_R($time_detail);
+									$tworking=checktimestatusnew($time_detail);
+									// $work_str=$rd['start_day']." ".$rd['start_time']." to ".$rd['end_day']." ".$rd['end_time']; 
+        						}
+							// print_R($tworking);
+							// echo "</br>Merchant Gap ";
+							foreach($tworking as $w)
+					        {
+					            if($w=="y")
+					            {$working="y";}
+							}
+					       $shopclose=[];
+					}
 					if($working=="y"){
 					
                     ?>
@@ -499,9 +546,9 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 					<div class="list_home">
 						<ul>
                         <?php
-                            $sql = "SELECT SQL_NO_CACHE  users.name, users.address,service.short_name,about.image,users.mobile_number,set_working_hr.*,users.order_extra_charge,users.delivery_plan,users.not_working_text,users.not_working_text_chiness FROM users 
-						   left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id   
-						   WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant=1 group by users.id order by users.name asc";   
+                             $sql = "SELECT SQL_NO_CACHE  users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.not_working_text,users.not_working_text_chiness FROM users 
+						   left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id   
+						   WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant=1 group by users.id order by users.name asc";      
                         $result = mysqli_query($conn, $sql);
                         $count= mysqli_num_rows($result);
                         $rd = mysqli_fetch_all($result);   
@@ -511,30 +558,38 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 						$langfile=$_SESSION['langfile'];
 						
                         for($i=0;$i<$condition;$i++){
-								if($rd[$i][7] && $rd[$i][8])
+							$working="n";
+							$work_str='';
+								if($rd[$i][7])
 								{
-									$s_time=date("g:i a", strtotime($rd[$i][9]));
-									$e_time=date("g:i a", strtotime($rd[$i][10]));
-									$work_str=$rd[$i][7]." ".$s_time." to ".$rd[$i][8]." ".$e_time; 
-									 $time_detail['starday']=$rd[$i][7];
-										 $time_detail['endday']=$rd[$i][8];
-										 $time_detail['starttime']=$rd[$i][9];
-										 $time_detail['endttime']=$rd[$i][10];
-									$working=checktimestatus($time_detail);
+								     $sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd[6];
+									$result1 = mysqli_query($conn,$sql1);
+									while($ti=mysqli_fetch_assoc($result1))
+									{ 
+										$time_detail['day']=$ti['day'];
+										$time_detail['starttime']=$ti['start_time'];
+										$time_detail['endttime']=$ti['end_time'];
+										// print_R($time_detail);
+										$tworking=checktimestatusnew($time_detail);
+									}
+									foreach($tworking as $w)
+									{
+										if($w=="y")
+										{$working="y";}
+									}
+								   $shopclose=[];
 								}
-								else
+								if($working=="y")
 								{
-									$work_str='';
-									$working='y';
-								}
+								
 								// echo $working;
-								if($langfile=="chinese" && $rd[$i][15]!='')
+								if($langfile=="chinese" && $rd[$i][13]!='')
 								{
-									$work_str.="</br>".$rd[$i][15];
+									$work_str.="</br>".$rd[$i][13];
 								}
-								else if($rd[$i][14])
+								else if($rd[$i][12])
 								{
-									$work_str.="</br>".$rd[$i][14];
+									$work_str.="</br>".$rd[$i][12];
 								}
                         ?>  <li>
 								<a href="view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $rd[$i][4];?>">
@@ -550,13 +605,13 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 									 <small style='color:red;'><?php if($work_str==""){
 										
 									}else{ echo $work_str;}?></small>
-									<?php if($rd[$i][12] || $rd[$i][13]){ if($rd[$i][13]){ $d_str="Flexible Delivery";} else { $d_str="MYR ".number_format($rd[$i][12],2);} } else { $d_str="Free Delivery";} ?>
+									<?php if($rd[$i][10] || $rd[$i][11]){ if($rd[$i][11]){ $d_str="Flexible Delivery";} else { $d_str="MYR ".number_format($rd[$i][10],2);} } else { $d_str="Free Delivery";} ?>
 									<?php if($d_str){ echo "<br><img src='https://koofamilies.sirv.com/about_images/motor.jpg'/> ".$d_str;} ?>
 									
                                     </a>
                                 </li>
 								
-                         <?php   }?>   
+								<?php   }}?>   
 							
 							
 						</ul>
@@ -568,30 +623,36 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
                        <?php 
                         
                        for($i=$condition;$i<$count;$i++){
-						   if($rd[$i][7] && $rd[$i][8])
+						   $working="n";
+						   $work_str='';
+						   if($rd[$i][7])
 								{
-									$s_time=date("g:i a", strtotime($rd[$i][9]));
-									$e_time=date("g:i a", strtotime($rd[$i][10]));
-								
-								 $work_str=$rd[$i][7]." ".$s_time." to ".$rd[$i][8]." ".$e_time;   
-								   $time_detail['starday']=$rd[$i][7];
-									$time_detail['endday']=$rd[$i][8];
-									$time_detail['starttime']=$rd[$i][9];
-									$time_detail['endttime']=$rd[$i][10];
-									$working=checktimestatus($time_detail);
+								   $sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd[6];
+									$result1 = mysqli_query($conn,$sql1);
+									while($ti=mysqli_fetch_assoc($result1))
+									{ 
+										$time_detail['day']=$ti['day'];
+										$time_detail['starttime']=$ti['start_time'];
+										$time_detail['endttime']=$ti['end_time'];
+										// print_R($time_detail);
+										$tworking=checktimestatusnew($time_detail);
+									}
+									foreach($tworking as $w)
+									{
+										if($w=="y")
+										{$working="y";}
+									}
+								   $shopclose=[];
 								}
-								else
+								if($working=="y")
 								{
-									$work_str='';
-									$working='y';
+								if($langfile=="chinese" && $rd[$i][13]!='')
+								{
+									$work_str.="</br>".$rd[$i][13];  
 								}
-								if($langfile=="chinese" && $rd[$i][15]!='')
+								else if($rd[$i][12])
 								{
-									$work_str.="</br>".$rd[$i][15];  
-								}
-								else if($rd[$i][14])
-								{
-									$work_str.="</br>".$rd[$i][14];
+									$work_str.="</br>".$rd[$i][12];
 								}
 						   ?>
 						<li>
@@ -608,12 +669,12 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 									 <small style='color:red;'><?php if($work_str==""){
 										
 									}else{ echo $work_str;}?></small>
-									<?php if($rd[$i][12] || $rd[$i][13]){ if($rd[$i][13]){ $d_str="Flexible Delivery";} else { $d_str="MYR ".number_format($rd[$i][12],2);} } else { $d_str="Free Delivery";} ?>
+									<?php if($rd[$i][10] || $rd[$i][11]){ if($rd[$i][11]){ $d_str="Flexible Delivery";} else { $d_str="MYR ".number_format($rd[$i][10],2);} } else { $d_str="Free Delivery";} ?>
 									<?php if($d_str){ echo "<br><img src='https://koofamilies.sirv.com/about_images/motor.jpg'/> ".$d_str;} ?>
 									
                                     </a>
                                 </li>
-                          <?php }?> 
+								<?php } }?> 
 							
 						</ul>
 					</div>

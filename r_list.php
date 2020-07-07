@@ -7,34 +7,34 @@ if (empty($_SESSION["langfile"])) { $_SESSION["langfile"] = "english"; }
     require_once ("languages/".$_SESSION["langfile"].".php");
 extract($_POST);
 
-if($sort_by)
+if($sort_by)  
 {
 if($sort_by=="sort_distance" && $type=="all")
 {
-	   $sql = "SELECT SQL_NO_CACHE  users.name, users.address,service.short_name,about.image,users.mobile_number,set_working_hr.*,users.order_extra_charge,users.delivery_plan,
+	     $sql = "SELECT SQL_NO_CACHE  users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,
             (6371 * ACOS ( COS ( RADIANS (".$_POST['latitude'].")) * COS ( RADIANS(users.latitude)) * COS(RADIANS(users.longitude) - RADIANS(".$_POST['longitude']."))
        + SIN(RADIANS(".$_POST['latitude'].")) * SIN(RADIANS(users.latitude)))) AS distance,users.not_working_text,users.not_working_text_chiness
       FROM users 
-						   left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id   
+						   left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id   
 						   WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant=1 and users.latitude!='' and users.longitude!='' group by users.id order by distance asc";   
 
 
 } else if($sort_by=="sort_distance" && $type=="popular")
 {
-	 $sql = "SELECT SQL_NO_CACHE  users.name, users.address,service.short_name,about.image,users.mobile_number,set_working_hr.*,users.order_extra_charge,users.delivery_plan,
+	 $sql = "SELECT SQL_NO_CACHE  users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,
             (6371 * ACOS ( COS ( RADIANS (".$_POST['latitude'].")) * COS ( RADIANS(users.latitude)) * COS(RADIANS(users.longitude) - RADIANS(".$_POST['longitude']."))
        + SIN(RADIANS(".$_POST['latitude'].")) * SIN(RADIANS(users.latitude)))) AS distance,users.not_working_text,users.not_working_text_chiness
       FROM users 
-						   left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id   
+						   left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id   
 						   WHERE users.user_roles = 2 and users.isLocked= 0 and users.popular_restro=1 and users.latitude!='' and users.longitude!=''  group by users.id order by distance asc";   
 } else if($sort_by=="sort_name" && $type=="sort_name")
 {
-	   $sql = "SELECT SQL_NO_CACHE  users.name, users.address,service.short_name,about.image,users.mobile_number,set_working_hr.*,users.order_extra_charge,users.delivery_plan,users.not_working_text,users.not_working_text_chiness FROM users 
-						   left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id   
+	   $sql = "SELECT SQL_NO_CACHE  users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.not_working_text,users.not_working_text_chiness FROM users 
+						   left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id   
 						   WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant=1 group by users.id order by users.name asc";   
                         // $result = mysqli_query($conn, $sql);
 }
-
+// echo $sql;
 
     $result = mysqli_query($conn, $sql);
     $count= mysqli_num_rows($result);
@@ -45,68 +45,26 @@ if($sort_by=="sort_distance" && $type=="all")
 		{
 			while($rd=mysqli_fetch_assoc($result)){
                      // print_r($rd);   
-					$working="y";
-					 if($rd['start_day']){
-						 $starday=$time_detail['starday']=$rd['start_day'];
-						 $endday=$time_detail['endday']=$rd['end_day'];
-						$starttime=$time_detail['starttime']=$rd['start_time'];
-						$endttime=$time_detail['endttime']=$rd['end_time'];
-						// print_r($time_detail);
-						switch ($starday) {
-						case "Monday":
-							$s_day=1;
-							break;
-						case "Tuesday":
-							$s_day=2;
-							break;
-						case "Wednesday":
-							$s_day=3;
-							break;
-						case "Thursday":
-							$s_day=4;
-							break;
-						case "Friday":
-							$s_day=5;
-							break;
-						case "Saturday":
-							$s_day=6;
-							break;
-						default:
-							$s_day=7;
-					}
-					switch ($endday) {
-						case "Monday":
-							$e_day=1;
-							break;
-						case "Tuesday":
-							$e_day=2;
-							break;
-						case "Wednesday":
-							$e_day=3;
-							break;
-						case "Thursday":
-							$e_day=4;
-							break;
-						case "Friday":
-							$e_day=5;
-							break;
-						case "Saturday":
-							$e_day=6;
-							break;
-						default:
-							$e_day=7;
-					}  
-					$currenttime=date("H:i");
-					$n=date("N");
-						if(($currenttime >$starttime && $currenttime < $endttime) && ($s_day<=$n && $e_day>=$n)){
-						  $working="y";
-					  }
-					  else
-					  {
-						  $working="n";
-					  }
-						 // echo $working=checktimestatus($time_detail);
-						 // $work_str="Working Time :".$rd['start_day']." ".$rd['start_time']." to "." ".$rd['end_day']." ".$rd['end_time'];
+					$working="n";
+					 if($rd['day']){
+						  $sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd['merchant_id'];
+        					$result1 = mysqli_query($conn,$sql1);
+                            while($ti=mysqli_fetch_assoc($result1))
+                                { 
+									$time_detail['day']=$ti['day'];
+									$time_detail['starttime']=$ti['start_time'];
+									$time_detail['endttime']=$ti['end_time'];
+									// print_R($time_detail);
+									$tworking=checktimestatusnew($time_detail);
+        						}
+							// print_R($tworking);
+							// echo "</br>Merchant Gap ";
+							foreach($tworking as $w)
+					        {
+					            if($w=="y")
+					            {$working="y";}
+							}
+					       $shopclose=[];
 					 }   
 					 if($working=="y")
 					 {
@@ -174,85 +132,38 @@ if($sort_by=="sort_distance" && $type=="all")
 						$langfile=$_SESSION['langfile'];
 						//echo $condition;
                         for($i=0;$i<$condition;$i++){
-							   
-								if($rd[$i][7] && $rd[$i][8])
+							$working="n";
+						   $work_str='';
+								if($rd[$i][7])
 								{
-									$s_time=date("g:i a", strtotime($rd[$i][9]));
-									$e_time=date("g:i a", strtotime($rd[$i][10]));
-									$work_str=$rd[$i][7]." ".$s_time." to ".$rd[$i][8]." ".$e_time;   
-									 $starday=$time_detail['starday']=$rd[$i][7];
-									$endday=$time_detail['endday']=$rd[$i][8];
-									$starttime=$time_detail['starttime']=$rd[$i][9];
-									$endttime=$time_detail['endttime']=$rd[$i][10];
-									// print_r($time_detail);
-											switch ($starday) {
-									case "Monday":
-										$s_day=1;
-										break;
-									case "Tuesday":
-										$s_day=2;
-										break;
-									case "Wednesday":
-										$s_day=3;
-										break;
-									case "Thursday":
-										$s_day=4;
-										break;
-									case "Friday":
-										$s_day=5;
-										break;
-									case "Saturday":
-										$s_day=6;
-										break;
-									default:
-										$s_day=7;
+									$sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd[6];
+									$result1 = mysqli_query($conn,$sql1);
+									while($ti=mysqli_fetch_assoc($result1))
+									{ 
+										$time_detail['day']=$ti['day'];
+										$time_detail['starttime']=$ti['start_time'];
+										$time_detail['endttime']=$ti['end_time'];
+										// print_R($time_detail);
+										$tworking=checktimestatusnew($time_detail);
+									}  
+									foreach($tworking as $w)
+									{
+										if($w=="y")
+										{$working="y";}
+									}
+								   $shopclose=[];
 								}
-								switch ($endday) {
-									case "Monday":
-										$e_day=1;
-										break;
-									case "Tuesday":
-										$e_day=2;
-										break;
-									case "Wednesday":
-										$e_day=3;
-										break;
-									case "Thursday":
-										$e_day=4;
-										break;
-									case "Friday":
-										$e_day=5;
-										break;
-									case "Saturday":
-										$e_day=6;
-										break;
-									default:
-										$e_day=7;
-								}  
-								$currenttime=date("H:i");
-								$n=date("N");
-									if(($currenttime >$starttime && $currenttime < $endttime) && ($s_day<=$n && $e_day>=$n)){
-									 $working="y";
-								  }
-								  else
-								  {
-									 $working="n";
-								  }
-								}
-								else
+								if($working=="y")
 								{
-									$work_str='';
-									$working="n";
-								}
-								if($langfile=="chinese" && $rd[$i][16]!='')
-								{
-									$work_str.="</br>".$rd[$i][16];
-								}
-								else if($rd[$i][15])
+								if($langfile=="chinese" && $rd[$i][15]!='')
 								{
 									$work_str.="</br>".$rd[$i][15];
 								}
-							  $distance=$rd[$i][14]['distance'];
+								else if($rd[$i][14])
+								{
+									$work_str.="</br>".$rd[$i][14];
+								}
+							  $distance=$rd[$i][13]['distance'];
                         ?>  <li>
 								<a href="view_merchant.php?sid=<?php echo $rd[$i][4];?>">
 									<figure class="<?php if($working=="n"){echo "shop_close";} ?>">
@@ -276,7 +187,7 @@ if($sort_by=="sort_distance" && $type=="all")
                                     </a>
                                 </li>
 								
-                         <?php   }?>   
+								<?php  }}?>   
 							
 							
 						</ul>
@@ -286,88 +197,41 @@ if($sort_by=="sort_distance" && $type=="all")
 					<div class="list_home">
 						<ul>
                         <?php
-                   
+						$langfile=$_SESSION['langfile'];
 						//echo $condition;
-                         for($i=$condition;$i<$count;$i++){
-							   
-								if($rd[$i][7] && $rd[$i][8])
+                        for($i=$condition;$i<$count;$i++){
+							$working="n";
+						   $work_str='';
+								if($rd[$i][7])
 								{
-									$s_time=date("g:i a", strtotime($rd[$i][9]));
-									$e_time=date("g:i a", strtotime($rd[$i][10]));
-									$work_str=$rd[$i][7]." ".$s_time." to ".$rd[$i][8]." ".$e_time;   
-									 $starday=$time_detail['starday']=$rd[$i][7];
-									$endday=$time_detail['endday']=$rd[$i][8];
-									$starttime=$time_detail['starttime']=$rd[$i][9];
-									$endttime=$time_detail['endttime']=$rd[$i][10];
-									// print_r($time_detail);
-											switch ($starday) {
-									case "Monday":
-										$s_day=1;
-										break;
-									case "Tuesday":
-										$s_day=2;
-										break;
-									case "Wednesday":
-										$s_day=3;
-										break;
-									case "Thursday":
-										$s_day=4;
-										break;
-									case "Friday":
-										$s_day=5;
-										break;
-									case "Saturday":
-										$s_day=6;
-										break;
-									default:
-										$s_day=7;
+									$sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd[6];
+									$result1 = mysqli_query($conn,$sql1);
+									while($ti=mysqli_fetch_assoc($result1))
+									{ 
+										$time_detail['day']=$ti['day'];
+										$time_detail['starttime']=$ti['start_time'];
+										$time_detail['endttime']=$ti['end_time'];
+										// print_R($time_detail);
+										$tworking=checktimestatusnew($time_detail);
+									}  
+									foreach($tworking as $w)
+									{
+										if($w=="y")
+										{$working="y";}
+									}
+								   $shopclose=[];
 								}
-								switch ($endday) {
-									case "Monday":
-										$e_day=1;
-										break;
-									case "Tuesday":
-										$e_day=2;
-										break;
-									case "Wednesday":
-										$e_day=3;
-										break;
-									case "Thursday":
-										$e_day=4;
-										break;
-									case "Friday":
-										$e_day=5;
-										break;
-									case "Saturday":
-										$e_day=6;
-										break;
-									default:
-										$e_day=7;
-								}  
-								$currenttime=date("H:i");
-								$n=date("N");
-									if(($currenttime >$starttime && $currenttime < $endttime) && ($s_day<=$n && $e_day>=$n)){
-									 $working="y";
-								  }
-								  else
-								  {
-									 $working="n";
-								  }
-								}
-								else
+								if($working=="y")
 								{
-									$work_str='';
-									$working="n";
-								}
-								if($langfile=="chinese" && $rd[$i][16]!='')
-								{
-									$work_str.="</br>".$rd[$i][16];
-								}
-								else if($rd[$i][15])
+								if($langfile=="chinese" && $rd[$i][15]!='')
 								{
 									$work_str.="</br>".$rd[$i][15];
 								}
-							  $distance=$rd[$i][14]['distance'];
+								else if($rd[$i][14])
+								{
+									$work_str.="</br>".$rd[$i][14];
+								}
+							  $distance=$rd[$i][13]['distance'];
                         ?>  <li>
 								<a href="view_merchant.php?sid=<?php echo $rd[$i][4];?>">
 									<figure class="<?php if($working=="n"){echo "shop_close";} ?>">
@@ -378,7 +242,7 @@ if($sort_by=="sort_distance" && $type=="all")
 									<!-- <div class="score"><strong>9.5</strong></div> --
 									<!--em>Italian</em!-->
 									<h3><?php echo $rd[$i][0];?></h3>
-									<?php if($sort_by!="sort_name"){ ?>
+								<?php if($sort_by!="sort_name"){ ?>
 											<!--small style="color:black;"><?php  print_r(number_format($rd[$i][14],2)); echo " KM Away </br>"; ?></small!-->
 									<?php } ?>
 									<!--small><?php echo $rd[$i][2]?></small!-->
@@ -391,12 +255,12 @@ if($sort_by=="sort_distance" && $type=="all")
                                     </a>
                                 </li>
 								
-                         <?php   }?>   
+								<?php  }}?>   
 							
 							
 						</ul>
 					</div>
-				</div>  
+				</div>   
 			<?php }   
 		}
 	}

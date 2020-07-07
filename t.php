@@ -135,7 +135,7 @@ inner join users on order_list.merchant_id = users.id
 		echo $msg_str;  
 		sendpush($msg_str);
 		die;     
-    function sendpush($sms_msg)
+    function sendpush2($sms_msg)
 	{
 		 $INSTANCE_ID = "17";  // TODO: Replace it with your gateway instance ID here
 		$CLIENT_ID = "mayank.mangalgroup@gmail.com";  // TODO: Replace it with your Forever Green client ID here
@@ -172,13 +172,13 @@ inner join users on order_list.merchant_id = users.id
 		if($json_array->error_message)
 		{
 			echo "failed to first setting";
-		  sendpush2($sms_msg);	
+		  sendpush($sms_msg);	
 		}
 		// if($json_array[''])
 	   print_R($response);
 	   
 	}
-       function sendpush2($sms_msg)
+       function sendpush($sms_msg)
 	{
 
 
@@ -209,10 +209,12 @@ inner join users on order_list.merchant_id = users.id
 		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
 
 		$response = curl_exec($ch);
+		print_R($response);
+		die;
 		$json_array=json_decode($response);
 		if($json_array->error_message)
 		{
-			sendpush($sms_msg);
+			sendpush2($sms_msg);
 		}
 		// if($json_array[''])
 	   print_R($response);

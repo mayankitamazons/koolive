@@ -907,7 +907,7 @@ map = new google.maps.Map($("#map")[0], {
 		// alert(clas_name);
 		   <?php } ?>
 		var s_token=generatetokenno(16);
-	var r_url="https://koofamilies.com/i.php?vs="+s_token;
+	var r_url="https://koofamilies.com/index.php?vs="+s_token;
 
 	 var myDynamicManifest = {
 
@@ -971,7 +971,7 @@ if ('serviceWorker' in navigator) {
 		  {
 			  swal("Welcome to KooFamilies!",show_flash, "success");
 			  setTimeout(function(){ 
-			  window.location.href = "i.php";
+			  window.location.href = "index.php";
 			  },5000); 
 		  }
 
