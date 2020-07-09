@@ -1,5 +1,26 @@
 <?php
 include('config.php');
+$shopclose=[];
+		function checktimestatusnew($time_detail)
+		{ 
+			global $shopclose;
+			extract($time_detail);
+// 			 echo "day=$day n=$n";
+// 		 	echo "ctime:".date("H:i");
+			$day=strtolower($day);
+			$currenttime=date("H:i");
+			$n=strtolower(date("l"));
+			if(($currenttime >$starttime && $currenttime < $endttime) && ($day==$n)){
+				  //$shop_close_status="y";
+				   array_push($shopclose,"y");
+			}
+			else
+			{ 
+			  //$shop_close_status="n";
+			  array_push($shopclose,"n");
+			}
+			return $shopclose;//$shop_close_status;
+		}
 if(isset($_GET['language'])){
 	$_SESSION["langfile"] = $_GET['language'];
 } 
@@ -29,7 +50,7 @@ if($sort_by=="sort_distance" && $type=="all")
 						   WHERE users.user_roles = 2 and users.isLocked= 0 and users.popular_restro=1 and users.latitude!='' and users.longitude!=''  group by users.id order by distance asc";   
 } else if($sort_by=="sort_name" && $type=="sort_name")
 {
-	   $sql = "SELECT SQL_NO_CACHE  users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.not_working_text,users.not_working_text_chiness FROM users 
+	   $sql = "SELECT SQL_NO_CACHE  users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.id as user_id,users.not_working_text,users.not_working_text_chiness FROM users 
 						   left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id   
 						   WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant=1 group by users.id order by users.name asc";   
                         // $result = mysqli_query($conn, $sql);
@@ -130,13 +151,13 @@ if($sort_by=="sort_distance" && $type=="all")
 						<ul>
                         <?php
 						$langfile=$_SESSION['langfile'];
-						//echo $condition;
+						//echo $condition;   
                         for($i=0;$i<$condition;$i++){
 							$working="n";
 						   $work_str='';
 								if($rd[$i][7])
 								{
-									$sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd[6];
+									$sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd[$i][6];
 									$result1 = mysqli_query($conn,$sql1);
 									while($ti=mysqli_fetch_assoc($result1))
 									{ 
@@ -146,6 +167,7 @@ if($sort_by=="sort_distance" && $type=="all")
 										// print_R($time_detail);
 										$tworking=checktimestatusnew($time_detail);
 									}  
+									// print_R($tworking);
 									foreach($tworking as $w)
 									{
 										if($w=="y")
@@ -155,15 +177,15 @@ if($sort_by=="sort_distance" && $type=="all")
 								}
 								if($working=="y")
 								{
-								if($langfile=="chinese" && $rd[$i][15]!='')
-								{
-									$work_str.="</br>".$rd[$i][15];
-								}
-								else if($rd[$i][14])
+								if($langfile=="chinese" && $rd[$i][14]!='')
 								{
 									$work_str.="</br>".$rd[$i][14];
 								}
-							  $distance=$rd[$i][13]['distance'];
+								else if($rd[$i][13])
+								{
+									$work_str.="</br>".$rd[$i][13];
+								}
+							  $distance=$rd[$i][12]['distance'];
                         ?>  <li>
 								<a href="view_merchant.php?sid=<?php echo $rd[$i][4];?>">
 									<figure class="<?php if($working=="n"){echo "shop_close";} ?>">
@@ -181,7 +203,7 @@ if($sort_by=="sort_distance" && $type=="all")
 									 <small style='color:red;'><?php if($work_str==""){
 										
 									}else{ echo $work_str;}?></small>
-									<?php if($rd[$i][12] || $rd[$i][13]){ if($rd[$i][13]){ $d_str="Flexible Delivery";} else { $d_str="MYR ".number_format($rd[$i][12],2);} } else { $d_str="Free Delivery";} ?>
+									<?php if($rd[$i][10] || $rd[$i][11]){ if($rd[$i][11]){ $d_str="Flexible Delivery";} else { $d_str="MYR ".number_format($rd[$i][10],2);} } else { $d_str="Free Delivery";} ?>
 									<?php if($d_str){ echo "<br><img src='img/motor.jpg' style='width:36px;'/> ".$d_str;} ?>
 									
                                     </a>
@@ -204,7 +226,7 @@ if($sort_by=="sort_distance" && $type=="all")
 						   $work_str='';
 								if($rd[$i][7])
 								{
-									$sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd[6];
+									$sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd[$i][6];
 									$result1 = mysqli_query($conn,$sql1);
 									while($ti=mysqli_fetch_assoc($result1))
 									{ 
@@ -223,15 +245,15 @@ if($sort_by=="sort_distance" && $type=="all")
 								}
 								if($working=="y")
 								{
-								if($langfile=="chinese" && $rd[$i][15]!='')
-								{
-									$work_str.="</br>".$rd[$i][15];
-								}
-								else if($rd[$i][14])
+								if($langfile=="chinese" && $rd[$i][14]!='')
 								{
 									$work_str.="</br>".$rd[$i][14];
 								}
-							  $distance=$rd[$i][13]['distance'];
+								else if($rd[$i][13])
+								{
+									$work_str.="</br>".$rd[$i][13];
+								}
+							  $distance=$rd[$i][12]['distance'];
                         ?>  <li>
 								<a href="view_merchant.php?sid=<?php echo $rd[$i][4];?>">
 									<figure class="<?php if($working=="n"){echo "shop_close";} ?>">
@@ -249,7 +271,7 @@ if($sort_by=="sort_distance" && $type=="all")
 									 <small style='color:red;'><?php if($work_str==""){
 										
 									}else{ echo $work_str;}?></small>
-									<?php if($rd[$i][12] || $rd[$i][13]){ if($rd[$i][13]){ $d_str="Flexible Delivery";} else { $d_str="MYR ".number_format($rd[$i][12],2);} } else { $d_str="Free Delivery";} ?>
+									<?php if($rd[$i][10] || $rd[$i][11]){ if($rd[$i][11]){ $d_str="Flexible Delivery";} else { $d_str="MYR ".number_format($rd[$i][10],2);} } else { $d_str="Free Delivery";} ?>
 									<?php if($d_str){ echo "<br><img src='img/motor.jpg' style='width:36px;'/> ".$d_str;} ?>
 									
                                     </a>

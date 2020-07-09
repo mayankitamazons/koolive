@@ -546,7 +546,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 					<div class="list_home">
 						<ul>
                         <?php
-                             $sql = "SELECT SQL_NO_CACHE  users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.not_working_text,users.not_working_text_chiness FROM users 
+                              $sql = "SELECT SQL_NO_CACHE  users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.not_working_text,users.not_working_text_chiness FROM users 
 						   left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id   
 						   WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant=1 group by users.id order by users.name asc";      
                         $result = mysqli_query($conn, $sql);
@@ -562,7 +562,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 							$work_str='';
 								if($rd[$i][7])
 								{
-								     $sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd[6];
+								      $sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd[$i][6];
 									$result1 = mysqli_query($conn,$sql1);
 									while($ti=mysqli_fetch_assoc($result1))
 									{ 
@@ -627,7 +627,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 						   $work_str='';
 						   if($rd[$i][7])
 								{
-								   $sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd[6];
+								   $sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$rd[$i][6];
 									$result1 = mysqli_query($conn,$sql1);
 									while($ti=mysqli_fetch_assoc($result1))
 									{ 
