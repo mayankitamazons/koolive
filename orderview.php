@@ -858,7 +858,7 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 							
 							<th><?php echo $language["invoice"];?></th>
 							<th><?php echo $language["kitchen"];?></th>   
-							<!--th><?php echo $language['review']; ?></th!-->
+							<th><?php echo $language['review']; ?></th>
 
 							<!--th>Agent code</th>
 							<th>Agent commission</th!-->
@@ -1220,7 +1220,7 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
                                     <a target="_blank" href="print_kitchen.php?id=<?php echo $row['id'];?>&merchant=<?php echo $loginidset?>">Print</a>
                                 <?php }?>
                             </td>
-							<!--td  style="font-size:18px;"  order_id='<?php echo $row['id']; ?>'> 
+							<td  style="font-size:18px;"  order_id='<?php echo $row['id']; ?>'> 
 								<?php 
 							   
 								if($row['reviewed']==1)
@@ -1232,7 +1232,7 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 								  <?php
 								}
 							   
-							   ?></td!-->
+							   ?></td>
 							 <!--td>
                                 <?php
                                     $o_id = $row['id']; 
@@ -2087,6 +2087,68 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
                       </div>
                     </div>
     </div>
+	<div id="reviewdetailmodel" class="modal fade" role="dialog">
+				  			<div class="modal-dialog">
+
+							    <!-- Modal content-->
+							    <div class="modal-content" id="review_model">
+									 <div class="modal-header">
+										  <button type="button" class="close" data-dismiss="modal">×</button>           
+										  <h4 class="modal-title" id="see_or_write_review" style="font-size: 21px;">Write a review for <span id="order_product_name"></span></h4>
+									   
+									</div>
+
+				  			
+							   <div class="modal-body" id="reviewdetailmodel_load" style="padding-bottom:0px;margin-top: -22px;">
+      <p style="font-size: 14px;" id="your_feedback">Your feedback is extermely important to us in order to provide best service to you</p>
+      <!--center>
+         <div class="row" >
+            <div class="col-md-5"><button id="marchant_review_button" type="button" style="font-size: 12px;cursor: pointer;" name="marchant_review_button"  class="btn btn-primary">Review to Marchant</button></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5"><button id="deliveryman_review_button" type="button" style="font-size: 12px;cursor: pointer;" name="deliveryman_review_button" class="btn btn-secondary">Review to Deliveryman</button>
+            </div>
+      </center!-->
+     
+      <div id="merchant_review" style="font-size:14px;">
+      <br> <center style="font-size: 14px;margin-top: -5px;text-align: center;font-weight: bold;"><b>Give feedback for service</b></center><hr>
+        Q 1. Are you satisfied with the food quality?<br>
+      <div class="row">
+	  
+      <div class="col-2 col-md-2 col-xs-2"><img id="review_q1_a1" src="assets\img\smile\laughing_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
+      <div class="col-2 col-md-2 col-xs-2"><img id="review_q1_a2" src="assets\img\smile\happy_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
+      <div class="col-2 col-md-2 col-xs-2"><img id="review_q1_a3" src="assets\img\smile\surprised_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
+      <div class="col-2 col-md-2 col-xs-2"><img id="review_q1_a4" src="assets\img\smile\sad_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
+      <div class="col-2 col-md-2 col-xs-2"><img id="review_q1_a5" src="assets\img\smile\verysad_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
+      <div class="col-2 col-md-2 col-xs-2"></div>
+      </div>
+      <hr>
+       Q 2. Are you happy with deliveryman service?<br> 
+      <div class="row">
+      <div class="col-2 col-md-2 col-xs-2"><img id="review_q2_a1" src="assets\img\smile\laughing_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
+      <div class="col-2 col-md-2 col-xs-2"><img id="review_q2_a2" src="assets\img\smile\happy_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
+      <div class="col-2 col-md-2 col-xs-2"><img id="review_q2_a3" src="assets\img\smile\surprised_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
+      <div class="col-2 col-md-2 col-xs-2"><img id="review_q2_a4" src="assets\img\smile\sad_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
+      <div class="col-2 col-md-2 col-xs-2"><img id="review_q2_a5" src="assets\img\smile\verysad_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
+      <div class="col-2 col-md-2 col-xs-2"></div>
+      </div>
+		<hr>
+      Q 3. Any additional comments? ?<br>
+      <textarea class="form-control rounded-0" id="addiComments" rows="1"></textarea>
+      <!--hr>
+      Q 6. Do you allow us to contact you for further clarification ?<br>
+      <input type="radio" name="clarification" value="No" checked>No</input>&nbsp;&nbsp;&nbsp;
+      <input type="radio" name="clarification" value="Yes">Yes</input>
+      <br!-->
+      <p id="review_error" style="color: red;"></p>
+      <br>
+      </div> 
+      <center><button id="review_check" type="button" name="review_check" onclick="checkNext()" style="color:black;"   class="btn btn-primary" order_id="">Feedback now</button>
+      <button id="review_skip" type="button" onclick="skip_review()"   class="btn btn-primary" style="color:black;"    order_id="">Feedback later</button></center>
+<br>	  
+      </div>
+   </div>
+</div>
+</div>
 <div id="WalletModel" class="modal fade" role="dialog">
 				  			<div class="modal-dialog">
 

@@ -3006,6 +3006,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
             </div>
 
           <div style="float:left;display:none;"><img src="images/worldwide-location.png"></div>
+		  <small>Location more than 30km will be subject to rider’s availability.</small>
            <small id="location_error" style="display:none;color:red;font-size:16px;">Delivery place is required</small>
         </div>
 

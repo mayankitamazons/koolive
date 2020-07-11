@@ -9,19 +9,19 @@ if($parent_data = mysqli_fetch_assoc(mysqli_query($conn, "select * from feedback
 
     //echo $parent_data['q1'].",".$parent_data['q2'].",".$parent_data['q3'].",".$parent_data['q4'].",".$parent_data['q5'].",".$parent_data['q6'].",".$parent_data['q7'].",".$parent_data['q8'].",".$parent_data['q9'].",".$parent_data['q10'];
 ?>      
-         <center>
+         <!--center>
            <div class="row" >
               <div class="col-md-5"><button id="marchant_review_button" type="button" style="font-size: 12px;cursor: pointer;" name="marchant_review_button"  class="btn btn-primary">Review  for Marchant</button></div>
               <div class="col-md-1"></div>
 			  <?php ?>
               <div class="col-md-5"><button id="deliveryman_review_button" type="button" style="font-size: 12px;cursor: pointer;" name="deliveryman_review_button" class="btn btn-secondary">Review for Deliveryman</button>
            </div>
-          </center>
+          </center!-->
         <div id="merchant_review" >
 		<?php if($login_as==1){ ?>
-          <br><center><b>Feedback For Merchant</b></center><hr>
+          <br><center><b>Feedback for service</b></center><hr>
 		<?php } ?>
-            Q 1. Is the food goods delivered to your hand in good conditions ?<br>
+              Q 1. Are you satisfied with the food quality?<br>
             <div class="row">
             <?php if ($parent_data['q1']==1){ ?>
               <div class="col-3 col-md-2"><img id="review_q1_a1" src="assets\img\smile\laughing_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
@@ -66,7 +66,7 @@ if($parent_data = mysqli_fetch_assoc(mysqli_query($conn, "select * from feedback
               
             </div>
             <hr>      
-            Q 2. Is the foods/goods meeting your expectations ?<br>   
+                   Q 2. Are you happy with deliveryman service?<br> 
             <div class="row">
             <?php if ($parent_data['q2']==1){ ?>
               <div class="col-3 col-md-2"><img id="review_q1_a1" src="assets\img\smile\laughing_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
@@ -111,96 +111,10 @@ if($parent_data = mysqli_fetch_assoc(mysqli_query($conn, "select * from feedback
               
             </div>
             <hr> 
-            Q 3. Is the foods/goods fresh and tasty ?<br>
-            <div class="row">
-            <?php if ($parent_data['q3']==1){ ?>
-              <div class="col-3 col-md-2"><img id="review_q1_a1" src="assets\img\smile\laughing_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-
-          		<?php }
-          		else{
-              ?>
-               <div class="col-3 col-md-2"><img id="review_q1_a1" src="assets\img\smile\laughing_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-          <?php } ?>
-
-<?php if ($parent_data['q3']==2){ ?>
-              <div class="col-3 col-md-2"><img id="review_q1_a2" src="assets\img\smile\happy_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-        <?php }
-          		else{
-              ?>
-              <div class="col-3 col-md-2"><img id="review_q1_a2" src="assets\img\smile\happy_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-        <?php } ?>
-
-<?php if ($parent_data['q3']==3){ ?>
-              <div class="col-3 col-md-2"><img  src="assets\img\smile\surprised_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-
-  <?php }
-          		else{
-              ?>    
-              <div class="col-3 col-md-2"><img  src="assets\img\smile\surprised_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-           <?php } ?>  
-           <?php if ($parent_data['q3']==4){ ?> 
-              <div class="col-3 col-md-2"><img  src="assets\img\smile\sad_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-              <?php }
-          		else{
-              ?>  
-              <div class="col-3 col-md-2"><img  src="assets\img\smile\sad_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-              <?php }?>
-            <?php if ($parent_data['q3']==5){ ?>    
-              <div class="col-3 col-md-2"><img  src="assets\img\smile\verysad_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-               <?php }
-          		else{
-              ?> 
-              <div class="col-3 col-md-2"><img  src="assets\img\smile\verysad_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-              <?php }?>
-              <div class="col-3 col-md-2"></div>
-              
-            </div>
-            <hr> 
-            Q 4. Will your recommend this merchant to your friends ?<br>
-                  <div class="row">
-            <?php if ($parent_data['q4']==1){ ?>
-              <div class="col-3 col-md-2"><img id="review_q1_a1" src="assets\img\smile\laughing_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-
-          		<?php }
-          		else{
-              ?>
-               <div class="col-3 col-md-2"><img id="review_q1_a1" src="assets\img\smile\laughing_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-          <?php } ?>
-
-<?php if ($parent_data['q4']==2){ ?>
-              <div class="col-3 col-md-2"><img id="review_q1_a2" src="assets\img\smile\happy_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-        <?php }
-          		else{
-              ?>
-              <div class="col-3 col-md-2"><img id="review_q1_a2" src="assets\img\smile\happy_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-        <?php } ?>
-
-<?php if ($parent_data['q4']==3){ ?>
-              <div class="col-3 col-md-2"><img  src="assets\img\smile\surprised_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-
-  <?php }
-          		else{
-              ?>    
-              <div class="col-3 col-md-2"><img  src="assets\img\smile\surprised_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-           <?php } ?>  
-           <?php if ($parent_data['q4']==4){ ?> 
-              <div class="col-3 col-md-2"><img  src="assets\img\smile\sad_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-              <?php }
-          		else{
-              ?>  
-              <div class="col-3 col-md-2"><img  src="assets\img\smile\sad_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-              <?php }?>
-            <?php if ($parent_data['q4']==5){ ?>    
-              <div class="col-3 col-md-2"><img  src="assets\img\smile\verysad_green.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-               <?php }
-          		else{
-              ?> 
-              <div class="col-3 col-md-2"><img  src="assets\img\smile\verysad_grey.png" style="height: 30px;width: 30px;cursor: pointer;" /></div>
-              <?php }?>
-              <div class="col-3 col-md-2"></div>
-              
-            </div>
-            <hr> 
+			 Q 3. Any additional comments? ?<br>
+      <textarea class="form-control rounded-0" id="addiComments" rows="1" readonly><?php echo  $parent_data['remark'];?></textarea>
+		</br>
+		</br>
         </div>
 		<?php if($login_as==1){ ?>
         <div id="deliveryman_review" style="font-size: 11px;display: none;">
