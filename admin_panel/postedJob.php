@@ -163,7 +163,7 @@ if(isset($_GET['jobData']) && $_GET['jobData']=="data"){
                                 <th>Job Title</th>
                                 <th>Job Desc</th>
                                 <th>Price</th>
-                                <th>Posted Date</th>
+                                <th>Post Date</th>
                                 <th>Expire Date</th>
                                 <th>Advance salery</th>
                                 <th>Salery Type</th>
@@ -188,8 +188,8 @@ if(isset($_GET['jobData']) && $_GET['jobData']=="data"){
                                 <td><?php echo isset($row['title'])?$row['title']:'';?></td>
                                 <td><?php echo isset($row['job_desc'])?substr($row['job_desc'],0,80):'';?></td>
                                 <td><?php echo isset($row['price'])?$row['price']:'';?></td>
-                                <td><?php $postDate = $row['posted_date_utc']; echo Date("Y-m-d",$postDate)?></td>
-                                <td><?php $exDate = $row['expire_date_utc']; echo Date("Y-m-d",$exDate);?></td>
+                                <td><?php $postDate = $row['posted_date_utc']; echo Date("d-m-Y H:i A",$postDate)?></td>
+                                <td><?php $exDate = $row['expire_date_utc']; echo Date("d-m-Y",$exDate);?></td>
                                 <td><?php echo isset($row['advance_salery'])?$row['advance_salery']:'';?></td>
                                 <td><?php echo isset($row['salaryType'])?$row['salaryType']:'';?></td>
                                 <td><?php echo isset($row['category_name'])?$row['category_name']:'';?></td>

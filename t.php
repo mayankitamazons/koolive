@@ -132,14 +132,14 @@ inner join users on order_list.merchant_id = users.id
 			$i++;
 		}        
 		$msg_str.="\r\nTotal qty : ".$total_qun."\r\n";        
-		echo $msg_str;  
+		// echo $msg_str;  
 		sendpush($msg_str);
 		die;     
     function sendpush2($sms_msg)
 	{
 		 $INSTANCE_ID = "17";  // TODO: Replace it with your gateway instance ID here
 		$CLIENT_ID = "mayank.mangalgroup@gmail.com";  // TODO: Replace it with your Forever Green client ID here
-		$CLIENT_SECRET = "a16236d83f1b43f38310e3cd393293afd";   // TODO: Replace it with your Forever Green client secret here
+		$CLIENT_SECRET = "a16236d83f1b43f38310e3cd393293af";   // TODO: Replace it with your Forever Green client secret here
 	   // $whatapp_group_name="chao shan Delivery"; 
 		// $INSTANCE_ID = "25";  // TODO: Replace it with your gateway instance ID here
 		// $CLIENT_ID = "woijoonchong@gmail.com";  // TODO: Replace it with your Forever Green client ID here
@@ -178,7 +178,7 @@ inner join users on order_list.merchant_id = users.id
 	   print_R($response);
 	   
 	}
-       function sendpush($sms_msg)
+    function sendpush($sms_msg)
 	{
 
 
@@ -210,7 +210,7 @@ inner join users on order_list.merchant_id = users.id
 
 		$response = curl_exec($ch);
 		print_R($response);
-		die;
+		die;   
 		$json_array=json_decode($response);
 		if($json_array->error_message)
 		{
@@ -219,6 +219,6 @@ inner join users on order_list.merchant_id = users.id
 		// if($json_array[''])
 	   print_R($response);
 	   
-	}		
+	}		   
 	
 ?>

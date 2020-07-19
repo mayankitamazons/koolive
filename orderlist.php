@@ -1098,7 +1098,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 					 <th style="color:#09caab;"><?php echo "Order Details";?></th>
 					 <th><?php echo $language["rider_info"];?></th>
 					 <th style="color:#09caab;"><?php echo "Merchant Bank Detail";?></th>
-					 					 <th style="color:#09caab;"><?php echo "Review";?></th>
+					 					 <th style="color:#09caab;"><?php echo "Feedback";?></th>
 					 
 					   <th>Section</th>
 					 <th><?php echo $language["table_number"];?></th>
@@ -1125,7 +1125,7 @@ input[name='p_total[]'],input[name='p_price[]']{
                             <th><?php echo $language['paid_by_wallet'];?></th>
                             <th><?php echo $language['bal_payment'];?></th>
                      <th><?php echo $language["mode_of_payment"];?></th>
-                     <th><?php echo $language["rating_comment"];?></th>
+                     <!--th><?php echo $language["rating_comment"];?></th!-->
                      <th><?php echo $language["print"];?></th>   
                      <!--th>K1/K2</th!-->
                   </tr>
@@ -1286,7 +1286,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 																$review_given="n";
 												  }
 						  ?>  
-					   	 <span class="btn btn-purple review_detail" invoice_id="<?php echo $row['invoice_no']; ?>" order_id="<?php echo $row['id']; ?>" review_status="<?php echo $review_given; ?>" style="color:black;" skiped_review="<?php echo $row['skiped_review']; ?>">Review</span>
+					   	 <span class="btn btn-purple review_detail" invoice_id="<?php echo $row['invoice_no']; ?>" order_id="<?php echo $row['id']; ?>" review_status="<?php echo $review_given; ?>" style="color:black;" skiped_review="<?php echo $row['skiped_review']; ?>">Feedback</span>
 
 					  <?php } ?>
 					  </td> 
@@ -1438,11 +1438,11 @@ input[name='p_total[]'],input[name='p_price[]']{
                            
                           
                     <td><?php echo $wal_label;  ?></td>   
-							<td>   
+							<!--td>   
 								<?php //if($row['status']== '1'){ ?>
 								<label class="dp_lab"  data-id="<?php echo $merchant_name['id'];  ?>" data-oid="<?php echo $total;?>" data-orid="<?php echo $row['id']; ?>">Click Here</label>
 								<?php// }   ?>
-							</td>                
+							</td!-->                
                      <?php if($row['status'] == 4 || $row['status']==5 || $row['status'] ==2 ){ ?>
                        
                       <td><a target="_blank" href="print.php?id=<?php echo $row['id'];?>&merchant=<?php echo $row['merchant_id']?>">Print</a></td>

@@ -195,6 +195,7 @@ $language['wallet_balance'] = "钱包";
 $language['list_order_payment'] = "订单和付款";
 $language['scan_order'] = "已处理的大量发票";
 $language["search_by_company"] = "按公司名称搜索";  
+$language["search_product_name"] = "输入商品名称";  
 $language["qr_code"] = "二维码";    
 $language["option_menu_1"] = "食品和饮料，例如饭店，健康食品，特许经营等"; 
 $language["option_menu_2"] ='汽车，例如洗车，维修，拖曳等';
@@ -372,7 +373,8 @@ $language['difficulty'] ="如果还是有困难下单，可以通过 whatapp 这
 $language['search_by_location'] ="寻找附近餐厅";   
 $language['near_by_shop_2'] ="附近商店";  
 $language['rider_info'] ="Rider info";     
-$language['new_timing_working'] ="Multiple Working";      
+$language['new_timing_working'] ="Multiple Working"; 
+$language['post_job_list'] ="Post/Search jobs";      
 
 
 ?>

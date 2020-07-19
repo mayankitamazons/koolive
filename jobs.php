@@ -2,7 +2,7 @@
 ?>
 <!DOCTYPE html>
 <html lang="en">
-	<?php
+<?php
 		// Find out how many items are in the table
 		$totalQuery = mysqli_query($conn,"select count(id) as totalRecord from jobs");
 		$totalFetch = mysqli_fetch_assoc($totalQuery);
@@ -161,6 +161,9 @@
 		<h2 style="margin-left:3%;"><?php echo "Job for ".$catdetail['category_name']; ?></h2>
 		<div></div>
 		<?php }?>
+		<?php if($_SESSION['job_post']){ ?>
+		<p style="color:red;text-align:center;"><?php echo "Your job has been submitted. We will review and come back to you as soon as possible"; $_SESSION['job_post']=''; ?></h2>
+		<?php } ?>
 		<div class="container margin_30_40" style="min-height:500px;">			
 			<div class="row">
 				<div class="col-lg-9">

@@ -61,7 +61,7 @@
    
    
    
-   $u_query =mysqli_query($conn,"SELECT * FROM delivery_plan WHERE status='y' and merchant_id='".$_SESSION['login']."'");  
+   $u_query =mysqli_query($conn,"SELECT * FROM delivery_plan WHERE status='y' and merchant_id='".$_SESSION['login']."' order by id asc");  
    
    
    
@@ -151,12 +151,14 @@
                      <?php if (mysqli_num_rows($u_query) > 0): ?>
                      <table class="table table-striped kType_table dataTable no-footer" id="kType_table" aria-describedby="kType_table_info">
                         <tr>
+						   <th>Sr No</th>
                            <th><?php echo $language['Mmin_distance']; ?></th>
                            <th><?php echo $language['max_distance']; ?></th>
                            <th><?php echo $language['charge']; ?></th>
                            <th>Action</th>
                         </tr>
                         <?php
+						   $i=1;
                            while($row = mysqli_fetch_assoc($u_query))
                            
                            
@@ -173,6 +175,7 @@
                            
                            	?>
                         <tr>
+						  <td><?php echo $i; ?></td>
                            <td><?php echo $row['min_distance']; ?></td>
                            <td><?php echo $row['max_distance']; ?></td>
                            <td><?php echo $row['charge']; ?></td>
@@ -185,7 +188,7 @@
                         </tr>
                         <?php
                            // die;
-                           
+                           $i++;
                            
                            
                            }

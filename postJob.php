@@ -178,7 +178,7 @@
 									<div class="col-lg-12">
                                         <div class="form-group">
                                             <label for="title">Job Price <span style="color:red;">*</span></label>
-                                            <input type="number" required="" name="jPrice" min="1" class="form-control" placeholder="Price">
+                                            <input type="text" required="" name="jPrice" min="1" class="form-control" placeholder="Price">
                                         </div>
 									</div>
 								</div>
@@ -285,7 +285,7 @@
 
                                 <hr>
 								<!-- /row -->
-								<div class="form-group text-center"><input type="submit" id="submitForm" name="post-job" class="btn_1" value="Submit"></div>
+								<div class="form-group text-center"><input type="submit" id="submitForm" name="post_job" class="btn_1" value="Submit"></div>
                             </form>
                             
 					</div>
@@ -495,28 +495,54 @@ map = new google.maps.Map($("#map")[0], {
 </body>
 </html>
 <?php
-		if(isset($_POST['post-job'])){
+function gw_send_sms($user,$pass,$sms_from,$sms_to,$sms_msg){           
+    $query_string = "api.aspx?apiusername=".$user."&apipassword=".$pass;
+    $query_string .= "&senderid=".rawurlencode($sms_from)."&mobileno=".rawurlencode($sms_to);
+    $query_string .= "&message=".rawurlencode(stripslashes($sms_msg)) . "&languagetype=1";        
+     $url = "http://gateway.onewaysms.com.au:10001/".$query_string;  
+    
+	// Initialize a CURL session. 
+	$ch = curl_init();  
+	  
+	// Return Page contents. 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+	  
+	//grab URL and pass it to the variable. 
+	curl_setopt($ch, CURLOPT_URL, $url); 
+	  
+	$result = curl_exec($ch); 
+	 $ok = "success"; 
+	      
+    return $ok;  
+}
+		if(isset($_POST['post_job'])){  
             extract($_POST);
             // print_r($_POST);
             // die;
             
-            $post_date = strtotime(Date("Y-m-d"));
-            $expire_date = strtotime($exDate);
-           
-            $query = mysqli_query($conn, "INSERT INTO `jobs`(`title`, `job_desc`, `price`, `posted_date_utc`, `expire_date_utc`, `job_category_id`, `job_provider_name`, `job_provide_mobile`, `salaryType`, `salaryStatus`,`advance_salery`,`view`,`postedStatus`) 
-            VALUES ('$title','$jobDesc','$jPrice','$post_date','$expire_date','$category','$jProname','$jProNo','$salaryType','$salaryStatus','$advance_salery','0','0')");
+            $post_date = strtotime(Date("Y-m-d h:i:s"));
+            $expire_date = strtotime($exDate);  
+            $insert="INSERT INTO `jobs`(`title`, `job_desc`, `price`, `posted_date_utc`, `expire_date_utc`, `job_category_id`, `job_provider_name`, `job_provide_mobile`, `salaryType`, `salaryStatus`,`advance_salery`,`view`,`postedStatus`) 
+            VALUES ('$title','$jobDesc','$jPrice','$post_date','$expire_date','$category','$jProname','$jProNo','$salaryType','$salaryStatus','$advance_salery','0','0')";
+			
+		   $query = mysqli_query($conn,$insert);
             
             if($query){
 				$msg_str='';
 				$msg_str.="New Job Posted !"."\r\n";
 				$msg_str.="Posted By:".$jProname.",".$jProNo."\r\n";
-				$msg_str.="Job title:".$title."\r\n";
-				$msg_str.="Desc:".$jobDesc."\r\n";
-				$whatapp_group_name="Koo Support Team";
+				// $msg_str.="Job title:".$title."\r\n";
+				// $msg_str.="Desc:".$jobDesc."\r\n";
+				$whatapp_group_name="Job delivery/live";
 				whatappgroupmsg($whatapp_group_name,$msg_str);
-                header('Location:jobs.php');
+				$sms_to="60123945670,60127500913";
+				$smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$msg_str);
+				$_SESSION['job_post']="yes";
+				$send_url="jobs.php"."?vs=".md5(rand());
+                 header("Location:$send_url");
+				 die;
             }else{
-                header('location:postJob.php');
+                // header('location:postJob.php');
             }
-        }
+        }   
 	?>
