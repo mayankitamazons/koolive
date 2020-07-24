@@ -1,4 +1,9 @@
 <?php include('config.php');
+if(isset($_GET['language'])){
+	$_SESSION["langfile"] = $_GET['language'];
+} 
+if (empty($_SESSION["langfile"])) { $_SESSION["langfile"] = "english"; }
+    require_once ("languages/".$_SESSION["langfile"].".php");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -155,7 +160,7 @@
 		$catid=$_GET['catid'];
 		$catName = mysqli_query($conn, "select * from job_category where id='$catid'");
 		$catdetail=mysqli_fetch_array($catName);
-		// print_R($catdetail);
+  		// print_R($catdetail);
 		
 		?>
 		<h2 style="margin-left:3%;"><?php echo "Job for ".$catdetail['category_name']; ?></h2>
@@ -164,10 +169,17 @@
 		<?php if($_SESSION['job_post']){ ?>
 		<p style="color:red;text-align:center;"><?php echo "Your job has been submitted. We will review and come back to you as soon as possible"; $_SESSION['job_post']=''; ?></h2>
 		<?php } ?>
-		<div class="container margin_30_40" style="min-height:500px;">			
+		<div class="container margin_30_40" style="min-height:500px;">	
+           	
 			<div class="row">
 				<div class="col-lg-9">
 					<div class="row">
+					    <a class="btn btn-primary" style="color:black;"  href="index.php?vs=<?php echo rand(); ?>"><button class="btn_1 add_bottom_15"><?php echo $language['more_shops'];?></button>
+
+						 <img class="Sirv" data-src="https://koofamilies.sirv.com/shop.png" alt="" />
+						 <img class="Sirv" data-src="https://koofamilies.sirv.com/shop.png" alt="" />
+						 <img class="Sirv" data-src="https://koofamilies.sirv.com/shop.png" alt="" />
+					 </a>   
 						<?php 
 						if($_GET['catid']){
 							$cId = $_GET['catid'];

@@ -1074,7 +1074,10 @@ input[name='p_total[]'],input[name='p_price[]']{
             <h3>Order list
 			<a style="text-align:center;width:100%;margin-top:2%;" href="https://play.google.com/store/apps/details?id=com.app.koofamily" target="blank">
 							  <img style="max-width:140px;" src="google.png" alt="">
-							</a>
+			</a>
+			<a style="text-align:center;width:100%;margin-top:2%;" href="https://apps.apple.com/us/app/id1491595615?mt=8" target="blank">
+                                <img style="max-width:140px;max-height:40px;" src="appstore.png" alt="">
+            </a> 	 			
 			</h3>  
             <?php
                $dt = new DateTime();

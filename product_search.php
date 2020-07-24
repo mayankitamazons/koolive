@@ -205,7 +205,7 @@ function ceiling($number, $significance = 1)
                         <div class="search_bar_list">
                             <form>
                                 <input type="text" class="form-control" name="p" value="<?= (isset($_GET['p'])) ? $_GET['p'] : '' ?>" placeholder="Search again...">
-                                <input type="submit" value="Search">
+                                <input type="submit" value="<?=$language['search'] ?>">
                             </form>
                         </div>
                     </div>
@@ -218,7 +218,7 @@ function ceiling($number, $significance = 1)
                     <div class="clearfix">
                         <div id="sort_fields" class="sort_select bg-white">
                             <select name="sort" id="sort">
-                                <option value="price" <?= (isset($_GET['orderby']) && $_GET['orderby'] == 'price') ? 'selected="selected"' : '' ?>>Sort by Price: <?= ($orderbyDirection === 'ASC') ? 'low to high' : 'high to low' ?></option>
+                                <option value="price" <?= (isset($_GET['orderby']) && $_GET['orderby'] == 'price') ? 'selected="selected"' : '' ?>><?=$language['sort_price_low_high'] ?></option>
                                 <option value="distance" <?= (isset($_GET['orderby']) && $_GET['orderby'] == 'distance') ? 'selected="selected"' : '' ?>>Sort by Distance</option>
                                 <option value="rating" <?= (isset($_GET['orderby']) && $_GET['orderby'] == 'rating') ? 'selected="selected"' : '' ?>>Sort by Rating</option>
                                 <option value="name" <?= (isset($_GET['orderby']) && $_GET['orderby'] == 'name') ? 'selected="selected"' : '' ?>>Sort by Name: A - Z</option>
@@ -226,7 +226,7 @@ function ceiling($number, $significance = 1)
                             <div class="icon"></div>
                         </div>
                     </div>
-                    <a href="." class="btn btn-success" style="background-color: #589442;color:#fff;">Search by company name </a>
+                    <a href="." class="btn btn-success" style="background-color: #589442;color:#fff;"><?=$language["search_by_company"] ?></a>
                 </div>
             </div>
         </div>
@@ -246,9 +246,36 @@ function ceiling($number, $significance = 1)
                         $floatDistance = $product['distance'] ? str_replace(',', '', $product['distance']) : 0;
                         $chargeSql = "SELECT charge FROM delivery_plan WHERE merchant_id='{$user_id}' AND max_distance >= {$floatDistance} ORDER BY max_distance ASC LIMIT 1";
                         $product['charge'] = mysqli_fetch_assoc(mysqli_query($conn, $chargeSql))['charge'];
-                        // $queryRating = mysqli_fetch_assoc(mysqli_query($conn, "SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id AND users.id = $user_id GROUP BY users.id"));
                         $avgRating = $product['avg_rating'];
                         $number_ratings = $product['ratings'];
+                        
+                        $get_workingHr = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE  * FROM set_working_hr WHERE merchant_id='$user_id' "));
+
+                        $inWorkingHours = false;
+                        if (!empty($get_workingHr['start_time']) && !empty($get_workingHr['end_time'])) {
+                            $daysArr = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                            $working_hours = (object) [
+                                'start_hour'    => $get_workingHr['start_time'],
+                                'end_hour'      => $get_workingHr['end_time'],
+                                'start_day'     => $get_workingHr['start_day'],
+                                'end_day'       => $get_workingHr['end_day']
+                            ];
+                            $start_time = date("g:i a", strtotime($working_hours->start_hour));
+                            $end_time = date("g:i a", strtotime($working_hours->end_hour));
+
+                            $startDay   = intval(array_search(strtolower($working_hours->start_day), $daysArr)) + 1;  // To make it 1-7 and not 0-6
+                            $endDay     = intval(array_search(strtolower($working_hours->end_day), $daysArr)) + 1;      // To make it 1-7 and not 0-6
+                            
+                            $currentDay = intval(date("N"));
+                            $currentTime    = strtotime(date("H:i"));
+
+                            if ($startDay < $currentDay && $currentDay < $endDay) {
+
+                                if (strtotime($start_time) < $currentTime && $currentTime < strtotime($end_time)) {
+                                    $inWorkingHours = true;
+                                }
+                            }
+                        }
                     ?>
                         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
                             <div class="card strip">
@@ -299,7 +326,13 @@ function ceiling($number, $significance = 1)
                                         <div class="col-md-12 p-0">
                                             <hr class="mt-2 mb-2">
                                         </div>
-
+                                        <?php
+                                         if(!$inWorkingHours){
+                                        ?>
+                                        <div class="col-md-12 p-0 text-danger"><?=$language['shop_closed_order_later'] ?></div>
+                                        <?php
+                                        }
+                                        ?>
                                         <div class="col-md-12 p-0">
                                             <b><?= $product['product_name'] ?> price:</b> <span class="text-info">Rm <?= ceiling($product['product_price_hike'], 0.05); ?></span>
                                         </div>
@@ -312,6 +345,18 @@ function ceiling($number, $significance = 1)
                                         ?>
                                             <div class="col-md-12 p-0">
                                                 <b>Distance:</b> <span class="text-info">~ <?= $product['distance'] ?> Km</span>
+                                            </div>
+                                        <?php
+                                        }
+                                        
+                                        if (!$inWorkingHours) {
+                                            $start_day_diminutive = date('D',strtotime($working_hours->start_day));
+                                            $end_day_diminutive = date('D',strtotime($working_hours->end_day));
+                                        ?>
+                                            <div class="col-md-12 p-0">
+                                                <b>Opening days:</b> <span class="text-info"><?="{$start_day_diminutive} - {$end_day_diminutive}" ?></span>
+                                                <br>
+                                                <b>Opening hours:</b> <span class="text-info"><?="{$working_hours->start_hour} - {$working_hours->end_hour}" ?></span>
                                             </div>
                                         <?php
                                         }

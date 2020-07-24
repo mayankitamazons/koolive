@@ -24,6 +24,21 @@ $bank_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE i
    $send_url=$site_url."/set_workinghours.php"."?vs=".md5(rand());
 		   header("Location:$send_url");
 }
+if(isset($_POST['working']))
+{
+    $working_text=$_POST['working_text'];
+    $working_text_chiness=$_POST['working_text_chiness'];
+  
+  
+   if($working_text || $working_text_chiness)
+   {
+	   // echo "updated users set not_working_text='$not_working_text' where id='$current_id'";
+	   $update=mysqli_query($conn,"update users set working_text='$working_text',working_text_chiness='$working_text_chiness' where id='$current_id'");
+	  // die; 
+   }
+   $send_url=$site_url."/set_workinghours.php"."?vs=".md5(rand());
+		   header("Location:$send_url");
+}
 if(isset($_POST['submit']))
 {
 	if($_POST['insert']=="insert")
@@ -219,41 +234,75 @@ if(isset($_GET['Delete']))
 
 					        </div>
 					      </div>
-					 </div> 
-											<div class="container" >
-					    <div class="row">
-					        <div class="well col-md-12">
-							<form  method="post">
-								<div class="panel price panel-red">
-									<h2>Not  Working Time</h2>
-									<div  class="row col-md-12">
-									<div  class="col-md-5">
-									
-										<input type="text" class="form-control" value="<?php echo $bank_data['not_working_text']; ?>" name="not_working_text" placeholder="Updated text for Not Working Hours"/>
-									</div>
-									<div  class="col-md-5">
-									
-										<input type="text" class="form-control" value="<?php echo $bank_data['not_working_text_chiness']; ?>" name="not_working_text_chiness" placeholder="Updated text for Not Working Hours in Chiness"/>
-									</div>
+					 </div>
+					 <div class="container" >
+							<div class="row">
+								<div class="well col-md-12">
+								<form  method="post">
+									<div class="panel price panel-red">
+										<h2>Working Time text</h2>
+										<div  class="row col-md-12">
+										<div  class="col-md-5">
+										
+											<input type="text" class="form-control" value="<?php echo $bank_data['working_text']; ?>" name="working_text" placeholder="Updated text for Working Hours"/>
+										</div>
+										<div  class="col-md-5">
+										
+											<input type="text" class="form-control" value="<?php echo $bank_data['working_text_chiness']; ?>" name="working_text_chiness" placeholder="Updated text for  Working Hours in Chiness"/>
+										</div>
 
-									<div class="col-md-2">
-										<input type="submit" class="btn btn-block btn-primary" name="not_working" value="Update">
+										<div class="col-md-2">
+											<input type="submit" class="btn btn-block btn-primary" name="working" value="Update">
+										</div>
+
+										
 									</div>
+									
 
 									
-								</div>
 								
 
-								
+									</div>
+									
+								</form>
+							</div>
 							
-
-								</div>
-								
-							</form>
 						</div>
-						
 					</div>
-				</div>
+						<div class="container" >
+							<div class="row">
+								<div class="well col-md-12">
+								<form  method="post">
+									<div class="panel price panel-red">
+										<h2>Not  Working Time</h2>
+										<div  class="row col-md-12">
+										<div  class="col-md-5">
+										
+											<input type="text" class="form-control" value="<?php echo $bank_data['not_working_text']; ?>" name="not_working_text" placeholder="Updated text for Not Working Hours"/>
+										</div>
+										<div  class="col-md-5">
+										
+											<input type="text" class="form-control" value="<?php echo $bank_data['not_working_text_chiness']; ?>" name="not_working_text_chiness" placeholder="Updated text for Not Working Hours in Chiness"/>
+										</div>
+
+										<div class="col-md-2">
+											<input type="submit" class="btn btn-block btn-primary" name="not_working" value="Update">
+										</div>
+
+										
+									</div>
+									
+
+									
+								
+
+									</div>
+									
+								</form>
+							</div>
+							
+						</div>
+					</div>
 
 			</main>
         </div>

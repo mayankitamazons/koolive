@@ -2469,7 +2469,7 @@ if (isset($login_user_id)) {
                                 <img style="max-width:140px;" src="google.png" alt="">
                             </a>
                             <a style="text-align:center;width:100%;margin-top:2%;" href="https://apps.apple.com/us/app/id1491595615?mt=8" target="blank">
-                                <img style="max-width:140px;" src="appstore.png" alt="">
+                                <img style="max-width:140px;max-height:40px;" src="appstore.png" alt="">
                             </a>
                         </div>
                         <?php if ($voice_recognition) { ?>
@@ -8176,9 +8176,12 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
         var w6 = "<?php echo $language['w6'] ?>";
         var selected_lang = "<?php echo $_SESSION['langfile'] ?>";
         var not_working_text = "<?php echo $merchant_detail['not_working_text']; ?>";
-        var not_working_text_chiness = "<?php echo $merchant_detail['not_working_text_chiness']; ?>";
+		  var working_text = "<?php echo $merchant_detail['working_text']; ?>";
+        var working_text_chiness = "<?php echo $merchant_detail['working_text_chiness']; ?>";
         if (selected_lang == "chinese" && not_working_text_chiness != '')
             var not_working_text = not_working_text_chiness;
+		  if (selected_lang == "chinese" && working_text_chiness != '')
+            var working_text = working_text_chiness;
 
         var n = d.getDay();
         if (n == 0)
@@ -8345,11 +8348,19 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                 // $( "#confmpayment" ).prop( "disabled", true ); 
 
                 // $("#shop_model_text").html("Shop is Close Now , Our Working Hours are "+starday1+" "+show_time+" to "+endday1+" "+end_time+"")
-                if (not_working_text)
-                    var m = w1 + " " + show_time + " " + w2 + " " + end_time + " (" + not_working_text + "). " + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
-                else
-                    var m = w1 + starday1 + " " + show_time + w2 + endday1 + " " + end_time + "." + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
-                // var m="Our working hours is from "+starday1+" "+show_time+" to "+endday1+" "+end_time+". You can still place order during non-working hours"+"</br><span style='color:red;'>Enjoy 5% rebate if you order before  12am for tomorrow's delivery.</span>";
+                // if (not_working_text)
+                    // var m = w1 + " " + show_time + " " + w2 + " " + end_time + " (" + not_working_text + "). " + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
+                // else
+                    // var m = w1 + starday1 + " " + show_time + w2 + endday1 + " " + end_time + "." + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
+                if(not_working_text)
+				{
+					 var m =working_text + " (" + not_working_text + "). " + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
+				}
+				else
+				{
+					var m =working_text + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
+				}     
+				// var m="Our working hours is from "+starday1+" "+show_time+" to "+endday1+" "+end_time+". You can still place order during non-working hours"+"</br><span style='color:red;'>Enjoy 5% rebate if you order before  12am for tomorrow's delivery.</span>";
                 $("#shop_model_text").html(m);
                 $('#error_label').html(m);
 

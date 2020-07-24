@@ -110,6 +110,7 @@ $language["view"] = "View";
 $language["scan_qr"] = "Scan Qr Code";  
 $language["search_by_company"] = "Search By Company Name";  
 $language["search_product_name"] = "Search By Product Name";  
+$language["search"] = "Search";  
 $language["qr_code"] = "Qr Code";   
 $language["fav_list"] = "Favorite List";  
 $language["near_by_shop"] = "Search nearby shops";  
@@ -359,7 +360,9 @@ $language['search_by_location'] ="Search by location";
 $language['post_job_list'] ="Post/Search jobs";     
 $language['near_by_shop_2'] ="Nearby shops";        
 $language['rider_info'] ="Rider info";        
-$language['new_timing_working'] ="Multiple Working";        
+$language['new_timing_working'] ="Multiple Working";    
+$language['shop_closed_order_later'] ="The shop is closed now, you can still order for later delivery.";        
+$language['sort_price_low_high'] = "Sort by price: Low to high"    
 
 
 
