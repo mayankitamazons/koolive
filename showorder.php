@@ -40,6 +40,7 @@ function ceiling($number, $significance = 1)
         <th>S.No</th>
         <th>DATE OF ORDER</th>
         <th>Detail</th>
+		<th>Rider Info</th>
         <th>Write up</th>
       
         <th>User Detail</th>
@@ -48,7 +49,7 @@ function ceiling($number, $significance = 1)
         <th>Order Status</th>
 
         <th>Action</th>
-		          <th>Rider Info</th>
+
       </tr>
     </thead>
     <tbody>
@@ -99,7 +100,7 @@ function ceiling($number, $significance = 1)
 	?>
       <tr>
         <td><?php echo $i; ?></td>
-		                            <td><?php echo date_format($date,"m/d/Y");  ?>
+		                            <td><?php echo date_format($date,"m/d/Y");  ?>      
                                 <?php echo '<br>'; echo $new_time[1] ?>
                                 <?php 
                                   if($row['status'] == 0){?>
@@ -107,6 +108,7 @@ function ceiling($number, $significance = 1)
                                   }?>
                             </td>
 		<td  style="font-size:18px;" class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></td>
+		<td><?php echo $row['rider_info']; ?></td>
         	<td class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i></td>
 		<td>
 		<?php if($r['user_name']){  echo $r['user_name']."- ".$r['user_mobile']; } else { echo $r['user_mobile'];} ?>
@@ -118,7 +120,7 @@ function ceiling($number, $significance = 1)
 </td>
 
 <td><a target="_blank" href="orderview.php?did=<?php echo $row['merchant_id'];?>&vs=<?php  echo md5(rand());?>">Check order</a></td>
-<td><?php echo $row['rider_info']; ?></td>
+
       </tr>
 	 <?php $i++;} ?>
       

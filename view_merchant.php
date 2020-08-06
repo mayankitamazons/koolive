@@ -76,7 +76,47 @@ if (isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id'])) {
 
 // print_r($_SESSION);
 
-// die;   
+// die;
+		$shopclose=[];
+function checktimestatusnew($time_detail)
+
+		{ 
+
+			global $shopclose;
+
+			extract($time_detail);
+
+// 			 echo "day=$day n=$n";
+
+// 		 	echo "ctime:".date("H:i");
+
+			$day=strtolower($day);
+
+			$currenttime=date("H:i");
+
+			$n=strtolower(date("l"));
+
+			if(($currenttime >$starttime && $currenttime < $endttime) && ($day==$n)){
+
+				  //$shop_close_status="y";
+
+				   array_push($shopclose,"y");
+
+			}
+
+			else
+
+			{ 
+
+			  //$shop_close_status="n";
+
+			  array_push($shopclose,"n");
+
+			}
+			// print_R($shopclose);
+			return $shopclose;//$shop_close_status;
+
+		}
 if (empty($_GET['ms'])) {
     $sid = $_GET['sid'];
     $url_product_id = $_GET['pd'];
@@ -260,8 +300,40 @@ if ($sectionsList) {
 $bank_data = isset($_SESSION['login']) ? mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE id='" . $_SESSION['login'] . "'")) : '';
 
 $check_number = $bank_data['mobile_number'];
-
+$total_work="n";
 $user_koo_coin = $bank_data['balance_inr'];
+$sql1="SELECT SQL_NO_CACHE * FROM `timings` WHERE `merchant_id` =".$_SESSION['merchant_id'];
+$tresult1 = mysqli_query($conn,$sql1);
+$totaltiming=mysqli_num_rows($tresult1);
+if($totaltiming>0)
+{
+    while($ti=mysqli_fetch_assoc($tresult1))
+	{
+		
+		$time_detail['day']=$ti['day'];
+		$time_detail['starttime']=$ti['start_time'];
+		$time_detail['endttime']=$ti['end_time'];
+		// print_R($time_detail);
+		$tworking=checktimestatusnew($time_detail);
+
+	}
+	
+	foreach($tworking as $w)
+	{
+		 
+		if($w=="y")
+		{$total_work="y";}
+
+	}
+}
+else
+{
+	$total_work="n";
+
+}   
+
+  // print_R($timingdetail);
+// die; 
 
 $check_number = str_replace("60", "", $check_number);
 
@@ -1723,9 +1795,9 @@ if (isset($login_user_id)) {
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqkgFdbQUhomdTY88R2OhkAKe57dnf9Kc&libraries=places"></script>
     <script src="https://scripts.sirv.com/sirv.js" defer></script>
     <style type="text/css">
-        .modal {
+        /* .modal {
             margin-top: 15%;
-        }
+        } */
 
         .active_menu {
             background: #d6dadf !important;
@@ -1983,6 +2055,22 @@ if (isset($login_user_id)) {
                 margin-top: 0px;
                 margin-left: 0px !important;
             }
+        }
+
+        #remarks_area .modal-footer {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 10px;
+            row-gap: 10px;
+        }
+
+        #remarks_area button {
+            margin: 0 !important;
+        }
+
+        #reset_remark {
+            grid-column: 2/3;
+            grid-row: 2;
         }
 
 
@@ -5813,6 +5901,20 @@ if (!empty($get_workingHr['start_time']) && !empty($get_workingHr['end_time'])) 
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="product_added_to_cart" style="margin-top: 40vh;" tabindex="-1" role="dialog" aria-labelledby="product_added_to_cart" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="product_added_to_cart">Success</h5>
+            </div>
+            <div class="modal-body">
+                <b>Product successfully added!</b>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 
 
@@ -6374,15 +6476,15 @@ if (!empty($get_workingHr['start_time']) && !empty($get_workingHr['end_time'])) 
 
         console.log("Extra price" + extra_price);
 
-        // $("#varient_name").html(name);
-
-        // alert(extra_price);   
-
         var quantity = $(this).closest("form").find("input[name='quatity']").val();
 
-        var p_total = p_price * quantity + extra_price;
+        let p_total = 0;
 
-        var p_total = p_total.toFixed(2);
+        p_total = p_price * quantity + extra_price;
+
+        p_total = p_total.toFixed(2);
+
+        $("#p_pop_price").val(p_total);
 
         // alert(p_total);
 
@@ -6596,6 +6698,9 @@ if (!empty($get_workingHr['start_time']) && !empty($get_workingHr['end_time'])) 
 
         $('#varient_error').hide();
 
+        var objDiv = document.querySelector("#data .product_data");
+        objDiv.scrollTop = objDiv.scrollHeight;
+
         var content = "";
 
         var id = $(this).data("id");
@@ -6728,8 +6833,13 @@ if (!empty($get_workingHr['start_time']) && !empty($get_workingHr['end_time'])) 
 
         jQuery(this).closest('tr').remove();
 
+    });
 
-
+    $("#ProductModel").on("hide.bs.modal", function() {
+        let id = $(this).find("#pop_cart").attr("data-id");
+        let child_id = `child_${id}`;
+        document.getElementById(child_id).classList.remove("fa-check");
+        document.getElementById(child_id).classList.add("fa-plus");
     });
 
     $(document).on("click", '#pop_cart', function(event) {
@@ -6944,6 +7054,11 @@ if (!empty($get_workingHr['start_time']) && !empty($get_workingHr['end_time'])) 
             $('#varient_error').show();
 
         }
+
+        $("#product_added_to_cart").modal("show");
+        setTimeout(() => {
+            $("#product_added_to_cart").modal("hide");
+        }, 1500);
 
         totalcart();
 
@@ -8176,6 +8291,8 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
         var w6 = "<?php echo $language['w6'] ?>";
         var selected_lang = "<?php echo $_SESSION['langfile'] ?>";
         var not_working_text = "<?php echo $merchant_detail['not_working_text']; ?>";
+        var not_working_text_chiness = "<?php echo $merchant_detail['not_working_text_chiness']; ?>";
+		
 		  var working_text = "<?php echo $merchant_detail['working_text']; ?>";
         var working_text_chiness = "<?php echo $merchant_detail['working_text_chiness']; ?>";
         if (selected_lang == "chinese" && not_working_text_chiness != '')
@@ -8309,7 +8426,10 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
         // if(n==0)   
         // var n=7;
-        if ((currenttime > starttime && currenttime < endttime) && (starday <= n && endday >= n)) {
+	var total_work="<?php  echo $total_work;?>";
+	// alert(total_work);
+        // if ((currenttime > starttime && currenttime < endttime) && (starday <= n && endday >= n)) {
+        if (total_work=="y") {
 
             const urlParams = new URLSearchParams(window.location.search)
             if (urlParams.has("pd")) {
@@ -8321,11 +8441,6 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
         } else {
 
-            if (starttime.length == '' && endttime.length == '') {
-
-                // window.location.href = "view_merchant.php";
-
-            } else {
 
                 // alert('Final Case');
 
@@ -8352,6 +8467,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                     // var m = w1 + " " + show_time + " " + w2 + " " + end_time + " (" + not_working_text + "). " + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
                 // else
                     // var m = w1 + starday1 + " " + show_time + w2 + endday1 + " " + end_time + "." + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
+				// alert(not_working_text);
                 if(not_working_text)
 				{
 					 var m =working_text + " (" + not_working_text + "). " + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
@@ -8374,7 +8490,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                     }
                 });
 
-            }
+            
 
 
 
@@ -9909,117 +10025,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                 $('#total_cart_amount').val(total_amount);
 
                 $('#total_cart_amount_label').html(total_amount);
-                if (shop_close_time == "y") {
-                    var starttime = $('#stime').val();
-                    var show_time = $('#show_time').val();
-                    var end_time = $('#end_time').val();
-                    var endttime = $('#etime').val();
-                    var starday = $('#sday').val();
-                    var starday1 = starday;
-                    var endday = $('#eday').val();
-                    endday1 = endday;
-
-                    var currenttime = $('#ctime').val();
-
-                    if (starday == 'Monday') {
-
-                        starday = 1;
-
-                    } else if (starday == 'Tuesday') {
-
-                        starday = 2;
-
-                    } else if (starday == 'Wednesday') {
-
-                        starday = 3;
-
-                    } else if (starday == 'Thursday') {
-
-                        starday = 4;
-
-                    } else if (starday == 'Friday') {
-
-                        starday = 5;
-
-                    } else if (starday == 'Saturday') {
-
-                        starday = 6;
-
-                    } else {
-
-                        starday = 7;
-
-                    }
-
-                    if (endday == 'monday') {
-
-                        endday = 1;
-
-                    } else if (endday == 'Tuesday') {
-
-                        endday = 2;
-
-                    } else if (endday == 'Wednesday') {
-
-                        endday = 3;
-
-                    } else if (endday == 'Thursday') {
-
-                        endday = 4;
-
-                    } else if (endday == 'Friday') {
-
-                        endday = 5;
-
-                    } else if (endday == 'Saturday') {
-
-                        endday = 6;
-
-                    } else {
-
-                        endday = 7;
-
-                    }
-                    if ((currenttime > starttime && currenttime < endttime) && (starday <= n && endday >= n)) {} else {
-
-                        if (starttime.length == '' && endttime.length == '') {
-
-                            // window.location.href = "view_merchant.php";
-
-                        } else {
-
-                            // alert('Final Case');
-
-                            $('#shop_close_time').val('y');
-
-                            $s = moment(d + starttime + 'PM').format('LT');
-
-                            $e = moment(d + endttime + 'PM').format('LT');
-                            if (not_working_text)
-                                var m = w1 + " " + show_time + " " + w2 + " " + end_time + " (" + not_working_text + "). " + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
-                            else
-                                var m = w1 + starday1 + " " + show_time + w2 + endday1 + " " + end_time + "." + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
-                            $("#shop_model_text").html(m);
-                            $('#error_label').html(m);
-
-                            $('#off_line_proceed').html(w6)
-                            $('#shop_model').modal('show');
-                            $('#yes_button').attr('selected_type', 'cash');
-                            // setTimeout(function() {
-                            // $("#shop_model").modal("hide");
-                            // }, 5000);
-
-                        }
-
-                    }
-
-                    return false;
-
-                } else {
-                    $('input[type=submit]', this).attr('disabled', 'disabled');
-                    $('#cash_order_process').show();
-                    $(this).removeClass(" btn-primary").addClass("btn-default");
-                }
+                
 
 
 
@@ -10949,115 +10955,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                     total_order_amount += +$(this).val();
 
                 });
-                var shop_close_time = $('#shop_close_time').val();
-                if (shop_close_time == "y") {
-                    var starttime = $('#stime').val();
-                    var show_time = $('#show_time').val();
-                    var end_time = $('#end_time').val();
-                    var endttime = $('#etime').val();
-                    var starday = $('#sday').val();
-                    var starday1 = starday;
-                    var endday = $('#eday').val();
-                    endday1 = endday;
-
-                    var currenttime = $('#ctime').val();
-
-                    if (starday == 'Monday') {
-
-                        starday = 1;
-
-                    } else if (starday == 'Tuesday') {
-
-                        starday = 2;
-
-                    } else if (starday == 'Wednesday') {
-
-                        starday = 3;
-
-                    } else if (starday == 'Thursday') {
-
-                        starday = 4;
-
-                    } else if (starday == 'Friday') {
-
-                        starday = 5;
-
-                    } else if (starday == 'Saturday') {
-
-                        starday = 6;
-
-                    } else {
-
-                        starday = 7;
-
-                    }
-
-                    if (endday == 'monday') {
-
-                        endday = 1;
-
-                    } else if (endday == 'Tuesday') {
-
-                        endday = 2;
-
-                    } else if (endday == 'Wednesday') {
-
-                        endday = 3;
-
-                    } else if (endday == 'Thursday') {
-
-                        endday = 4;
-
-                    } else if (endday == 'Friday') {
-
-                        endday = 5;
-
-                    } else if (endday == 'Saturday') {
-
-                        endday = 6;
-
-                    } else {
-
-                        endday = 7;
-
-                    }
-                    if ((currenttime > starttime && currenttime < endttime) && (starday <= n && endday >= n)) {} else {
-
-                        if (starttime.length == '' && endttime.length == '') {
-
-                            // window.location.href = "view_merchant.php";
-
-                        } else {
-
-                            // alert('Final Case');
-
-                            $('#shop_close_time').val('y');
-
-                            $s = moment(d + starttime + 'PM').format('LT');
-
-                            $e = moment(d + endttime + 'PM').format('LT');
-                            if (not_working_text)
-                                var m = w1 + " " + show_time + " " + w2 + " " + end_time + " (" + not_working_text + "). " + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
-                            else
-                                var m = w1 + starday1 + " " + show_time + w2 + endday1 + " " + end_time + "." + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
-                            $("#shop_model_text").html(m);
-                            $('#error_label').html(m);
-                            $('#off_line_proceed').html(w6);
-                            $('#shop_model').modal('show');
-                            $('#yes_button').attr('selected_type', 'internet');
-                            // setTimeout(function() {
-                            // $("#shop_model").modal("hide");
-                            // }, 5000);
-
-                        }
-
-                    }
-
-                    return false;
-
-                } else {
-                    $('#InternetModel').modal('show');
-                }
+               $('#InternetModel').modal('show');
                 return false;
                 $('input[type=submit]', this).attr('disabled', 'disabled');
 
@@ -11158,112 +11056,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                     total_amount += parseFloat($(this).val());
 
                 });
-                if (shop_close_time == "y") {
-                    var starttime = $('#stime').val();
-                    var show_time = $('#show_time').val();
-                    var end_time = $('#end_time').val();
-                    var endttime = $('#etime').val();
-                    var starday = $('#sday').val();
-                    var starday1 = starday;
-                    var endday = $('#eday').val();
-                    endday1 = endday;
-
-                    var currenttime = $('#ctime').val();
-
-                    if (starday == 'Monday') {
-
-                        starday = 1;
-
-                    } else if (starday == 'Tuesday') {
-
-                        starday = 2;
-
-                    } else if (starday == 'Wednesday') {
-
-                        starday = 3;
-
-                    } else if (starday == 'Thursday') {
-
-                        starday = 4;
-
-                    } else if (starday == 'Friday') {
-
-                        starday = 5;
-
-                    } else if (starday == 'Saturday') {
-
-                        starday = 6;
-
-                    } else {
-
-                        starday = 7;
-
-                    }
-
-                    if (endday == 'monday') {
-
-                        endday = 1;
-
-                    } else if (endday == 'Tuesday') {
-
-                        endday = 2;
-
-                    } else if (endday == 'Wednesday') {
-
-                        endday = 3;
-
-                    } else if (endday == 'Thursday') {
-
-                        endday = 4;
-
-                    } else if (endday == 'Friday') {
-
-                        endday = 5;
-
-                    } else if (endday == 'Saturday') {
-
-                        endday = 6;
-
-                    } else {
-
-                        endday = 7;
-
-                    }
-                    if ((currenttime > starttime && currenttime < endttime) && (starday <= n && endday >= n)) {} else {
-
-                        if (starttime.length == '' && endttime.length == '') {
-
-                            // window.location.href = "view_merchant.php";
-
-                        } else {
-
-                            // alert('Final Case');
-
-                            $('#shop_close_time').val('y');
-
-                            $s = moment(d + starttime + 'PM').format('LT');
-
-                            $e = moment(d + endttime + 'PM').format('LT');
-                            if (not_working_text)
-                                var m = w1 + " " + show_time + " " + w2 + " " + end_time + " (" + not_working_text + "). " + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
-                            else
-                                var m = w1 + starday1 + " " + show_time + w2 + endday1 + " " + end_time + "." + w3 + "</br><span style='color:red;'>" + w4 + "</span>";
-                            $("#shop_model_text").html(m);
-                            $('#error_label').html(m);
-                            $('#off_line_proceed').html(w6);
-                            $('#shop_model').modal('show');
-                            $('#yes_button').attr('selected_type', 'wallet');
-                            // setTimeout(function() {
-                            // $("#shop_model").modal("hide");
-                            // }, 5000);
-
-                        }
-
-                    }
-
-                    return false;
-
-                } else {
+                
                     var delivery_charges = $('#delivery_charges').val();
 
                     // alert('Deliver charge '+delivery_charges);
@@ -11598,7 +11391,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
                     }
 
-                }
+                
 
                 return false;
 
@@ -11728,14 +11521,14 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
                 var pickup_type = $('#pickup_type').val();
 
-                // alert(pickup_type);
+                // alert(delivery_charges);
 
 
 
                 if (pickup_type == "divein")
 
                 {
-
+					
                     if (delivery_dive_in == '1')
 
                     {
@@ -11761,7 +11554,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                 } else if (pickup_type == "takein")
 
                 {
-
+						
                     if (delivery_take_up == '1')
 
                     {
@@ -11794,10 +11587,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
                 }
 
-                if (parseFloat(delivery_charges) > 0)
-
-                    var total_amount = parseFloat(total_amount) + parseFloat(delivery_charges);
-
+                
                 var membership_discount_input = $('#membership_discount_input').val();
 
 
@@ -11843,6 +11633,22 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
 
                     }
+					 var fix_delivery_val = "<?php echo $merchant_detail['delivery_charges']; ?>";
+            if (delivery_charges == 0) {
+                if (fix_delivery_val)
+                    var delivery_charges = fix_delivery_val;
+                else {
+                    var additonal_delivery_charges = $('#additonal_delivery_charges').val();
+                    if (additonal_delivery_charges)
+                        var delivery_charges = additonal_delivery_charges;
+                    else
+                        var delivery_charges = 2.99;
+                }
+
+            }      
+			// alert(delivery_charges);
+					if (parseFloat(delivery_charges) > 0)
+						var total_amount = parseFloat(total_amount) + parseFloat(delivery_charges);
 
                     if (membership_discount > 0)
 
@@ -11867,7 +11673,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                 }
 
                 // alert(total_amount);
-
+				
 
 
                 // alert(w_bal);
@@ -12093,7 +11899,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                 selected_wallet_bal = max_bal;
 
             var rem = 0;
-
+			totalcart();
             selected_wallet_bal = (parseInt(selected_wallet_bal * 10) / 10).toFixed(2);
 
             var delivery_charges = $('#delivery_charges').val();
@@ -12317,7 +12123,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
             $('#payable_amount').val(payable_amount);
 
-            // var r = confirm(p_msg);
+            var r = confirm(p_msg);
 
             if (r == true) {
 

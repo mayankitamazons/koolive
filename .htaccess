@@ -77,3 +77,173 @@ BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
   AddHandler application/x-httpd-ea-php72 .php .php7 .phtml
 </IfModule>
 # php -- END cPanel-generated handler, do not edit
+
+# BEGIN cPanel-generated php ini directives, do not edit
+# Manual editing of this file may result in unexpected behavior.
+# To make changes to this file, use the cPanel MultiPHP INI Editor (Home >> Software >> MultiPHP INI Editor)
+# For more information, read our documentation (https://go.cpanel.net/EA4ModifyINI)
+<IfModule php7_module>
+   php_flag engine On
+   php_flag short_open_tag Off
+   php_value precision 14
+   php_value output_buffering 4096
+   php_flag zlib.output_compression Off
+   php_flag implicit_flush Off
+   php_value serialize_precision -1
+   php_flag zend.enable_gc On
+   php_value max_execution_time 30000
+   php_value max_input_time 60000
+   php_value max_input_vars 1000
+   php_value memory_limit 1208M
+   php_value error_reporting E_ALL & ~E_DEPRECATED & ~E_STRICT
+   php_flag display_errors On
+   php_flag display_startup_errors On
+   php_flag log_errors On
+   php_value log_errors_max_len 102400
+   php_flag ignore_repeated_errors Off
+   php_flag ignore_repeated_source Off
+   php_flag report_memleaks On
+   php_flag track_errors On
+   php_flag html_errors On
+   php_value error_log "/home/koofamilies/.logs/php_errors.log"
+   php_value variables_order "GPCS"
+   php_value request_order "GP"
+   php_flag register_argc_argv Off
+   php_flag auto_globals_jit On
+   php_value post_max_size 800M
+   php_value default_mimetype "text/html"
+   php_value default_charset "UTF-8"
+   php_value include_path "C:\xampp\php\PEAR"
+   php_value upload_max_filesize 20M
+   php_value default_socket_timeout 60
+   php_flag display_startup_errors On
+   php_flag track_errors Off
+   php_value error_log "C:\xampp\php\logs\php_error_log"
+   php_flag register_long_arrays Off
+   php_flag magic_quotes_sybase Off
+   php_flag cli_server.color On
+   php_value SMTP "localhost"
+   php_value smtp_port 25
+   php_flag mail.add_x_header On
+   php_value odbc.defaultlrl 4096
+   php_value odbc.defaultbinmode 1
+   php_value ibase.timestampformat "%Y-%m-%d %H:%M:%S"
+   php_value ibase.dateformat "%Y-%m-%d"
+   php_value ibase.timeformat "%H:%M:%S"
+   php_value mysqli.default_port 3306
+   php_value pgsql.ignore_notice 0
+   php_value pgsql.log_notice 0
+   php_value bcmath.scale 0
+   php_value session.save_handler "files"
+   php_value session.save_path "/var/tmp/php"
+   php_flag session.use_strict_mode Off
+   php_flag session.use_cookies On
+   php_flag session.use_only_cookies On
+   php_value session.name "PHPSESSID"
+   php_flag session.auto_start Off
+   php_value session.cookie_lifetime 0
+   php_value session.cookie_path "/"
+   php_value session.serialize_handler "php"
+   php_value session.gc_probability 1
+   php_value session.gc_divisor 1000
+   php_value session.gc_maxlifetime 604800
+   php_value session.cache_limiter "nocache"
+   php_value session.cache_expire 180
+   php_flag session.use_trans_sid Off
+   php_flag tidy.clean_output Off
+   php_flag soap.wsdl_cache_enabled On
+   php_value soap.wsdl_cache_dir "/tmp"
+   php_value soap.wsdl_cache_ttl 86400
+   php_value soap.wsdl_cache_limit 5
+   php_value date.timezone "Europe/Berlin"
+   php_value mysql.default_port "3306"
+   php_value mysql.default_socket "MySQL"
+   php_value mysql.connect_timeout 3
+   php_flag mysql.trace_mode Off
+   php_value mssql.min_error_severity 10
+   php_value mssql.min_message_severity 10
+   php_flag mssql.compatability_mode Off
+</IfModule>
+<IfModule lsapi_module>
+   php_flag engine On
+   php_flag short_open_tag Off
+   php_value precision 14
+   php_value output_buffering 4096
+   php_flag zlib.output_compression Off
+   php_flag implicit_flush Off
+   php_value serialize_precision -1
+   php_flag zend.enable_gc On
+   php_value max_execution_time 30000
+   php_value max_input_time 60000
+   php_value max_input_vars 1000
+   php_value memory_limit 1208M
+   php_value error_reporting E_ALL & ~E_DEPRECATED & ~E_STRICT
+   php_flag display_errors On
+   php_flag display_startup_errors On
+   php_flag log_errors On
+   php_value log_errors_max_len 102400
+   php_flag ignore_repeated_errors Off
+   php_flag ignore_repeated_source Off
+   php_flag report_memleaks On
+   php_flag track_errors On
+   php_flag html_errors On
+   php_value error_log "/home/koofamilies/.logs/php_errors.log"
+   php_value variables_order "GPCS"
+   php_value request_order "GP"
+   php_flag register_argc_argv Off
+   php_flag auto_globals_jit On
+   php_value post_max_size 800M
+   php_value default_mimetype "text/html"
+   php_value default_charset "UTF-8"
+   php_value include_path "C:\xampp\php\PEAR"
+   php_value upload_max_filesize 20M
+   php_value default_socket_timeout 60
+   php_flag display_startup_errors On
+   php_flag track_errors Off
+   php_value error_log "C:\xampp\php\logs\php_error_log"
+   php_flag register_long_arrays Off
+   php_flag magic_quotes_sybase Off
+   php_flag cli_server.color On
+   php_value SMTP "localhost"
+   php_value smtp_port 25
+   php_flag mail.add_x_header On
+   php_value odbc.defaultlrl 4096
+   php_value odbc.defaultbinmode 1
+   php_value ibase.timestampformat "%Y-%m-%d %H:%M:%S"
+   php_value ibase.dateformat "%Y-%m-%d"
+   php_value ibase.timeformat "%H:%M:%S"
+   php_value mysqli.default_port 3306
+   php_value pgsql.ignore_notice 0
+   php_value pgsql.log_notice 0
+   php_value bcmath.scale 0
+   php_value session.save_handler "files"
+   php_value session.save_path "/var/tmp/php"
+   php_flag session.use_strict_mode Off
+   php_flag session.use_cookies On
+   php_flag session.use_only_cookies On
+   php_value session.name "PHPSESSID"
+   php_flag session.auto_start Off
+   php_value session.cookie_lifetime 0
+   php_value session.cookie_path "/"
+   php_value session.serialize_handler "php"
+   php_value session.gc_probability 1
+   php_value session.gc_divisor 1000
+   php_value session.gc_maxlifetime 604800
+   php_value session.cache_limiter "nocache"
+   php_value session.cache_expire 180
+   php_flag session.use_trans_sid Off
+   php_flag tidy.clean_output Off
+   php_flag soap.wsdl_cache_enabled On
+   php_value soap.wsdl_cache_dir "/tmp"
+   php_value soap.wsdl_cache_ttl 86400
+   php_value soap.wsdl_cache_limit 5
+   php_value date.timezone "Europe/Berlin"
+   php_value mysql.default_port "3306"
+   php_value mysql.default_socket "MySQL"
+   php_value mysql.connect_timeout 3
+   php_flag mysql.trace_mode Off
+   php_value mssql.min_error_severity 10
+   php_value mssql.min_message_severity 10
+   php_flag mssql.compatability_mode Off
+</IfModule>
+# END cPanel-generated php ini directives, do not edit
