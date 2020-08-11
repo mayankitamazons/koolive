@@ -1,6 +1,7 @@
 <?php
 $distance=0;
 include("config.php");
+
 if( isset( $_POST['from_lat'])) {
 	  $merchant_id    = $_POST['merchant_id'];
 	  $latitudeFrom    = $_POST['from_lat'];
@@ -8,18 +9,35 @@ if( isset( $_POST['from_lat'])) {
     $latitudeTo        = $_POST['to_lat'];
     $longitudeTo    = $_POST['to_long'];
 	
-	// Calculate distance between latitude and longitude
-    $theta    = $longitudeFrom - $longitudeTo;
-    $dist    = sin(deg2rad($latitudeFrom)) * sin(deg2rad($latitudeTo)) +  cos(deg2rad($latitudeFrom)) * cos(deg2rad($latitudeTo)) * cos(deg2rad($theta));
-    $dist    = acos($dist);
-    $dist    = rad2deg($dist);
-    $miles    = $dist * 60 * 1.1515;
+	// $url ="https://maps.googleapis.com/maps/api/distancematrix/json?origins=40.6655101,-73.89188969999998&destinations=41.6655101,-73.89188969999998&key=AIzaSyAqkgFdbQUhomdTY88R2OhkAKe57dnf9Kc";  
+	 $url ="https://maps.googleapis.com/maps/api/distancematrix/json?origins=".$latitudeFrom.",".$longitudeFrom."&destinations=".$latitudeTo.",".$longitudeTo."&key=AIzaSyAqkgFdbQUhomdTY88R2OhkAKe57dnf9Kc";  
+    
+	// Initialize a CURL session.   
+	$ch = curl_init();  
+	  
+	// Return Page contents. 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+	  
+	//grab URL and pass it to the variable. 
+	curl_setopt($ch, CURLOPT_URL, $url); 
+	  
+	$result = curl_exec($ch);
+	$rd=json_decode($result,true);
+	// print_R($rd);
+	// die;  
+	// if($rd[''])
+		if($rd['status']=="OK")
+		{
+		   $m_distance=$rd['rows'][0]['elements'][0]['distance']['value'];
+		   $distance=$m_distance/1000;
+		}
+	
     $unit="k";
     // Convert unit and return distance
     $unit = strtoupper($unit);
     if($unit == "K"){
-         $distance =round($miles * 1.609344, 2);
-		 $distance=(int) $distance;
+         // $distance =round($miles * 1.609344, 2);
+		 $distance=(int)$distance;
 		 $d['distance']=$distance;
 		 $merchant_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT delivery_plan,order_extra_charge FROM users WHERE id='$merchant_id'"));
 		 // print_R($merchant_data);
