@@ -269,6 +269,7 @@ if($user_roles=="5")
 				<li><a href="investor_relations.php" class="investor_relation"><span class="hide-menu <?php if($me=="investor_relation"){ echo "active";} ?>"><?php echo $language['InvestorRelations']; ?></span><i class="fa fa-star" style="color:yellow;"></i></a></li>
 				<li><a href="contact.php"><span class="hide-menu <?php if($me=="contact"){ echo "active";} ?>"><?php echo $language['contact'];?></span></a></li>
 				<li><a href="login.php"><span class="hide-menu <?php if($me=="login"){ echo "active";} ?>"><?php echo $language['login'];?></span></a>	</li>
+				
 			<?php } ?>  
 			<?php if($user_roles==5){ ?>
 			<li> <a href="#"  type="normal_logout" class="logout"><?php echo $language['log_out'];?>  </a> </li>

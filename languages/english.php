@@ -362,7 +362,8 @@ $language['near_by_shop_2'] ="Nearby shops";
 $language['rider_info'] ="Rider info";        
 $language['new_timing_working'] ="Multiple Working";    
 $language['shop_closed_order_later'] ="The shop is closed now, you can still order for later delivery.";        
-$language['sort_price_low_high'] = "Sort by price: Low to high"    
+$language['sort_price_low_high'] = "Sort by price: Low to high";
+$language['without_product_coupon'] = "Please select the product before applying coupon";     
 
 
 

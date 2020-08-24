@@ -119,7 +119,7 @@ function ceiling($number, $significance = 1)
 		<td>
 		<?php if($r['rider_info']==''){ ?>
 		<span class="btn btn-primary assign_order" order_id="<?php echo $r['id']; ?>" style="font-size:16px;">Assign</span>
-		<?php } else {  echo $r['rider_info'];}?>
+		<?php } else {   $r['rider_info'];}?>
 		
 		</td>
 		<td><?php echo $r['rider_name']; ?></td>

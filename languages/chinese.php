@@ -377,7 +377,8 @@ $language['rider_info'] ="Rider info";
 $language['new_timing_working'] ="Multiple Working"; 
 $language['post_job_list'] ="Post/Search jobs";    
 $language['shop_closed_order_later'] ="商家现在休息中，你依然可以下单。";      
-$language['sort_price_low_high'] = "根据价格最低排列"  
+$language['sort_price_low_high'] = "根据价格最低排列";
+$language['without_product_coupon'] = "请选择产品先，再输入折扣优惠密码";  
 
 
 ?>

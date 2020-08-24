@@ -2287,7 +2287,10 @@ input[name='p_total[]'],input[name='p_price[]']{
 	<div class="row">
 	   <p style="font-size: 16px;margin-bottom: 0px;margin-left:1%;">Download our app for future easy ordering</p>
 		<a href="https://play.google.com/store/apps/details?id=com.app.koofamily" target="_blank">
-			  <img src="assets/img/google-play-button.png"/></a>
+			  <img style="max-height:40px;" src="assets/img/google-play-button.png"/></a>
+			  <a  href="https://apps.apple.com/us/app/id1491595615?mt=8" target="blank">
+                                <img style="max-width:140px;max-height:40px;" src="appstore.png" alt="">
+                            </a>
 			</div>
 			  
           </div>  

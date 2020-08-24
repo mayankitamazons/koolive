@@ -3873,8 +3873,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
                 <div class="modal-body product_data" style="padding-bottom:0px;max-height:50vh;overflow-x: auto;">
 
-                    <p id="varient_error" style="color:red;display:none;">Please select at least one choice. Thank</p>
-
+                   
 
 
                     <div id="product_main" class="ingredients_container">
@@ -3883,7 +3882,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
                     </div>
 
-
+				
 
                     <div class="product_extra">
 
@@ -3928,11 +3927,12 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
                     </div>
 
-
+						
 
 
 
                 </div>
+				 <p id="varient_error" style="color:red;display:none;">Please select at least one choice. Thank</p>
 
                 <div style="margin: 10px 0 10px 34%;" class="modal-footer product_button pop_model">
 
@@ -5542,7 +5542,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
                         <div class="col otp_fields join_now" style="padding: 0;margin: 5px;display:none;">
 
-                            <input type="submit" class="btn btn-primary login_ajax_new" name="login_ajax" value="LOGIN" style="float: right;display:none;" />
+                            <input type="submit" class="btn btn-primary login_ajax_new" name="login_ajax" value="<?php echo $language['login']; ?>" style="float: right;display:none;" />
 
                             <small id="login_error_new" style="display: none;color:#e6614f;"></small>
 
@@ -11554,6 +11554,21 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                 } else if (pickup_type == "takein")
 
                 {
+					
+					var fix_delivery_val = "<?php echo $merchant_detail['delivery_charges']; ?>";
+				if (delivery_charges == 0) {
+					if (fix_delivery_val)
+						var delivery_charges = fix_delivery_val;
+					else {
+						var additonal_delivery_charges = $('#additonal_delivery_charges').val();
+						if (additonal_delivery_charges)
+							var delivery_charges = additonal_delivery_charges;
+						else
+							var delivery_charges = 2.99;
+					}
+
+				}  
+					
 						
                     if (delivery_take_up == '1')
 
@@ -11633,22 +11648,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
 
                     }
-					 var fix_delivery_val = "<?php echo $merchant_detail['delivery_charges']; ?>";
-            if (delivery_charges == 0) {
-                if (fix_delivery_val)
-                    var delivery_charges = fix_delivery_val;
-                else {
-                    var additonal_delivery_charges = $('#additonal_delivery_charges').val();
-                    if (additonal_delivery_charges)
-                        var delivery_charges = additonal_delivery_charges;
-                    else
-                        var delivery_charges = 2.99;
-                }
-
-            }      
-			// alert(delivery_charges);
-					if (parseFloat(delivery_charges) > 0)
-						var total_amount = parseFloat(total_amount) + parseFloat(delivery_charges);
+					
 
                     if (membership_discount > 0)
 
@@ -11661,6 +11661,9 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
 
                 }
+				    
+				if (parseFloat(delivery_charges) > 0)
+						var total_amount = parseFloat(total_amount) + parseFloat(delivery_charges);
 
                 var coupon_discount = $('#coupon_discount').val();
 
@@ -11728,14 +11731,15 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                 // alert("Payment Bal"+p_bal);
 
                 // alert("Payment 2"+total_amount);
-
+				// alert(p_bal);
+				// alert(total_amount);
                 if (parseFloat(p_bal) > parseFloat(total_amount))
 
                     var p_bal = total_amount;
 
                 // alert(total_amount);
-
-                p_bal = (parseInt(p_bal * 10) / 10).toFixed(2);
+				p_bal=p_bal.toFixed(2);
+                // p_bal = (parseInt(p_bal * 10) / 10).toFixed(2);
 
 
 
@@ -11758,6 +11762,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                     selected_wallet_bal = max_bal;
 
                 selected_wallet_bal = (parseInt(selected_wallet_bal * 10) / 10).toFixed(2);
+                // selected_wallet_bal = selected_wallet_bal.toFixed(2);
 
                 var rem = 0;
                 // alert(total_amount);   
@@ -11863,7 +11868,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
 
         $(".wallet_final_payment").click(function() {
-
+			// alert(2);
             var sst_tax = "<?php echo $merchant_detail['sst_rate'] ?>";
 
             var delivery_tax = "<?php echo $merchant_detail['delivery_rate'] ?>";
@@ -11905,7 +11910,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             var delivery_charges = $('#delivery_charges').val();
 
             var pickup_type = $('#pickup_type').val();
-
+			// alert(pickup_type);
             if (pickup_type == "divein")
 
             {
@@ -11937,6 +11942,19 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             } else if (pickup_type == "takein")
 
             {
+				var fix_delivery_val = "<?php echo $merchant_detail['delivery_charges']; ?>";
+				if (delivery_charges == 0) {
+					if (fix_delivery_val)
+						var delivery_charges = fix_delivery_val;
+					else {
+						var additonal_delivery_charges = $('#additonal_delivery_charges').val();
+						if (additonal_delivery_charges)
+							var delivery_charges = additonal_delivery_charges;
+						else
+							var delivery_charges = 2.99;
+					}
+
+				}      
 
                 if (delivery_take_up == '1')
 
@@ -12123,8 +12141,8 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
             $('#payable_amount').val(payable_amount);
 
-            var r = confirm(p_msg);
-
+            // var r = confirm(p_msg);
+			var r=true;
             if (r == true) {
 
                 // alert(data);
@@ -13459,16 +13477,14 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
         if ((product_qty == null) || (product_qty == '')) {
 
-            // alert('Without Prouct add cant able to go ahead.');
-
-            $('#show_msg').html("<?php echo $language['no_product_added']; ?>");
+           $('#show_msg').html("<?php echo $language['without_product_coupon']; ?>");
 
             $('#AlerModel').modal('show');
 
 
 
             var s_flag = false;
-
+			$('#apply_coupon').show();
             return false;
 
         }

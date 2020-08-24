@@ -230,8 +230,11 @@ include("config.php");
 			</a>
 			
 			<?php }?>
-			<a style="text-align:center;width:100%;margin-top:2%;" href="https://play.google.com/store/apps/details?id=com.app.koofamily" target="blank">
+				<a style="text-align:center;width:100%;margin-top:2%;" href="https://play.google.com/store/apps/details?id=com.app.koofamily" target="blank">
 					<img style="max-width:140px;" src="google.png" alt=""></a>
+				<a style="text-align:center;width:100%;margin-top:2%;" href="https://apps.apple.com/us/app/id1491595615?mt=8" target="blank">
+                                <img style="max-width:140px;max-height:40px;" src="appstore.png" alt="">
+                </a>
             <div class="title">
             <div class="title-left"> <img src="new/images/mail.png"> <div class="title-h">  <a href="#"> Merchant Name:<span>  <?php echo $merchant_name ?></span> </a> </div>  </div> 
             <div class="title-right"> 
@@ -345,6 +348,9 @@ include("config.php");
                         <?php }?>
 						<a style="text-align:center;width:100%;margin-top:2%;" href="https://play.google.com/store/apps/details?id=com.app.koofamily" target="blank">
 					<img style="max-width:140px;" src="google.png" alt=""></a>
+					<a style="text-align:center;width:100%;margin-top:2%;" href="https://apps.apple.com/us/app/id1491595615?mt=8" target="blank">
+                                <img style="max-width:140px;max-height:40px;" src="appstore.png" alt="">
+                            </a>
                         <div class="col-md-12 favorite" style="padding: 0px !important;">
                             <?php 
                             if (!empty($_SESSION['login'])){

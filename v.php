@@ -166,14 +166,13 @@ if(isset($_POST['login']))
 				mysqli_query($conn,$q);
 				mysqli_query($conn,$insert);
 				if($user_roles==1)
-		    	header("location:dashboard.php");
+		    	header("location:index.php");
 				else if($user_roles==2)
 				header("location:dashboard.php");
 			    else if($user_roles==5)
-
 				header("location:dashboard.php");	
 
-				header("location:dashboard.php");	 
+				// header("location:dashboard.php");	 
 
 			}else{
 				$_SESSION['e']="An error occuried, please, try again later.";

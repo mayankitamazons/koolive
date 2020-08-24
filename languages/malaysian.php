@@ -368,6 +368,7 @@
 $language['near_by_shop_2'] ="Nearby shops"; 
 $language['rider_info'] ="Rider info";        
 $language['new_timing_working'] ="Multiple Working";  
-$language['post_job_list'] ="Post/Search jobs";    
+$language['post_job_list'] ="Post/Search jobs";  
+$language['without_product_coupon'] = "Please select the product before applying coupon";  
 
 ?>
