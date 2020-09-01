@@ -841,6 +841,10 @@ if(isset($_POST))
 								{
 								   $msg_str.=$key.'\r\n';
 								}
+								if($product['remark'])
+								{
+									$msg_str.= "Product Remark :".$product['remark']."\r\n";
+								}   
 								if($remark_ids[$i])
 								{
 									$msg_str.= "Remark :".$remark_ids[$i]."\r\n";
@@ -860,7 +864,7 @@ if(isset($_POST))
 							}        
 							$msg_str.="\r\nTotal qty : ".$total_qun." --End-- \r\n";
 							whatappgroupmsg($whatapp_group_name,$msg_str);
-						// send write up to merchant 
+						// send write up to merchant   
 					   
 					 
 					}  

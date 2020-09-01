@@ -2363,534 +2363,243 @@ if (isset($login_user_id)) {
 
 
 
-            <main class="main-wrapper clearfix" style="min-height: 522px;">
-
-                <div class="row" id="main-content" style="padding-top:25px">
-
-                    <input type="hidden" id="shop_status" value="<?php echo $merchant_detail['shop_open']; ?>" />
-                    <input type="hidden" id="direct_sub" value="<?php echo $_GET['direct_sub']; ?>" />
-
+              <main class="main-wrapper clearfix" style="min-height: 522px;">
+                    <div class="row" id="main-content" style="padding-top:25px">
+          <input type="hidden" id="shop_status" value="<?php echo $merchant_detail['shop_open']; ?>"/>
                     <?php
-
-                    if ($_SESSION['IsVIP'] == 1) {
-
-                    ?>
-
-
-
+                    if($_SESSION['IsVIP'] ==1){ 
+                      ?>
+                    
                         <div class="box-right">
-
-
-
+                            
                             <div class="title">
-
-                                <div class="title-left"> <img src="new/images/merchant.png">
-                                    <div class="title-h"> <a href="#"> Merchant Name : <?php echo $merchant_detail['name']; ?></a> </div>
+                                <div class="title-left"> <img src="new/images/merchant.png"> <div class="title-h">  <a href="#"> Merchant Name : <?php echo $merchant_detail['name'];?></a> </div>  </div> 
+                            <div class="title-right"> 
+                                <div class="favorite_icon">
+                                <?php if($count > 0) {?>
+                                <i class="heart fa fa-heart"></i>
+                                <?php } else {?>
+                                <i class="heart fa fa-heart-o"></i>
+                                <?php }?>
+                                
+                                <h4 class="starting-bracket" style="display: inline-block;">(</h4>
+                                <?php if($business1 != ""){ ?>
+                                <img style="margin-top:10px;" class="nature_image" src="<?php echo $site_url;?>/img/<?php echo $business1;?>">
+                                <?php }?>
+                                <?php if($business2 != ""){ ?>
+                                <img style="margin-top:10px;" class="nature_image" src="<?php echo $site_url;?>/img/<?php echo $business2;?>">
+                                <?php }?>
+                                <?php if($merchant_detail['account_type'] != ''){?>
+                                <h4 class="transaction_num"> <?php echo $merchant_detail['account_type'];?>, </h4>
+                                <?php }?>
+                                <h4 class="transaction_num"><?php echo $result_transaction['ordered_num'];?>, </h4>
+                                <h4 class="favorite_num"><?php echo $result_favorite['favorite_num'];?>)</h4>
                                 </div>
-
-                                <div class="title-right">
-
-                                    <div class="favorite_icon">
-
-                                        <?php if ($count > 0) { ?>
-
-                                            <i class="heart fa fa-heart"></i>
-
-                                        <?php } else { ?>
-
-                                            <i class="heart fa fa-heart-o"></i>
-
-                                        <?php } ?>
-
-
-
-                                        <h4 class="starting-bracket" style="display: inline-block;">(</h4>
-
-                                        <?php if ($business1 != "") { ?>
-
-                                            <img style="margin-top:10px;" class="nature_image" src="<?php echo $site_url; ?>/img/<?php echo $business1; ?>">
-
-                                        <?php } ?>
-
-                                        <?php if ($business2 != "") { ?>
-
-                                            <img style="margin-top:10px;" class="nature_image" src="<?php echo $site_url; ?>/img/<?php echo $business2; ?>">
-
-                                        <?php } ?>
-
-                                        <?php if ($merchant_detail['account_type'] != '') { ?>
-
-                                            <h4 class="transaction_num"> <?php echo $merchant_detail['account_type']; ?>, </h4>
-
-                                        <?php } ?>
-
-                                        <h4 class="transaction_num"><?php echo $result_transaction['ordered_num']; ?>, </h4>
-
-                                        <h4 class="favorite_num"><?php echo $result_favorite['favorite_num']; ?>)</h4>
-
-                                    </div>
-
                                 </div>
-
-                            </div>
-
+                            </div> 
+                        </div> 
+                        <div class="cont-area3"> 
+                        <div class="white-box"> 
+                        <div class="btns">
+                        <div class="main-btn"> <a  href="<?php echo $site_url; ?>/about_menu.php"><?php echo $language["about_us"]?></a> </div>
+                        <div class="main-btn1">  <a  href="<?php echo $site_url; ?>/rating_list.php"><?php echo $language["rating"]?> </div>
+                        <?php if(isset($_SESSION['invitation_id']) && (!isset($_SESSION['login']))){?>
+                        <a class="col-md-2" href="signup.php?invitation_id=<?php echo $_SESSION['invitation_id'];?>"><img src="img/join-us.jpg" style="width: 100px;"></a>
+						
+                        <?php }?>
                         </div>
-
-                        <div class="cont-area3">
-
-                            <div class="white-box">
-
-                                <div class="btns">
-
-                                    <div class="main-btn"> <a href="<?php echo $site_url; ?>/about_menu.php"><?php echo $language["about_us"] ?></a> </div>
-
-                                    <div class="main-btn1"> <a href="<?php echo $site_url; ?>/rating_list.php"><?php echo $language["rating"] ?> </div>
-
-                                    <?php if (isset($_SESSION['invitation_id']) && (!isset($_SESSION['login']))) { ?>
-
-                                        <a class="col-md-2" href="signup.php?invitation_id=<?php echo $_SESSION['invitation_id']; ?>"><img src="img/join-us.jpg" style="width: 100px;"></a>
-
-
-
-                                    <?php } ?>
-
-                                </div>
-
-
-
-
-
-
-
-                                <div class="clear-both"> </div>
-
-
-
-                                <div class="head-title">Merchant</div>
-
-                                <div class="main-cont">
-
-                                    It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently.
-
-                                </div>
-
-
-
-
-
-                                <div class="grey-bg">
-
-                                    <div class="grey-left">Merchant Name </div>
-
-                                    <div class="grey-right"> Product No : 0 </div>
-
-                                </div>
-
-
-
-                            </div>
-
+                        
+                        
+                    
+                        <div class="clear-both"> </div>
+                        
+                        <div class="head-title">Merchant</div>
+                        <div class="main-cont">
+                        It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently.
                         </div>
-
-                </div>
-
-
-
-            <?php } else { ?>
-
-                <div class="col-md-12">
-
+                        
+                        
+                        <div class="grey-bg"> 
+                        <div class="grey-left">Merchant Name  </div> 
+                        <div class="grey-right"> Product No : 0 </div> 
+                        </div> 
+                        
+                        </div>
+                        </div>
+                    </div> 
+                    
+                    <?php }else{ ?> 
+                    <div class="col-md-12">
                     <div class="total_rat_abt">
-
-
-                        <div class="about_uss 3button"><a class="merchant_about" href="<?php echo $site_url; ?>/about_menu.php"><?php echo $language["about_us"] ?></a></div>
-
-                        <div class="rating_menuss"><a class="merchant_ratings 3button" href="<?php echo $site_url; ?>/rating_list.php"><?php echo $language["rating"] ?> </a></div>
-
-                        <div class="rating_menuss">
-
-                            <?php if ($merchant_detail['google_map']) { ?>
-
-                                <a class="merchant_ratings" target="_blank" href="https://maps.google.com/maps?q=<?php echo  $merchant_detail['google_map']; ?>"> <?php echo $language['location']; ?></a>
-
-
-
-                            <?php  } else { ?>
-
-                                <a class="merchant_ratings" href="#"><?php echo $language['location']; ?></a>
-
-
-
-                            <?php }  ?>
-
-                            <!--a class="merchant_ratings" href="<?php echo $site_url; ?>/location.php?address=<?php echo  $_SESSION['address_person'] ?>"><?php echo $language['location'] ?> </a!-->
-
-
-
-                        </div>
-
-
-
-                        <?php if ($stallcount > 0) { ?>
-
-                            <div class="rating_menuss"><a class="merchant_ratings" onclick="our_stall()">Our Stalls </a></div>
-
-                        <?php } ?>
-
-
-
-                        <!--a class="col-md-2" href="signup.php?invitation_id=<?php echo $_SESSION['invitation_id']; ?>"><img src="img/join-us.jpg" style="width: 100px;"></a!-->
-
-                        <!--a class="col-md-2 rating_menuss" href="signup_referral.php?m_id=<?php echo $merchant_detail['id']; ?>"><?php echo "ADD MEMBER"; ?></a!-->
-
-
-
-
+                    <div class="about_uss"><a class="merchant_about" href="<?php echo $site_url; ?>/about_menu.php"><?php echo $language["about_us"]?></a></div>
+                    <div class="rating_menuss"><a class="merchant_ratings" href="<?php echo $site_url; ?>/rating_list.php"><?php echo $language["rating"]?> </a></div>
+                    <div class="rating_menuss">
+					<?php if($merchant_detail['google_map']){ ?>
+						<a class="merchant_ratings" target="_blank" href="http://maps.google.com/maps?q=<?php echo  $merchant_detail['google_map']; ?>"> LOCATION</a> 
+						
+						<?php  } else { ?>
+						<a class="merchant_ratings"  href="#"> LOCATION</a> 
+						
+						<?php }  ?>
+					<!--a class="merchant_ratings" href="<?php echo $site_url; ?>/location.php?address=<?php echo  $_SESSION['address_person'] ?>"><?php echo $language['location']?> </a!-->
+					
+					</div>
+                    
+					<?php if($stallcount>0){ ?>
+					 <div class="rating_menuss"><a class="merchant_ratings" onclick="our_stall()">Our Stalls </a></div>
+					 <?php } ?>
+                    <?php if(isset($_SESSION['invitation_id']) && (!isset($_SESSION['login']))){?>
+                    <a class="col-md-2" href="signup.php?invitation_id=<?php echo $_SESSION['invitation_id'];?>"><img src="img/join-us.jpg" style="width: 100px;"></a>
+					
+                    <?php }?>
                     </div>
-
-
-
-                    <div class="clear"></div>
-                    <div class="row">
-                        <div class="col-xs-4">
-                            <a style="text-align:center;width:100%;margin-top:2%;" href="https://play.google.com/store/apps/details?id=com.app.koofamily" target="blank">
-                                <img style="max-width:140px;" src="google.png" alt="">
-                            </a>
-                            <a style="text-align:center;width:100%;margin-top:2%;" href="https://apps.apple.com/us/app/id1491595615?mt=8" target="blank">
-                                <img style="max-width:140px;max-height:40px;" src="appstore.png" alt="">
-                            </a>
-                        </div>
-                        <?php if ($voice_recognition) { ?>
-                            <div class="col-xs-8">
-                                <div style="width: 40px;margin-left: 20px;cursor: pointer;" class="mp1">
-                                    <img src="images/Microphone.png" data-type="top" class="img-responsive microphone_click" id="microphone_click">
-                                </div>
-                            </div>
-                        <?php } ?>
+					
+				  <div class="clear"></div>
+				  <a style="text-align:center;width:100%;margin-top:2%;" href="https://play.google.com/store/apps/details?id=com.koobigfamilies.app" target="blank">
+					<img style="max-width:140px;" src="google.png" alt=""></a>
+				  <div class="clear"></div>
+                    
                     </div>
-
-
-
-
-                    <div class="clear"></div>
-                    <div style="margin-top:3%;margin-bottom:10px;" class="search_div">
-                        <a class="col-md-6 search_anchor" style="box-shadow: -3px 3px #fa7953, -2px 2px #fa7953, -1px 1px #fa7953;
-border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;padding:10px;" href="index.php?vs=<?= md5(rand()) ?>"><?php echo $language['more_shops']; ?>
-                            <img class="Sirv" data-src="<?php echo $image_cdn; ?>shop.png" alt="" />
-                            <img class="Sirv" data-src="<?php echo $image_cdn; ?>shop.png" alt="" />
-                            <img class="Sirv" data-src="<?php echo $image_cdn; ?>shop.png" alt="" />
-                        </a>
-                    </div>
-
-                </div>
-
-                <p style="color:red;" id="error_label"></p>
-
-
-
-                <div class="col-md-12 row favorite" style="margin-left:15px; margin-bottom: 10px; padding-left:0px;">
-
+                      <p style="color:red;" id="error_label"></p>
+                    
+                    <div class="col-md-12 row favorite" style="margin-left:15px; margin-bottom: 10px; padding-left:0px;" >
                     <div style="clear:both;">
-
-                        <?php
-
-                        if ($merchant_detail['mobile_number'] == '') { ?>
-
-                            <script>
-                                window.location.replace("https://www.koofamilies.com/merchant_find.php");
-                            </script>
-
-                        <?php } ?>
-
-                        <h4 class="favorite_name" style="display: inline-blick;">
-                            <?php
-                            if ($merchant_detail['chat_with_merchant']) {
-                                if ($merchant_detail['chat_group']) {
-                            ?>
-                                    <a href="<?php echo $merchant_detail['chat_with_merchant']; ?>" target="_blank">Chat with <?php echo $merchant_detail['name']; ?></a>
-                                <?php } else {
-                                ?>
-                                    <a href="https://api.whatsapp.com/send?phone=<?php echo $merchant_detail['chat_with_merchant'] ?>" target="_blank">Chat with <?php echo $merchant_detail['name']; ?></a>
-                                <?php }
-                            } else {
-                                $chat_merchant_list = array(6958, 6956, 7634, 7785, 7799, 7839, 7808, 7818, 7846, 7912, 7953, 7837, 7209, 7462, 7209, 7723, 7674, 7663, 7726, 7703, 7554, 6960, 7658, 7662, 7462);
-                                if (in_array($merchant_detail['id'], $chat_merchant_list)) { ?>
-                                    <a href="https://chat.whatsapp.com/J4wcS4riADaBBrvY60c8f3" target="_blank">Chat with <?php echo $merchant_detail['name']; ?>
-                                    <?php } else { ?>
-                                        <a href="https://api.whatsapp.com/send?phone=<?php echo $merchant_detail['mobile_number'] ?>" target="_blank">Chat with <?php echo $merchant_detail['name']; ?>
-                                    <?php }
-                            } ?>
-
-                                    <img src="images/whatapp.png" style="max-width:32px;" /></a>
-                                        </br>
-                                        <span style="color:red;"><?php echo $language['difficulty']; ?> <a href="https://chat.whatsapp.com/J4wcS4riADaBBrvY60c8f3" target="_blank">
-                                                <img src="images/whatapp.png" style="max-width:32px;" />
-                                            </a></span>
-
-                        </h4>
-
+                    <h4 class="favorite_name" style="display: inline-blick;">
+                    <a href="javascript:jqcc.cometchat.launch({uid:' <?php echo $merchant_detail['id'];?>'});">Chat with <?php echo $merchant_detail['name'];?> </a></h4>
                     </div>
-
-                    <h4 class="favorite_name" style="display: inline-block;margin-left:1%;"> Name: <?php echo $merchant_detail['name']; ?></h4>
-
+                    <h4 class="favorite_name" style="display: inline-blick;">Name: <?php echo $merchant_detail['name'];?></h4>
                     <div class="favorite_icon">
-
-                        <?php if ($count > 0) { ?>
-
-                            <i class="heart fa fa-heart"></i>
-
-                        <?php } else { ?>
-
-                            <i class="heart fa fa-heart-o"></i>
-
-                        <?php } ?>
-
+                    <?php if($count > 0) {?>
+                    <i class="heart fa fa-heart"></i>
+                    <?php } else {?>
+                    <i class="heart fa fa-heart-o"></i>
+                    <?php }?>
                     </div>
-
                     <h4 class="starting-bracket" style="display: inline-block;">(</h4>
-
-                    <?php if ($business1 != "") { ?>
-
-                        <img style="margin-top:10px;" class="nature_image" src="<?php echo $site_url; ?>/img/<?php echo $business1; ?>">
-
-                    <?php } ?>
-
-                    <?php if ($business2 != "") { ?>
-
-                        <img style="margin-top:10px;" class="nature_image" src="<?php echo $site_url; ?>/img/<?php echo $business2; ?>">
-
-                    <?php } ?>
-
-                    <?php if ($merchant_detail['account_type'] != '') { ?>
-
-                        <h4 class="transaction_num"> <?php echo $merchant_detail['account_type']; ?>, </h4>
-
-                    <?php } ?>
-
-                    <h4 class="transaction_num"><?php if (isset($result_transaction['ordered_num'])) {
-                                                    echo $result_transaction['ordered_num'];
-                                                } ?>, </h4>
-
-                    <h4 class="favorite_num"><?php if (isset($result_favorite['favorite_num'])) {
-                                                    echo $result_favorite['favorite_num'];
-                                                } ?>)</h4>
-
-                </div>
-
-                <?php
-
-                        $current_time = date("h:i");
-
-                        $opening_hr = $merchant_detail['start_time_setup'];
-
-                        $end_hr = $merchant_detail['end_time_setup'];
-
-                        $date1 = DateTime::createFromFormat('H:i', $current_time);
-
-                        $date2 = DateTime::createFromFormat('H:i', $opening_hr);
-
-                        $date3 = DateTime::createFromFormat('H:i', $end_hr);
-
-                        $go_ahead = true;
-
-                        if ($merchant_detail['shop_open'] == "0") {
-
-                            $go_ahead = false;
-                        }
-
-                        if ($go_ahead == true) {
-
-                ?>
-
-                    <!-- if store is open !-->
-
-                    <?php if ($merchant_detail['mobile_number'] != "60172669613") { ?>
-
-                        <!--div class="comm_prd">
-                    <h4 class="head_oth"><?php echo $language["order_direct"]; ?></h4>
+                    <?php if($business1 != ""){ ?>
+                    <img style="margin-top:10px;" class="nature_image" src="<?php echo $site_url;?>/img/<?php echo $business1;?>">
+                    <?php }?>
+                    <?php if($business2 != ""){ ?>
+                    <img style="margin-top:10px;" class="nature_image" src="<?php echo $site_url;?>/img/<?php echo $business2;?>">
+                    <?php }?>
+                    <?php if($merchant_detail['account_type'] != ''){?>
+                    <h4 class="transaction_num"> <?php echo $merchant_detail['account_type'];?>, </h4>
+                    <?php }?>
+                    <h4 class="transaction_num"><?php if( isset( $result_transaction['ordered_num'] ) ) {echo $result_transaction['ordered_num'];}?>, </h4>
+                    <h4 class="favorite_num"><?php if( isset($result_favorite['favorite_num']) ) {echo $result_favorite['favorite_num'];}?>)</h4>
+                    </div>
+            <?php
+               $current_time = date("h:i");
+               $opening_hr=$merchant_detail['start_time_setup'];
+               $end_hr=$merchant_detail['end_time_setup'];
+              $date1 = DateTime::createFromFormat('H:i', $current_time);
+             $date2 = DateTime::createFromFormat('H:i', $opening_hr);
+             $date3 = DateTime::createFromFormat('H:i', $end_hr);
+            $go_ahead=true;
+            // if($merchant_detail['shop_open']=="0")
+            // {
+                 // $go_ahead=false;
+            // }
+              if($go_ahead==true){  
+          ?>
+               <!-- if store is open !-->
+          <?php if($merchant_detail['mobile_number']!="60172669613"){ ?>
+                    <!--div class="comm_prd">
+                    <h4 class="head_oth"><?php echo $language["order_direct"];?></h4>
                    
           <div class="oth_pr" id="oth_pr">
                     Order 
                     </div>
           
                     </div!-->
+          <?php } ?>
+          
 
-                    <?php } ?>
-
-
-
-
-
-                    <?php
-
-                            if ($merchant_detail['menu_type'] == 2) {
-
-                                include 'view_merchant_layout2.php';
-                            } else {
-
-                                include 'view_merchant_layout1.php';
-                            }
-
-                    ?>
-
-
-
-
-
-        </div>
-
-
-
+                     <?php
+                        if($merchant_detail['menu_type']==2){
+                            include 'view_merchant_layout2.php';
+                        } else {  
+                            include 'view_merchant_layout1.php';
+                        }
+                    ?>  
+                   
+                   
+                </div>
+        
         <!-- without picture--->
-
         <?php
+        if($merchant_detail['menu_type']==1) {
 
-                            if ($merchant_detail['menu_type'] == 1) {
 
-                                // echo "SELECT * FROM products WHERE category = '".$sub_cat."' and user_id ='".$id."' and status=0";
-
-                                // die;
-
-                                $total_rows1 = isset($category) ? mysqli_query($conn, "SELECT * FROM products WHERE category = '" . $sub_cat . "' and user_id ='" . $id . "' and status=0") : [];
-
+    // echo "SELECT * FROM products WHERE category = '".$sub_cat."' and user_id ='".$id."' and status=0";
+    // die;
+        $total_rows1 = isset($category) ? mysqli_query($conn, "SELECT * FROM products WHERE category = '".$sub_cat."' and user_id ='".$id."' and status=0") : [];
         ?>
+        <div class="without_picture">
+        
+        <table class="table table-striped" id="without_table">
+        <thead>
+        <tr>
+         <th>S.no</th>
+         <th>Product Name</th>
+         <th>Action</th>
+         <th>Remark</th>
+         <th>Price</th>
+         <th>Code</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        $i =1;
+        while ($row=mysqli_fetch_assoc($totalo_rws1)){
+          // var_dump($row);
+          if($row['image'] == '') {
+        
+        
+        ?>
+          <tr>
+              <td><?php echo $i; ?> </td>
+              <input type="hidden" id="id" name="m_id" value="<?php echo $id;?>">
+                <input type="hidden" id="id" name="p_id" value="<?php echo $row['id'];?>">
+            <td><?php echo $row['product_name']; ?></td>
+         <?php if($row['varient_exit']=="y") { $cart_class="with_varient";} else { $cart_class="without_varient";} ?>
+            <?php 
+              if($row['on_stock']){
+             ?>
+            
+            <td  class="text_add_cart_without  <?php echo $cart_class ?>"  data-id = "<?php echo $row['id'] ?>" data-code = "<?php echo $row['product_type'] ?>"  data-pr = "<?php echo number_format((float)$row['product_price'], 2, '.', ''); ?>" data-name = "<?php echo $row['product_name'] ?>" id="text_without">Add to Cart</td>
+            <?php 
+              }else{
+                ?>
+                  <p class='no_stock_add_to_cart'>Out of stock</p>
 
-            <div class="without_picture">
-
-
-
-                <table class="table table-striped" id="without_table">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>S.no</th>
-
-                            <th>Product Name</th>
-
-                            <th>Action</th>
-
-                            <th>Remark</th>
-
-                            <th>Price</th>
-
-                            <th>Code</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <?php
-
-                                $i = 1;
-
-                                while ($row = mysqli_fetch_assoc($totalo_rws1)) {
-
-                                    // var_dump($row);
-
-                                    if ($row['image'] == '') {
-
-
-
-
-
-                        ?>
-
-                                <tr>
-
-                                    <td><?php echo $i; ?> </td>
-
-                                    <input type="hidden" id="id" name="m_id" value="<?php echo $id; ?>">
-
-
-
-                                    <input type="hidden" id="id" name="p_id" value="<?php echo $row['id']; ?>">
-
-                                    <td><?php echo $row['product_name']; ?></td>
-
-                                    <?php if ($row['varient_exit'] == "y") {
-                                            $cart_class = "with_varient";
-                                        } else {
-                                            $cart_class = "without_varient";
-                                        } ?>
-
-                                    <?php
-
-                                        if ($row['on_stock']) {
-
-                                    ?>
-
-
-
-                                        <td class="text_add_cart_without  <?php echo $cart_class ?>" data-id="<?php echo $row['id'] ?>" data-code="<?php echo $row['product_type'] ?>" data-pr="<?php echo number_format((float)$row['product_price'], 2, '.', ''); ?>" data-name="<?php echo $row['product_name'] ?>" id="text_without">Add to Cart</td>
-
-                                    <?php
-
-                                        } else {
-
-                                    ?>
-
-                                        <p class='no_stock_add_to_cart'>Out of stock</p>
-
-
-
-                                    <?php
-
-                                        }
-
-                                    ?>
-
-                                    <td><?php echo number_format((float)$row['product_price'], 2, '.', ''); ?></td>
-
-                                    <td><?php echo $row['remark']; ?></td>
-
-                                    <td><?php echo $row['product_type']; ?></td>
-
-
-
-                                </tr>
-
-                            <?php $i++;
-                                    }
-
-                            ?>
-
-                        <?php } ?>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
+                <?php
+              }
+             ?>
+            <td><?php echo number_format((float)$row['product_price'], 2, '.', ''); ?></td>
+            <td><?php echo $row['remark']; ?></td>
+            <td><?php echo $row['product_type']; ?></td>
+            
+            </tr>
+        <?php  $i++; }
+        ?>
         <?php } ?>
-
-
-
-        <?php if ($merchant_detail['mobile_number'] != "60172669613") { ?>
-
-            <div class="comm_prd">
-
-                <h4 class="head_oth"><?php echo $language["order_direct"]; ?></h4>
-
-
-
-                <div class="oth_pr" id="oth_pr"><?php echo $language['order']; ?></div>
-
-
-
-            </div>
-
+        </tbody>
+        </table>
+        </div>
         <?php } ?>
-
-
-
-    </div>
-
-    </main>
+        
+        <?php if($merchant_detail['mobile_number']!="60172669613"){ ?>
+        <div class="comm_prd">
+        <h4 class="head_oth"><?php echo $language["order_direct"];?></h4>
+    
+        <div class="oth_pr" id="oth_pr">Order</div>
+      
+        </div>
+    <?php } ?>
+        
+        </div>
+        </main>
 
     </div>
 
