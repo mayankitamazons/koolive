@@ -2496,10 +2496,10 @@ if (isset($login_user_id)) {
              $date2 = DateTime::createFromFormat('H:i', $opening_hr);
              $date3 = DateTime::createFromFormat('H:i', $end_hr);
             $go_ahead=true;
-            // if($merchant_detail['shop_open']=="0")
-            // {
-                 // $go_ahead=false;
-            // }
+            if($merchant_detail['shop_open']=="0")
+            {
+                 $go_ahead=false;
+            }
               if($go_ahead==true){  
           ?>
                <!-- if store is open !-->
