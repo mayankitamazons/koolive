@@ -263,6 +263,8 @@ if(isset($_POST['submit']))
 	else $write_up_link_share = "0";
 	if($auto_accept_order =="on") $auto_accept_order = '1';
 	else $auto_accept_order = "0";
+	if($order_sms =="on") $order_sms = '1';
+	else $order_sms = "0";
 	if($chat_group =="on") $chat_group = '1';
 	else $chat_group = "0";
 	$old_image=$bank_data['old_image'];
@@ -364,7 +366,7 @@ if(isset($_POST['submit']))
 		wallet_check='$wallet_check',boost_check='$boost_check',grab_check='$grab_check',wechat_check='$wechat_check',touch_check='$touch_check',service_id='$service',
 		fpx_check='$fpx_check',discount='$discounts',mian_merchant='$main_merchant_id',location_order='$location_order',location_range='$location_range',free_delivery='$free_delivery'
 		,delivery_address_exit='$delivery_address_exit',section_exit='$section_exit',table_exit='$table_exit',pre_fill_delivery_address='$pre_fill_delivery_address',write_up_share='$write_up_share'
-		,auto_accept_order='$auto_accept_order',write_up_link_share='$write_up_link_share',chat_with_merchant='$chat_with_merchant',chat_group='$chat_group' WHERE id='".$_SESSION['login']."'";
+		,auto_accept_order='$auto_accept_order',write_up_link_share='$write_up_link_share',chat_with_merchant='$chat_with_merchant',chat_group='$chat_group',order_sms='$order_sms' WHERE id='".$_SESSION['login']."'";
 		// die;                                     
 		$test_test = mysqli_query($conn,$qur);
 		$error .= "Successfully Updated profile Details.<br>";
@@ -1321,6 +1323,10 @@ audio {
 										<div class="form-group">
 											<label>Order Auto Accept</label><br>
 											<input type="checkbox" name="auto_accept_order" <?php if($profile_data['auto_accept_order']=='1') echo "checked";?>/> 
+										</div>  
+										<div class="form-group">
+											<label>Order Sms</label><br>
+											<input type="checkbox" name="order_sms" <?php if($profile_data['order_sms']=='1') echo "checked";?>/> 
 										</div>
 										<div class="form-group">
 											

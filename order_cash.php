@@ -532,8 +532,11 @@ if(isset($_POST))
 					$rand= substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),1,4);
 					$url="https://www.koofamilies.com/orderlist.php?did=".$user_id."&vs=".$rand."&oid=".$order_id;    
 					$sms_msg="Your order is complete, you can check your order here. ".$url;
-					if($sms_to!="601001025477")
-					$smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg);   
+					if($merchant_data['order_sms'])
+					{
+						if($sms_to!="601001025477")
+						$smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg); 
+					}				
 					  $_SESSION['new_order']='y';
 					 $whatapp_group_name=$merchant_data['whatapp_group_name'];
 					 $merchant_onesignal_id=$merchant_data['onesignal_player_id'];

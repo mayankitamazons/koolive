@@ -28,7 +28,7 @@ function gw_send_sms($user,$pass,$sms_from,$sms_to,$sms_msg){
  $cur_date=date('Y-m-d');
  $cur_utc=strtotime(date('Y-m-d h:i:s'));  
     $query="SELECT order_list.invoice_no,order_list.order_alert_done,order_list.newuser,order_list.id as order_id,order_list.status,order_list.merchant_id, 
-	order_list.created_on,users.id,users.name,users.handphone_number,users.write_up_link_share,users.pending_time,users.whatapp_group_name  FROM order_list inner join users on 
+	order_list.created_on,users.id,users.name,users.handphone_number,users.write_up_link_share,users.pending_time,users.whatapp_group_name,users.order_sms  FROM order_list inner join users on 
 	order_list.merchant_id = users.id WHERE order_list.merchant_id not in('5401') and users.pending_time!=0 and users.write_up_link_share='1'
 	AND status =0 AND DATE(`created_on`) ='$cur_date' and order_alert_done='n'  order by order_list.created_on  DESC ";
 // die;  
@@ -71,12 +71,15 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 			   
 		$order_id=$row['order_id'];
 	// die;
+	if($row['order_sms'])
+	{
     	$sms_to = '+60127500913'.',+60123115670,'.$row['handphone_number'];
     	// $sms_to = '+60123115670';
     	// $sms_to = '+919001025477';
     	$sms_msg = $_POST['message'];
 		
-        $smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg);   
+        $smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg); 
+	}		
 		if($row['whatapp_group_name'])
 		{
 			$whatapp_group_name=$row['whatapp_group_name'];
