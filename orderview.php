@@ -2350,7 +2350,7 @@ var qtyno = $("input[name='qtyno[]']")
 
           //return false;
          // }
-}
+}   
 
   $('#myScanModal1').on('hidden.bs.modal', function (e) {
   $(this)

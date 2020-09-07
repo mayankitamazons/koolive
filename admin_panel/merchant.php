@@ -160,6 +160,7 @@ $a_m="merchant";
 							<th>Set Delivery Rate (%) </th>
 							<th>Vendor Comission (%) </th>
 							<th>Chiness Delivery </th>
+							<th>Fix Delivery Charges </th>
 							<th>Price Hike </th>
 							<th> Time of the pop-up </th>
 							<th>Popular Merchant </th>
@@ -226,6 +227,7 @@ $a_m="merchant";
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="delivery_rate" placeholder="%" class="form-control delivery_rate" value="<?php echo $row['delivery_rate'];?>"></td>   
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="vendor_comission" placeholder="%" class="form-control vendor_comission" value="<?php echo $row['vendor_comission'];?>"></td>   
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="special_price_value" placeholder="" class="form-control special_price_value" value="<?php echo $row['special_price_value'];?>"></td>   
+								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="order_extra_charge" placeholder="" class="form-control order_extra_charge" value="<?php echo $row['order_extra_charge'];?>"></td>   
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="price_hike" placeholder="" class="form-control price_hike" value="<?php echo $row['price_hike'];?>"></td>   
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="custom_msg_time" placeholder="" class="form-control custom_msg_time" value="<?php echo $row['custom_msg_time'];?>"></td>   
 								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="popular_restro" placeholder="" class="form-control popular_restro" value="<?php echo $row['popular_restro'];?>"></td>   
@@ -453,6 +455,30 @@ $a_m="merchant";
 						url :'../functions.php',
 						 type:"post",
 						 data:{special_price_value:special_price_value,method:"adminprofilesave",selected_user_id:selected_user_id},     
+						 dataType:'json',
+						 success:function(result){  
+							var data = JSON.parse(JSON.stringify(result));   
+							if(data.status==true)
+							{
+							  // location.reload(true);
+								alert('Updated');
+							}
+							else
+							{alert('Failed to update');	}
+							
+							}
+				});      
+		} 
+	});
+		$(".order_extra_charge").focusout(function(e){
+		var selected_user_id= $(this).attr('selected_user_id');
+		var order_extra_charge=this.value;
+		if(order_extra_charge!='' && selected_user_id)
+		{  
+		  $.ajax({
+						url :'../functions.php',
+						 type:"post",
+						 data:{order_extra_charge:order_extra_charge,method:"adminprofilesave",selected_user_id:selected_user_id},     
 						 dataType:'json',
 						 success:function(result){  
 							var data = JSON.parse(JSON.stringify(result));   
