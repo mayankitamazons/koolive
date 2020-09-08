@@ -379,6 +379,7 @@ $language['post_job_list'] ="Post/Search jobs";
 $language['shop_closed_order_later'] ="商家现在休息中，你依然可以下单。";      
 $language['sort_price_low_high'] = "根据价格最低排列";
 $language['without_product_coupon'] = "请选择产品先，再输入折扣优惠密码";  
-
+$language['location_more'] = "在繁忙时间，古来区食物可在一个小时内抵达,外坡则需要一个半小时。越早下单，食物能够越准时送达。";   
+$language['language'] = "语言";   
 
 ?>

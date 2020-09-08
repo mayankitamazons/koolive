@@ -364,7 +364,8 @@ $language['new_timing_working'] ="Multiple Working";
 $language['shop_closed_order_later'] ="The shop is closed now, you can still order for later delivery.";        
 $language['sort_price_low_high'] = "Sort by price: Low to high";
 $language['without_product_coupon'] = "Please select the product before applying coupon";     
-
+$language['location_more'] = "During Peak hours, Food can be reached for Kulai area (within 60 minutes); Outstation (within 90 minutes). Early order will be very helpful for punctual arrival.";     
+$language['language'] = "Language";    
 
 
 ?>

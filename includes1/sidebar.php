@@ -247,7 +247,18 @@ if($user_roles=="5")
 								<!--li><a href="#">Subscription</a></li!-->
 							</ul>
 						</li> 
+						<li class="menu-item-has-children">
+							<a href="#" class=""> <?php echo $language['language']; ?></a>
+							<ul class="list-unstyled sub-menu collapse" aria-expanded="false">
+								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="?language=english<?php echo $g_url; ?>">English</a></li> 
+								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
+								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
+								
+								
+							</ul>
+			</li>
 						<li> 
+						
 							<?php   $setup_shop=$balance['setup_shop'];
 							   if(($setup_shop=="y") && ($user_roles=='2')){ ?>   
 							
@@ -263,15 +274,45 @@ if($user_roles=="5")
 				 <li><a href="referral_list.php?vs=<?=md5(rand()) ?>"><span class="hide-menu <?php if($me=="referral_list"){echo "active";} ?>"><?php echo $language['referral_list'];?></span></a> </li>
 				   <li><a href="investor_relations.php" class="investor_relation"><span class="hide-menu <?php if($me=="investor_relation"){echo "active";} ?>"><?php echo $language['InvestorRelations']; ?></span><i class='fa fa-star' style="color:yellow;"></i></a></li>
 				   <li><a href="contact.php"><span class="hide-menu <?php if($me=="contact"){echo "active";} ?>"><?php echo $language['contact'];?></span></a></li>  
+				   <li class="menu-item-has-children">
+							<a href="#" class=""> <?php echo $language['language']; ?></a>
+							<ul class="list-unstyled sub-menu collapse" aria-expanded="false">
+								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="?language=english<?php echo $g_url; ?>">English</a></li> 
+								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
+								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
+								
+								
+							</ul>
+			</li>
 				   <li><a href="#"  type="normal_logout" class="logout"><?php echo $language['log_out']; ?>  </a></li>
 				<?php }else if($user_roles==''){ ?>
 				<li><a href="merchant_find.php"><span class="hide-menu <?php if($me=="merchant_find"){ echo "active";} ?>"><?php echo $language["find_merchant"];?></span></a></li>
+				<li class="menu-item-has-children">
+							<a href="#" class=""> <?php echo $language['language']; ?></a>
+							<ul class="list-unstyled sub-menu collapse" aria-expanded="false">
+								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="?language=english<?php echo $g_url; ?>">English</a></li> 
+								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
+								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
+								
+								
+							</ul>
+			</li>
 				<li><a href="investor_relations.php" class="investor_relation"><span class="hide-menu <?php if($me=="investor_relation"){ echo "active";} ?>"><?php echo $language['InvestorRelations']; ?></span><i class="fa fa-star" style="color:yellow;"></i></a></li>
 				<li><a href="contact.php"><span class="hide-menu <?php if($me=="contact"){ echo "active";} ?>"><?php echo $language['contact'];?></span></a></li>
 				<li><a href="login.php"><span class="hide-menu <?php if($me=="login"){ echo "active";} ?>"><?php echo $language['login'];?></span></a>	</li>
 				
 			<?php } ?>  
 			<?php if($user_roles==5){ ?>
+			<li class="menu-item-has-children">
+							<a href="#" class=""> <?php echo $language['language']; ?></a>
+							<ul class="list-unstyled sub-menu collapse" aria-expanded="false">
+								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="?language=english<?php echo $g_url; ?>">English</a></li> 
+								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
+								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
+								
+								
+							</ul>
+			</li>
 			<li> <a href="#"  type="normal_logout" class="logout"><?php echo $language['log_out'];?>  </a> </li>
 			<?php } ?>
 		</ul>

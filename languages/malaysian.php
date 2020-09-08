@@ -370,5 +370,7 @@ $language['rider_info'] ="Rider info";
 $language['new_timing_working'] ="Multiple Working";  
 $language['post_job_list'] ="Post/Search jobs";  
 $language['without_product_coupon'] = "Please select the product before applying coupon";  
+$language['location_more'] = "During Peak hours, Food can be reached for Kulai area (within 60 minutes); Outstation (within 90 minutes). Early order will be very helpful for punctual arrival.";   
+$language['language'] = "Language";    
 
 ?>
