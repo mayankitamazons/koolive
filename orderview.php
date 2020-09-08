@@ -767,9 +767,9 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 					<div class="clear"></div>
 					<div class="row">
 					
-					  <div class="about_uss 3button">
+					  <!--div class="about_uss 3button">
 					  <span  style="color:#35cbab;" class="logout_show"> <?php echo $language['open_close_shop']; ?>  </span>  
-					 </div>
+					 </div!-->
 					<div class="about_uss 3button"><a class="" href="view_product.php"><?php echo $language['edit_product']; ?>  </a></div>
 					  <!--div class="about_uss 3button"><a class="" href="#"><?php echo "Stock inventory";?></a></div!-->
 					</div>

@@ -3394,7 +3394,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                             <input type="hidden" name='delivery_charges' value='<?php echo $merchant_detail['order_extra_charge']; ?>' id='delivery_charges' />
                         <?php  } else { ?>
                             <input type="hidden" name='delivery_charges' value='2.99' id='delivery_charges' /> <?php } ?>
-                        <input type="hidden" name='additonal_delivery_charges' value='2.99' id='additonal_delivery_charges' />
+                        <input type="hidden" name='additonal_delivery_charges' value='<?php echo $merchant_detail['additonal_delivery_charges']; ?>' id='additonal_delivery_charges' />
                         <input type="hidden" id="deliver_tax_amount" name="deliver_tax_amount" value="0">
 
 
@@ -3449,7 +3449,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                                             <?php $deliver_charges_label = $language['delivery_charges']; ?>
                                             <?php echo ucfirst(strtolower($deliver_charges_label)); ?>: Rm <span id="order_extra_label"><?php echo number_format($merchant_detail['order_extra_charge'], 2); ?></span>
                                         </div>
-                                        <input type="hidden" name="order_extra_charge" id="order_extra_charge" value="2.99" />
+                                        <input type="hidden" name="order_extra_charge" id="order_extra_charge" value="<?php echo $merchant_detail['order_extra_charge'];?>" />
                                         <input type="hidden" name="special_delivery_amount" id="special_delivery_amount" value="0" />
                                         <input type="hidden" name="pickup_type" id="pickup_type" value="takein" />
                                     </div>
