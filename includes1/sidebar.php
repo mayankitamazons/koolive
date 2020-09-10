@@ -133,6 +133,16 @@ if($user_roles=="5")
 			  <li> <a href="dashboard.php?vs=<?=md5(rand()) ?>" class="<?php if($me=="dashboard"){ echo "active";} ?>"> <?php echo $language["dashboard"] ?> </a> </li> 
 			
 				<?php if($user_roles=="2" || $user_roles=="5"){ ?>
+				<li class="menu-item-has-children">
+							<a href="#" class=""> <?php echo $language['language']; ?></a>
+							<ul class="list-unstyled sub-menu collapse" aria-expanded="false">
+								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="?language=english<?php echo $g_url; ?>">English</a></li> 
+								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
+								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
+								
+								
+							</ul>
+			</li>
 					<li class="menu-item-has-children">
 					<a href='#' class="<?php if ($merchant_tab=="y"){ echo "active";}?>"><?php echo $language['merchant'];?></a>
 					<ul class="list-unstyled sub-menu collapse" aria-expanded="true">
@@ -247,16 +257,7 @@ if($user_roles=="5")
 								<!--li><a href="#">Subscription</a></li!-->
 							</ul>
 						</li> 
-						<li class="menu-item-has-children">
-							<a href="#" class=""> <?php echo $language['language']; ?></a>
-							<ul class="list-unstyled sub-menu collapse" aria-expanded="false">
-								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="?language=english<?php echo $g_url; ?>">English</a></li> 
-								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
-								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
-								
-								
-							</ul>
-			</li>
+						
 						<li> 
 						
 							<?php   $setup_shop=$balance['setup_shop'];

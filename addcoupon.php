@@ -28,6 +28,7 @@ if(isset($_POST['submit']))
 	$valid_to='';
 	$title = $_POST['title'];
 	$discount = $_POST['discount'];
+	$per_user_count = $_POST['per_user_count'];
 	$coupon_code = $_POST['coupon_code'];
 	$valid_user = $_POST['valid_user'];
 	$type = $_POST['type'];
@@ -36,7 +37,8 @@ if(isset($_POST['submit']))
 	$user_id = $_SESSION['login'];
 	$created = date('Y-m-d H:i:s');
 	// move_uploaded_file($file_tmp_name,$target_dir.$file_name);
-	$q="INSERT INTO `coupon`(`user_id`, `title`, `coupon_code`, `discount`, `total_min_price`, `total_max_price`, `valid_from`, `valid_to`, `type`, `valid_user`, `remain_user`, `description`, `status`, `created`)  VALUES ('$user_id', '$title', '$coupon_code', '$discount', '$total_min_price', '$total_max_price', '$valid_from', '$valid_to', '$type', '$valid_user', '$valid_user', '$description', '$status', '$created')";
+	$q="INSERT INTO `coupon`(`user_id`, `title`, `coupon_code`, `discount`, `total_min_price`, `total_max_price`, `valid_from`, `valid_to`, `type`, `valid_user`, `remain_user`, `description`, `status`, `created`,`per_user_count`)
+	VALUES ('$user_id', '$title', '$coupon_code', '$discount', '$total_min_price', '$total_max_price', '$valid_from', '$valid_to', '$type', '$valid_user', '$valid_user', '$description', '$status', '$created','$per_user_count')";
 	// die;
 	mysqli_query($conn,$q);
 	header('Location: coupon_list.php');
@@ -168,6 +170,10 @@ if(isset($_POST['submit']))
 											<div class="col-md-4">
 													<label><?php echo $language['order_max']; ?> Amount</label>
 													<input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" maxlength="4" name="total_max_price" class="form-control" placeholder="<?php echo $language['order_max']; ?> Amount">
+											</div>
+											<div class="col-md-4">
+													<label>Per user count</label>
+													<input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" value='1' maxlength="4" name="per_user_count" class="form-control" placeholder="Per User Count">
 											</div>
 										</div>																		
 									</div>

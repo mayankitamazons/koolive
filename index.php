@@ -116,7 +116,7 @@ if(isset($_POST['merchant_select_form']))
 
     <meta name="theme-color" content="#317EFB"/>
 
-<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" defer></script>
 
 <script>
 
@@ -1890,7 +1890,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 
   <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 
-<script src="extra/js/select2.min_da99e0cfb43d832f77954298a0557ca5.js" defer></script>
+<script src="extra/js/select2.min_da99e0cfb43d832f77954298a0557ca5.js"></script>
 
   <!-- SPECIFIC SCRIPTS -->
 

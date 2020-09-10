@@ -36,10 +36,11 @@ if(isset($_POST['submit']))
 	$type = $_POST['type'];
 	$status =1;
 	$description = $_POST['description'];
+	$per_user_count = $_POST['per_user_count'];
 	$user_id = $_SESSION['login'];
 	$created = date('Y-m-d H:i:s');
 	
-	mysqli_query($conn, "UPDATE `coupon` SET `title`='$title',`coupon_code`='$coupon_code',`discount`='$discount',`total_min_price`='$total_min_price',`total_max_price`='$total_max_price',`valid_from`='$valid_from',`valid_to`='$valid_to',`type`='$type',`valid_user`='$valid_user',`description`='$description',`status`='$status' WHERE `id` = '".$plan_id."'");
+	mysqli_query($conn, "UPDATE `coupon` SET `title`='$title',`coupon_code`='$coupon_code',`discount`='$discount',`total_min_price`='$total_min_price',`total_max_price`='$total_max_price',`valid_from`='$valid_from',`valid_to`='$valid_to',`type`='$type',`valid_user`='$valid_user',`description`='$description',`status`='$status',`per_user_count`='$per_user_count' WHERE `id` = '".$plan_id."'");    
 	header('Location: coupon_list.php');
 
 
@@ -174,6 +175,10 @@ if(isset($_POST['submit']))
 										<div class="col-md-4">
 												<label><?php echo $language['order_max']; ?> Amount</label>
 												<input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" maxlength="4" name="total_max_price" class="form-control" placeholder="<?php echo $language['order_max']; ?> Amount" value="<?php echo $plan_data['total_max_price'] ?>">
+										</div>
+										<div class="col-md-4">
+													<label>Per user count</label>
+													<input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" value='1' maxlength="4" name="per_user_count" class="form-control" placeholder="Per User Count">
 										</div>
 										</div>																		
 									</div>

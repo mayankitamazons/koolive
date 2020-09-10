@@ -22,13 +22,7 @@ RewriteRule (.*) https://koofamilies.com/$1 [R=301,L]
     appcmd set config/section:urlCompression/doDynamicCompression:True
 </ifModule>
    
-<IfModule mod_headers.c>
-    <FilesMatch "\.(html|php)$">
-        Header set Cache-Control "no-cache, no-store, must-revalidate"
-        Header set Pragma "no-cache"
-        Header set Expires 0
-    </FilesMatch>
-</IfModule>
+## EXPIRES CACHING ##
 <IfModule mod_expires.c>
 ExpiresActive On
 ExpiresByType image/jpg "access 1 year"
@@ -43,6 +37,7 @@ ExpiresByType application/x-shockwave-flash "access 1 month"
 ExpiresByType image/x-icon "access 1 year"
 ExpiresDefault "access 1 month"
 </IfModule>
+## EXPIRES CACHING ##
 <IfModule mod_deflate.c>
 AddOutputFilterByType DEFLATE text/html
 AddOutputFilterByType DEFLATE text/css
