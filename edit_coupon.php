@@ -178,7 +178,7 @@ if(isset($_POST['submit']))
 										</div>
 										<div class="col-md-4">
 													<label>Per user count</label>
-													<input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" value='1' maxlength="4" name="per_user_count" class="form-control" placeholder="Per User Count">
+													<input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" value='<?php echo $plan_data['per_user_count'];?>' maxlength="4" name="per_user_count" class="form-control" placeholder="Per User Count">
 										</div>
 										</div>																		
 									</div>

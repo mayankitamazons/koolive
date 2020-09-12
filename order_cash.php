@@ -104,7 +104,7 @@ if(isset($_POST))
 		$show_alert="n";
 		$logincount=0;
 	}
-	$mobile_block = array("60123456789", "601234567890", "Glenn", "Cleveland");
+	$mobile_block = array("60123456789", "601234567890", "Glenn", "Cleveland",'60179605935');
 
 	if(in_array($mobile_check,$mobile_block))
 	{

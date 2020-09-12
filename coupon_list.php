@@ -214,6 +214,7 @@ $u_query =mysqli_query($conn,"SELECT * FROM coupon WHERE user_id='".$_SESSION['l
 								<th><?php echo $language["valid_from"];?></th>
 								<th><?php echo $language["valid_to"];?></th>
 								<th><?php echo $language["remaining_user"];?></th>
+								<th><?php echo "Per user use";?></th>
 								<th><?php echo $language["status"];?></th>
 								<th>Action</th>
 							</tr>
@@ -253,6 +254,7 @@ $u_query =mysqli_query($conn,"SELECT * FROM coupon WHERE user_id='".$_SESSION['l
 									<td><?php if(($row['valid_from']!='0000-00-00 00:00:00')){ echo date('M d, Y', strtotime($row['valid_from']));} else { echo "--";}  ?>
 									<td><?php if(($row['valid_to']!='0000-00-00 00:00:00')){ echo date('M d, Y', strtotime($row['valid_to']));} else { echo "--";}  ?>
 								    <td><?php echo $row['remain_user']; ?></td>
+								    <td><?php echo $row['per_user_count']; ?></td>
 
 									<td><?php if ($row['status'] == '1'): ?>
 
