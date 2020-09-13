@@ -171,12 +171,77 @@ if(isset($_POST['merchant_select_form']))
         }
     }
 </style>
+<style>
+	/*loader Css */
+.page_loader {	
+		position: fixed;	
+		left: 0px;	top: 0px;	
+		width: 100%;	
+		height: 100%;	
+		z-index: 999999;
+		  background-color: rgba(255,255,255,0.5);
+	}
+	#load {	
+		background-image: url("loader.gif");	
+		background-position: center center;	
+		background-repeat: no-repeat;	
+		bottom: 0;	
+		height: auto;	
+		left: 0;	
+		margin: auto;	
+		position: absolute;	
+		right: 0;	
+		top: 0;	
+		width: 100%;	
+		max-width: 200px;	
+		background-size: contain;
+	}
+
+	.load_parentcss{
+		background: "transparent" !important;
+		z-index: "-1" !important;
+	}	
+	</style>
+<script>
+	// ===== Page Loader ==== 
+		document.onreadystatechange = function () {
+			var state = document.readyState;
+			setTimeout(function () {
+					document.getElementById('interactive');
+					document.getElementById('load').style.visibility = "hidden";
+					$('#load').parent().css({"background": "transparent", "z-index": "-1"});
+					//$(".page_loader").addClass('load_parentcss');
+				}, 1000);
+				/*
+			if (state == 'complete') {
+				setTimeout(function () {
+					document.getElementById('interactive');
+					document.getElementById('load').style.visibility = "hidden";
+					$('#load').parent().css({"background": "transparent", "z-index": "-1"});
+					//$(".page_loader").addClass('load_parentcss');
+				}, 1000);
+			}*/
+			
+		}
+		function removeLoader(){
+			  $(".merchant_select").select2();
+   $("#load").removeAttr('style');;
+							$('.page_loader').hide();
+							$("#load").hide();
+ 
+}
+$(window).on('load', function(){
+  setTimeout(removeLoader, 2000); //wait for page load PLUS two seconds.
+});
+	</script>
 </head>
 
 
 
 <body>
-
+    <div class="page_loader" style="">
+            <span id="load"></span>
+	</div>
 	<?php
 
 	 
@@ -1880,17 +1945,19 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-  <script type="text/javascript" src="js/sweetalert.min.js" defer></script>
 
-  <script src="extra/js/common_scripts.min.js" defer></script>
+  <script type="text/javascript" src="js/sweetalert.min.js" defer></script>
+  
+
+
+  <script src="extra/js/common_scripts.min.js"></script>
 
   <script src="extra/js/common_func.js" defer></script>
 
-  
+  <script src="extra/js/select2.min_da99e0cfb43d832f77954298a0557ca5.js" defer></script>
 
   <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 
-<script src="extra/js/select2.min_da99e0cfb43d832f77954298a0557ca5.js"></script>
 
   <!-- SPECIFIC SCRIPTS -->
 
