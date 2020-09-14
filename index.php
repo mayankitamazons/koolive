@@ -11,7 +11,6 @@ if (empty($_SESSION["langfile"])) { $_SESSION["langfile"] = "english"; }
     require_once ("languages/".$_SESSION["langfile"].".php");
 
 if(empty($_GET['vs']))
-
 {
 
 	$url="index.php?vs=".md5(rand());
@@ -653,6 +652,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
                                             <span id="please_wait" style="color:red;display:none;">Please wait.....</span>
 
 									</div>
+									
                                 </div>
 								
 
@@ -665,8 +665,8 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 
 					<div style="margin-top:20px;">
 
-					
-
+					please click  <span class="btn btn-primary ok_button" style="margin-top:2%;background-color: #589442;padding: 13px;width: 100%;color: white;border-radius: 4px;">Ok</span> to refresh page  </br>
+					</br>
 				    <span id="please_wait_location" style="color:red;display:none;">Please wait.....</span>
 
 					<button type="button"  id="search_location" style="margin-top:2%;background-color: #589442;padding: 13px;width: 100%;color: white;border-radius: 4px;" class="btn btn-primary col-xl-9 col-lg-10 col-md-8"><?php echo $language['search_by_location']; ?></button>
@@ -2047,7 +2047,10 @@ map = new google.maps.Map($("#map")[0], {
 
 	var r_url="https://koofamilies.com/index.php?vs="+s_token;
 
-
+    $( ".ok_button").click(function() {
+		$('#please_wait_location').show();
+       window.location.replace(r_url);
+	});
 
 	 var myDynamicManifest = {
 
