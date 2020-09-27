@@ -110,13 +110,18 @@ if($s_id)
         {  
 			if(is_numeric($key))
             {
-                $product = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM products WHERE id ='".$key."'"));
+                $product = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE* FROM products WHERE id ='".$key."'"));
 				// $msg_str.="<b>".$product['product_name'].',qty-'.$quantity_ids[$i].',Unit Price '.$product['product_price'].'</b><br>';
 				$msg_str.="<b>".$product['product_name']."(".$product['category'].')('.$product['product_type'].'),qty-'.$quantity_ids[$i].',Unit Price:'.$product['product_price'].'</b></br>';    
 			}
 			else
 			{
                $msg_str.=$key.'<br>';
+			}
+			
+			if($product['remark'])
+			{
+				$msg_str.= "Product Remark :".$product['remark'].'<br>';   
 			}
 			if($remark_ids[$i])
 			{

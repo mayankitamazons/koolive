@@ -665,8 +665,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 
 					<div style="margin-top:20px;">
 
-					please click  <span class="btn btn-primary ok_button" style="margin-top:2%;background-color: #589442;padding: 13px;width: 100%;color: white;border-radius: 4px;">Ok</span> to refresh page  </br>
-					</br>
+					
 				    <span id="please_wait_location" style="color:red;display:none;">Please wait.....</span>
 
 					<button type="button"  id="search_location" style="margin-top:2%;background-color: #589442;padding: 13px;width: 100%;color: white;border-radius: 4px;" class="btn btn-primary col-xl-9 col-lg-10 col-md-8"><?php echo $language['search_by_location']; ?></button>
@@ -1950,7 +1949,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
   
 
 
-  <script src="extra/js/common_scripts.min.js"></script>
+  <script src="extra/js/common_scripts.min.js" defer></script>
 
   <script src="extra/js/common_func.js" defer></script>
 

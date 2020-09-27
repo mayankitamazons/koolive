@@ -391,7 +391,7 @@ if (isset($_GET['data'])) {
 
     $tablenumber = $epxplode[1];
 }
-if ($merchant_detail['id'] == 5062)
+if ($merchant_detail['id'] == 5062 || $merchant_detail['id']==1107)
     $dine_in = "y";
 ?>
 

@@ -37,10 +37,16 @@ if($s_id)
 			{
                echo $key.'<br>';
 			}
+			// print_R($product['remark']);
+			// die;
+			if($product['remark'])
+			{
+				echo $msg_str.= "Product Remark :".$product['remark'].'<br>';   
+			}
 			if($remark_ids[$i])
 			{
 				echo "Remark :".$remark_ids[$i].'<br>';
-			}
+			}  
 			if($v_array[$i])
 			{
 				$v_match=$v_array[$i];

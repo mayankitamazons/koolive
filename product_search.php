@@ -62,14 +62,17 @@ if ($issetProduct) {
     else
         $addDistance = '';
 
+    // $sql = "SELECT user_id AS u_id, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id ORDER BY {$orderby} {$orderbyDirection} limit 12 offset $offset";
+
     $sql = "SELECT user_id AS u_id, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id ORDER BY {$orderby} {$orderbyDirection} limit 12 offset $offset";
 
-    // $sql = "SELECT user_id AS u_id, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1)), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id ORDER BY {$orderby} {$orderbyDirection} limit 12 offset $offset";
+    // This SQL is used to have the number of restaurants
+    $sql2 = "SELECT user_id AS u_id, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id";
 
-    // die($sql);
     $q = mysqli_query($conn, $sql);
-    // $q = mysqli_query($conn, "SELECT user_id AS u_id, products.id AS product_id, product_name, product_type, IF( users.price_hike > 0, MIN( product_price * users.price_hike), MIN(product_price) ) AS product_price, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, products2.page_type $addDistance FROM products JOIN( SELECT products.id, products.user_id AS u_id, IF( users.price_hike > 0, MIN( product_price * users.price_hike ), MIN(product_price) ) AS hike_price, arrange_system.page_type FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.product_price > 0 AND products.status = 0 AND arrange_system.page_type='p' AND products.on_stock=1 GROUP BY u_id ) AS products2 ON products.product_price = products2.hike_price AND products.user_id = products2.u_id AND products.id = products2.id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id ORDER BY {$orderby} ASC limit 12 offset $offset");
-    $totalResults = mysqli_num_rows($q);
+    $q2 = mysqli_query($conn, $sql2);
+    
+    $totalResults = mysqli_num_rows($q2);
 
     $productResult = [
         'results' => $q->num_rows,
@@ -374,20 +377,27 @@ function ceiling($number, $significance = 1)
                 ?>
             </div>
             <?php
+            $ignoredKeys = ['pg']; // Ignored keys for the formation of new URL
             $pages = ceil(floatval($totalResults) / 12);
             $currentPage = isset($_GET['pg']) ? $_GET['pg'] : 1;
+            $urlQueries = '?';
+            foreach($_GET as $key => $value) {
+                if(in_array($key, $ignoredKeys)) continue;
+                $urlQueries .= "{$key}={$value}&";
+            }
+            $urlQueries = mb_substr($urlQueries, 0, -1);
             ?>
             <div class="pagination_fg m-2">
-                <a id="pag_prev" href="./product_search.php?p=<?= $_GET['p'] ?><?= (isset($_GET['orderby'])) ? '&orderby=' . $_GET['orderby'] : '' ?>&pg=<?= ($currentPage - 1 < 1) ? 1 : $currentPage - 1 ?>" class="<?= ($currentPage - 1 < 1) ? 'disabled' : '' ?>">«</a>
+                <a id="pag_prev" href="./product_search.php<?=$urlQueries ?>&pg=<?= ($currentPage - 1 < 1) ? 1 : $currentPage - 1 ?>" class="<?= ($currentPage - 1 < 1) ? 'disabled' : '' ?>">«</a>
                 <?php
 
                 for ($i = 0; $i < $pages; $i++) {
                     $page = $i + 1;
                 ?>
-                    <a href="./product_search.php?p=<?= $_GET['p'] ?><?= (isset($_GET['orderby'])) ? '&orderby=' . $_GET['orderby'] : '' ?>&pg=<?= $page ?>" class="<?= ($currentPage == $page) ? 'active' : '' ?>"><?= $page ?></a>
+                    <a href="./product_search.php<?=$urlQueries ?>&pg=<?= $page ?>" class="<?= ($currentPage == $page) ? 'active' : '' ?>"><?= $page ?></a>
                 <?php
                 }; ?>
-                <a id="pag_next" href="./product_search.php?p=<?= $_GET['p'] ?><?= (isset($_GET['orderby'])) ? '&orderby=' . $_GET['orderby'] : '' ?>&pg=<?= ($currentPage + 1 >= $pages) ? 1 : $currentPage + 1 ?>" class="<?= ($currentPage + 1 >= $pages) ? 'disabled' : '' ?>">»</a>
+                <a id="pag_next" href="./product_search.php<?=$urlQueries ?>&pg=<?= ($currentPage + 1 > $pages) ? $pages : $currentPage + 1 ?>" class="<?= ($currentPage + 1 > $pages) ? 'disabled' : '' ?>">»</a>
             </div>
         </div>
     </main>
@@ -468,10 +478,8 @@ function ceiling($number, $significance = 1)
                 var longitude = position.coords.longitude;
                 if (latitude && longitude) {
                     let needsReload = false;
-                    console.log(`${url.get('lat')} ${latitude}`);
-                    console.log(`${url.get('lng')} ${longitude}`);
                     if (!(url.has('lat') === true && url.has('lng') === true))
-                        window.location.href = `./product_search.php?p=<?= $searchProduct ?>&orderby=${$("#sort_fields").find("option:selected").val()}&direction=<?= ($orderbyDirection === 'ASC') ? 'desc' : 'asc' ?>&lat=${latitude}&lng=${longitude}`;
+                        window.location.href = `./product_search.php?p=<?= $searchProduct ?>&orderby=${$("#sort_fields").find("option:selected").val()}&direction=<?= ($orderbyDirection === 'ASC') ? 'desc' : 'asc' ?>&lat=${latitude}&lng=${longitude}&pg=<?=$_GET['pg']; ?>`;
                 }
             });
 
