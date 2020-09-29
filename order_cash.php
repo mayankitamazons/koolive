@@ -516,6 +516,8 @@ if(isset($_POST))
 			
 			 
 			$vendor_total = ($vendor_comission / 100) * $total_cart_amount;  
+			if($pickup_type=="divein")
+				$special_delivery_amount=0;
 			if($login_for_wallet_id=='')
 				$membership_applicable="n";  
 			if($auto_accept_order=='1')

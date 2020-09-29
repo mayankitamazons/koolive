@@ -376,7 +376,7 @@ function ceiling($number, $significance = 1)
                 }
                 ?>
             </div>
-            <?php
+            <?php 
             $ignoredKeys = ['pg']; // Ignored keys for the formation of new URL
             $pages = ceil(floatval($totalResults) / 12);
             $currentPage = isset($_GET['pg']) ? $_GET['pg'] : 1;
@@ -385,19 +385,19 @@ function ceiling($number, $significance = 1)
                 if(in_array($key, $ignoredKeys)) continue;
                 $urlQueries .= "{$key}={$value}&";
             }
-            $urlQueries = mb_substr($urlQueries, 0, -1);
+            // $urlQueries = mb_substr($urlQueries, 0, -1);
             ?>
             <div class="pagination_fg m-2">
-                <a id="pag_prev" href="./product_search.php<?=$urlQueries ?>&pg=<?= ($currentPage - 1 < 1) ? 1 : $currentPage - 1 ?>" class="<?= ($currentPage - 1 < 1) ? 'disabled' : '' ?>">«</a>
+                <a id="pag_prev" href="./product_search.php<?=$urlQueries ?>pg=<?= ($currentPage - 1 < 1) ? 1 : $currentPage - 1 ?>" class="<?= ($currentPage - 1 < 1) ? 'disabled' : '' ?>">«</a>
                 <?php
 
                 for ($i = 0; $i < $pages; $i++) {
                     $page = $i + 1;
                 ?>
-                    <a href="./product_search.php<?=$urlQueries ?>&pg=<?= $page ?>" class="<?= ($currentPage == $page) ? 'active' : '' ?>"><?= $page ?></a>
+                    <a href="./product_search.php<?=$urlQueries ?>pg=<?= $page ?>" class="<?= ($currentPage == $page) ? 'active' : '' ?>"><?= $page ?></a>
                 <?php
-                }; ?>
-                <a id="pag_next" href="./product_search.php<?=$urlQueries ?>&pg=<?= ($currentPage + 1 > $pages) ? $pages : $currentPage + 1 ?>" class="<?= ($currentPage + 1 > $pages) ? 'disabled' : '' ?>">»</a>
+                } ?>
+                <a id="pag_next" href="./product_search.php<?=$urlQueries ?>pg=<?= ($currentPage + 1 > $pages) ? $pages : $currentPage + 1 ?>" class="<?= ($currentPage + 1 > $pages) ? 'disabled' : '' ?>">»</a>
             </div>
         </div>
     </main>

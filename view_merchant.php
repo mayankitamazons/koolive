@@ -8216,6 +8216,8 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
     $(window).on('load', function() {
 
         // alert(4);
+        
+		
         $('.lazy').lazy({
 
             placeholder: "https://koofamilies.com/img/logo.png"
@@ -8250,6 +8252,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             var n = 7;
         // alert(dine_in);
         if (dine_in == "y") {
+            $('.special_price_value').hide();
             $('.plastic_remark').hide();
             $('#delivery_label').hide();
             $("#divein").prop("checked", true);
@@ -8499,7 +8502,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
         $('.merchant_select').click(function(e) {
             // getLocation();
-
+            var special_price_value="<?php echo $merchant_detail['special_price_value'] ?>";
             $('.divert').css("background-color", "#51D2B7");
 
             $('.divert').css("color", "#555");
@@ -8517,6 +8520,8 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             $('#pickup_type').val('takein');
 
             $("#takeaway_select").prop("checked", true);
+			if(special_price_value)
+				$('.special_price_value').show();
 
             $("#divein").prop("checked", false);
 
@@ -8583,6 +8588,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
         });
         $(".divert").click(function(e) {
             // alert(3);
+			$('.special_price_value').hide();
             $('#pickup_type').val('divein');
             totalcart();
             $('#transfer_name_label').hide();
