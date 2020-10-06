@@ -73,7 +73,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 	// die;
 	if($row['order_sms'])
 	{
-    	$sms_to = '+60127500913'.',+60123115670,'.$row['handphone_number'];
+    	$sms_to = '+60127088661'.',+60123115670,'.$row['handphone_number'];
     	// $sms_to = '+60123115670';
     	// $sms_to = '+919001025477';
     	$sms_msg = $_POST['message'];
@@ -190,7 +190,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 		  	       
 			$message= $_POST['message'] = $url." ".$client.",KooFamilies alert.Rider has not been assigned for Invoice no: (".$invoice_no.").";
 			$sms_to = '+60123115670,'.$row['handphone_number'];
-				$sms_to = '+60127500913'.',+60123115670,'.$row['handphone_number'];
+				$sms_to = '+60127088661'.',+60123115670,'.$row['handphone_number'];
 			
 			$sms_msg = $_POST['message'];   
 			$smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg);  

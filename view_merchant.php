@@ -119,10 +119,13 @@ function checktimestatusnew($time_detail)
 		}
 if (empty($_GET['ms'])) {
     $sid = $_GET['sid'];
+    $data = $_GET['data'];
     $url_product_id = $_GET['pd'];
     $url = "view_merchant.php?sid=" . $sid . "&ms=" . md5(rand());
     if ($url_product_id) $url .= "&pd={$url_product_id}";
-
+    if ($data) $url .= "&data={$data}";
+    // echo $url;
+	// die;
     header("Location:$url");
     exit();
 }
@@ -4959,7 +4962,8 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                                         <?php echo $language['name']; ?>: Chong Woi Joon </br>
                                         Bank name: Hong Leong Bank </br>
                                         Bank account : 22850076859 </br>
-                                        <b style="font-size:18px;">Boostpay Number 6012-3115670</b>
+                                        <b style="font-size:18px;">Boostpay Number +60123115670</b><br>
+                                        <b style="font-size:18px;">Touch & Go account: +60127722783</b>
                                         </br>
                                         <?php if ($_SESSION["langfile"] == "chinese") {
                                             echo "请写商家店名在“银行参考”";
@@ -4981,9 +4985,9 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                                     <?php } ?>
                                 </p>
 
-                                <span class="btn btn-large btn-danger trasfer_complete"><?php echo $language['transfer_complete']; ?><span>
+                                <button class="btn btn-large btn-danger trasfer_complete"><?php echo $language['transfer_complete']; ?><span>
 
-                                    </span></span>
+                                    </span></button>
                             </div>
 
                             <div class="form-group no-wallet">

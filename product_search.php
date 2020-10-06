@@ -229,7 +229,7 @@ function ceiling($number, $significance = 1)
                             <div class="icon"></div>
                         </div>
                     </div>
-                    <a href="." class="btn btn-success" style="background-color: #589442;color:#fff;"><?=$language["search_by_company"] ?></a>
+                    <a href="./index.php?vs=<?=md5(rand()) ?>" class="btn btn-success" style="background-color: #589442;color:#fff;"><?=$language["search_by_company"] ?></a>
                 </div>
             </div>
         </div>

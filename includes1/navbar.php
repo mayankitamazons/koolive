@@ -43,9 +43,43 @@ else
 	$pending_count=0;
 }
 ?>
-<style type="text/css">
 
-</style>  
+
+
+<style>
+	/*loader Css */
+	.page_loader {
+		position: fixed;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 100%;
+		z-index: 999999;
+		background-color: rgba(255, 255, 255, 0.5);
+	}
+
+	#load {
+		background-image: url("loader.gif");
+		background-position: center center;
+		background-repeat: no-repeat;
+		bottom: 0;
+		height: auto;
+		left: 0;
+		margin: auto;
+		position: absolute;
+		right: 0;
+		top: 0;
+		width: 100%;
+		max-width: 200px;
+		background-size: contain;
+	}
+
+	.load_parentcss {
+		background: "transparent" !important;
+		z-index: "-1" !important;
+	}
+</style>
+<div class="page_loader"><span id="load"></span></div>
 <nav class="navbar">
     <!--<audio id="myAudio" style="display:none;">
       <source src="/notification.mp3" type="audio/mpeg">

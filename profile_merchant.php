@@ -1458,7 +1458,7 @@ audio {
 					
                 <div style="margin:10px">
                  
-                    <form method="post" action="<?php echo $site_url.'/profile_merchant.php#qrcode'; ?>" >
+                    <form method="POST" action="" >
                     <div class="form-group input-has-value">
 										<label>Section</label>
 										<input type="text" name="section" class="form-control" value="" required>
@@ -1471,19 +1471,20 @@ audio {
 									</div>
 									
 					<input type="submit" class="btn btn-block btn-primary" name="submithwe" value="Create QR Code">				
-                    </form>
-                    
+                    </form>   
+
                 <?php
                 if(isset($_POST['submithwe']))
                 {
-					$site_url="https://www.koofamilies.com/";    
+					
+					 $site_url="https://www.koofamilies.com/";    
                     $section=$_POST['section']; 
                      $tablehwe=$_POST['tablehwe'];
                      
                      $getdetail=$section."hweset".$tablehwe;
                      $basecode=base64_encode($getdetail) ;
                      
-                    // echo "$site_url/view_merchant.php?sid=$user_mobile&data=$basecode";
+                    echo "$site_url/view_merchant.php?sid=$user_mobile&data=$basecode";
                      
                      	$PPU = urlencode("$site_url/view_merchant.php?sid=$user_mobile&data=$basecode") ;
                      	

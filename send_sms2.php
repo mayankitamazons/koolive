@@ -66,7 +66,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 			   
 		$order_id=$row['order_id'];
 	// die;
-    	$sms_to = '+60123115670,'.$row['handphone_number'];
+    	$sms_to = '+60127088661','+60123115670,'.$row['handphone_number'];
     	// $sms_to = '+60123115670';
     	// $sms_to = '+919001025477';
     	$sms_msg = $_POST['message'];
@@ -130,7 +130,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 			   
 		// die;  0123945670
 			// $sms_to = '+60123945670,'.$row['handphone_number'];
-			$sms_to = '+60123115670,'.$row['handphone_number'];  
+			$sms_to = '+60127088661','+60123115670,'.$row['handphone_number'];  
 			// $sms_to = '+60123115670';
 			// $sms_to = '+919001025477';
 			$sms_msg = $_POST['message'];

@@ -31,6 +31,78 @@
 
 <script src="./js/custom.js"></script>
 
+
+
+<style>
+	/*loader Css */
+	.page_loader {
+		position: fixed;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 100%;
+		z-index: 999999;
+		background-color: rgba(255, 255, 255, 0.5);
+	}
+
+	#load {
+		background-image: url("loader.gif");
+		background-position: center center;
+		background-repeat: no-repeat;
+		bottom: 0;
+		height: auto;
+		left: 0;
+		margin: auto;
+		position: absolute;
+		right: 0;
+		top: 0;
+		width: 100%;
+		max-width: 200px;
+		background-size: contain;
+	}
+
+	.load_parentcss {
+		background: "transparent" !important;
+		z-index: "-1" !important;
+	}
+</style>
+<script>
+	// ===== Page Loader ==== 
+	document.onreadystatechange = function() {
+		var state = document.readyState;
+		if (state == 'complete') {
+			setTimeout(function() {
+				document.getElementById('interactive');
+				document.getElementById('load').style.visibility = "hidden";
+				$('#load').parent().css({
+					"background": "transparent",
+					"z-index": "-1"
+				});
+			}, 1000);
+		}
+	}
+
+	function removeLoader() {
+		$("#load").removeAttr('style');
+		$('.page_loader').hide();
+		$("#load").hide();
+	}
+	jQuery(window).on('load', function() {
+		setTimeout(removeLoader, 2000); //wait for page load PLUS two seconds.
+	});
+	jQuery(document).on("click", 'button, input[type="submit"], .btn', function() {
+		$('.page_loader').removeAttr('style');
+		$("#load").removeAttr('style');;
+		$('.page_loader').show();
+		$("#load").show();
+		setTimeout(function () {
+			$('.page_loader').hide();
+			$("#load").hide();
+		}, 3000);
+	});
+</script>
+
+
 <!-- BEGIN JIVOSITE CODE {literal} -->
 <!--script type='text/javascript'>
 (function(){ var widget_id = 'QCJcJ4Qb9Q';var d=document;var w=window;function l(){ var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = '//code.jivosite.com/script/widget/'+widget_id; var ss = document.getElementsByTagName('script')[0]; ss.parentNode.insertBefore(s, ss);}if(d.readyState=='complete'){l();}else{if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
