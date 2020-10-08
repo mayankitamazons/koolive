@@ -90,7 +90,8 @@
 	jQuery(window).on('load', function() {
 		setTimeout(removeLoader, 2000); //wait for page load PLUS two seconds.
 	});
-	jQuery(document).on("click", 'button, input[type="submit"], .btn', function() {
+	jQuery(document).on("click", 'button, input[type="submit"], .btn, .showLoader', function() {
+        if(window.location.href.includes('orderview.php')) return false;
 		$('.page_loader').removeAttr('style');
 		$("#load").removeAttr('style');;
 		$('.page_loader').show();

@@ -238,7 +238,7 @@ $error= "The merchant's phone number is incorrect.";
                   <!-- end merchant name -->		   
                    <div class="well col-md-12 testing_method">
 						<div style="margin-top:5%;margin-bottom:10px;margin-left: 1px;" class="search_div">
-						  <a class="col-md-6 search_anchor" style="box-shadow:-3px 5px #fa7953, -2px 2px #fa7953, -1px 1px #fa7953;
+						  <a class="col-md-6 search_anchor showLoader" style="box-shadow:-3px 5px #fa7953, -2px 2px #fa7953, -1px 1px #fa7953;
 border:3 px solid #fa7953;font-size:18px;background:red;color:black !important;margin-top: 3%;padding:10px;" href="index.php?vs=<?=md5(rand()) ?>"><?php echo $language['more_shops']; ?>
 						 <img class="Sirv" data-src="https://koofamilies.sirv.com/shop.png" alt="" />
 						 <img class="Sirv" data-src="https://koofamilies.sirv.com/shop.png" alt="" />

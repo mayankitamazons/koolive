@@ -127,7 +127,7 @@
 	jQuery(window).on('load', function() {
 		setTimeout(removeLoader, 2000); //wait for page load PLUS two seconds.
 	});
-	jQuery(document).on("click", 'button, input[type="submit"]', function() {
+	jQuery(document).on("click", 'button, input[type="submit"], .showLoader', function() {
 		if($(this).parents(".sub_category_grid").length) return;
         if($(this).hasClass("remove-ingredient") || $(this).hasClass("removevarient")) return;
 		$('.page_loader').removeAttr('style');
