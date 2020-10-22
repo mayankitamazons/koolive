@@ -129,7 +129,7 @@
 	});
 	jQuery(document).on("click", 'button, input[type="submit"], .showLoader', function() {
 		if($(this).parents(".sub_category_grid").length) return;
-        if($(this).hasClass("remove-ingredient") || $(this).hasClass("removevarient")) return;
+        if($(this).hasClass("remove-ingredient") || $(this).hasClass("removevarient") || $(this).hasClass('hideLoader') || $(this).hasClass('introduce-remarks')) return;
 		$('.page_loader').removeAttr('style');
 		$("#load").removeAttr('style');;
 		$('.page_loader').show();

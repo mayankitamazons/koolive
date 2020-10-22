@@ -10,8 +10,9 @@ if( isset( $_POST['from_lat'])) {
     $longitudeTo    = $_POST['to_long'];
 	
 	// $url ="https://maps.googleapis.com/maps/api/distancematrix/json?origins=40.6655101,-73.89188969999998&destinations=41.6655101,-73.89188969999998&key=AIzaSyAqkgFdbQUhomdTY88R2OhkAKe57dnf9Kc";  
-	 $url ="https://maps.googleapis.com/maps/api/distancematrix/json?origins=".$latitudeFrom.",".$longitudeFrom."&destinations=".$latitudeTo.",".$longitudeTo."&key=AIzaSyAqkgFdbQUhomdTY88R2OhkAKe57dnf9Kc";  
-    
+	 // $url ="https://maps.googleapis.com/maps/api/distancematrix/json?origins=".$latitudeFrom.",".$longitudeFrom."&destinations=".$latitudeTo.",".$longitudeTo."&key=AIzaSyAqkgFdbQUhomdTY88R2OhkAKe57dnf9Kc";  
+	  $url ="https://maps.googleapis.com/maps/api/distancematrix/json?origins=".$latitudeFrom.",".$longitudeFrom."&destinations=".$latitudeTo.",".$longitudeTo."&key=AIzaSyDJaLaYhhq7poU-0_LTu5GOmhYR4b4D0d4";  
+    // die;
 	// Initialize a CURL session.   
 	$ch = curl_init();  
 	  

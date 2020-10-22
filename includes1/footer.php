@@ -82,13 +82,19 @@
 		}
 	}
 
+    if(window.location.href.includes('orderview.php')) {
+        let elem = document.getElementById("load");
+        elem.parentElement.remove();
+    }
+
 	function removeLoader() {
 		$("#load").removeAttr('style');
 		$('.page_loader').hide();
 		$("#load").hide();
 	}
 	jQuery(window).on('load', function() {
-		setTimeout(removeLoader, 2000); //wait for page load PLUS two seconds.
+		//wait for page load PLUS two seconds.
+        setTimeout(removeLoader, 2000);
 	});
 	jQuery(document).on("click", 'button, input[type="submit"], .btn, .showLoader', function() {
         if(window.location.href.includes('orderview.php')) return false;
@@ -798,7 +804,8 @@ $(document).ready(function(){
 				while($row = mysqli_fetch_assoc($qMerchant)){
 					// print_R($row);
 					// die;
-					echo "merchant_tags.push('" . $row['name'] . "');\n";
+					$m_name = str_replace("'", ' ', $row['name']);
+					echo "merchant_tags.push('" . $m_name . "');\n";
 					// echo "console.log('" . $row['name'] . "');\n";
 				}
 				
@@ -1057,5 +1064,6 @@ $(document).ready(function(){
        $('#LoginModel').modal('show');
 	});
 });
-</script>
- <a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
+</script>   
+ <!--a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a!-->
+ <a href="https://chat.whatsapp.com/LdvomJRqXoIG6aXqsf5PgX" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
