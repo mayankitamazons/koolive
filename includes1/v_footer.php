@@ -2853,9 +2853,10 @@ $(document).ready(function(){
 
 					// die;
 
+					$m_name = str_replace("'", ' ', $row['name']);
+					echo "merchant_tags.push('" . $m_name . "');\n";
 
-
-					echo "merchant_tags.push('" . $row['name'] . "');\n";
+					// echo "merchant_tags.push('" . $row['name'] . "');\n";
 
 
 

@@ -1795,9 +1795,10 @@ if (isset($login_user_id)) {
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4BfDrt-mCQCC1pzrGUAjW_2PRrGNKh_U&libraries=places"></script!-->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqkgFdbQUhomdTY88R2OhkAKe57dnf9Kc&libraries=places"></script>
+ 
     <!--script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJaLaYhhq7poU-0_LTu5GOmhYR4b4D0d4&libraries=places"></script!-->
 	
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyDJaLaYhhq7poU-0_LTu5GOmhYR4b4D0d4&sensor=false&callback=initializeMap&libraries=places"></script>
     <script src="https://scripts.sirv.com/sirv.js" defer></script>
     <style type="text/css">
         /* .modal {
