@@ -1,6 +1,7 @@
 <?php
 $distance=0;
-include("config.php");
+// include("config.php");
+$conn = mysqli_connect("localhost", "koofamil_B277", "rSFihHas];1P", "koofamil_B277");
 
 if( isset( $_POST['from_lat'])) {
 	  $merchant_id    = $_POST['merchant_id'];
@@ -54,6 +55,8 @@ if( isset( $_POST['from_lat'])) {
 		 {
 			$plan_detail['charge']=0; 
 		 }
+		 // print_R($plan_detail);
+		 // die;
 		 if($plan_detail)
 		 $d['delivery_charge']=$plan_detail['charge']; 
 		else
