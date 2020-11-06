@@ -146,6 +146,7 @@ $a_m="merchant";
 					        <tr>
 							<th>Particular</th>
 							<th>Name</th>
+							<th>City</th>
 							<th>Mobile Nmber</th>
 							<th>K Type</th>
 							<th>Wallet Coin</th>
@@ -179,6 +180,25 @@ $a_m="merchant";
                         	  <tr>
                         		 <td> <?php echo $i; ?> </td>
                                 <td class="name" data-id=<?php echo $row['id']; ?> style="cursor:pointer;"><?php echo $row['name'];  ?></td>
+								<td>
+									<select class='city' name="city" style="" data-id="<?php echo $row['id']; ?>">
+									<option>Select city</option>
+									<?php
+									$sql = mysqli_query($conn, "SELECT CityName  FROM city WHERE 0=0 GROUP BY CityName");
+									$selected = '';
+									while($data = mysqli_fetch_array($sql))
+									{
+									if($row['city'] == $data['CityName']){
+									$selected= 'selected';
+									}else{
+									$selected = '';
+									}
+									echo'<option data-id="'.$row['id'].'" value="'.$data['CityName'].'" '.$selected.'>'.$data['CityName'].'</option>';
+									}
+
+									?>
+									</select>
+								</td>
                                 <td><?php echo $row['mobile_number'];  ?></td>
                                 <td><?php echo $row['account_type'];?></td>
                         		<td><?php echo $row['balance_usd'];  ?></td>
@@ -321,6 +341,21 @@ $a_m="merchant";
 			url : 'updateuser.php',
 			type: 'POST',
 			data :{updatedid:id,upadtedstatus:status},
+			success:function(data){
+		     location.reload();
+			}  
+		});
+		
+	});
+	$(".city").change(function(){
+		var cityval = $(this).val();
+		//alert(cityval);
+		var id = $(this).data("id");
+		//alert(id);
+		$.ajax({
+			url : 'updatecity.php',
+			type: 'POST',
+			data :{updatedid:id,cityval:cityval},
 			success:function(data){
 		     location.reload();
 			}  

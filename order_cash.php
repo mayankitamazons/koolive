@@ -570,7 +570,7 @@ if(isset($_POST))
 					// send onesingal push to client 
 					// $admin_one_signal_id="f9720947-9c4b-4440-ba1b-e9e8132dc25a";
 					$admin_one_signal_id="0a97b787-578f-4c26-98f1-8bcc04087a7f";
-					// $admin_one_signal_id="f179f475-05eb-45c5-a2ac-734492de111d";   
+					$admin_one_signal_id="b5753265-4e15-44f2-8635-343cd07ac233";   
 					if($admin_one_signal_id)
 					{
 						include 'adminpush.php';
@@ -767,7 +767,7 @@ if(isset($_POST))
 							$special_delivery_amount=$row['special_delivery_amount'];
 							if($row['remark_extra'])
 							{
-								$msg_str.="\r\n"."Order Remark:".$row['remark_extra'];
+								$msg_str.="\r\n *"."Order Remark:".$row['remark_extra']."*";
 							}
 							if($row['merchant_remark'])
 							{
@@ -835,13 +835,14 @@ if(isset($_POST))
 							  $msg_str.="\r\n"."Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']."+".$row['special_delivery_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."\r\n".$inv_str."\r\nPickup Type:".$row['pickup_type']."\r\n Order from:\r\n";
 							  $msg_str="*".$row['merchant_name'].",\r\n".$row['google_map'].$m_map.",\r\n Mobile - ".$row['mobile_number']."\r\n  To: ".$row['user_name']." \r\n,".$row['user_mobile'].$otp_str."".$user_location.$u_map."\r\n Order Detail:";
 							}
+							$p=1;
 							 foreach ($product_ids as $key )
 							{  
 								if(is_numeric($key))
 								{
 									$product = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM products WHERE id ='".$key."'"));
 									// $msg_str.="<b>".$product['product_name'].',qty-'.$quantity_ids[$i].',Unit Price '.$product['product_price'].'</b><br>';
-									$msg_str.="\r\n *".$product['product_name']."(".$product['category'].')('.$product['product_type'].'),qty-'.$quantity_ids[$i].',Unit Price:'.$product['product_price']."*\r\n";    
+									$msg_str.="\r\n *".$p.") ".$product['product_name']."\r\n(".$product['category'].')('.$product['product_type'].'),qty-'.$quantity_ids[$i].',Unit Price:'.$product['product_price']."*\r\n";    
 								}  
 								else
 								{
@@ -866,6 +867,7 @@ if(isset($_POST))
 										}  
 								}  
 							   
+								$p++;
 								$i++;
 							}        
 							$msg_str.="\r\nTotal qty : ".$total_qun." --End-- \r\n";

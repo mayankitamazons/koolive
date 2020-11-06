@@ -57,7 +57,7 @@ if($s_id)
 		$special_delivery_amount=$row['special_delivery_amount'];
 		if($row['remark_extra'])
 		{
-			$msg_str.="</br>Order Remark:".$row['remark_extra'];
+			$msg_str.="</br><b><u>(Order Remark:)".$row['remark_extra']."</u></b>";
 		}
 		if($merchant_name['merchant_remark'])
 		{
@@ -105,14 +105,14 @@ if($s_id)
 		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br>Order from:</br>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."".$user_location."</br> Order Detail:</br>";
 		else
 		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']."+".$row['special_delivery_amount'].")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br> Order from:</b>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."".$user_location."</br> Order Detail:</br>";
-	
+		$p=1;
 		foreach ($product_ids as $key )
         {  
 			if(is_numeric($key))
             {
                 $product = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE* FROM products WHERE id ='".$key."'"));
 				// $msg_str.="<b>".$product['product_name'].',qty-'.$quantity_ids[$i].',Unit Price '.$product['product_price'].'</b><br>';
-				$msg_str.="<b>".$product['product_name']."(".$product['category'].')('.$product['product_type'].'),qty-'.$quantity_ids[$i].',Unit Price:'.$product['product_price'].'</b></br>';    
+				$msg_str.="<b>".$p.")  ".$product['product_name']."</br>(".$product['category'].')('.$product['product_type'].'),qty-'.$quantity_ids[$i].',Unit Price:'.$product['product_price'].'</b></br>';    
 			}
 			else
 			{
@@ -139,6 +139,7 @@ if($s_id)
 			}
 		   
 			$i++;
+			$p++;
 		}
 		$msg_str.="Total qty : ".$total_qun." --End--</br>";
 		

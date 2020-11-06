@@ -30,6 +30,17 @@ function gw_send_sms($user,$pass,$sms_from,$sms_to,$sms_msg){
   echo  $query="SELECT order_list.invoice_no,order_list.order_alert_done,order_list.newuser,order_list.id as order_id,order_list.status,order_list.merchant_id, order_list.created_on,users.id,users.name,users.handphone_number,users.pending_time,users.whatapp_group_name  FROM order_list inner join users on order_list.merchant_id = users.id WHERE order_list.merchant_id not in('5401') and users.pending_time!=0 AND status =0 AND DATE(`created_on`) ='$cur_date' and order_alert_done='n'  order by order_list.created_on  DESC ";
 // die;  
 $total_rows = mysqli_query($conn,$query);
+$admindata = mysqli_query($conn, "SELECT * FROM admins");
+$smsdata=mysqli_fetch_array($admindata);
+$no_list='';
+if($smsdata['order_mobile_no'])
+	$no_list.=$smsdata['order_mobile_no'];
+if($smsdata['order_mobile_no_2'])
+	$no_list.=",".$smsdata['order_mobile_no_2'];
+if($smsdata['order_mobile_no_3'])
+	$no_list.=",".$smsdata['order_mobile_no_3'];
+if($smsdata['order_mobile_no_4'])
+	$no_list.=",".$smsdata['order_mobile_no_4'];
 while ($row=mysqli_fetch_assoc($total_rows)){
 	// print_R($row);
 	// die;  
@@ -66,7 +77,8 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 			   
 		$order_id=$row['order_id'];
 	// die;
-    	$sms_to = '+60127088661','+60123115670,'.$row['handphone_number'];
+    	// $sms_to = '+60127088661','+60123115670,'.$row['handphone_number'];
+    	$sms_to =$no_list.",".$row['handphone_number'];
     	// $sms_to = '+60123115670';
     	// $sms_to = '+919001025477';
     	$sms_msg = $_POST['message'];

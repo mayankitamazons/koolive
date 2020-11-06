@@ -39,6 +39,7 @@ $profile_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM admins WHE
 
 		 <li><a href="merchant.php" class="<?php if($a_m=="merchant"){ echo "active";} ?>">Merchant</a></li>
 				 <li><a href="user.php" class="<?php if($a_m=="member"){ echo "active";} ?>">Member</a></li>
+				 <li><a href="sms_setting.php" class="<?php if($a_m=="sms_setting"){ echo "active";} ?>">Smm Setting</a></li>
 				 <li><a href="coupon.php" class="<?php if($a_m=="coupon"){ echo "active";} ?>">Coupon code</a></li>
 		  <li><a href="classficationmerchant.php"><span class="hide-menu <?php if($a_m=="classfication_merchant"){ echo "active";} ?>">Classfication Merchant</span></a></li>      
 		  <li><a href="smspush.php"><span class="hide-menu <?php if($a_m=="send_push"){ echo "active";} ?>">Send push msg</span></a></li>      
@@ -87,6 +88,7 @@ $profile_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM admins WHE
 		<li><a href="charges.php"><span class="hide-menu">Withdraw Charges</span></a></li>
 		<li><a href="margin.php"><span class="hide-menu">Exchange Margin</span></a></li>
 		<li><a href="contact.php"><span class="hide-menu">Contact</span></a></li>
+		<li><a href="city.php"><span class="hide-menu">City</span></a></li>
         <li><a href="logout.php"><span class="hide-menu">Log Out</span></a></li>    
     </ul>
     <!-- /.side-menu -->
