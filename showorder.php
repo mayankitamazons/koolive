@@ -14,13 +14,29 @@ exit();
 }
 if (empty($_SESSION["langfile"])) { $_SESSION["langfile"] = "english"; }
     require_once ("languages/".$_SESSION["langfile"].".php");
- $query="select  order_list.*,u.name as merchant_name,u.mobile_number as merchant_mobile_number,u.foodpanda_link from order_list inner join 
+ $query="select  order_list.*,u.name as merchant_name,u.mobile_number as merchant_mobile_number,u.foodpanda_link,u.vendor_comission as vc_user, u.price_hike as price_hike_user from order_list inner join 
 users as u on u.id=order_list.merchant_id  order by order_list.id desc limit 0,100";
+
+
 $current_time = date('Y-m-d H:i:s');
 function ceiling($number, $significance = 1)
 {
 	return ( is_numeric($number) && is_numeric($significance) ) ? (ceil(round($number/$significance))*$significance) : false;
 }
+
+if($profile_data['user_roles']==5)
+{
+	$loginidset=$profile_data['parentid'];
+}
+else
+{
+
+	$loginidset=$_SESSION['login'];
+
+}
+
+$parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE id='$loginidset'"));
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -136,6 +152,10 @@ function ceiling($number, $significance = 1)
     $product_varient_array = array();
     $v_array = array();
     $v_comisssion_chk = number_format($r['vendor_comission'], 2);
+	$price_hike_user = number_format($r['price_hike_user'],2); //from users table
+	$vendor_comission_user = number_format($r['vc_user'],2); //from users table
+	
+	
     $special_delivery_amount_chk = $r['special_delivery_amount'];
     $amount_val_array = explode(",", $r['amount']);
     $quantity_ids_array = explode(",", $r['quantity']);
@@ -187,7 +207,9 @@ function ceiling($number, $significance = 1)
             $sub_rows = mysqli_query($conn, "SELECT * FROM sub_products WHERE id  in ($v_match)");
             while ($srow = mysqli_fetch_assoc($sub_rows))
             {
-                $product_price_array[] = number_format($srow['product_price'], 2);
+                //$product_price_array[] = number_format($srow['product_price'], 2);
+				$subprice =  $srow['product_price'] * $quantity_ids_array[$i];
+				$product_price_array[] = number_format($subprice,2); 
                 $sub_product_varient_array[$key] = 'yes';
                 $product_varient_array[$key][$srow['id']] = $product['varient_must'];
             }
@@ -213,6 +235,18 @@ function ceiling($number, $significance = 1)
     $allproduct_price_digit = bcadd(sprintf('%F', $allproduct_price) , '0', 1);
     $cash_term_payment_digit = bcadd(sprintf('%F', $cash_term_payment) , '0', 1);
     $price_diff = abs($cash_term_payment_digit - $allproduct_price_digit);
+	echo "cashprice = ".$cash_term_payment_digit;	
+	echo '<br/>';
+	echo "totalproduct = ".$allproduct_price_digit;
+	echo '<br/>';
+	echo "Diff = ".$price_diff; // 28
+
+	echo '<br/>';
+	echo "VC = ".$vendor_comission_user;
+	echo '<br/>';
+	echo "Hike = ".$price_hike_user;
+	echo '<br/>';
+	
 	if(round($price_diff) > 1){
 	   // echo 'here';
 	   echo '<br/><br/><input type="button" style="background-color:red" class= "btn btn-danger" value="Error in order" />';

@@ -1,4 +1,13 @@
 <?php
+if($sid)
+{
+ $merchant_detail = mysqli_fetch_assoc(mysqli_query($conn, "SELECT  * FROM users WHERE mobile_number='$sid' and user_roles='2'")); 
+}
+else
+{
+ $merchant_id = $_SESSION['mm_id'];
+ $merchant_detail = mysqli_fetch_assoc(mysqli_query($conn, "SELECT  * FROM users WHERE id='$merchant_id' and user_roles='2'"));
+}
 $hike_per=$merchant_detail['price_hike'];    
 $_SESSION['price_hike']=$hike_per;
 $product_google_image=$merchant_detail['product_google_image'];
@@ -194,9 +203,9 @@ if($product['pro_ct'] > 0) { ?>
 					$s=0;
                     foreach ($categories as $category)
                     {
-						 if($ordercount>0)
+						if($ordercount>0)
 						{
-							  $q="SELECT  category.*,arrange_system.shift_pos FROM category inner join arrange_system on  category.id=arrange_system.entity_id and arrange_system.user_id='".$id."'
+							 $q="SELECT  category.*,arrange_system.shift_pos FROM category inner join arrange_system on  category.id=arrange_system.entity_id and arrange_system.user_id='".$id."'
 							 WHERE category.user_id ='".$id."' and category.catparent='".$index."' and category.status=0  and arrange_system.page_type='c' group by arrange_system.entity_id order by arrange_system.shift_pos asc";
 							$sub_categories_q = mysqli_query($conn,$q);
 						
@@ -207,8 +216,6 @@ if($product['pro_ct'] > 0) { ?>
 						}
                         while ($row = mysqli_fetch_assoc($sub_categories_q))
                         {
-							
-							
 							if($s==0)
 							{
 								 $sub_cat=$row['category_name'];
@@ -240,21 +247,17 @@ if($product['pro_ct'] > 0) { ?>
                     <?php
 					$products_id_global = [];
                     $subproducts_global = [];
-					
 					if($pcount>0)
 					{
 					    
-						$q="select GROUP_CONCAT(sub.id SEPARATOR '^') as subproduct_id,GROUP_CONCAT(sub.name SEPARATOR '^') as subproduct,GROUP_CONCAT(sub.product_price SEPARATOR '^') as subprice, prd.*,arrange_system.shift_pos from products as prd left join sub_products as sub ON 
-							sub.product_id = prd.id inner join arrange_system on prd.id=arrange_system.entity_id and arrange_system.user_id = '".$id."' 
-							where prd.user_id='".$id."' AND prd.status=0  and arrange_system.page_type='p' group by arrange_system.entity_id order by arrange_system.shift_pos asc";
-						
-					
-					}
-					else
-					{
-						$q="select GROUP_CONCAT(sub.id SEPARATOR '^') as subproduct_id,GROUP_CONCAT(sub.name SEPARATOR '^') as subproduct,GROUP_CONCAT(sub.product_price SEPARATOR '^') as subprice, prd.* from products as prd left join sub_products as sub ON 
-							sub.product_id = prd.id 
-							where prd.user_id='$id' AND prd.status=0 group by prd.id";
+						 // $q="SELECT  products.*,arrange_system.shift_pos FROM products inner join arrange_system on  products.id=arrange_system.entity_id 
+							 // WHERE products.user_id ='".$id."'  and products.status=0 and arrange_system.page_type='p' group by arrange_system.entity_id order by arrange_system.shift_pos asc";
+						 // echo $q="select GROUP_CONCAT(sub.id SEPARATOR '^') as subproduct_id,GROUP_CONCAT(sub.name SEPARATOR '^') as subproduct,GROUP_CONCAT(sub.product_price SEPARATOR '^') as subprice, prd.*,arrange_system.shift_pos from products as prd left join sub_products as sub ON 
+							// sub.product_id = prd.id inner join arrange_system on prd.id=arrange_system.entity_id and arrange_system.user_id = 1107 
+							// where prd.user_id='".$id."' AND prd.status=0  and arrange_system.page_type='p' group by arrange_system.entity_id order by arrange_system.shift_pos asc";
+						$q="select GROUP_CONCAT(sub.id SEPARATOR '^') as subproduct_id,GROUP_CONCAT(sub.name SEPARATOR '^') as subproduct,GROUP_CONCAT(sub.product_price SEPARATOR '^') as subprice, prd.*,arrange_system.shift_pos 
+						from products as prd left join sub_products as sub ON sub.product_id = prd.id inner join arrange_system on prd.id=arrange_system.entity_id where prd.user_id='".$id."' 
+						AND prd.status=0 and arrange_system.page_type='p' group by arrange_system.entity_id order by arrange_system.shift_pos asc";
 						
 					}
 					
@@ -369,7 +372,7 @@ if($product['pro_ct'] > 0) { ?>
                                             <input type="hidden" name="extra" value=""/>   
                                             <?php } ?>
                                             <p class="mBt10 product_name_field"><strong><?php echo $row['product_name']; ?></strong>
-                                            
+                                           
 											<?php if($product_google_image==1){
 														$s_url=urlencode($row['product_name'].",". $row['remark']);
 														$s_url='https://www.google.com/search?q='.$s_url.'&tbm=isch';

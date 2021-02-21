@@ -2216,11 +2216,11 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                             <span id="cash_order_process" style="color:red;display:none;font-weight:bold;">Please wait......., we are processing your order..</span>
                             <div class="container">
                                 <div class="row">
-                                    <div class="col-md-12" style="padding: 10px 0px;">
+                                    <!--div class="col-md-12" style="padding: 10px 0px;">
                                         <audio id="player1" controls="controls">
                                             <source src="<?php echo $path; ?>" type="audio/wav">
                                         </audio>
-                                    </div>
+                                    </div!-->
                                 </div>
                             </div>
 

@@ -187,6 +187,7 @@ if(isset($_GET['q']) && isset($_GET['cr'])){
 	  left join sections on order_list.section_type = sections.id left join users on order_list.user_id=users.id  left join riders on order_list.rider_id=riders.id  WHERE merchant_id ='".$loginidset."' ORDER BY order_list.created_on DESC LIMIT $offset, $rec_limit";
 }
 
+//echo $query;
 $total_rows = mysqli_query($conn,$query);
 $total_rows1 = mysqli_query($conn,$query);
 $last_id = mysqli_fetch_assoc(mysqli_query($conn, "SELECT max(id) as max_id FROM order_list WHERE merchant_id ='".$loginidset."'"))['max_id'];
@@ -1060,6 +1061,9 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 									$v_array = array();
 									
 									$v_comisssion_chk = number_format($row['vendor_comission'],2);
+									$price_hike_user = number_format($parent_data['price_hike'],2); //from users table
+									$vendor_comission_user = number_format($parent_data['vendor_comission'],2); //from users table
+									
 									$special_delivery_amount_chk = $row['special_delivery_amount'];
 									$amount_val_array = explode(",",$row['amount']);
 									$quantity_ids_array = explode(",",$row['quantity']);
@@ -1111,7 +1115,9 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 											$v_match = ltrim($v_match, ',');
 											$sub_rows = mysqli_query($conn, "SELECT * FROM sub_products WHERE id  in ($v_match)");
 											while ($srow=mysqli_fetch_assoc($sub_rows)){
-												$product_price_array[] = number_format($srow['product_price'],2); 
+												$subprice =  $srow['product_price'] * $quantity_ids_array[$i];
+												$product_price_array[] = number_format($subprice,2); 
+												//$product_price_array[] = number_format($srow['product_price'],2); 
 												$sub_product_varient_array[$key] = 'yes';
 												$product_varient_array[$key][$srow['id']] = $product['varient_must'];
 											}
@@ -1131,13 +1137,22 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 										$p++;
 									}
 									$allproduct_price = array_sum($product_price_array);
-									$allproduct_price_digit = bcadd(sprintf('%F', $allproduct_price), '0', 1); ;
-									$cash_term_payment_digit = bcadd(sprintf('%F', $cash_term_payment), '0', 1); ;
-										echo "cashprice".$cash_term_payment_digit."<br/>totalproduct".$allproduct_price_digit;	
-										echo '<br/>';
-										echo "Diff = ".abs($cash_term_payment_digit - $allproduct_price_digit); // 28
-										$price_diff = abs($cash_term_payment_digit - $allproduct_price_digit);
-										echo '<br/>';
+									$allproduct_price_digit = bcadd(sprintf('%F', $allproduct_price), '0', 1); 
+									$cash_term_payment_digit = bcadd(sprintf('%F', $cash_term_payment), '0', 1);
+									$price_diff = abs($cash_term_payment_digit - $allproduct_price_digit);									
+									echo "cashprice = ".$cash_term_payment_digit;	
+									echo '<br/>';
+									echo "totalproduct = ".$allproduct_price_digit;
+									echo '<br/>';
+									echo "Diff = ".$price_diff; // 28
+									
+									echo '<br/>';
+									echo "VC = ".$vendor_comission_user;
+									echo '<br/>';
+									echo "Hike = ".$price_hike_user;
+									
+									echo '<br/>';
+									
 										if(round($price_diff) > 1){
 										   // echo 'here';
 										   echo '<br/><br/><input type="button" style="background-color:red" class= "btn btn-danger" value="Error in order" />';

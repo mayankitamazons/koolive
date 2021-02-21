@@ -56,10 +56,13 @@
 	   $user_id=$_SESSION['login'];
    }
   
-     $query="SELECT  order_list.*, sections.name as section_name FROM order_list left join sections on order_list.section_type = sections.id WHERE order_list.user_id ='".$user_id."' ORDER BY `created_on` DESC LIMIT $limit";
+     $query="SELECT  order_list.id as order_id,order_list.*, sections.name as section_name,m.id as merchant_id,m.*,u.id as user_id,u.* FROM order_list left join 
+	 sections on order_list.section_type = sections.id inner join users as m on m.id=order_list.merchant_id  left 
+	join users as u on u.mobile_number=order_list.user_mobile 
+	 WHERE order_list.user_id ='".$user_id."' ORDER BY `created_on` DESC LIMIT $limit";
 // die;
      $total_rows = mysqli_query($conn,$query);
-	 $uq="SELECT  order_list.*,m.mobile_number as merchant_mobile,m.name as merchant_name,u.user_refferal_code FROM order_list inner join users as m on m.id=order_list.merchant_id left 
+	 $uq="SELECT  order_list.*,m.mobile_number as merchant_mobile,m.name as row,u.user_refferal_code FROM order_list inner join users as m on m.id=order_list.merchant_id left 
 	join users as u on u.mobile_number=order_list.user_mobile 
 	WHERE order_list.user_id ='$user_id' ORDER BY `created_on` DESC limit 0,1";
 	 // die;     
@@ -1104,7 +1107,7 @@ input[name='p_total[]'],input[name='p_price[]']{
                      <th>No</th>
 					 <th>Invoice Number</th>
             <!--th>Agent code</th!-->
-					 <th class="test_product" style="min-width:240px;"><?php echo $language["merchant_name"];?></th>
+					 <th class="test_product" style="min-width:240px;"><?php echo $language["row"];?></th>
 					 <th><?php echo $language["status"];?></th>
 					 <th style="color:#09caab;"><?php echo "Order Details";?></th>
 					 <th><?php echo $language["rider_info"];?></th>
@@ -1166,13 +1169,13 @@ input[name='p_total[]'],input[name='p_price[]']{
                     $total_data = array_combine($quantity_ids, $amount_val);
                     //var_dump($amount_val);
 					// $order_list = mysqli_query($conn, "SELECT * FROM order_list WHERE user_id ='".$_SESSION['login']."' ORDER BY `created_on` DESC");
-                    $user_namess = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE id ='".$row['user_id']."'"));
-                    $merchant_name = mysqli_fetch_assoc(mysqli_query($conn, "SELECT  * FROM users WHERE id ='".$row['merchant_id']."'"));
+                  
+                  
                     $created =$row['created_on'];
                     $date=date_create($created);
 					$section_type=$row['section_type'];
 					 $section_id=$section_type;
-					 $sstper=$merchant_name['sst_rate'];
+					 $sstper=$row['sst_rate'];
 					 $merchant_id=$user_order['merchant_id'];
 					 if($section_type)
 					 {
@@ -1193,7 +1196,7 @@ input[name='p_total[]'],input[name='p_price[]']{
                      $todayorder = $today == $new_time[0] ? "red" : "";
                    $i1 =1;
                       ?>
-                  <tr  data-id="<?php echo $row['id']; ?>" class="<?php echo $todayorder; ?> <?php echo $callss; ?> br_bk" >
+                  <tr  data-id="<?php echo $row['order_id']; ?>" class="<?php echo $todayorder; ?> <?php echo $callss; ?> br_bk" >
                      <td><?php echo  $i; ?></td>
                      <td><?php echo date_format($date,"Y/m/d");  ?>
                      <?php echo '<br>'; echo $new_time[1] ?>
@@ -1207,33 +1210,33 @@ input[name='p_total[]'],input[name='p_price[]']{
                         }
                         ?></td>   
 						 <td><?php echo ($row['invoice_no']%1000);?></td>
-                    <!--td><?=mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM order_list WHERE id ='".$row['id']."'"))['agent_code'] ?></td!-->  
+                    <!--td></td!-->  
                     <td>
-					<a  style="text-decoration:underline;font-weight:bold;font-size:16px;" href="<?php echo $site_url; ?>/view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $merchant_name['mobile_number'];?>&oid=<?php echo $row['id']; ?>"><?php echo $merchant_name['name'];  ?>
+					<a  style="text-decoration:underline;font-weight:bold;font-size:16px;" href="<?php echo $site_url; ?>/view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $row['mobile_number'];?>&oid=<?php echo $row['order_id']; ?>"><?php echo $row['name'];  ?>
 					
 					</br></br>
 						<?php 
-						if($merchant_name['chat_with_merchant'])
+						if($row['chat_with_merchant'])
 							{
-							if($merchant_name['chat_group'])
+							if($row['chat_group'])
 							{
 								?>
-							<a href="<?php echo $merchant_name['chat_with_merchant']; ?>" target="_blank"><img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['merchant_hotline']; ?></a>
+							<a href="<?php echo $row['chat_with_merchant']; ?>" target="_blank"><img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['merchant_hotline']; ?></a>
 							<?php }
-							else
+							else  
 							{
 							  ?>
-							 	<a href="https://api.whatsapp.com/send?phone=<?php  echo $merchant_name['chat_with_merchant']?>" target="_blank"><img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['merchant_hotline']; ?></a>
+							 	<a href="https://api.whatsapp.com/send?phone=<?php  echo $row['chat_with_merchant']?>" target="_blank"><img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['merchant_hotline']; ?></a>
 							<?php }
 							}
 							else
 							{
 						   $chat_merchant_list = array(6958,6956, 7634,7785,7799,7839,7808,7818,7846,7912,7953,7837,7209,7462,7209,7723,7674,7663,7726,7703,7554,6960,7658,7662,7462); 
-						   if (in_array($merchant_name['id'], $chat_merchant_list)) { ?>
+						   if (in_array($row['merchant_id'], $chat_merchant_list)) { ?>
 						
 						  <a href="https://chat.whatsapp.com/J4wcS4riADaBBrvY60c8f3" target="_blank"><img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['merchant_hotline']; ?></a>
 						   <?php } else { ?>
-							<a href="https://api.whatsapp.com/send?phone=<?php  echo $merchant_name['mobile_number']?>" target="_blank">
+							<a href="https://api.whatsapp.com/send?phone=<?php  echo $row['mobile_number']?>" target="_blank">
 							<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['merchant_hotline']; ?></a>
 							<?php } } ?>  
 							
@@ -1280,11 +1283,11 @@ input[name='p_total[]'],input[name='p_price[]']{
                             //echo $row['id'];
                         }
                         ?>
-                        <label class= "btn btn-primary status" data-id="<?php echo $row['id']; ?>" style="cursor:pointer;background-color:<?php echo $s_color;?>"> <?php echo $sta; ?></label>
+                        <label class= "btn btn-primary status" data-id="<?php echo $row['order_id']; ?>" style="cursor:pointer;background-color:<?php echo $s_color;?>"> <?php echo $sta; ?></label>
                      </td> 
-					 <td style="font-size:18px;" class="s_order_detail btn btn-blue" order_id='<?php echo $row['id']; ?>'> Detail</td>
+					 <td style="font-size:18px;" class="s_order_detail btn btn-blue" order_id='<?php echo $row['order_id']; ?>'> Detail</td>
 					 <td><?php echo $row['rider_info']; ?></td>
-					  <td><span class="btn btn-yellow bank_detail" merchant_id="<?php echo $merchant_name['id']; ?>"  merchant_name="<?php echo $merchant_name['name']; ?>" style="color:black;">Bank Detail</span></td>
+					  <td><span class="btn btn-yellow bank_detail" merchant_id="<?php echo $row['merchant_id']; ?>"  row="<?php echo $row['name']; ?>" style="color:black;">Bank Detail</span></td>
 					   <td>
 					  <?php if($row['status']){
 						    				    if(($row['status']!=1 && $row['reviewed']==1 ))
@@ -1297,7 +1300,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 																$review_given="n";
 												  }
 						  ?>  
-					   	 <span class="btn btn-purple review_detail" invoice_id="<?php echo $row['invoice_no']; ?>" order_id="<?php echo $row['id']; ?>" review_status="<?php echo $review_given; ?>" style="color:black;" skiped_review="<?php echo $row['skiped_review']; ?>">Feedback</span>
+					   	 <span class="btn btn-purple review_detail" invoice_id="<?php echo $row['invoice_no']; ?>" order_id="<?php echo $row['order_id']; ?>" review_status="<?php echo $review_given; ?>" style="color:black;" skiped_review="<?php echo $row['skiped_review']; ?>">Feedback</span>
 
 					  <?php } ?>
 					  </td> 
@@ -1310,8 +1313,8 @@ input[name='p_total[]'],input[name='p_price[]']{
 							<?php echo $row['location'];?></a></td>
 
 
-                         <?php if($merchant_name['number_lock'] == 0){?>
-                            <td><?php echo $merchant_name['mobile_number'];?></td>
+                         <?php if($row['number_lock'] == 0){?>
+                            <td><?php echo $row['mobile_number'];?></td>
                         <?php } else {?>
                             <td></td>
                         <?php }?>
@@ -1466,7 +1469,7 @@ input[name='p_total[]'],input[name='p_price[]']{
                     <td><?php echo $wal_label;  ?></td>   
 							<!--td>   
 								<?php //if($row['status']== '1'){ ?>
-								<label class="dp_lab"  data-id="<?php echo $merchant_name['id'];  ?>" data-oid="<?php echo $total;?>" data-orid="<?php echo $row['id']; ?>">Click Here</label>
+								<label class="dp_lab"  data-id="<?php echo $row['id'];  ?>" data-oid="<?php echo $total;?>" data-orid="<?php echo $row['id']; ?>">Click Here</label>
 								<?php// }   ?>
 							</td!-->                
                      <?php if($row['status'] == 4 || $row['status']==5 || $row['status'] ==2 ){ ?>
@@ -1541,19 +1544,7 @@ input[name='p_total[]'],input[name='p_price[]']{
                 </div>
 				</div>
 			<!-- end edit function--->
-	<?php
-	$res = mysqli_query($conn,"SELECT * FROM `order_list` WHERE status_change_date = CURDATE() and status = 1 and popup = 1 and user_id ='".$user_id."'");
-	if(mysqli_num_rows($res)==0)
-	{
-	    $res = mysqli_query($conn,"SELECT * FROM `order_list` WHERE status_change_date = CURDATE() and status = 1 and popup = 0 and user_id ='".$user_id."'");
-	    $r = mysqli_fetch_array($res);
-	    if(mysqli_num_rows($res)!=0)
-	    {
-	        include_once 'share_popup.php';
-	        //$res = mysqli_query($conn,"UPDATE `order_list` set popup = 1 WHERE status_change_date = CURDATE() and status = 1 and popup = 0 and user_id ='".$_SESSION['login']."'");
-	    }
-	}
-	 ?>
+	
 		<!-- end new code--->
 
       </main>
@@ -2045,7 +2036,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 				      					<input type="hidden" value="" name="wallet" id="payment_type" class="payment_type">
 				      				
 				      					<input type="hidden" value="<?php echo $open_order_id;?>" name="payment_order_id">
-					        			<h5 class="">Please pay to <span class="merchant_name">sdf</span></h5>
+					        			<h5 class="">Please pay to <span class="row">sdf</span></h5>
 					        			<h5>Mobile Number +60 <span class="mobile"></span></h5>
 					        			<h5>QR Code:</h5>
 					        			<img class="qr_code_image">
@@ -2285,7 +2276,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 			$ref_link=$site_url."/view_merchant.php?sid=".$user_order['merchant_mobile']."&r_code=".$user_refferal_code;  
 			  
 					 $share_link=urlencode("Hey use my link to place order on koofamilies $ref_link"); 
-					 $share_link=$language['ref_1']." ".$user_order['merchant_name']." ".$language['ref_2']." ".$language['ref_3']."\n".$ref_link;
+					 $share_link=$language['ref_1']." ".$user_order['row']." ".$language['ref_2']." ".$language['ref_3']."\n".$ref_link;
 										$share_link=urlencode($share_link);
 					?>
 			<div class="form-group">
@@ -2752,7 +2743,7 @@ if ('serviceWorker' in navigator) {
 				// var title = $(".text_payment").find(':selected').attr('title'); 
 				
             	$(".payment_header").html(title + "&nbsp <img style='width:90px;' src='images/payments/"+$image+"'>");
-            	$(".merchant_name").html(data['name']);
+            	$(".row").html(data['name']);
             	$(".mobile").html(data['mobile']);
             	$(".qr_code_image").attr({"src": "uploads/"+data['qr_code']});
             	$(".reference").html(data['remark']);
@@ -2805,7 +2796,7 @@ if ('serviceWorker' in navigator) {
             	}
 				var title = $(".text_payment").find(':selected').attr('title'); 
             	$(".payment_header").html(title + "&nbsp <img style='width:90px;' src='images/payments/"+$image+"'>");
-            	$(".merchant_name").html(data['name']);
+            	$(".row").html(data['name']);
             	$(".mobile").html(data['mobile']);
             	$(".qr_code_image").attr({"src": "uploads/"+data['qr_code']});
             	$(".reference").html(data['remark']);
@@ -3063,8 +3054,8 @@ if ('serviceWorker' in navigator) {
 				  });
 	   });
 	   $(".bank_detail").click(function(e){
-		    var merchant_name = $(this).attr('merchant_name');
-			$('#bank_merchant_name').html(merchant_name);   
+		    var row = $(this).attr('row');
+			$('#bank_merchant_name').html(row);   
 		    $("#InternetModel").modal("show"); 
 	   });
 	    $(".s_order_detail").click(function(e){
