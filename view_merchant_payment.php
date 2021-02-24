@@ -14341,6 +14341,7 @@ $(document).ready(function(){
 
 $(document).ready(function(){
 	$(".internet_banking_fpx").click(function(){
+		
 		console.log('fpx_data');
 		//$("#order_place").attr('action','temp_order_save.php');
 		//$(".internet_banking_fpx").
@@ -14434,7 +14435,7 @@ $(document).ready(function(){
 		var final_amount_value = $(".final_amount_value").html();
 		$("#hidden_final_cart_price").val(final_amount_value);
 		var str = $("#order_place").serializeArray();
-		
+		$(".internet_banking_fpx").prop('disabled', true);
 		$.ajax({  
 			type: "POST",  
 			url: "temp_order_save.php",  
@@ -14442,7 +14443,6 @@ $(document).ready(function(){
 			success: function(value) { 
 				
 				var json = $.parseJSON(value);
-				console.log(json);
 				//return false;
 				//$("#paymentid").val();
 				$("#RefNo").val(json.refNo);
@@ -14454,12 +14454,13 @@ $(document).ready(function(){
 				$("#Remark").val(json.remark_ipay88);
 				$("#Signature").val(json.signature);
 				//sleep(10);
-				setTimeout(
+				$("#ipay88_form").submit();
+				/*setTimeout(
 					  function() 
 					  {
 						//do something special
 							$("#ipay88_form").submit();
-					  }, 5000);
+					  }, 500);*/
 				}
 		});
 		return false;

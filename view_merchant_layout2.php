@@ -391,7 +391,7 @@ if($product['pro_ct'] > 0) { ?>
                                             <?php 
                                             if(!empty($row['image'])){
                                                 if(isActive($row['active_time']) && $row['on_stock']){ ?>
-                                                    <p id="product_child_<?php echo $row['id']?>" style="<?php if($row['add_to_cart_button']=='0'){echo "display:none;";} ?>" data-rebate='<?php echo $row['product_discount'];?>' class="pro_status text_add_cart <?php echo $cart_class ?>"  data_varient_must='<?php echo $row['varient_must']; ?>' data-id = "<?php echo $row['id'] ?>" data-code = "<?php echo $row['product_type'] ?>"  data-pr = "<?php echo $new_price; ?>" data-name = "<?php echo $row['product_name'] ?>">
+                                                    <p id="product_child_<?php echo $row['id']?>" product_name="<?php echo $row['product_name'];?>" product_remark="<?php echo $row['remark']; ?>" product_price='<?php echo number_format($new_price,2);?>' style="<?php if($row['add_to_cart_button']=='0'){echo "display:none;";} ?>" data-rebate='<?php echo $row['product_discount'];?>' class="pro_status text_add_cart <?php echo $cart_class ?>"  data_varient_must='<?php echo $row['varient_must']; ?>' data-id = "<?php echo $row['id'] ?>" data-code = "<?php echo $row['product_type'] ?>"  data-pr = "<?php echo $new_price; ?>" data-name = "<?php echo $row['product_name'] ?>">
 												    
 													<i  id="child_<?php echo $row['id']?>" class="fa fa-plus"></i></p>
 													
@@ -402,7 +402,7 @@ if($product['pro_ct'] > 0) { ?>
                                                     if(isActive($row['active_time'])){
                                                         if($row['on_stock']){
                                                 ?>
-                                                    <p  id="product_child_<?php echo $row['id']?>" style="<?php if($row['add_to_cart_button']=='0'){echo "display:none;";} ?>" class="pro_status text_add_cart <?php echo $cart_class ?>" data-rebate='<?php echo $row['product_discount'];?>' data_varient_must='<?php echo $row['varient_must']; ?>'  data-id = "<?php echo $row['id'] ?>" data-code = "<?php echo $row['product_type'] ?>"  data-pr = "<?php echo $new_price; ?>" data-name = "<?php echo $row['product_name'] ?>">
+                                                    <p  id="product_child_<?php echo $row['id']?>" product_name="<?php echo $row['product_name'];?>" product_remark="<?php echo $row['remark']; ?>" product_price='<?php echo number_format($new_price,2);?>' style="<?php if($row['add_to_cart_button']=='0'){echo "display:none;";} ?>" class="pro_status text_add_cart <?php echo $cart_class ?>" data-rebate='<?php echo $row['product_discount'];?>' data_varient_must='<?php echo $row['varient_must']; ?>'  data-id = "<?php echo $row['id'] ?>" data-code = "<?php echo $row['product_type'] ?>"  data-pr = "<?php echo $new_price; ?>" data-name = "<?php echo $row['product_name'] ?>">
 												    <i  id="child_<?php echo $row['id']?>" class="fa fa-plus"></i></p>
 													
                                                     <p class="quantity">

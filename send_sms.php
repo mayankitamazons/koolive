@@ -68,7 +68,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 		
 		$invoice_no=$row['invoice_no'];
 		$length = 4;    
-		 $query2="UPDATE `order_list` SET `order_alert_done` = 'y' WHERE `order_list`.`id` ='$order_id'";
+		echo  $query2="UPDATE `order_list` SET `order_alert_done` = 'y' WHERE `order_list`.`id` ='$order_id'";
 		// die;
 		$update=mysqli_query($conn,$query2);
 			$rand= substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),1,$length);
@@ -97,7 +97,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 		{
 			$whatapp_group_name=$row['whatapp_group_name'];
 			// whatappgroupmsg("Urgent Group",$sms_msg);
-			whatappgroupmsg($whatapp_group_name,$sms_msg);
+			// whatappgroupmsg($whatapp_group_name,$sms_msg);
 		} 
 		echo $smsend;
 		echo "</br>";          
@@ -106,7 +106,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
    {
 	    // $query2="UPDATE `order_list` SET `order_alert_done` = 'expire' WHERE `order_list`.`id` ='$order_id'";
 		// die;
-		// $update=mysqli_query($conn,$query2);
+		$update=mysqli_query($conn,$query2);
 	   echo "time expire for order id: ".$order_id;
 	   echo "</br>";
    }	   

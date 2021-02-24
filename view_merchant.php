@@ -1994,12 +1994,12 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                         <input type="hidden" name='varient_must' id='varient_must' />
                         <?php if ($merchant_detail['order_extra_charge'])
         { ?>
-                            <input type="hidden" name='delivery_charges' value='<?php echo $merchant_detail['order_extra_charge']; ?>' id='delivery_charges' />
+                            <input type="hidden" class="2" name='delivery_charges' value='<?php echo $merchant_detail['order_extra_charge']; ?>' id='delivery_charges' />
                         <?php
         }
         else
         { ?>
-                            <input type="hidden" name='delivery_charges' value='2.99' id='delivery_charges' /> <?php
+                            <input type="hidden" class="3" name='delivery_charges' value='2.99' id='delivery_charges' /> <?php
         } ?>
                         <input type="hidden" name='additonal_delivery_charges' value='<?php echo $merchant_detail['additonal_delivery_charges']; ?>' id='additonal_delivery_charges' />
                         <input type="hidden" id="deliver_tax_amount" name="deliver_tax_amount" value="0">
@@ -2062,7 +2062,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                                             <?php $deliver_charges_label = $language['delivery_charges']; ?>
                                             <?php echo ucfirst(strtolower($deliver_charges_label)); ?>: Rm <span id="order_extra_label"><?php echo number_format($merchant_detail['order_extra_charge'], 2); ?></span>
                                         </div>
-                                        <input type="hidden" name="order_extra_charge" id="order_extra_charge" value="<?php echo $merchant_detail['order_extra_charge']; ?>" />
+                                        <input type="hidden" class="1" name="order_extra_charge" id="order_extra_charge" value="<?php echo number_format($merchant_detail['order_extra_charge'], 2); ?>" />
                                         <input type="hidden" name="special_delivery_amount" id="special_delivery_amount" value="0" />
                                         <input type="hidden" name="speed_delivery_amount" id="speed_delivery_amount" value="0" />   
                                         <input type="hidden" name="pickup_type" id="pickup_type" value="takein" />
@@ -2214,7 +2214,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 							<p><?php echo $language['speed_text']; ?></p>
                      
                             <span id="cash_order_process" style="color:red;display:none;font-weight:bold;">Please wait......., we are processing your order..</span>
-                            <div class="container">
+                            <!--div class="container">
                                 <div class="row">
                                     <div class="col-md-12" style="padding: 10px 0px;">
                                         <audio id="player1" controls="controls">
@@ -2222,7 +2222,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                                         </audio>
                                     </div>
                                 </div>
-                            </div>
+                            </div!-->
 
 
 
@@ -3097,7 +3097,9 @@ else
 
             <div class="element-item modal-header">
 
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+				<h5 class="product_name_popup"></h5>
+                <button type="button" class="close" data-dismiss="modal" style="background:black;margin-right:2px">&times;</button>
 
 
 
@@ -3105,9 +3107,14 @@ else
 
             </div>
 
-            <p><?php echo $language['the_product_added']; ?></p>
+            <p class="product_price_popup" style="padding-top:10px;padding-bottom:10px"><b>Price:</b> RM <span class="span_price_popup"></span></p>
+			<span style="border-bottom:1px solid #e9ecef;margin:-1px calc(-25px - 1px) 0"></span>
+            
+			<!--<p style="padding:10px;margin:0px;text-align:center;"><?php echo $language['the_product_added']; ?></p>
+	
+			<span style="border-bottom:1px solid #e9ecef;margin:-1px calc(-25px - 1px) 0"></span>-->
 
-            <div id="without_varient_footer" class="modal-footer model_pop" style="padding-bottom:2px;">
+            <div id="without_varient_footer" class="modal-footer model_pop" style="padding-bottom:2px;border-top:none !important;">
 
                 <input type="hidden" id="pop_ok" name="pop_ok">
 
@@ -5361,6 +5368,18 @@ function updateMarkerAddress(str) {
         // console.log("Without varient");
 
         // $(this).hide();
+		
+		//product details show in popup
+		var product_name_popup = $(this).attr('product_name');
+		var product_remark_popup = $(this).attr('product_remark');
+		var span_price_popup = $(this).attr('product_price');
+		
+		$(".product_name_popup").html(product_name_popup);
+		$(".product_remark_popup").remove();
+		if(product_remark_popup != ''){
+			$(".product_price_popup").before('<p class="product_remark_popup" style="padding-top:10px;">'+product_remark_popup+'</p>');
+		}
+		$(".span_price_popup").html(span_price_popup);
 
         $("#product_main").html("");
 
@@ -10494,7 +10513,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
                 {
                     
-                    var fix_delivery_val = "<?php echo $merchant_detail['delivery_charges']; ?>";
+                    var fix_delivery_val = "<?php echo $merchant_detail['order_extra_charge']; ?>";
                 if (delivery_charges == 0) {
                     if (fix_delivery_val)
                         var delivery_charges = fix_delivery_val;
@@ -10892,7 +10911,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             } else if (pickup_type == "takein")
 
             {
-                var fix_delivery_val = "<?php echo $merchant_detail['delivery_charges']; ?>";
+                var fix_delivery_val = "<?php echo $merchant_detail['order_extra_charge']; ?>";
                 if (delivery_charges == 0) {
                     if (fix_delivery_val)
                         var delivery_charges = fix_delivery_val;
@@ -11176,7 +11195,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
 
 
-            var fix_delivery_val = "<?php echo $merchant_detail['delivery_charges']; ?>";    
+            var fix_delivery_val = "<?php echo $merchant_detail['order_extra_charge']; ?>";    
             var user_lat = $('#user_lat').val();
 
             if (!user_lat)
@@ -11202,6 +11221,9 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                         var delivery_charges = fix_delivery_val;
                     else
                         var delivery_charges = 2.99;
+					
+					
+					console.log("#1:"+delivery_charges);
                     $('#delivery_charges').val(delivery_charges);
                     $('#order_extra_charge').val(delivery_charges);
                 }
@@ -11632,7 +11654,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                         {
 
                             // alert('paid');
-
+							console.log("#2:"+delivery_charges);
                             $('#delivery_charges').val(delivery_charges);
                             $('#additonal_delivery_charges').val(delivery_charges);
                             $('#order_extra_charge').val(delivery_charges);
@@ -11643,6 +11665,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
                         {
                             // alert('free');
+							console.log("#3:"+delivery_charges);
                             $('#additonal_delivery_charges').val(delivery_charges);
                             $('#delivery_charges').val(delivery_charges);
                             $('#order_extra_charge').val(delivery_charges);
@@ -11955,7 +11978,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
         } else if (pickup_type == "takein")
 
         {
-            var fix_delivery_val = "<?php echo $merchant_detail['delivery_charges']; ?>";
+            var fix_delivery_val = "<?php echo $merchant_detail['order_extra_charge']; ?>";
             if (delivery_charges == 0) {
                 if (fix_delivery_val)
                     var delivery_charges = fix_delivery_val;

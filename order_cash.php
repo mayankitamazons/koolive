@@ -640,8 +640,8 @@ if(isset($_POST))
 					$total_refferal_amount=0;
 				}  
 			 	     $sqlFinalIns = "INSERT INTO order_list SET r_code='$r_code',order_refer_id='$order_refer_id',total_refferal_amount='$total_refferal_amount',order_time_shop_on='$order_time_shop_on',order_lat='$latitude',order_lng='$longitude',status='$status',special_delivery_amount='$special_delivery_amount',price_hike='$price_hike',pickup_type='$show_pick_up',vendor_comission=$vendor_total,plastic_box='$plastic_box',deliver_tax_amount='$deliver_tax_amount',rebate_applicable='$rebate_applicable',membership_discount_input='$membership_discount_input',membership_applicable='$membership_applicable',order_extra_charge='$order_extra_charge',remark_extra='$remark_extra',rebate_amount='$rebate_amount',prepaid='$prepaid',membership_discount='".$discount."',coupon_id='$coupon_id',coupon_discount='".$coupon_discount."',coupon_code='".$coupon_code."',membership_plan_id='$membership_plan_id',total_cart_amount='$total_cart_amount',total_rebate_amount='$total_rebate_amount',wallet_paid_amount='$wallet_paid_amount',online_pay='$online_pay',payment_alert='$payment_alert',user_name='$user_name',user_mobile='$user_mobile',wallet='$w_type',varient_type='$v_str',product_id='$pro_id',  user_id='$user_id', merchant_id='$m_id', quantity='$qty_list', amount='$p_price',product_code='$p_code', remark='$option', location='".$location."', table_type='".$table_type."',section_type='$section_type',created_on='$date', invoice_no='$invoice_no',newuser='$newuser',show_alert='$show_alert',section_saved='$section_saved',agent_code='$agent_code'";
- 
-				#echo $sqlFinalIns;exit;
+
+				//echo $sqlFinalIns;exit;
 				$test_method = mysqli_query($conn, $sqlFinalIns);
 				$order_id = mysqli_insert_id($conn); 
 				#echo 'teste'.$order_id.$test_method ;				

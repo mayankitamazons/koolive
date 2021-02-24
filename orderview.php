@@ -1175,6 +1175,21 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 								
 								<!-- Show error in order if total not match 24/01/2021--->
 								
+								<?php /*if($row['ipay_p_id'] != 0){?>
+							<?php if($row['ipay_payment_status'] == 0){?>
+								<br/>
+								 <label class= "btn btn-primary status"  style="background-color:red"> <?php echo $row['ipay_message']; ?></label>
+								 <br/>Transaction Id: 
+								 <?php echo $row['pay_transid']; ?>
+							<?php }?>
+							<?php if($row['ipay_payment_status'] == 1){?>
+								<br/>
+								 <label class= "btn btn-primary status"  style="background-color:green"> Success<?php //echo $row['ipay_message']; ?></label>
+								 <br/>Transaction Id: 
+								 <?php echo $row['pay_transid']; ?>
+							<?php }?>
+						<?php }*/?>
+								
 									
 							</td>
 							<td  style="font-size:18px;" class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></td>

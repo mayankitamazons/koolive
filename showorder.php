@@ -60,6 +60,7 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
         <th>S.No</th>
         <th>Invoice Number</th>
         <th>DATE OF ORDER</th>
+		 <th>Order Status</th>
         <th>Detail</th>
 		<th>Rider Info</th>
         <th>Write up</th>
@@ -68,7 +69,7 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
         <th>Merchant Name</th>
         <th>Food Panda Link</th>
         <th>Merchant Mobile Number</th>
-        <th>Order Status</th>
+       
 
         <th>Action</th>
 
@@ -131,17 +132,7 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
                                     <p style="color: red;"><?php echo $diff_time; ?></p> <?php 
                                   }?>
                             </td>
-							
-		<td  style="font-size:18px;" class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></td>
-		<td style="min-width:190px;"><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="rider_info" placeholder="%" class="form-control rider_info" value="<?php echo $row['rider_info'];?>"></td>
-        	<td class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i></td>
-		<td>
-		<?php if($r['user_name']){  echo $r['user_name']."- ".$r['user_mobile']; } else { echo $r['user_mobile'];} ?>
-		</td>
-		<td><?php echo $r['merchant_name']; ?></td>
-		<td><a href="<?php echo $r['foodpanda_link']; ?>" target="_blank"><?php echo $r['foodpanda_link']; ?></a></td>   
-        <td><?php echo $r['merchant_mobile_number']; ?></td>
-        <td><input type="button" next_status="<?php echo $n_status; ?>" style="background-color:<?php echo $s_color;?>" class= "status btn btn-primary" value="<?php  echo $sta;?>" status="<?php echo $row['status'];?>" data-invoce='<?php echo $row['invoice_no'];?>' data-id="<?php echo $row['id']; ?>"/>
+		   <td><input type="button" next_status="<?php echo $n_status; ?>" style="background-color:<?php echo $s_color;?>" class= "status btn btn-primary" value="<?php  echo $sta;?>" status="<?php echo $row['status'];?>" data-invoce='<?php echo $row['invoice_no'];?>' data-id="<?php echo $row['id']; ?>"/>
 
 
 
@@ -262,6 +253,17 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 
 
 </td>
+							
+		<td  style="font-size:18px;" class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></td>
+		<td style="min-width:190px;"><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="rider_info" placeholder="%" class="form-control rider_info" value="<?php echo $row['rider_info'];?>"></td>
+        	<td class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i></td>
+		<td>
+		<?php if($r['user_name']){  echo $r['user_name']."- ".$r['user_mobile']; } else { echo $r['user_mobile'];} ?>
+		</td>
+		<td><?php echo $r['merchant_name']; ?></td>
+		<td><a href="<?php echo $r['foodpanda_link']; ?>" target="_blank"><?php echo $r['foodpanda_link']; ?></a></td>   
+        <td><?php echo $r['merchant_mobile_number']; ?></td>
+     
 
 <td><a target="_blank" href="orderview.php?did=<?php echo $row['merchant_id'];?>&vs=<?php  echo md5(rand());?>">Check order</a></td>
 

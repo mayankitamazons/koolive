@@ -245,10 +245,10 @@ function ceiling($number, $significance = 1)
                         if ($longitude && $latitude)
                             $product['distance'] = number_format(floatval($product['distance']), 2);
                         $user_id = $product['u_id'];
-                        $productsAvailable = mysqli_fetch_assoc(mysqli_query($conn, "SELECT count(id) AS productsAvailable FROM products WHERE products.user_id = $user_id"))['productsAvailable'];
+                        // $productsAvailable = mysqli_fetch_assoc(mysqli_query($conn, "SELECT count(id) AS productsAvailable FROM products WHERE products.user_id = $user_id"))['productsAvailable'];
                         $floatDistance = $product['distance'] ? str_replace(',', '', $product['distance']) : 0;
-                        $chargeSql = "SELECT charge FROM delivery_plan WHERE merchant_id='{$user_id}' AND max_distance >= {$floatDistance} ORDER BY max_distance ASC LIMIT 1";
-                        $product['charge'] = mysqli_fetch_assoc(mysqli_query($conn, $chargeSql))['charge'];
+                        // $chargeSql = "SELECT charge FROM delivery_plan WHERE merchant_id='{$user_id}' AND max_distance >= {$floatDistance} ORDER BY max_distance ASC LIMIT 1";
+                        // $product['charge'] = mysqli_fetch_assoc(mysqli_query($conn, $chargeSql))['charge'];
                         $avgRating = $product['avg_rating'];
                         $number_ratings = $product['ratings'];
                         
@@ -351,9 +351,9 @@ function ceiling($number, $significance = 1)
                                             <b><?= $product['product_name'] ?> price:</b> <span class="text-info">Rm <?= ceiling($product['product_price_hike'], 0.05); ?></span>
                                         </div>
 
-                                        <div class="col-md-12 p-0">
+                                        <!--div class="col-md-12 p-0">
                                             <b>Delivery fee: </b> <span class="text-info"><?= ($product['charge']) ? "Rm {$product['charge']}" : 'Not available' ?></span>
-                                        </div>
+                                        </div!-->
                                         <?php
                                         if ($addDistance !== '') {
                                         ?>
@@ -376,9 +376,9 @@ function ceiling($number, $significance = 1)
                                         <?php
                                        // }
                                         ?>
-                                        <div class="col-md-12 p-0">
+                                        <!--div class="col-md-12 p-0">
                                             <b>Products available:</b> <span class="text-info"><?= $productsAvailable ?></span>
-                                        </div>
+                                        </div!-->
                                     </div>
                                 </div>
                             </div>

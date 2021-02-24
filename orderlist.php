@@ -56,13 +56,13 @@
 	   $user_id=$_SESSION['login'];
    }
   
-     $query="SELECT  order_list.id as order_id,order_list.*, sections.name as section_name,m.id as merchant_id,m.*,u.id as user_id,u.* FROM order_list left join 
+     $query="SELECT  order_list.id as order_id,order_list.order_extra_charge as od_extra_charge,order_list.*, sections.name as section_name,m.id as merchant_id,m.name as merchant_name,m.mobile_number as merchant_mobile_number,m.*,u.id as user_id,u.* FROM order_list left join 
 	 sections on order_list.section_type = sections.id inner join users as m on m.id=order_list.merchant_id  left 
 	join users as u on u.mobile_number=order_list.user_mobile 
 	 WHERE order_list.user_id ='".$user_id."' ORDER BY `created_on` DESC LIMIT $limit";
 // die;
      $total_rows = mysqli_query($conn,$query);
-	 $uq="SELECT  order_list.*,m.mobile_number as merchant_mobile,m.name as row,u.user_refferal_code FROM order_list inner join users as m on m.id=order_list.merchant_id left 
+	  $uq="SELECT  order_list.*,m.mobile_number as merchant_mobile,m.name as merchant_name,u.user_refferal_code FROM order_list inner join users as m on m.id=order_list.merchant_id left 
 	join users as u on u.mobile_number=order_list.user_mobile 
 	WHERE order_list.user_id ='$user_id' ORDER BY `created_on` DESC limit 0,1";
 	 // die;     
@@ -1184,7 +1184,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 					 }
 					 $table_type=$row['table_type'];
                     $new_time = explode(" ",$created);
-                    $user_name = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE id ='".$row['merchant_id']."'"));
+                   // $user_name = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE id ='".$row['merchant_id']."'"));
                     //$account_type = mysqli_fetch_assoc(mysqli_query($conn, "SELECT k_merchant FROM k1k2_history WHERE id ='".$row['id']."'"))['account_type'];
                   ?>
                <tbody>
@@ -1212,7 +1212,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 						 <td><?php echo ($row['invoice_no']%1000);?></td>
                     <!--td></td!-->  
                     <td>
-					<a  style="text-decoration:underline;font-weight:bold;font-size:16px;" href="<?php echo $site_url; ?>/view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $row['mobile_number'];?>&oid=<?php echo $row['order_id']; ?>"><?php echo $row['name'];  ?>
+					<a  style="text-decoration:underline;font-weight:bold;font-size:16px;" href="<?php echo $site_url; ?>/view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $row['merchant_mobile_number'];?>&oid=<?php echo $row['order_id']; ?>"><?php echo $row['merchant_name'];  ?>
 					
 					</br></br>
 						<?php 
@@ -1236,7 +1236,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 						
 						  <a href="https://chat.whatsapp.com/J4wcS4riADaBBrvY60c8f3" target="_blank"><img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['merchant_hotline']; ?></a>
 						   <?php } else { ?>
-							<a href="https://api.whatsapp.com/send?phone=<?php  echo $row['mobile_number']?>" target="_blank">
+							<a href="https://api.whatsapp.com/send?phone=<?php  echo $row['merchant_mobile_number']?>" target="_blank">
 							<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo $language['merchant_hotline']; ?></a>
 							<?php } } ?>  
 							
@@ -1284,6 +1284,21 @@ input[name='p_total[]'],input[name='p_price[]']{
                         }
                         ?>
                         <label class= "btn btn-primary status" data-id="<?php echo $row['order_id']; ?>" style="cursor:pointer;background-color:<?php echo $s_color;?>"> <?php echo $sta; ?></label>
+						
+						<?php if($row['ipay_p_id'] != 0){?>
+							<?php if($row['ipay_payment_status'] == 0){?>
+								<br/>
+								 <label class= "btn btn-primary status"  style="background-color:red"> <?php echo $row['ipay_message']; ?></label>
+								 <br/>Transaction Id: 
+								 <?php echo $row['pay_transid']; ?>
+							<?php }?>
+							<?php if($row['ipay_payment_status'] == 1){?>
+								<br/>
+								 <label class= "btn btn-primary status"  style="background-color:green"> Success<?php //echo $row['ipay_message']; ?></label>
+								 <br/>Transaction Id: 
+								 <?php echo $row['pay_transid']; ?>
+							<?php }?>
+						<?php }?>
                      </td> 
 					 <td style="font-size:18px;" class="s_order_detail btn btn-blue" order_id='<?php echo $row['order_id']; ?>'> Detail</td>
 					 <td><?php echo $row['rider_info']; ?></td>
@@ -1444,26 +1459,31 @@ input[name='p_total[]'],input[name='p_price[]']{
 							
 							<td><?php  
 							if($row['special_delivery_amount']>0 && $row['speed_delivery_amount']>0){
-								echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)"."</br>+".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)";
+								//echo '1';
+								echo @number_format($row['od_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)"."</br>+".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)";
 								
 								}
 								else if($row['special_delivery_amount']>0 && $row['speed_delivery_amount']==0){
-								echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)";
+								//echo '2';
+								echo @number_format($row['od_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)";
 									
 								}
 								else if($row['special_delivery_amount']==0 && $row['speed_delivery_amount']>0){
-									echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)";
+									//echo '3';
+									echo @number_format($row['od_extra_charge'],2)."+ ".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)";
 								}
 								else {
-									echo @number_format($row['order_extra_charge'],2); 
+									//echo '4';
+									//echo "..".$row['order_extra_charge'];
+									echo @number_format($row['od_extra_charge'],2); 
 									} ?>
 							</td>
 							<td><?php  echo @number_format($row['membership_discount'],2); ?></td>
 							<td><?php echo @number_format($row['coupon_discount'],2); ?></td>
-							<td><?php  echo @number_format(($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['membership_discount']+$row['coupon_discount']),2); ?></td>
+							<td><?php  echo @number_format(($g_total+$row['od_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['membership_discount']+$row['coupon_discount']),2); ?></td>
 							
 							<td><?php  echo @number_format($row['wallet_paid_amount'],2); ?></td>
-							<td><?php echo @number_format(($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['wallet_paid_amount']+$row['membership_discount']+$row['coupon_discount']), 2); ?></td>   
+							<td><?php echo @number_format(($g_total+$row['od_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['wallet_paid_amount']+$row['membership_discount']+$row['coupon_discount']), 2); ?></td>   
                            
                           
                     <td><?php echo $wal_label;  ?></td>   
@@ -2300,7 +2320,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 				
 										
 											</br>
-										Or become our salesman, earn money by sharing <a href="comission_list.php?vs=<?php echo md5(rand());?>">(learn more)</a>
+										Or become our salesman, earn money by sharing <!--<a href="comission_list.php?vs=<?php echo md5(rand());?>">(learn more)</a>-->
 										</p>
 										
 			</div>
