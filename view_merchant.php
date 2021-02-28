@@ -1923,6 +1923,8 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
             $u_id = $_SESSION['login'];
 
             $rows = mysqli_num_rows(mysqli_query($conn, "SELECT id,user_id,agent_code FROM order_list WHERE agent_code IS NOT NULL AND NOT agent_code = '' AND user_id='$u_id'"));
+			
+			
         }
         else
         {
