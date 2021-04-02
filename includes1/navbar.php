@@ -81,9 +81,10 @@ else
 </style>
 <?php 
 $page_script = $_SERVER['SCRIPT_URL'];
-if($page_script != '/orderlist.php'){?>
-<div class="page_loader"><span id="load"></span></div>
-<?php }?>
+
+//if($page_script != '/orderlist.php'){?>
+<div class="page_loader" style="display:none!important;"><span id="load"></span></div>
+<?php// }?>
 <nav class="navbar">
     <!--<audio id="myAudio" style="display:none;">
       <source src="/notification.mp3" type="audio/mpeg">

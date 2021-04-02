@@ -11,9 +11,9 @@ header("Pragma: no-cache");
 // session_start();
 $current_time = date('Y-m-d H:i:s');
 function ceiling($number, $significance = 1)
-								{
-									return ( is_numeric($number) && is_numeric($significance) ) ? (ceil(round($number/$significance))*$significance) : false;
-								}
+{
+	return ( is_numeric($number) && is_numeric($significance) ) ? (ceil(round($number/$significance))*$significance) : false;
+}
 if(isset($_GET['did']))
 {
 	 $did=$_GET['did'];   
@@ -839,6 +839,8 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
                            
                             <th><?php echo $language['paid_by_wallet'];?></th>
                             <th><?php echo $language['bal_payment'];?></th>
+							
+							<th>Defer Price</th>
                        
                            
                             <th class="product_name test_product"><?php echo $language["product_name"];?></th>
@@ -1192,8 +1194,84 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 								
 									
 							</td>
-							<td  style="font-size:18px;" class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></td>
-						<td style="min-width:167px;"><textarea  style="border:1px solid gray !important;" rows="2" cols="10" order_id="<?php echo $row['id']; ?>" class="form-control rider_info"><?php echo $row['rider_info']." ".$row['rider_name']; ?></textarea></td>
+							<td  style="font-size:18px;" class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?>
+							
+							<!-- payment proof -->
+							<br/>
+					  <?php if($row['payment_proof'] != '' ){?>
+						  <label class="btn-sm btn-yellow" style="background-color:#6ea6d6;margin-top:10px;width:150px">
+						  <a class="fancybox" rel="" href="<?php echo $site_url.'/upload/'.$row['payment_proof'];?>" style="color:white" >
+Payment Proof </a>
+						  </label>
+					  <?php }?>
+							<!-- End Payment Proof-->
+							
+							</td>
+						<td style="min-width:167px;">
+						
+						<!--<textarea  style="border:1px solid gray !important;" rows="2" cols="10" order_id="<?php echo $row['id']; ?>" class="form-control rider_info"><?php echo $row['rider_info']." ".$row['rider_name']; ?></textarea>-->
+						
+						<!-- Start select online Riders-->
+						<?php 
+						$riders_query = "select * from tbl_riders where r_status = 1 and r_online = 1";
+						$ridersFetch = mysqli_query($conn,$riders_query);
+						?>
+						<select name="rider_info" id="rider_info" class="form-control rider_info" order_id="<?php echo $row['id']; ?>">
+						<option value="">Select Riders</option>
+						<?php while($r_value = mysqli_fetch_assoc($ridersFetch)){?>
+							<?php if($row['rider_info'] == $r_value['r_id']){?>
+							<option selected  value="<?php echo $r_value['r_id']; ?>"><?php echo $r_value['r_name']."(".$r_value['r_mobile_number'].")"; ?></option>
+							<?php }else{?>
+							<option   value="<?php echo $r_value['r_id']; ?>"><?php echo $r_value['r_name']."(".$r_value['r_mobile_number'].")"; ?></option>
+							<?php }?>
+						<?php }?>
+						</select>
+						<?php
+						//echo $row['rider_info'];
+						if($row['rider_info'] != '' && $row['rider_info'] != '0'){
+							$rider_od_assign_time = $row['rider_od_assign_time'];
+							$assign_date = new DateTime($rider_od_assign_time);
+							$now = new DateTime(Date('Y-m-d H:i:s'));
+							$interval = $assign_date->diff($now);
+							$hours = $interval->h;
+							$minutes = $interval->i;
+							
+							if($minutes > 3){
+								//echo $minutes."===".$row['rider_accept_id'];
+								if($row['rider_accept_id'] == 0){
+								?>
+								<br/>
+								<span class="btn btn-sm btn-primary">Not Accept Order Yet!!</span>
+								<?php	
+								}
+							}
+						} 
+						
+						if($row['rider_info'] != '' && $row['rider_info'] != '0'){
+							$rider_od_accept_time = $row['rider_od_accept_time'];
+							$accept_time = new DateTime($rider_od_accept_time);
+							$now2 = new DateTime(Date('Y-m-d H:i:s'));
+							$interval_2 = $accept_time->diff($now2);
+							$hours_2 = $interval_2->h;
+							$minutes_2 = $interval_2->i;
+							
+							//echo $minutes_2;
+							if($minutes_2 > 20){
+								//echo $minutes."===".$row['rider_accept_id'];
+								if($row['rider_accept_id'] != 0){
+								?>
+								<br/>
+								<span class="btn btn-sm btn-primary">Not reached at shop !!</span>
+								<?php	
+								}
+							}
+						} 
+						
+						
+						?>
+						<!-- END select online Riders-->
+						
+						</td>
 							<td class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i></td>
 								 <td><?php echo $row['remark_extra']; ?></td>
 							   <td class="table_number_<?php echo $row['id']?>"><?php echo $row['section_name'];?></td>
@@ -1278,14 +1356,47 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 							  
 							<?php } else { $g_total=$total;} ?>
 							<td> <?php  echo @number_format($row['deliver_tax_amount'],2); ?></td>
+							
+							<?php /*
 							<td><?php  if($row['special_delivery_amount']){echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)";} else {echo @number_format($row['order_extra_charge'],2); } ?></td>
+							*/?>
+							
+							<td><?php  
+							if($row['special_delivery_amount']>0 && $row['speed_delivery_amount']>0){
+								//echo '1';
+								echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)"."</br>+".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)";
+								
+								}
+								else if($row['special_delivery_amount']>0 && $row['speed_delivery_amount']==0){
+								//echo '2';
+								echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)";
+									
+								}
+								else if($row['special_delivery_amount']==0 && $row['speed_delivery_amount']>0){
+									//echo '3';
+									echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)";
+								}
+								else {
+									//echo '4';
+									//echo "..".$row['order_extra_charge'];
+									echo @number_format($row['order_extra_charge'],2); 
+									} ?>
+							</td>
+							
+							
 							<td><?php  echo @number_format($row['membership_discount'],2); ?></td>
 							<td><?php echo @number_format($row['coupon_discount'],2); ?></td>
-							<td><?php  echo @number_format(($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount'])-($row['membership_discount']+$row['coupon_discount']),2); ?></td>
+							<td><?php  echo @number_format(($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['membership_discount']+$row['coupon_discount']),2); ?></td>
 							
 							<td><?php  echo @number_format($row['wallet_paid_amount'],2); ?></td>
-							<td><?php echo @number_format(($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount'])-($row['wallet_paid_amount']+$row['membership_discount']+$row['coupon_discount']), 2); ?></td>   
-                           
+							<td><?php echo @number_format(($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['wallet_paid_amount']+$row['membership_discount']+$row['coupon_discount']), 2); ?></td>  
+								
+							<td>
+							Bank price: <input type="text" class="admin_bank_price" name="admin_bank_price" id="admin_bank_price" value="<?php echo $row['admin_bank_price'];?>" order_id="<?php echo $row['id']; ?>"/>
+							<br/>
+							Cash price: <input type="text" class="admin_cash_price" name="admin_cash_price" id="admin_cash_price" value="<?php echo $row['admin_cash_price'];?>" order_id="<?php echo $row['id']; ?>"/>
+							
+							</td>
                           
                             <td class="products_namess product_name_<?php echo $row['id'];?> test_productss" >
 							<?php echo $pro_str;   ?>
@@ -2334,6 +2445,9 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 						</div>
 						
 </body>
+ <link rel="stylesheet" href="css/fancybox.css" type="text/css" media="screen" />
+   <script type="text/javascript" src="js/fancybox.js"></script>
+
 </html>
 <!--
 <script>
@@ -2628,30 +2742,91 @@ var qtyno = $("input[name='qtyno[]']")
 		// alert(cash_id);
 		if(cash_match=="y")
 		$('#ShiftModel').modal('show');
- 	$(".rider_info").focusout(function(e){
+ 	$(".rider_info").change(function(e){
 		var order_id= $(this).attr('order_id');
 		var rider_text=this.value;
+		
 		if(rider_text!='' && order_id)
+		{
+			var cnfrmDelete = confirm("Are You Sure Assign This Riders ?");
+			if(cnfrmDelete==true){
+				  
+				  $.ajax({
+							url :'functions.php',
+							 type:"post",
+							 data:{rider_info:rider_text,method:"riderdetailsave",order_id:order_id},     
+							 dataType:'json',
+							 success:function(result){  
+								var data = JSON.parse(JSON.stringify(result));   
+								if(data.status==true)
+								{
+								}
+								else
+								{alert('Failed to update');	}
+								
+								}
+						});      
+				} else{
+					//$(this).val('');
+					location.reload(); 
+				}
+		}
+		
+		
+	});
+	
+	
+	/* start :: save admin_bank_price & admin_cash_price*/
+	$(".admin_bank_price").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var bank_text = this.value;
+		console.log(bank_text);
+		if(bank_text!='' && order_id)
 		{  
-		  $.ajax({
-						url :'functions.php',
-						 type:"post",
-						 data:{rider_info:rider_text,method:"riderdetailsave",order_id:order_id},     
-						 dataType:'json',
-						 success:function(result){  
-							var data = JSON.parse(JSON.stringify(result));   
-							if(data.status==true)
-							{
-							  // location.reload(true);
-							// alert('Updated');
-							}
-							else
-							{alert('Failed to update');	}
-							
-							}
-				});      
+		    $.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{bank_text:bank_text,method:"admin_bank_price",order_id:order_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{
+					}
+					else
+					{alert('Failed to update');	}
+					}
+			});      
 		} 
 	});
+	
+	$(".admin_cash_price").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var bank_text = this.value;
+		console.log(bank_text);
+		if(bank_text!='' && order_id)
+		{  
+		    $.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{bank_text:bank_text,method:"admin_cash_price",order_id:order_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{
+					}
+					else
+					{alert('Failed to update');	}
+					}
+			});      
+		} 
+	});
+	
+	/* END :: save admin_bank_price & admin_cash_price*/
+	
+	
+	
 	$('.logout_show').click(function() {
 		$('#logout_model').modal('show');
 	});
@@ -4702,3 +4877,12 @@ $('#mobile_number').on("input",function(){
 });
 </script>
 <!-- end of avnish tomar code -->
+
+<script>
+$(document).ready(function() {
+	$(".fancybox").fancybox({
+		openEffect	: 'none',
+		closeEffect	: 'none'
+	});
+});  
+</script>

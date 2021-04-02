@@ -11,6 +11,8 @@ if($_GET['c_id'])
 	$query=mysqli_query($conn,"select * from coupon where id='$c_id'");
 	$c_data=mysqli_fetch_array($query);
 	extract($c_data);
+	
+
 }
 else
 {
@@ -23,12 +25,27 @@ if(isset($_POST['add_coupon_code'])){
  // die;
  if($coupon_code)
  {
-	  $q="INSERT INTO `coupon`(`user_id`, `title`, `coupon_code`, `discount`, `total_min_price`, `total_max_price`, `valid_from`, `valid_to`, `type`, `valid_user`, `remain_user`, `description`, `status`, `created`,`per_user_count`,`coupon_type`)
-	VALUES ('$user_id', '$title', '$coupon_code', '$discount', '$total_min_price', '$total_max_price', '$valid_from', '$valid_to', '$type', '$valid_user', '$valid_user', '$description', '$status', '$created','$per_user_count','uni')";
-	
+	$q="INSERT INTO `coupon`(`user_id`, `title`, `coupon_code`, `discount`, `total_min_price`, `total_max_price`, `valid_from`, `valid_to`, `type`, `valid_user`, `remain_user`, `description`, `status`, `created`,`per_user_count`,`coupon_type`,`coupon_allot`,`specific_user_ids`)
+	VALUES ('$user_id', '$title', '$coupon_code', '$discount', '$total_min_price', '$total_max_price', '$valid_from', '$valid_to', '$type', '$valid_user', '$valid_user', '$description', '1', '$created','$per_user_count','uni','$coupon_allot','$specific_user_ids')";
+   
 	 $insert=mysqli_query($conn,$q);
 	if($insert)
 	{
+		if($coupon_allot==2)
+		{
+			if($specific_user_ids)
+			{
+				$spe_array=explode(',',$specific_user_ids);
+				$coupon_id=mysqli_insert_id($conn);
+				
+				foreach($spe_array as $s)
+				{
+					 $s_ids="INSERT INTO `coupon_specific_allot` (`user_mobile_no`, `coupon_id`) VALUES ('$s','$coupon_id')";
+					$insert2=mysqli_query($conn,$s_ids);
+				}
+				
+			}
+		}
 		$_SESSION['show_msg']="New Coupon Code  added";
 		header('Location:coupon.php');
 	}		
@@ -154,6 +171,22 @@ $a_m="coupon";
 												</select>
 											</div>
 											
+										</div>																		
+									</div>
+									<div class="form-group">
+										<div class="col-md-4">
+												<label><?php echo $language['discount']; ?> Coupon For </label>
+												<select class="form-control" name="coupon_allot" required>
+													<option value="">Select Type</option>
+													<option value=1 <?php if($coupon_allot=="1"){echo "selected";} ?> >All</option>
+													<option value=2 <?php if($coupon_allot=="2"){echo "selected";} ?> >Specific Users</option>
+												</select>
+											</div>
+										<div class="row">
+											<div class="col-md-8">
+												<label>Specific user mobile with comma speartor like 60123115670,60-123321111</label>
+												<textarea class="form-control" name="specific_user_ids" placeholder="Write User Mobile no...."><?php echo $specific_user_ids; ?></textarea>
+											</div>
 										</div>																		
 									</div>
 									<div class="form-group">

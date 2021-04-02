@@ -3,10 +3,33 @@ include("config.php");
 include("IPay88.class.php");
 $ipay88 = new IPay88('M31571'); // MerchantCode
 $ipay88->setMerchantKey('IzXIhfJHUJ'); /*YOUR_MERCHANT_KEY*/
+function gw_send_sms($user,$pass,$sms_from,$sms_to,$sms_msg){           
+    $query_string = "api.aspx?apiusername=".$user."&apipassword=".$pass;
+    $query_string .= "&senderid=".rawurlencode($sms_from)."&mobileno=".rawurlencode($sms_to);
+    $query_string .= "&message=".rawurlencode(stripslashes($sms_msg)) . "&languagetype=1";        
+     $url = "http://gateway.onewaysms.com.au:10001/".$query_string;  
+    
+	// Initialize a CURL session. 
+	$ch = curl_init();  
+	  
+	// Return Page contents. 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+	  
+	//grab URL and pass it to the variable. 
+	curl_setopt($ch, CURLOPT_URL, $url); 
+	  
+	$result = curl_exec($ch); 
+	 $ok = "success"; 
+	      
+    return $ok;  
+} 
 
 if($_POST){
-	
+	if($_POST['login_user_id'] != ''){
 	$logged_user_id = $_POST['login_user_id'];
+	}else{
+		$logged_user_id = 0;
+	}
 	$merchant_id = $_POST['m_id'];
 	$mobile_number = "60".$_POST['mobile_number'];
 	$prd_ids = implode(",",$_POST['p_id']);
@@ -26,7 +49,7 @@ if($_POST){
 	
 	
 	//Create dynamic signature
-	$amount = '1.00';//$_POST['hidden_final_cart_price'];
+	$amount = $_POST['hidden_final_cart_price'];
 	$sign_price = str_replace('.', '', str_replace(',', '', $amount));
 	$signature = '';
 	$signature .= 'IzXIhfJHUJ';
@@ -51,6 +74,10 @@ if($_POST){
 	$res_array['usercontact'] = $mobile_number;
 	$res_array['remark_ipay88'] = "temp_orderid".$last_id ;
 	$res_array['signature'] = $signature;
+	
+	$sms_to = "60123115670";
+	$sms_msg = $mobile_number." tried to do payment(RM ".$amount.") via FPX";
+	$smsend = gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to, $sms_msg); 
 	echo json_encode($res_array);
 }exit;
 ?>

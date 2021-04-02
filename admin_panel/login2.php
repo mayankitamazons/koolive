@@ -11,7 +11,7 @@ if(isset($_POST['login']))
 	$error = "";
 	if($error == "")
 	{
-		 "SELECT id FROM s_admin WHERE username='$email' and password='$password'";
+		
 		
 		$id = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id FROM s_admin WHERE username='$email' AND password2='$password'"))['id'];
 		if($id)

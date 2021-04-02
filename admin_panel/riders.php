@@ -10,58 +10,45 @@ $rec_limit = 40;
 
 /* end  for limit  */
 
- $sql = "select count(id) as total_count from jobs where view='1'";
-
+$sql = "select count(id) as total_count from tbl_riders where r_status='1'";
 $row = mysqli_fetch_assoc(mysqli_query($conn,$sql));
 $rec_limit = 40;
-  $rec_count = $row['total_count'];
+$rec_count = $row['total_count'];
 
 if( isset($_GET{'page'} ) ) {
-            $page = $_GET{'page'};
-            $offset = $rec_limit * $page ;
-         }else {
-            $page = 0;
-            $offset = 0;
-         }
+	$page = $_GET{'page'};
+	$offset = $rec_limit * $page ;
+}else {
+	$page = 0;
+	$offset = 0;
+}
          
 $left_rec = $rec_count - ($page * $rec_limit);
-     $query="select SQL_NO_CACHE * from riders order by id desc LIMIT $offset, $rec_limit";
-
-$user = mysqli_query($conn,$query);
-$total_rows = mysqli_num_rows($user);
+$query="select SQL_NO_CACHE * from tbl_riders where r_status=1 order by r_id desc LIMIT $offset, $rec_limit";
+$riders = mysqli_query($conn,$query);
+$total_rows = mysqli_num_rows($riders);
 $total_page_num = ceil($total_rows / $limit);
-
 $start = ($page - 1) * $limit;
 $end = $page * $limit;
-// $a_m="merchant";
-if(isset($_GET['jobData']) && $_GET['jobData']=="data"){
-	$id = $_GET['id'];
-	$res = mysqli_fetch_assoc(mysqli_query($conn,"select * from jobs where id = '$id'"));
-	// print_r($res);
-	echo json_encode($res);
-	die();
-}
 
 if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 	$id = $_GET['id'];
-	$query = mysqli_query($conn,"UPDATE `riders` SET `status`='n' WHERE id='$id'");
+	$query = mysqli_query($conn,"UPDATE `tbl_riders` SET `r_status`=0 WHERE r_id='$id'");
 	if($query){echo true;}else{die();}
 }
-// to change status in db
-	//  $edate = $row['expire_date_utc'];
-	//  $cdate = strtotime(Date("Y-m-d"));
-	// if($cdate>$edate){$upQuery=mysqli_query($conn,"update jobs set status='Expired'") }
-									
 ?>
 <!DOCTYPE html>
 <html lang="en" style="" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths">
-
 <head>   
     <?php include("includes1/head.php"); ?>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css">
     <link rel="stylesheet" href="/css/dropzone.css" type="text/css" /> 
 	<style>
+	.kType_table_filter{
+		margin-top:10px !important;
+	}
+	
 	.well
 	{
 		min-height: 20px;
@@ -119,6 +106,7 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 	    }
 	}
 	</style>
+	
 </head>
 
 <body class="header-light sidebar-dark sidebar-expand pace-done">
@@ -138,8 +126,9 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 					<h2 class="text-center wallet_h">Rider List</h2>
 					<!-- <button type="button" class="btn btn-danger" onclick="window.location.href='./user.php'">Clear Page</button> -->
 					<button type="button" class="btn btn-danger pull-right" onclick="window.location.href='./addrider.php'">Add Rider</button>
-				<h3> Total Records <?php  echo $rec_count;?></h3>
-				<h4> Total Pages <?php  echo floor($rec_count/$rec_limit);?></h4>
+					<br/>
+				<!--<h5> Total Records <?php  echo $rec_count;?></h5>
+				<h5> Total Pages <?php  echo floor($rec_count/$rec_limit);?></h5>-->
 				<?php if($rec_count>25){ ?>        
 					<p style="float:right;" class="pagecount">   
 					 <?php
@@ -164,33 +153,56 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 					    <thead>
 					        <tr>
                                 <th>SR</th>
+								<th>Image</th>
                                 <th>Rider Name</th>
-                                <th>Rider Code</th>
-                               
+								<th>Vehicle Number</th>
                                 <th>Mobile</th>
-                                <th>status</th>
-                               
-                              
+								<th>Info</th>
 							    <th>Action</th>
 						  </tr>
 					    </thead>
 					   <tbody>
                     	<?php
                         $i=1;
-						$jobs = mysqli_query($conn, "SELECT * from riders order by id desc");
-					
-                    	while($row=mysqli_fetch_assoc($jobs)){
+						$riders = mysqli_query($conn, "SELECT * from tbl_riders where r_status = 1 order by r_id desc");
+					    while($row=mysqli_fetch_assoc($riders)){
 							 ?>
                         	  <tr>
                                 <td><?php echo $i;?></td>
-                                <td><?php echo isset($row['name'])?$row['name']:'';?></td>
-
-                                <td><?php echo isset($row['rider_code'])?$row['rider_code']:'';?></td>
-                                <td><?php echo isset($row['rider_mobile_no'])?$row['rider_mobile_no']:'';?></td>
-								<td><span class="btn btn-primary"><?php if($row['status']=="y"){echo "Active";} else { echo "Inactive";} ?></span></td>
-                        		 <td>
-                                     <a href="javascript:void(0)" class="deleteRecord" jId="<?php echo $row['id']?>">Delete</a>
-                                     <a href="editrider.php?id=<?php echo $row['id']; ?>"  >Edit</a>
+								<td>
+								<?php 
+								if($row['r_image'] != ''){
+								$image_view = $site_url."/admin_panel/uploads/riders/".$row['r_image'];?>
+								<img src="<?php echo $image_view;?>" height="100px" width="100px"/>
+								<?php }?>
+								</td>
+                                <td><?php echo isset($row['r_name'])?$row['r_name']:'';?>
+								<?php if($row['r_online']=="1"){?>
+								<br/>
+								<span class="btn btn-sm btn-primary" style="cursor:auto"><?php echo "Online";?></span>
+								<?php }?>
+								</td>
+								<td><?php echo isset($row['r_vehicle_number'])?$row['r_vehicle_number']:'';?></td>
+                                <td><?php echo isset($row['r_mobile_number'])?$row['r_mobile_number']:'';?></td>
+								<td><?php echo isset($row['r_info'])?$row['r_info']:'';?></td>
+								<td>
+									<a class="mr-4" href="addrider.php?r_id=<?php echo $row['r_id']?>" title="Edit">
+										<i class="fa fa-pencil" aria-hidden="true"></i>
+									</a>
+									<a href="javascript:void(0)" class="deleteRecord mr-4" jId="<?php echo $row['r_id']?>" title="Delete">
+										<i class="fa fa-trash" aria-hidden="true"></i>
+									</a>
+									
+									<a class="mr-4"  target="_blank" href="<?php echo $row['r_link']?>" title="View Rider's page">
+										<i class="fa fa-eye" aria-hidden="true"></i>
+									</a>
+									
+									
+									<a class="mr-4"  target="_blank" href="workingrider.php?r_id=<?php echo $row['r_id']?>" title="View Rider's Hours">
+										<i class="fa fa-clock-o" aria-hidden="true"></i>
+									</a>
+									
+									
                                  </td>
                               </tr>
                     	<?php
@@ -298,7 +310,7 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
   $(".deleteRecord").click(function(){
 
 	var id = $(this).attr('jId');
-	var cnfrmDelete = confirm("Are You Sure Delete This Job ?");
+	var cnfrmDelete = confirm("Are You Sure Delete This Riders ?");
 	if(cnfrmDelete==true){
 		  $.ajax({
 				url:'riders.php',

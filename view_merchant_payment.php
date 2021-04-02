@@ -441,7 +441,10 @@ if (isset($_GET['data']))
 if ($merchant_detail['id'] == 5062 || $merchant_detail['id'] == 1107) $dine_in = "y";
 ?>
 
-<?php $login_user_id = $_SESSION['login'];
+<?php 
+
+$login_user_id = $_SESSION['login'];
+
 
 if (isset($login_user_id))
 {
@@ -3173,7 +3176,9 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                             <div class="col-md-4 merchant_select " style="box-shadow:rgba(0, 0, 0, 0.16) 0px 2px 5px 0px, rgba(0, 0, 0, 0.12) 0px 2px 10px 0px;font-weight: bold; border-right: 1px solid black; padding-top: 2%;padding-bottom:1%; background: red none repeat scroll 0% 0%; color: rgb(255, 255, 255);">
 
                                 <input type="checkbox" id="takeaway_select" checked /> <?php echo $language['delivery']; ?></div>
-                            <?php if ($dine_in == "y")
+                            <?php 
+							
+							if ($dine_in == "y")
         { ?>
                                 <div class="col-md-4 divert" style="box-shadow:rgba(0, 0, 0, 0.16) 0px 2px 5px 0px, rgba(0, 0, 0, 0.12) 0px 2px 10px 0px;font-weight: bold; padding-top: 2%;padding-bottom:1%;background: rgb(81, 210, 183) none repeat scroll 0% 0%; color: rgb(85, 85, 85);">
 
@@ -4198,6 +4203,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 				*/$ipay88->setField('Remark', 'this is testing product and orderid #1');
 				$ipay88->setField('Lang', 'utf-8');
 				$ipay88->setField('ResponseURL', 'https://koofamilies.com/payment_temp_resp.php');
+				//$ipay88->setField('BackendURL', 'https://koofamilies.com/payment_backresp.php');
 
 				$ipay88->generateSignature();
 
@@ -4206,8 +4212,9 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 <?php if (!empty($ipay88_fields)): ?>
     <form action="<?php echo Ipay88::$epayment_url; ?>" method="post" id="ipay88_form">
         <?php foreach ($ipay88_fields as $key => $val): ?>
-          <?php echo $key; ?><input type="hidden" name="<?php echo $key; ?>" id="<?php echo $key; ?>" value="<?php echo $val; ?>" />
+         <input type="hidden" name="<?php echo $key; ?>" id="<?php echo $key; ?>" value="<?php echo $val; ?>" />
         <?php endforeach; ?>
+		<INPUT type="hidden" name="BackendURL" value="https://koofamilies.com/payment_backresp.php">
         <input type="hidden" value="Submit" name="Submit"  />
     </form>
   <?php endif; ?>
@@ -14446,7 +14453,7 @@ $(document).ready(function(){
 				//return false;
 				//$("#paymentid").val();
 				$("#RefNo").val(json.refNo);
-				//$("#Amount").val(final_amount_value);
+				$("#Amount").val(final_amount_value);
 				$("#ProdDesc").val(json.proddesc);
 				$("#UserName").val(json.username);
 				$("#UserEmail").val(json.useremail);

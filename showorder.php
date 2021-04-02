@@ -1,8 +1,38 @@
 <?php 
 include('config.php');
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
+
 if(!isset($_SESSION['s_admin']))
 {
 	header("location:rl.php");
+}
+$shopclose = array();
+if(!function_exists('checktimestatus')){
+	function checktimestatus($time_detail)
+	  {
+		global $shopclose;
+			extract($time_detail);
+ //			 echo "day=$day n=$n";
+// 		 	echo "ctime:".date("H:i");
+			$day=strtolower($day);
+			$currenttime=date("H:i");
+			$n=strtolower(date("l"));
+			//echo $day."===".$n;
+			if(($currenttime >$starttime && $currenttime < $endttime) && ($day==$n)){
+				  //$shop_close_status="y";
+				  //echo 'here';
+				   array_push($shopclose,"y");
+			}
+			else
+			{ 
+			  //$shop_close_status="n";
+			  array_push($shopclose,"n");
+			}
+			//print_R($shopclose);
+			return $shopclose;//$shop_close_status;
+	  }	
 }
 if(empty($_GET['ms']))
 {
@@ -14,10 +44,11 @@ exit();
 }
 if (empty($_SESSION["langfile"])) { $_SESSION["langfile"] = "english"; }
     require_once ("languages/".$_SESSION["langfile"].".php");
- $query="select  order_list.*,u.name as merchant_name,u.mobile_number as merchant_mobile_number,u.foodpanda_link,u.vendor_comission as vc_user, u.price_hike as price_hike_user from order_list inner join 
+ $query="select  order_list.*,u.shop_open,u.working_text,u.working_text_chiness,u.not_working_text_chiness,u.not_working_text,u.name as merchant_name,u.mobile_number as merchant_mobile_number,u.whatsapp_link,u.foodpanda_link,u.vendor_comission as vc_user, u.price_hike as price_hike_user from order_list inner join 
 users as u on u.id=order_list.merchant_id  order by order_list.id desc limit 0,100";
 
 
+#echo $query;
 $current_time = date('Y-m-d H:i:s');
 function ceiling($number, $significance = 1)
 {
@@ -68,6 +99,7 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
         <th>User Detail</th>
         <th>Merchant Name</th>
         <th>Food Panda Link</th>
+        <th>Whatsapp  Link</th>
         <th>Merchant Mobile Number</th>
        
 
@@ -254,14 +286,213 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 
 </td>
 							
-		<td  style="font-size:18px;" class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></td>
+		<td  style="font-size:18px;" >
+		
+		<span class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></span>
+		
+		<!--- info Merchant Button-->
+		<br/>
+		<?php 
+		$created_on = $row['created_on'];
+		$old_date = new DateTime($created_on);
+		$now = new DateTime(Date('Y-m-d H:i:s'));
+		//echo date('Y-m-d H:i:s');
+		//echo '<br/>';
+		$interval = $old_date->diff($now);
+		$years = $interval->y;
+		$months = $interval->m;
+		$days = $interval->d;
+		$hours = $interval->h;
+		$minutes = $interval->i;
+		$alert_show = 'no';
+		if($years == 0 && $months == 0 && $days== 0 && $hours == 0 ){
+			if($minutes <= 7){
+			}else{
+				//echo 'ALERT';
+				$alert_show = 'yes';
+			}
+		}else{
+			//echo 'ALERT2';
+			$alert_show = 'yes';
+		}
+		/*echo $interval->d.' days<br>';
+		echo $interval->y.' years<br>';
+		echo $interval->m.' months<br>';
+		echo $interval->h.' hours<br>';
+		echo $interval->i.' minutes<br>';
+		echo $interval->s.' seconds<br>';
+		*/?>
+
+<style>
+.blink_info_button {
+  -webkit-border-radius: 10px;
+  
+  -webkit-animation: glowing 1500ms infinite;
+  -moz-animation: glowing 1500ms infinite;
+  -o-animation: glowing 1500ms infinite;
+  animation: glowing 1500ms infinite;
+}
+@-webkit-keyframes glowing {
+  0% { background-color: #B20000; -webkit-box-shadow: 0 0 3px #B20000; }
+  50% { background-color: #FF0000; -webkit-box-shadow: 0 0 40px #FF0000; }
+  100% { background-color: #B20000; -webkit-box-shadow: 0 0 3px #B20000; }
+}
+
+@-moz-keyframes glowing {
+  0% { background-color: #B20000; -moz-box-shadow: 0 0 3px #B20000; }
+  50% { background-color: #FF0000; -moz-box-shadow: 0 0 40px #FF0000; }
+  100% { background-color: #B20000; -moz-box-shadow: 0 0 3px #B20000; }
+}
+
+@-o-keyframes glowing {
+  0% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+  50% { background-color: #FF0000; box-shadow: 0 0 40px #FF0000; }
+  100% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+}
+
+@keyframes glowing {
+  0% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+  50% { background-color: #FF0000; box-shadow: 0 0 40px #FF0000; }
+  100% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+}
+.edit_info_merchant{
+	padding: 10px;
+	cursor:pointer;
+}
+.green{
+	color:green;
+}
+.red{
+	color:red;
+}
+</style>
+		<?php if($row['inform_mecnt_status'] != '0'){
+			
+			if($row['inform_mecnt_status'] == 1){
+				$labels = 'Inform already';
+				$lab_cls = 'green';
+			}else if($row['inform_mecnt_status'] == 2){
+				$labels = 'Cannot reach  merchant, now inform customer rider is otw checking';
+				$lab_cls = 'red';
+			}else if($row['inform_mecnt_status'] == 3){
+				$labels = 'Rider buy himself';
+				$lab_cls = 'green';
+			} 
+			?>
+		
+			<span class="<?php echo $lab_cls;?>" order_id='<?php echo $row['id']; ?>' >
+			<?php echo $labels;?>
+			<br/>
+			<?php if($row['info_merchant_admin'] != ''){?>
+			Admin: <?php echo $row['info_merchant_admin'];?>
+			<?php }?>
+			</span>
+			
+			
+			<span class="edit_info_merchant info_merchant" invoice_no='<?php echo $row['invoice_no']; ?>'   order_id='<?php echo $row['id']; ?>' title="Edit" inform_mecnt_status="<?php echo $row['inform_mecnt_status'];?>" admin_name="<?php echo $row['info_merchant_admin'];?>" ><i class="fa fa-pencil"></i></span>
+			<br/>
+			<b>Invoice No:</b> # <?php echo $row['invoice_no']; ?>
+			
+		<?php }else{
+					$class_alert = '';
+				if($alert_show == 'yes'){
+					$class_alert = 'blink_info_button';
+				}
+			?>
+						
+			<span class="btn btn-danger info_merchant <?php echo $class_alert;?>" invoice_no='<?php echo $row['invoice_no']; ?>' order_id='<?php echo $row['id']; ?>' >Admin 名字成功通知商家</span>
+			<br/>
+			<b>Invoice No:</b> # <?php echo $row['invoice_no']; ?>
+		<?php }?>
+		<!-- END---->
+		</td>
+		
+	
 		<td style="min-width:190px;"><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="rider_info" placeholder="%" class="form-control rider_info" value="<?php echo $row['rider_info'];?>"></td>
         	<td class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i></td>
 		<td>
 		<?php if($r['user_name']){  echo $r['user_name']."- ".$r['user_mobile']; } else { echo $r['user_mobile'];} ?>
+		
+		<?php if($row['ipay_p_id'] != 0){?>
+							<?php if($row['ipay_payment_status'] == 0){?>
+								<br/>
+								 <label class= "btn btn-primary status"  style="background-color:red"> <?php echo $row['ipay_message']; ?></label>
+								 <br/>Transaction Id: 
+								 <?php echo $row['pay_transid']; ?>
+							<?php }?>
+							<?php if($row['ipay_payment_status'] == 1){?>
+								<br/>
+								 <label class= "btn btn-primary status"  style="background-color:green"> Success<?php //echo $row['ipay_message']; ?></label>
+								 <br/>Transaction Id: 
+								 <?php echo $row['pay_transid']; ?>
+							<?php }?>
+						<?php }?>
 		</td>
-		<td><?php echo $r['merchant_name']; ?></td>
+		<td><?php echo $r['merchant_name']; ?>
+		
+		<br/>
+		
+		<?php 
+		$english_word = str_replace("Our food delivery hours are from","",$r['working_text']);
+		
+		//if($_GET['s']){
+			
+			if($r['shop_open']){
+			$today_day=strtolower(date('l'));
+		    $sql1="SELECT  * FROM `timings` WHERE day='$today_day' and `merchant_id` =".$r['merchant_id'];
+			//echo $sql1;
+			$result1 = mysqli_query($conn,$sql1);
+			
+			while($ti=mysqli_fetch_assoc($result1))
+				{ 
+					//echo '1';
+					$time_detail['day']=$ti['day'];
+					$time_detail['starttime']=$ti['start_time'];
+					$time_detail['endttime']=$ti['end_time'];
+					//echo '1';
+					$tworking=checktimestatus($time_detail);  
+					//exit;
+				}
+				//echo count($tworking);
+				if(count($tworking)>0)
+				{
+					foreach($tworking as $w)
+					{  
+						if($w=="y")
+						{
+							$working="y";
+							break;
+						}
+						else
+						{
+							//echo '1';
+							$working="n";
+						}
+					}
+				}
+				else
+				{
+					//echo '2';
+					$working="n";
+				}
+				$shopclose=[];
+		}  
+		
+		
+		//}
+			//echo "==".$working;					
+		?>
+		<?php if($working == 'n'){?>
+		<p style="color:red">请改正如果错误，</p>
+		<p style="color:red">外送时间是: <?php echo $english_word." ".$r['not_working_text'];?></p>
+		<?php }else{?>
+		<p >请改正如果错误，</p>
+		<p >外送时间是: <?php echo $english_word." ".$r['not_working_text'];?></p>
+		
+		<?php }?>
+		</td>
 		<td><a href="<?php echo $r['foodpanda_link']; ?>" target="_blank"><?php echo $r['foodpanda_link']; ?></a></td>   
+		<td><a href="<?php echo $r['whatsapp_link']; ?>" target="_blank"><?php echo $r['whatsapp_link']; ?></a></td>   
         <td><?php echo $r['merchant_mobile_number']; ?></td>
      
 
@@ -292,6 +523,55 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 							</div>						
 							</div>
 						</div>
+						
+												
+<!-- info merchnt modal-->
+<div id="myModal_infomerchnt" class="modal fade" role="dialog" style="margin-top:12%;">
+    <div class="modal-dialog" style="width:46%">
+        <div class="modal-content" style="width:50%" >
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h5 class="modal-title">Info Merchant</h5>
+            </div>
+            <div class="modal-body">
+				
+				<p> Invoice No: #<span class="invoice_no"></span></p>
+				<br/>
+				<p> order No: #<span class="order_no"></span></p>
+				<br/>
+				<form name="infomerchnt_form" id="infomerchnt_form" class="form-inline" >
+					
+					<div class="form-group mx-sm-3 mb-2">
+						<select name="inform_mecnt_status" id="inform_mecnt_status" class="form-control">
+							<option value="">Select Status</option>
+							<option value="1">Inform already</option>
+							<option value="2">Cannot reach  merchant, now inform customer rider is otw checking</option>
+							<option value="3">Rider buy himself</option>
+						</select>
+					</div>
+					
+					
+					
+					<div class="form-group mx-sm-3 mb-2">
+						<input type="text" class="form-control" name="code_admin_code" id="code_admin_code" placeholder="Admin 名字成功通知商家">
+						<input type="hidden" class="" name="admin_order_id" id="admin_order_id" value=""/>
+					</div>
+					<button type="button" class="btn btn-primary mb-2 submit_admin_popup">Submit</button>
+					<br/>
+					<img src="img/ajax-loader.gif" class="ajx_lang_resp" style="display:none;padding-top:10px"/>
+					&nbsp;
+					<span class="please_wait_text" style="display:none;color:red">Please wait ....</span>
+				</form>
+            </div>
+			<div class="modal-footer">
+		
+			</div>
+        </div>
+    </div>
+</div>
+
+
+<!-- END-->	
 <script>
 function generatetokenno(length) {
    var result           = '';
@@ -377,6 +657,63 @@ $(document).ready(function(){
 				60000);      
 	   
 });
+
+
+/* Info Merchnt*/
+$(document).ready(function(){
+	$(".info_merchant").click(function(){
+		var ordeid = $(this).attr('order_id');
+		var admin_name = $(this).attr('admin_name');
+		var invoice_no = $(this).attr('invoice_no');
+		var inform_mecnt_status = $(this).attr('inform_mecnt_status');
+		$(".invoice_no").html(invoice_no);
+		$(".order_no").html(ordeid);
+		
+		console.log("+++"+inform_mecnt_status);
+		$("#code_admin_code").val(admin_name);
+		$("#admin_order_id").val(ordeid);
+		$("#inform_mecnt_status").val(inform_mecnt_status);
+
+		$("#myModal_infomerchnt").modal('show');
+	});
+	
+	$(".submit_admin_popup").click(function(){
+		var ordeid = $("#admin_order_id").val();
+		var admin_code = $("#code_admin_code").val();
+		var inform_mecnt_status = $("#inform_mecnt_status").val();
+		//console.log("+++"+admin_code);
+		$("#inform_mecnt_status").css('border','');
+		
+		if(inform_mecnt_status == ''){
+			$("#inform_mecnt_status").focus();
+			$("#inform_mecnt_status").css('border','1px solid red');
+			return false;
+		}else{
+			
+			var cnfrm = confirm("Are You Sure Inform the Merchant?");
+			if(cnfrm==true){
+				
+				$(".ajx_lang_resp").show();
+				$(".please_wait_text").show();
+				
+				$.ajax({
+					url:'functions.php',
+					method:'POST',
+					data:{data:'infomerchnt',admin_code:admin_code,ordeid:ordeid,inform_mecnt_status:inform_mecnt_status},
+					success:function(res){
+						//console.log(res);
+						location.reload(true);
+						$(".ajx_lang_resp").hide();
+						$(".please_wait_text").hide();
+					}
+				});	
+			}
+			
+		}
+	});
+});
+/*END*/
+
 
 </script>
 </body>

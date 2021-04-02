@@ -287,8 +287,18 @@ if($product['pro_ct'] > 0) { ?>
 							$k=0;
 							 // print_R($sub_product_arr[$k]);
 							foreach ($sub_product_ids as $key => $sub_id) {
+								if($hike_per>0)
+								{
+									$new_sub_price_direct =(($hike_per / 100) * $sub_price_arr[$k])+ $sub_price_arr[$k];
+									$new_sub_price=ceiling($new_sub_price_direct,0.05);
+								}
+								else
+								{
+									$new_sub_price=$sub_price_arr[$k];
+								} 
+								$new_sub_price=number_format($new_sub_price, 2);
 								 
-								  $item = array( "id" => $sub_id, "name" =>$sub_product_arr[$k], "product_id" => $row['id'],'product_price' => $sub_price_arr[$k]);
+								  $item = array( "id" => $sub_id, "name" =>$sub_product_arr[$k], "product_id" => $row['id'],'product_price' => $new_sub_price);
 									array_push($result, $item);
 								$k++;	
 							 }

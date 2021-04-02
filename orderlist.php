@@ -41,6 +41,23 @@
 // }
   // print_R($_SESSION);
   // die;
+  //echo "==".$_SESSION['tmp_login'];
+  //unset($_SESSION['tmp_login']);
+  
+  
+  //https://www.koofamilies.com/orderlist.php?payid=12085&vs=6f493a2d2155f8e45b670d8b3b0d938f
+  
+  if($_GET['payid']){
+	  session_start();
+	  $_SESSION['tmp_login'] = $_GET['payid'];
+	  $merchant_id = $_SESSION['AjaxCartResponse']['merchant_id'];
+	  unset($_SESSION['AjaxCartResponse'][$merchant_id]);  
+					
+	  $limit="0,1";	
+	  //echo $_GET['payid']."==".$_SESSION['tmp_login'];exit;
+	  
+  }
+  //echo "==".$_SESSION['tmp_login'];
    if(isset($_SESSION['tmp_login']))
    {
 	 $user_id=$_SESSION['tmp_login']; 
@@ -56,10 +73,11 @@
 	   $user_id=$_SESSION['login'];
    }
   
-     $query="SELECT  order_list.id as order_id,order_list.order_extra_charge as od_extra_charge,order_list.*, sections.name as section_name,m.id as merchant_id,m.name as merchant_name,m.mobile_number as merchant_mobile_number,m.*,u.id as user_id,u.* FROM order_list left join 
+     $query="SELECT  order_list.id as order_id,order_list.order_extra_charge as od_extra_charge,order_list.*, sections.name as section_name,m.id as merchant_id,m.name as merchant_name,m.sst_rate as m_sst_rate,m.mobile_number as merchant_mobile_number,m.*,u.id as user_id,u.* FROM order_list left join 
 	 sections on order_list.section_type = sections.id inner join users as m on m.id=order_list.merchant_id  left 
 	join users as u on u.mobile_number=order_list.user_mobile 
 	 WHERE order_list.user_id ='".$user_id."' ORDER BY `created_on` DESC LIMIT $limit";
+	 //echo $query;
 // die;
      $total_rows = mysqli_query($conn,$query);
 	  $uq="SELECT  order_list.*,m.mobile_number as merchant_mobile,m.name as merchant_name,u.user_refferal_code FROM order_list inner join users as m on m.id=order_list.merchant_id left 
@@ -1175,7 +1193,7 @@ input[name='p_total[]'],input[name='p_price[]']{
                     $date=date_create($created);
 					$section_type=$row['section_type'];
 					 $section_id=$section_type;
-					 $sstper=$row['sst_rate'];
+					 $sstper=$row['m_sst_rate'];
 					 $merchant_id=$user_order['merchant_id'];
 					 if($section_type)
 					 {
@@ -1494,7 +1512,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 							</td!-->                
                      <?php if($row['status'] == 4 || $row['status']==5 || $row['status'] ==2 ){ ?>
                        
-                      <td><a target="_blank" href="print.php?id=<?php echo $row['id'];?>&merchant=<?php echo $row['merchant_id']?>">Print</a></td>
+                      <td><a target="_blank" href="print.php?id=<?php echo $row['order_id'];?>&merchant=<?php echo $row['merchant_id']?>">Print</a></td>
                       <!--td><?php echo $user_name['account_type']; ?></td!-->
                       <?php }?>   
                   </tr>

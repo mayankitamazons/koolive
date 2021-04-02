@@ -324,7 +324,9 @@ exit();
 							<th>Particular</th>
 							<th>Merchant id</th>
 							<th style="min-width:200px;">Name</th>
+							<th> </th>
 							<th style="min-width:200px;">Food Panda Link</th>
+							<th style="min-width:200px;">Whats app Link</th>
 							
 							<th>Normal Image</th>
 							<th>Banner Image <small> (800*400)</small></th>
@@ -370,10 +372,15 @@ exit();
                         
 								<td style="min-width:200px;">
 								<textarea  style="min-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control real_name" rows="5" name="name"><?php if(isset($row['name'])){ echo $row['name']; }?></textarea></td>
+								<td><a target="_blank" href="../orderview.php?did=<?php echo $row['id'];?>"><i style="font-size: 60px;" class="fa fa-info"></i></a>
+								</td>
                                 
 								<td style="min-width:200px;">
 								<textarea  style="min-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control foodpanda_link" rows="5" name="foodpanda_link"><?php if(isset($row['foodpanda_link'])){ echo $row['foodpanda_link']; }?></textarea>
 								</td>  
+								<td style="min-width:200px;">
+								<textarea  style="min-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control whatsapp_link" rows="5" name="whatsapp_link"><?php if(isset($row['whatsapp_link'])){ echo $row['whatsapp_link']; }?></textarea>
+								</td> 
                                 
 								<td><form action="" method="post" enctype="multipart/form-data">
 								  <input name="image" type="file">
@@ -718,6 +725,32 @@ exit();
 						url :'../functions.php',
 						 type:"post",
 						 data:{foodpanda_link:foodpanda_link,method:"adminprofilesave",selected_user_id:selected_user_id},     
+						 dataType:'json',
+						 success:function(result){  
+							var data = JSON.parse(JSON.stringify(result));   
+							if(data.status==true)
+							{  
+							   // location.reload(true);
+								
+							}
+							else
+							{alert('Failed to update');	}
+							
+							}
+				});      
+		}
+		});
+		$(".whatsapp_link").focusout(function(e){
+		var selected_user_id= $(this).attr('selected_user_id');
+		// var selected_user_id= $(this).attr('selected_user_id');
+		var whatsapp_link=this.value; 
+		// alert(name);  
+		if(whatsapp_link!='' && selected_user_id)    
+		{    
+		  $.ajax({
+						url :'../functions.php',
+						 type:"post",
+						 data:{whatsapp_link:whatsapp_link,method:"adminprofilesave",selected_user_id:selected_user_id},     
 						 dataType:'json',
 						 success:function(result){  
 							var data = JSON.parse(JSON.stringify(result));   

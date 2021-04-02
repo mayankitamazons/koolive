@@ -1,0 +1,173 @@
+ALTER TABLE `order_list` ADD `payment_proof` VARCHAR(255) NOT NULL AFTER `free_delivery_prompt`;
+
+
+orderview.php
+ <link rel="stylesheet" href="css/fancybox.css" type="text/css" media="screen" />
+   <script type="text/javascript" src="js/fancybox.js"></script>
+
+
+<!-- payment proof -->
+<br/>
+<?php /*if($row['payment_proof'] != '' ){?>
+<label class="btn-sm btn-yellow" style="background-color:#6ea6d6;margin-top:10px;width:150px">
+<a class="fancybox" rel="" href="<?php echo $site_url.'/upload/'.$row['payment_proof'];?>" style="color:white" >
+Payment Proof </a>
+</label>
+<?php }*/?>
+<!-- End Payment Proof-->
+
+<script>
+$(document).ready(function() {
+	$(".fancybox").fancybox({
+		openEffect	: 'none',
+		closeEffect	: 'none'
+	});
+});  
+</script>
+
+
+Orderlist.php
+
+if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
+	$orderid = $_GET['orderid'];
+	$sql_proof = "UPDATE `order_list` SET `payment_proof` = '' WHERE `order_list`.`id` = ".$orderid;
+	$result_proof = mysqli_query($conn,$sql_proof);   
+	if($result_proof){echo true;}else{die();}
+}
+
+<link rel="stylesheet" href="./css/font-awesome.min.css">
+
+
+<!--- Payment proof --->
+					  <br/>
+					  <?php /*if($row['payment_proof'] != '' ){?>
+						  <label class="btn-sm btn-yellow" style="background-color:#6ea6d6;margin-top:10px;width:150px">
+						  <a class="fancybox" rel="" href="<?php echo $site_url.'/upload/'.$row['payment_proof'];?>" style="color:white" >
+Payment Proof </a>
+						  <a href="javascript:void(0)" class="delete_paymentproof" orderid='<?php echo $row['order_id']; ?>' style="color:white"><i class="fa fa-trash" style="margin-left:20px"> </i></a>
+						  </label>
+					  <?php }else{?>
+						<form method="post" id="image-form_<?php echo $row['order_id']; ?>" class="image-form" orderid='<?php echo $row['order_id']; ?>' enctype="multipart/form-data" onSubmit="return false;">
+							<div class="form-group">
+								<input type="file" name="file" class="file" style="visibility: hidden;position: absolute;">
+								<div class="input-group my-3">
+									<input type="text" class="form-control payment_proof" disabled placeholder="Payment Proof" id="file" style="width:130px">
+									<br/>
+									<div class="input-group-append">
+										<button type="button" class="browse btn btn-primary">Browse...</button>
+									</div>
+									&nbsp;&nbsp;
+									<input type="submit" name="submit" value="Upload" class="btn btn-danger">
+								</div>
+							</div>
+						</form>
+					  <?php }*/?>
+						
+			
+					  <!--- END payment proof -->
+					  
+					     
+<link rel="stylesheet" href="css/fancybox.css" type="text/css" media="screen" />
+<script type="text/javascript" src="js/fancybox.js"></script>
+
+
+
+<!--payment proof--->
+<script>
+jQuery(document).on("click", ".browse", function() {
+		  var file = $(this)
+			.parent()
+			.parent()
+			.parent()
+			.find(".file");
+		  file.trigger("click");
+		});
+		
+$('input[type="file"]').change(function(e) {
+	  var fileName = e.target.files[0].name;
+	  $(".payment_proof").val(fileName);
+
+	  /*var reader = new FileReader();
+	  reader.onload = function(e) {
+		// get loaded data and render thumbnail.
+		document.getElementById("preview").src = e.target.result;
+	  };
+	  // read the image file as a data URL.
+	  reader.readAsDataURL(this.files[0]);*/
+});
+
+
+$(document).ready(function(e) {
+		  $(".image-form").on("submit", function() {
+			var orderid = $(this).attr('orderid');  
+			console.log(orderid);
+			$("#msg").html('<div class="alert alert-info"><i class="fa fa-spin fa-spinner"></i> Please wait...!</div>');
+			var formData = new FormData(this);
+			//formData.append('file', this.files[0]);
+			formData.append('orderid', orderid);
+			var payment_proof = $(".payment_proof").val();
+			$(".payment_proof").css('border','');
+			if( payment_proof == ''){
+				$(".payment_proof").css('border','1px solid red');
+				return false;
+			}else{
+				$.ajax({
+				  type: "POST",
+				  url: "action_image_ajax.php",
+				  data: formData,
+				  //data: new FormData(this), // Data sent to server, a set of key/value pairs (i.e. form fields and values)
+				  contentType: false, // The content type used when sending data to the server.
+				  cache: false, // To unable request pages to be cached
+				  processData: false, // To send DOMDocument or non processed data file it is set to false
+				  success: function(data) {
+					  location.reload(true);
+					  $("#image-form_"+orderid).hide();
+					  //$(".bank_detail").append('<label class="btn-sm btn-yellow" style="background-color:#6ea6d6;margin-top:10px;width:150px">Payment Proof<a href="javascript:void(0)" class="delete_paymentproof" orderid='+orderid+'><i class="fa fa-trash" style="margin-left:20px"> </i></a></label>');
+					/*if (data == 1 || parseInt(data) == 1) {
+					  $("#msg").html(
+						'<div class="alert alert-success"><i class="fa fa-thumbs-up"></i> Data updated successfully.</div>'
+					  );
+					} else {
+					  $("#msg").html(
+						'<div class="alert alert-info"><i class="fa fa-exclamation-triangle"></i> Extension not good only try with <strong>GIF, JPG, PNG, JPEG</strong>.</div>'
+					  );
+					}*/
+				  },
+				  error: function(data) {
+					$("#msg").html(
+					  '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> There is some thing wrong.</div>'
+					);
+				  }
+				});
+			}
+			
+});
+
+$(".delete_paymentproof").click(function(){
+	var orderid = $(this).attr('orderid');
+	var cnfrmDelete = confirm("Are You Sure want to delete this payment proof?");
+	if(cnfrmDelete==true){
+		  $.ajax({
+			url:'orderlist.php',
+			method:'GET',
+			data:{
+				data:'deleteRecord',
+				orderid:orderid
+				},
+			success:function(res){location.reload(true);}
+		  });	
+	}
+});
+
+$(document).ready(function() {
+	$(".fancybox").fancybox({
+		openEffect	: 'none',
+		closeEffect	: 'none'
+	});
+});  
+
+});
+		
+		
+</script>
+<!-- End Payment proof-->

@@ -1,0 +1,189 @@
+ALTER TABLE `order_list` ADD `info_merchant_admin` VARCHAR(255) NOT NULL COMMENT 'Name of admin who inform the merchnt about order' AFTER `admin_cash_price`, ADD `info_merchant_admin_datetime` DATETIME NOT NULL COMMENT 'time of admin who inform the merchnt about order' AFTER `info_merchant_admin`;
+
+ALTER TABLE `order_list` ADD `inform_mecnt_status` INT(11) NOT NULL COMMENT '1=>Inform already,2=>Cannot reach merchant, now inform customer rider is otw checking,3=>Rider buy himself' AFTER `info_merchant_admin_datetime`;
+
+
+functions.php
+/*Start : info merchnt*/
+/* info merchnt update*/
+if(isset($_POST['data']) && ($_POST['data'] == "infomerchnt")){ 
+	$admin_code = $_POST['admin_code'];
+	$ordeid = $_POST['ordeid'];
+	$inform_mecnt_status = $_POST['inform_mecnt_status'];
+	$info_merchant_admin_datetime = date('Y-m-d H:i:s');
+	$query_info = "update order_list SET info_merchant_admin='".$admin_code."', info_merchant_admin_datetime='".$info_merchant_admin_datetime."', inform_mecnt_status='".$inform_mecnt_status."' where id =".$ordeid;
+	//echo $query_info;
+	mysqli_query($conn,$query_info);
+	die;
+}
+/* END*/
+
+
+
+showorder.php
+/* Info Merchnt*/
+$(document).ready(function(){
+	$(".info_merchant").click(function(){
+		var ordeid = $(this).attr('order_id');
+		$("#admin_order_id").val(ordeid);
+		$("#myModal_infomerchnt").modal('show');
+	});
+	
+	$(".submit_admin_popup").click(function(){
+		var ordeid = $("#admin_order_id").val();
+		var admin_code = $("#code_admin_code").val();
+		
+		console.log("+++"+admin_code);
+		$("#code_admin_code").css('border','');
+		
+		if(admin_code == ''){
+			$("#code_admin_code").focus();
+			$("#code_admin_code").css('border','1px solid red');
+			return false;
+		}else{
+			
+			var cnfrm = confirm("Are You Sure Inform the Merchant?");
+			if(cnfrm==true){
+				
+				$(".ajx_lang_resp").show();
+				$(".please_wait_text").show();
+				
+				$.ajax({
+					url:'functions.php',
+					method:'POST',
+					data:{data:'infomerchnt',admin_code:admin_code,ordeid:ordeid},
+					success:function(res){
+						//console.log(res);
+						location.reload(true);
+						$(".ajx_lang_resp").hide();
+						$(".please_wait_text").hide();
+					}
+				});	
+			}
+			
+		}
+	});
+});
+/*END*/
+
+showorder.php
+	<td  style="font-size:18px;" >
+		
+		<span class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></span>
+		
+		<!--- info Merchant Button-->
+		<br/>
+		<?php 
+		$created_on = $row['created_on'];
+		$old_date = new DateTime($created_on);
+		$now = new DateTime(Date('Y-m-d H:i:s'));
+		//echo date('Y-m-d H:i:s');
+		//echo '<br/>';
+		$interval = $old_date->diff($now);
+		$years = $interval->y;
+		$months = $interval->m;
+		$days = $interval->d;
+		$hours = $interval->h;
+		$minutes = $interval->i;
+		$alert_show = 'no';
+		if($years == 0 && $months == 0 && $days== 0 && $hours == 0 ){
+			if($minutes <= 15){
+			}else{
+				//echo 'ALERT';
+				$alert_show = 'yes';
+			}
+		}else{
+			//echo 'ALERT2';
+			$alert_show = 'yes';
+		}
+		/*echo $interval->d.' days<br>';
+		echo $interval->y.' years<br>';
+		echo $interval->m.' months<br>';
+		echo $interval->h.' hours<br>';
+		echo $interval->i.' minutes<br>';
+		echo $interval->s.' seconds<br>';
+		*/?>
+
+<style>
+.blink_info_button {
+  -webkit-border-radius: 10px;
+  
+  -webkit-animation: glowing 1500ms infinite;
+  -moz-animation: glowing 1500ms infinite;
+  -o-animation: glowing 1500ms infinite;
+  animation: glowing 1500ms infinite;
+}
+@-webkit-keyframes glowing {
+  0% { background-color: #B20000; -webkit-box-shadow: 0 0 3px #B20000; }
+  50% { background-color: #FF0000; -webkit-box-shadow: 0 0 40px #FF0000; }
+  100% { background-color: #B20000; -webkit-box-shadow: 0 0 3px #B20000; }
+}
+
+@-moz-keyframes glowing {
+  0% { background-color: #B20000; -moz-box-shadow: 0 0 3px #B20000; }
+  50% { background-color: #FF0000; -moz-box-shadow: 0 0 40px #FF0000; }
+  100% { background-color: #B20000; -moz-box-shadow: 0 0 3px #B20000; }
+}
+
+@-o-keyframes glowing {
+  0% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+  50% { background-color: #FF0000; box-shadow: 0 0 40px #FF0000; }
+  100% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+}
+
+@keyframes glowing {
+  0% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+  50% { background-color: #FF0000; box-shadow: 0 0 40px #FF0000; }
+  100% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+}</style>
+		<?php if($row['info_merchant_admin'] != ''){?>
+			<span class="" order_id='<?php echo $row['id']; ?>'>Admin: <?php echo $row['info_merchant_admin'];?></span>
+		<?php }else{
+					$class_alert = '';
+				if($alert_show == 'yes'){
+					$class_alert = 'blink_info_button';
+				}
+			?>
+						
+			<span class="btn btn-danger info_merchant <?php echo $class_alert;?>" order_id='<?php echo $row['id']; ?>'> Inform Merchant</span>
+		<?php }?>
+		<!-- END---->
+		</td>
+		
+		
+		
+		
+		
+
+						
+<!-- info merchnt modal-->
+<div id="myModal_infomerchnt" class="modal fade" style="">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h5 class="modal-title">Info Merchant</h5>
+            </div>
+            <div class="modal-body">
+				<form name="infomerchnt_form" id="infomerchnt_form" class="form-inline" >
+					<div class="form-group mx-sm-3 mb-2">
+						<input type="text" class="form-control" name="code_admin_code" id="code_admin_code" placeholder="Code">
+						<input type="hidden" class="" name="admin_order_id" id="admin_order_id" value=""/>
+					</div>
+					<button type="button" class="btn btn-primary mb-2 submit_admin_popup">Submit</button>
+					<br/>
+					<img src="img/ajax-loader.gif" class="ajx_lang_resp" style="display:none;padding-top:10px"/>
+					&nbsp;
+					<span class="please_wait_text" style="display:none;color:red">Please wait ....</span>
+				</form>
+            </div>
+			<div class="modal-footer">
+		
+			</div>
+        </div>
+    </div>
+</div>
+
+
+<!-- END-->			
+	

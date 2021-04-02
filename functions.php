@@ -61,7 +61,7 @@ if(isset($_POST['method']) && ($_POST['method'] == "onesingalidsave")){
 }  
 if(isset($_POST['method']) && ($_POST['method'] == "riderdetailsave")){ 
 	 extract($_POST);
-	 $up=mysqli_query($conn,"update order_list set rider_info='$rider_info' where id='$order_id'");
+	 $up=mysqli_query($conn,"update order_list set rider_info='$rider_info', rider_od_assign_time= '".date('Y-m-d H:i:s')."' where id='$order_id'");
 	 if($up)
 		$res = array('msg'=>"Rider detail updated",'status'=>true);	
 	else
@@ -69,6 +69,41 @@ if(isset($_POST['method']) && ($_POST['method'] == "riderdetailsave")){
 	echo json_encode($res);
 	die;
 }
+/* start :: save admin_bank_price & admin_cash_price*/
+if(isset($_POST['method']) && ($_POST['method'] == "admin_bank_price")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set admin_bank_price='".$_POST['bank_text']."' where id='$order_id'");
+	 if($up)
+		$res = array('msg'=>"Bank price updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "admin_cash_price")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set admin_cash_price='".$_POST['bank_text']."' where id='$order_id'");
+	 if($up)
+		$res = array('msg'=>"Cash price updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+/* END :: save admin_bank_price & admin_cash_price*/
+/*Start : info merchnt*/
+/* info merchnt update*/
+if(isset($_POST['data']) && ($_POST['data'] == "infomerchnt")){ 
+	$admin_code = $_POST['admin_code'];
+	$ordeid = $_POST['ordeid'];
+	$inform_mecnt_status = $_POST['inform_mecnt_status'];
+	$info_merchant_admin_datetime = date('Y-m-d H:i:s');
+	$query_info = "update order_list SET info_merchant_admin='".$admin_code."', info_merchant_admin_datetime='".$info_merchant_admin_datetime."', inform_mecnt_status='".$inform_mecnt_status."' where id =".$ordeid;
+	//echo $query_info;
+	mysqli_query($conn,$query_info);
+	die;
+}
+/* END*/
 if(isset($_POST['method']) && ($_POST['method'] == "adminfeedbacksave")){
 	 extract($_POST);
 	 $user_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM feedback WHERE  feedback_id='".$selected_id."'"));

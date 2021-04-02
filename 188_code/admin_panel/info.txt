@@ -1,0 +1,51 @@
+CREATE TABLE `tbl_riders` (
+  `r_id` int NOT NULL,
+  `r_name` varchar(255) NOT NULL,
+  `r_mobile_number` varchar(15) NOT NULL,
+  `r_info` text NOT NULL,
+  `r_online` int NOT NULL COMMENT '1=>online 0=>offline',
+  `r_online_datetime` datetime NOT NULL,
+  `r_offline_time` datetime NOT NULL COMMENT 'save time of offline',
+  `r_link` text NOT NULL,
+  `r_createddate` datetime NOT NULL,
+  `r_updateddate` datetime NOT NULL,
+  `r_status` int NOT NULL COMMENT '1=>Active 2=>Delete'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE `order_list` CHANGE `rider_info` `rider_info` INT NOT NULL COMMENT 'primary key of tbl_riders,';
+
+ALTER TABLE `order_list` ADD `rider_accept_id` INT NOT NULL COMMENT 'rider id , which is accept order' AFTER `rider_info`, ADD `rider_od_accept_time` DATETIME NOT NULL COMMENT 'rider accept the order timezone' AFTER `rider_accept_id`;
+
+ALTER TABLE `order_list` ADD `rider_od_time_count` VARCHAR(255) NOT NULL COMMENT 'save minutes when accept order' AFTER `rider_od_accept_time`;
+
+ALTER TABLE `order_list` ADD `rider_od_assign_time` DATETIME NOT NULL COMMENT 'save time zone when assign rider' AFTER `rider_od_accept_time`;
+
+
+#1 /var/www/live/admin_panel/riders.php
+#2 /var/www/live/admin_panel/add_riders.php
+
+#4 /var/www/live/riders.php
+#3 /var/www/live/orderview.php
+
+Line: 1212 to 1227
+<!-- Start select online Riders-->
+<?php 
+$riders_query = "select * from tbl_riders where r_status = 1 and r_online = 1";
+$ridersFetch = mysqli_query($conn,$riders_query);
+?>
+<select name="rider_info" id="rider_info" class="form-control rider_info" order_id="<?php echo $row['id']; ?>">
+<option value="">Select Riders</option>
+<?php while($r_value = mysqli_fetch_assoc($ridersFetch)){?>
+	<?php if($row['rider_info'] == $r_value['r_id']){?>
+	<option selected  value="<?php echo $r_value['r_id']; ?>"><?php echo $r_value['r_name']."(".$r_value['r_mobile_number'].")"; ?></option>
+	<?php }else{?>
+	<option   value="<?php echo $r_value['r_id']; ?>"><?php echo $r_value['r_name']."(".$r_value['r_mobile_number'].")"; ?></option>
+	<?php }?>
+<?php }?>
+</select>
+<!-- END select online Riders-->
+
+
+#4 Function.php
+$up=mysqli_query($conn,"update order_list set rider_info='$rider_info', rider_od_assign_time= '".date('Y-m-d H:i:s')."' where id='$order_id'");

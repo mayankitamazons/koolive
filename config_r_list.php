@@ -84,7 +84,7 @@ else if(isset($sort_by) && $sort_by=="sort_distance" && $type=="popular"){
 
 } 
 else if(isset($sort_by) && $sort_by=="sort_name" && $type=="sort_name"){
-/*		$sql = "SELECT   users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open,
+	/*$sql = "SELECT   users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open,
 			users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness	
 			FROM users 
 			left JOIN service on users.service_id = service.id 
@@ -92,31 +92,27 @@ else if(isset($sort_by) && $sort_by=="sort_name" && $type=="sort_name"){
 			LEFT JOIN timings on users.id=timings.merchant_id   
 			WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' $LOCSQL
 			group by users.id 
-			order by users.name asc";  
-			
-		echo $sql;
-			echo '<br/>';
+			order by users.name asc";  */
 
+/*
 $sql = "SELECT   users.name, (SELECT count(*) FROM `timings` WHERE day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time and `merchant_id` = users.id) as opening, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open,users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness	
 	FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid 
 	LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' $LOCSQL
 	group by users.id order by `opening` DESC, users.name asc";
+	*/
 	
-	echo '<br>';
-	echo '<br>';
-	echo $sql;
+	if($_SESSION['langfile'] == 'malaysian'){
+		$lang_shop = " and users.default_lang !='2'";
+	}else{
+		$lang_shop = "";
+	}
 	
-	echo '<br>';
-	
-	echo '<br>';*/
-
-	$sql = "(SELECT users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time and users.city='Kulai' group by users.id order by users.name asc)
+	$sql = "(SELECT users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop." and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time $LOCSQL group by users.id order by users.name asc)
 UNION ALL
-(SELECT users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' and day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN start_time and end_time and users.city='Kulai' group by users.id order by users.name asc
+(SELECT users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop." and day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN start_time and end_time $LOCSQL group by users.id order by users.name asc
 )";  
 			
-			
-	//echo $sql;
+	
 
 	$sql_count = "SELECT   COUNT(users.name) as count
 			FROM users 
@@ -336,9 +332,9 @@ if($count > 0){
 											echo "<br><img src='https://koofamilies.sirv.com/about_images/motor.jpg'/> ".$d_str;
 										} 
 									?>
-									<?php /*if($working=="n"){?>
-									<span class="loc_open">Shop closed</span>   
-									<?php } */?>
+									<?php if($working=="n"){?>
+									<!--<span class="loc_open">Shop closed</span>  -->
+									<?php } ?>
 								</a>
 	                        </li>
 						</ul>
