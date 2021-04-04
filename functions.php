@@ -69,6 +69,20 @@ if(isset($_POST['method']) && ($_POST['method'] == "riderdetailsave")){
 	echo json_encode($res);
 	die;
 }
+/*Start : info merchnt*/
+/* info merchnt update*/
+if(isset($_POST['data']) && ($_POST['data'] == "infomerchnt")){ 
+	$admin_code = $_POST['admin_code'];
+	$ordeid = $_POST['ordeid'];
+	$inform_mecnt_status = $_POST['inform_mecnt_status'];
+	$info_merchant_admin_datetime = date('Y-m-d H:i:s');
+	$query_info = "update order_list SET info_merchant_admin='".$admin_code."', info_merchant_admin_datetime='".$info_merchant_admin_datetime."', inform_mecnt_status='".$inform_mecnt_status."' where id =".$ordeid;
+	//echo $query_info;
+	mysqli_query($conn,$query_info);
+	die;
+}
+/* END*/
+
 if(isset($_POST['method']) && ($_POST['method'] == "adminfeedbacksave")){
 	 extract($_POST);
 	 $user_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM feedback WHERE  feedback_id='".$selected_id."'"));
@@ -118,6 +132,14 @@ if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){
 		else
 		{
 			$foodpanda_link=$user_data['foodpanda_link'];
+		}
+		if($whatsapp_link)
+		{
+			
+		}
+		else
+		{
+			$whatsapp_link=$user_data['whatsapp_link'];
 		}
 		if($google_map!='')
 		{
@@ -181,7 +203,7 @@ if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){
 		$popular_restro=$user_data['popular_restro'];
 		if($show_merchant=='')
 		$show_merchant=$user_data['show_merchant'];
-        $s=mysqli_query($conn,"update users set balance_inr='$balance_inr',foodpanda_link='$foodpanda_link',google_map='$google_map',latitude='$mapLat',longitude='$mapLong',name='$name',order_extra_charge='$order_extra_charge',sst_rate='$sst_rate',custom_msg_time='$custom_msg_time',price_hike='$price_hike',popular_restro='$popular_restro',show_merchant='$show_merchant',special_price_value='$special_price_value',vendor_comission='$vendor_comission',delivery_rate='$delivery_rate',delivery_take_up='$delivery_take_up',delivery_dive_in='$delivery_dive_in' where id='$selected_user_id'");
+        $s=mysqli_query($conn,"update users set whatsapp_link='$whatsapp_link',balance_inr='$balance_inr',foodpanda_link='$foodpanda_link',google_map='$google_map',latitude='$mapLat',longitude='$mapLong',name='$name',order_extra_charge='$order_extra_charge',sst_rate='$sst_rate',custom_msg_time='$custom_msg_time',price_hike='$price_hike',popular_restro='$popular_restro',show_merchant='$show_merchant',special_price_value='$special_price_value',vendor_comission='$vendor_comission',delivery_rate='$delivery_rate',delivery_take_up='$delivery_take_up',delivery_dive_in='$delivery_dive_in' where id='$selected_user_id'");
 		
 		if($s)
 		{

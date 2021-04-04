@@ -154,7 +154,10 @@ $error= "The merchant's phone number is incorrect.";
     margin-bottom: 10px;
 } 
 
- 
+	.st_merchnt form{
+		min-height: 0px !important;
+	}
+	 
       </style>
 	   <meta name="theme-color" content="#317EFB"/>
    </head>
@@ -219,7 +222,7 @@ $error= "The merchant's phone number is incorrect.";
                  <!-- third part-->
                                    <!-- qr scanning code new--->
 								   <!-- merchant name-->
-                  <div class="well col-md-8 mer_nam" id="mer_name_2">
+                  <div class="well col-md-8 mer_nam st_merchnt" id="mer_name_2">
                      <h4><?php echo $language['merchant_name']; ?></h4>
                      <form action="structure_merchant.php" method="post">
                         <?php 

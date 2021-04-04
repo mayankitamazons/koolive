@@ -38,7 +38,9 @@ $profile_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM admins WHE
     <ul class="nav in side-menu">
 
 		 <li><a href="merchant.php" class="<?php if($a_m=="merchant"){ echo "active";} ?>">Merchant</a></li>
-		 <li><a href="foodpanda.php" class="<?php if($a_m=="f_panda"){ echo "active";} ?>">Food Panda </a></li>   
+		 <li><a href="foodpanda.php" class="<?php if($a_m=="f_panda"){ echo "active";} ?>">Food Panda </a></li> 
+ <li><a href="territory.php" class="<?php if($a_m=="territory"){ echo "active";} ?>">Territory</a></li>
+		 
 				 <li><a href="user.php" class="<?php if($a_m=="member"){ echo "active";} ?>">Member</a></li>
 				 <li><a href="sms_setting.php" class="<?php if($a_m=="sms_setting"){ echo "active";} ?>">Sms Setting</a></li>
 				 <li><a href="coupon.php" class="<?php if($a_m=="coupon"){ echo "active";} ?>">Coupon code</a></li>

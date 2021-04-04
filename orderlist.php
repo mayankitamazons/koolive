@@ -1,5 +1,6 @@
 <?php
    include("config.php");
+  // ini_set('display_errors', 1); ini_set('display_startup_errors', 1); error_reporting(E_ALL); 
 	$me="orderlist";
 	if($_SESSION['new_order']=="y")
 	{
@@ -9,6 +10,16 @@
 	{
 		$new_order="n";
 	}
+	
+		
+if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
+	$orderid = $_GET['orderid'];
+	$sql_proof = "UPDATE `order_list` SET `payment_proof` = '' WHERE `order_list`.`id` = ".$orderid;
+	$result_proof = mysqli_query($conn,$sql_proof);   
+	if($result_proof){echo true;}else{die();}
+}
+
+
 	function ceiling($number, $significance = 1)
 	{
 		return ( is_numeric($number) && is_numeric($significance) ) ? (ceil(round($number/$significance))*$significance) : false;
@@ -41,6 +52,23 @@
 // }
   // print_R($_SESSION);
   // die;
+  //echo "==".$_SESSION['tmp_login'];
+  //unset($_SESSION['tmp_login']);
+  
+  
+  //https://www.koofamilies.com/orderlist.php?payid=12085&vs=6f493a2d2155f8e45b670d8b3b0d938f
+  
+  if($_GET['payid']){
+	  session_start();
+	  $_SESSION['tmp_login'] = $_GET['payid'];
+	  $merchant_id = $_SESSION['AjaxCartResponse']['merchant_id'];
+	  unset($_SESSION['AjaxCartResponse'][$merchant_id]);  
+					
+	  $limit="0,1";	
+	  //echo $_GET['payid']."==".$_SESSION['tmp_login'];exit;
+	  
+  }
+  //echo "==".$_SESSION['tmp_login'];
    if(isset($_SESSION['tmp_login']))
    {
 	 $user_id=$_SESSION['tmp_login']; 
@@ -56,10 +84,11 @@
 	   $user_id=$_SESSION['login'];
    }
   
-     $query="SELECT  order_list.id as order_id,order_list.order_extra_charge as od_extra_charge,order_list.*, sections.name as section_name,m.id as merchant_id,m.name as merchant_name,m.mobile_number as merchant_mobile_number,m.*,u.id as user_id,u.* FROM order_list left join 
+     $query="SELECT  order_list.id as order_id,order_list.order_extra_charge as od_extra_charge,order_list.*, sections.name as section_name,m.id as merchant_id,m.name as merchant_name,m.sst_rate as m_sst_rate,m.mobile_number as merchant_mobile_number,m.*,u.id as user_id,u.* FROM order_list left join 
 	 sections on order_list.section_type = sections.id inner join users as m on m.id=order_list.merchant_id  left 
 	join users as u on u.mobile_number=order_list.user_mobile 
 	 WHERE order_list.user_id ='".$user_id."' ORDER BY `created_on` DESC LIMIT $limit";
+	 //echo $query;
 // die;
      $total_rows = mysqli_query($conn,$query);
 	  $uq="SELECT  order_list.*,m.mobile_number as merchant_mobile,m.name as merchant_name,u.user_refferal_code FROM order_list inner join users as m on m.id=order_list.merchant_id left 
@@ -251,6 +280,8 @@ $months = floor(($diff - $years * 365*60*60*24)
 <!DOCTYPE html>
 <html lang="en" style="" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths">
    <head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+      <link rel="stylesheet" href="./css/font-awesome.min.css">
+
      <style type="text/css">
 			
 
@@ -1090,6 +1121,97 @@ input[name='p_total[]'],input[name='p_price[]']{
                                 <img style="max-width:140px;max-height:40px;" src="appstore.png" alt="">
             </a> 	 			
 			</h3>  
+			<br/>
+			
+			<?php /* start -- 10 minute delivery countdown*/?>			
+				<style>
+@media only screen and (max-width: 761px)
+.tip {
+    margin: 3em 0 2em;
+}
+
+.tab_fr {
+   /* margin-left: 2.5em!important;*/
+}
+
+.tip {
+    background-color: #fffbce;
+    padding: 0 2em 2em;
+   /* margin: 3.2em 14em 2em 0;*/
+    display: table;
+	margin-top:40px;
+}
+
+span.title_fr {
+    background: #ffed00;
+    padding: .6em 1.5em;
+    font-weight: 600;
+    font-size: 1.13em;
+    top: -17px;
+    left: -28px;
+    display: inline-block;
+    position: relative;
+}
+
+span.title_fr:before {
+    font-family: FontAwesome;
+    content: "\f0d1";
+    margin-right: 7px;
+    font-size: larger;
+}
+
+.tip p {
+    margin: 0!important;
+}
+#ten-countdown{
+	color:red;
+	font-weight:bold;
+}
+</style>
+
+			<?php 
+				
+				$rows_od = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM order_list WHERE user_id= ".$_SESSION['login']." order by created_on desc limit 0,1"));
+				//echo "SELECT * FROM order_list WHERE user_id= ".$_SESSION['login']." order by created_on desc limit 0,1";
+				$currenttimestamp = date('Y-m-d H:i:s'); //
+				$free_delivery_popup = 'no'; 
+				if(count($rows_od) > 0 ){
+					$free_delivery_prompt = $rows_od['free_delivery_prompt'];
+					$created_timestamp_od = $rows_od['created_on'];
+					$curr_time_od = strtotime($currenttimestamp); //currenttime
+					$od_timestmp = strtotime($created_timestamp_od); //ordertime
+					
+					$diff =  round(abs($od_timestmp - $curr_time_od) / 60,2);
+					$chk_time = 15 - $diff;
+					
+					if($free_delivery_prompt == 0){
+						// free delivery
+						if($diff < 15){
+							// free delivery
+							$free_delivery_popup = 'yes';
+						}
+						if($diff > 15){
+							//  NO free delivery
+							$free_delivery_popup = 'no';
+						}
+					}
+		
+				}
+				//echo "====".$free_delivery_popup;
+			
+			?>
+<?php if($free_delivery_popup == 'yes'){?>
+	<br/>
+	<div class="tip tab_fr hurry_div" style="display:block">
+	<span class="title_fr">Hurry Up!!</span>
+	<p>Congratulation!! Place your free Delivery order within <span id="ten-countdown"></span> Minutes</p>
+	<br/>
+	<a href="index.php?vs=<?=md5(rand()) ?>" Class="btn btn-sm btn-primary" style="background-color:green;border-color:green;color:white"> Place Next Order Now!!</a>
+	</div>
+
+<?php }?>
+<?php 	/* end -- 10 minute delivery countdown*/?>
+
             <?php
                $dt = new DateTime();
                $today =  $dt->format('Y-m-d');
@@ -1175,7 +1297,7 @@ input[name='p_total[]'],input[name='p_price[]']{
                     $date=date_create($created);
 					$section_type=$row['section_type'];
 					 $section_id=$section_type;
-					 $sstper=$row['sst_rate'];
+					 $sstper=$row['m_sst_rate'];
 					 $merchant_id=$user_order['merchant_id'];
 					 if($section_type)
 					 {
@@ -1302,7 +1424,35 @@ input[name='p_total[]'],input[name='p_price[]']{
                      </td> 
 					 <td style="font-size:18px;" class="s_order_detail btn btn-blue" order_id='<?php echo $row['order_id']; ?>'> Detail</td>
 					 <td><?php echo $row['rider_info']; ?></td>
-					  <td><span class="btn btn-yellow bank_detail" merchant_id="<?php echo $row['merchant_id']; ?>"  row="<?php echo $row['name']; ?>" style="color:black;">Bank Detail</span></td>
+					  <td><span class="btn btn-yellow bank_detail" merchant_id="<?php echo $row['merchant_id']; ?>"  row="<?php echo $row['name']; ?>" style="color:black;">Bank Detail</span>
+					  <!--- Payment proof --->
+					  <br/>
+					  <?php 
+					  //echo "===".$row['payment_proof'];
+					  if($row['payment_proof'] != '' ){?>
+						  <label class="btn-sm btn-yellow" style="background-color:#6ea6d6;margin-top:10px;width:150px">
+						  <a class="fancybox" rel="" href="<?php echo $site_url.'/upload/'.$row['payment_proof'];?>" style="color:white" >
+Payment Proof </a>
+						  <a href="javascript:void(0)" class="delete_paymentproof" orderid='<?php echo $row['order_id']; ?>' style="color:white"><i class="fa fa-trash" style="margin-left:20px"> </i></a>
+						  </label>
+					  <?php }else{?>
+						<form method="post" id="image-form_<?php echo $row['order_id']; ?>" class="image-form" orderid='<?php echo $row['order_id']; ?>' enctype="multipart/form-data" onSubmit="return false;">
+							<div class="form-group">
+								<input type="file" name="file" class="file" style="visibility: hidden;position: absolute;">
+								<div class="input-group my-3">
+									<input type="text" class="form-control payment_proof" disabled placeholder="Payment Proof" id="file" style="width:130px">
+									<br/>
+									<div class="input-group-append">
+										<button type="button" class="browse btn btn-primary">Browse...</button>
+									</div>
+									&nbsp;&nbsp;
+									<input type="submit" name="submit" value="Upload" class="btn btn-danger btn_proof_upload">
+								</div>
+							</div>
+						</form>
+					  <?php }?>
+					  <!--- END payment proof -->
+					  </td>
 					   <td>
 					  <?php if($row['status']){
 						    				    if(($row['status']!=1 && $row['reviewed']==1 ))
@@ -1449,6 +1599,9 @@ input[name='p_total[]'],input[name='p_price[]']{
 								$incsst=ceiling($incsst,0.05);
 								 $incsst=@number_format($incsst, 2);
 							    $g_total=@number_format($total+$incsst, 2);
+								$territory_price_array = explode("|",$row['territory_price']);
+								$terr_id = $territory_price_array[0];
+								$territory_price = $territory_price_array[1];
 							 ?>
 							  <td><?php echo $incsst; ?></td>
 							    <td><?php  echo $g_total;?></td>
@@ -1460,30 +1613,41 @@ input[name='p_total[]'],input[name='p_price[]']{
 							<td><?php  
 							if($row['special_delivery_amount']>0 && $row['speed_delivery_amount']>0){
 								//echo '1';
-								echo @number_format($row['od_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)"."</br>+".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)";
+								echo @number_format($row['od_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)"."</br>+".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)"."+".@number_format($territory_price,2);
+								
 								
 								}
 								else if($row['special_delivery_amount']>0 && $row['speed_delivery_amount']==0){
 								//echo '2';
-								echo @number_format($row['od_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)";
+								echo @number_format($row['od_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)"."+".@number_format($territory_price,2);
 									
 								}
 								else if($row['special_delivery_amount']==0 && $row['speed_delivery_amount']>0){
 									//echo '3';
-									echo @number_format($row['od_extra_charge'],2)."+ ".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)";
+									echo @number_format($row['od_extra_charge'],2)."+ ".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)"."+".@number_format($territory_price,2);
 								}
 								else {
 									//echo '4';
 									//echo "..".$row['order_extra_charge'];
-									echo @number_format($row['od_extra_charge'],2); 
+									echo @number_format($row['od_extra_charge'],2)."<br/>+<br/>".@number_format($territory_price,2); 
 									} ?>
+									
+								<?php if($terr_id == '-1'){?>
+								<label class="btn-sm btn-primary" style="cursor:pointer;background-color:red"> Check AreaName</label>
+								<?php }?>
+									
+								<?php if($row['free_delivery_prompt'] == 1){?>
+								<label class="btn-sm btn-primary" style="cursor:pointer;background-color:green"> 10-minute free delivery</label>
+								<?php }?>
+								
+								
 							</td>
 							<td><?php  echo @number_format($row['membership_discount'],2); ?></td>
 							<td><?php echo @number_format($row['coupon_discount'],2); ?></td>
-							<td><?php  echo @number_format(($g_total+$row['od_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['membership_discount']+$row['coupon_discount']),2); ?></td>
+							<td><?php  echo @number_format(($g_total+$row['od_extra_charge']+$territory_price+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['membership_discount']+$row['coupon_discount']),2); ?></td>
 							
 							<td><?php  echo @number_format($row['wallet_paid_amount'],2); ?></td>
-							<td><?php echo @number_format(($g_total+$row['od_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['wallet_paid_amount']+$row['membership_discount']+$row['coupon_discount']), 2); ?></td>   
+							<td><?php echo @number_format(($g_total+$row['od_extra_charge']+$territory_price+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['wallet_paid_amount']+$row['membership_discount']+$row['coupon_discount']), 2); ?></td>   
                            
                           
                     <td><?php echo $wal_label;  ?></td>   
@@ -1494,7 +1658,7 @@ input[name='p_total[]'],input[name='p_price[]']{
 							</td!-->                
                      <?php if($row['status'] == 4 || $row['status']==5 || $row['status'] ==2 ){ ?>
                        
-                      <td><a target="_blank" href="print.php?id=<?php echo $row['id'];?>&merchant=<?php echo $row['merchant_id']?>">Print</a></td>
+                      <td><a target="_blank" href="print.php?id=<?php echo $row['order_id'];?>&merchant=<?php echo $row['merchant_id']?>">Print</a></td>
                       <!--td><?php echo $user_name['account_type']; ?></td!-->
                       <?php }?>   
                   </tr>
@@ -2191,8 +2355,10 @@ input[name='p_total[]'],input[name='p_price[]']{
 										Name: Chong Woi Joon  </br>
 									Bank name: Hong Leong Bank </br>
 									Bank account : 22850076859 </br>
-									<b style="font-size:18px;">Boostpay Number 6012-3115670</b>  
+									<b style="font-size:18px;">Boostpay Number 6012-3115670</b> 
+									
 									</br>
+									<b style="margin:0px">Touch & Go account ( Chong Woi joon): <b>+6012-3115670</b></b>
 									<?php if($_SESSION["langfile"]=="chinese"){ echo "请写商家店名在“银行参考”";} else {?>
 									    (Please write <span id="bank_merchant_name"></span>   in "bank reference")
 									 <?php } ?>
@@ -2407,6 +2573,8 @@ input[name='p_total[]'],input[name='p_price[]']{
   </div>
 </div>
    <a href="https://chat.whatsapp.com/LdvomJRqXoIG6aXqsf5PgX" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
+ <link rel="stylesheet" href="css/fancybox.css" type="text/css" media="screen" />
+   <script type="text/javascript" src="js/fancybox.js"></script>
 
    </body>
 </html>
@@ -3500,5 +3668,140 @@ setInterval(function(){
                     });   
           }
 </script>
-         
+         <script>
+function countdown( elementName, minutes, seconds )
+{
+    var element, endTime, hours, mins, msLeft, time;
+    function twoDigits( n )
+    {
+        return (n <= 9 ? "0" + n : n);
+    }
+	var x = 1;
+    function updateTimer()
+    {
+        msLeft = endTime - (+new Date);
+		if ( msLeft < 1000 ) {
+            element.innerHTML = "0:00";
+			$(".hurry_div").html('');
+			$(".hurry_div").css('background-color','none');
+        } else {
+			time = new Date( msLeft );
+            hours = time.getUTCHours();
+            mins = time.getUTCMinutes();
+            element.innerHTML = (hours ? hours + ':' + twoDigits( mins ) : mins) + ':' + twoDigits( time.getUTCSeconds() );
+            setTimeout( updateTimer, time.getUTCMilliseconds() + 500 );
+        }
+		x++;
+    }
+    element = document.getElementById( elementName );
+    endTime = (+new Date) + 1000 * (60*minutes + seconds) + 500;
+    updateTimer();
+}
+jQuery(document).ready(function(){
+	countdown( "ten-countdown", <?php echo $chk_time;?>, 0 );
+});
+</script>
+
+ 
 <!--nikhil--->
+
+
+<!--payment proof--->
+<script>
+jQuery(document).on("click", ".browse", function() {
+		  var file = $(this)
+			.parent()
+			.parent()
+			.parent()
+			.find(".file");
+		  file.trigger("click");
+		});
+		
+$('input[type="file"]').change(function(e) {
+	  var fileName = e.target.files[0].name;
+	  $(".payment_proof").val(fileName);
+
+	  /*var reader = new FileReader();
+	  reader.onload = function(e) {
+		// get loaded data and render thumbnail.
+		document.getElementById("preview").src = e.target.result;
+	  };
+	  // read the image file as a data URL.
+	  reader.readAsDataURL(this.files[0]);*/
+});
+
+
+$(document).ready(function(e) {
+		  $(".image-form").on("submit", function() {
+			var orderid = $(this).attr('orderid');  
+			console.log(orderid);
+			$("#msg").html('<div class="alert alert-info"><i class="fa fa-spin fa-spinner"></i> Please wait...!</div>');
+			var formData = new FormData(this);
+			//formData.append('file', this.files[0]);
+			formData.append('orderid', orderid);
+			var payment_proof = $(".payment_proof").val();
+			$(".payment_proof").css('border','');
+			if( payment_proof == ''){
+				$(".payment_proof").css('border','1px solid red');
+				return false;
+			}else{
+				$.ajax({
+				  type: "POST",
+				  url: "action_image_ajax.php",
+				  data: formData,
+				  //data: new FormData(this), // Data sent to server, a set of key/value pairs (i.e. form fields and values)
+				  contentType: false, // The content type used when sending data to the server.
+				  cache: false, // To unable request pages to be cached
+				  processData: false, // To send DOMDocument or non processed data file it is set to false
+				  success: function(data) {
+					  location.reload(true);
+					  //$("#image-form_"+orderid).hide();
+					  //$(".bank_detail").append('<label class="btn-sm btn-yellow" style="background-color:#6ea6d6;margin-top:10px;width:150px">Payment Proof<a href="javascript:void(0)" class="delete_paymentproof" orderid='+orderid+'><i class="fa fa-trash" style="margin-left:20px"> </i></a></label>');
+					/*if (data == 1 || parseInt(data) == 1) {
+					  $("#msg").html(
+						'<div class="alert alert-success"><i class="fa fa-thumbs-up"></i> Data updated successfully.</div>'
+					  );
+					} else {
+					  $("#msg").html(
+						'<div class="alert alert-info"><i class="fa fa-exclamation-triangle"></i> Extension not good only try with <strong>GIF, JPG, PNG, JPEG</strong>.</div>'
+					  );
+					}*/
+				  },
+				  error: function(data) {
+					$("#msg").html(
+					  '<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> There is some thing wrong.</div>'
+					);
+				  }
+				});
+			}
+			
+});
+
+$(".delete_paymentproof").click(function(){
+	var orderid = $(this).attr('orderid');
+	var cnfrmDelete = confirm("Are You Sure want to delete this payment proof?");
+	if(cnfrmDelete==true){
+		  $.ajax({
+			url:'orderlist.php',
+			method:'GET',
+			data:{
+				data:'deleteRecord',
+				orderid:orderid
+				},
+			success:function(res){location.reload(true);}
+		  });	
+	}
+});
+
+$(document).ready(function() {
+	$(".fancybox").fancybox({
+		openEffect	: 'none',
+		closeEffect	: 'none'
+	});
+});  
+
+});
+		
+		
+</script>
+<!-- End Payment proof-->

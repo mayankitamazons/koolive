@@ -9,7 +9,16 @@ $rec_limit = 20;
 
 $row = mysqli_fetch_assoc(mysqli_query($conn,$sql));
 $rec_limit = 20;
-  
+ if(isset($_POST['search']))
+ {
+	 $selected_city=$_POST['m_id'];
+	$l="python3 foodpanda/select_city_all_restaurants.py ".$selected_city;
+	$command = escapeshellcmd($l);
+	$c_restro = shell_exec($command);
+	$c_restro = json_decode($c_restro, TRUE);
+
+											
+ }
 	
 
 ?>
@@ -97,7 +106,7 @@ $rec_limit = 20;
                 <div class="container-fluid" id="main-content" style="padding-top:25px">
 					<h2 class="text-center wallet_h">Food Panda Scrapper</h2>
 					<div class="col-md-3">
-					        <form action="" method="post">
+					        <form action="#" method="post">
 								<div class="form-group">
 									<?php 
 									 
@@ -107,13 +116,18 @@ $rec_limit = 20;
 									?>
 										<label for="tags_merchant">Choose a City</label>
 									
-									
+										<?php
+											$command = escapeshellcmd('python3 foodpanda/allcityname.py');
+											$city_list = shell_exec($command);
+											$city_list = json_decode($city_list, TRUE);
+											
+										
+										?>
 									<select class="tags_merchant_select" name='m_id'>
 									    <option value='-1'>Select City</option>
 										<?php 
-										   $city_list=['kuala-lumper'];
 											foreach($city_list as $c){ ?>
-									       <option  value="<?php  echo $c;?>"><?php echo $c;?></option>
+									       <option <?php if($_POST['m_id']==$c){echo "selected";} ?> value="<?php  echo $c;?>"><?php echo $c;?></option>
 											<?php } ?>
 
 									</select>
@@ -128,232 +142,42 @@ $rec_limit = 20;
 							
 					<button type="button" class="btn btn-danger" onclick="window.location.href='./merchant.php'">Clear Page</button>
 					
-				<h3> Total Records <?php  echo $rec_count;?></h3>
-				<h4> Total Pages <?php  echo floor($rec_count/$rec_limit);?></h4>
-				<?php if($rec_count>25){ ?>        
-					<p style="float:right;" class="pagecount">   
-					 <?php
-					      
-								if( $page > 0 ) {
-									$last = $page - 2;
-  									echo "<a href = \"$_PHP_SELF?"."page=$last\">Last $rec_limit Records</a> |";
-									echo "<a href = \"$_PHP_SELF?"."page=$page\">Next $rec_limit Records</a> |";
-  									
-								 }else if( $page == 0 ) {
-									 echo "<a href = \"$_PHP_SELF?"."page=1\">Next $rec_limit Records</a> |";
-								
-								 }else if( $left_rec < $rec_limit ) {
-									$last = $page - 2;
-									 echo "<a href = \"$_PHP_SELF?"."page=$last\">Last $rec_limit Records</a> |";
-									
-								 }
-							?>
-					</p>
-					<?php } ?>
+				
 					<table class="table table-striped kType_table" id="kType_table">
 					    <thead>
 					        <tr>
 							<th>Particular</th>
-							<th>Merchant id</th>
-							<th style="min-width:200px;">Name</th>
-							<th style="min-width:200px;">Food Panda Link</th>
+							<th>Restro Name</th>
+							<th>Url</th>
+							<th>Image</th>
+							<th>Scrap</th>
+							<th>Last sync time</th>
 							
-							<th>Normal Image</th>
-							<th>Banner Image <small> (800*400)</small></th>
-							<th>City</th>
-							<th>Defalut Lanaguage</th>
-							<th>Address Google Map</th>
-							<th>Mobile Nmber</th>
-							<th>K Type</th>
-							<th>Wallet Coin</th>
-							<th>MYR Wallet</th>
-							<th>CF</th>
-							<th>Joining Date</th>
-							<th>Nature of Business</th>
-							<th>Whatapp Group Name</th>
-							<th>Status</th>
-							<th>Merchant Status</th>
-							<th>Service tax (%) </th>
-							<th>Set Delivery Rate (%) </th>
-							<th>Vendor Comission (%) </th>
-							<th>Chiness Delivery </th>
-							<th>Fix Delivery Charges </th>
-							<th>Price Hike </th>
-							<th> Time of the pop-up </th>
-							<th>Popular Merchant </th>
-							<th>Show Merchant </th>
-							
-							<!--th>Delivery Rate use </th!-->
-							<th>View</th>
-							<th>Delete</th>
 						  </tr>
 					    </thead>
 					   <tbody>
                     	<?php
                     	$i=1;
-                    	while($row=mysqli_fetch_assoc($user)){
-							// print_R($row);
-							// die;
-							 $default_lang=$row['default_lang'];
-							 ?>
-                        	  <tr>
-                        		 <td> <?php echo $i; ?> </td>
-								 <td><?php  echo $row['id'];?></td>
-                        
-								<td style="min-width:200px;">
-								<textarea  style="min-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control real_name" rows="5" name="name"><?php if(isset($row['name'])){ echo $row['name']; }?></textarea></td>
-                                
-								<td style="min-width:200px;">
-								<textarea  style="min-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control foodpanda_link" rows="5" name="foodpanda_link"><?php if(isset($row['foodpanda_link'])){ echo $row['foodpanda_link']; }?></textarea>
-								</td>  
-                                
-								<td><form action="" method="post" enctype="multipart/form-data">
-								  <input name="image" type="file">
-								   <input name="selected_user_id" type="hidden" value="<?php echo $row['id']; ?>">
-								     <input type="submit" value="Upload" />
-								   <?php if($row['image']==""){ ?>
-							<img src="images/logo_new.jpg" data-src="images/logo_new.jpg"  alt=""> <?php
-							}else{ ?> <img src="<?php echo $image_cdn; ?>about_images/<?php echo $row['image']?>" data-src="<?php echo $image_cdn; ?>about_images/<?php echo $row['image']?>" alt=""> <?php }?>
-			                
-								
-								</form></td>
-								<td><form  action="" method="post" enctype="multipart/form-data">
-								  <input name="banner_image" type="file">
-								  <input name="selected_user_id" type="hidden" value="<?php echo $row['id']; ?>">
-								  <input type="submit" value="Upload" />
-								  <?php if ($row['banner_image']) {  ?>
-
-													<img ref="banner_image" data-src="<?php echo $image_cdn; ?>banner_image/<?php echo $row['banner_image'] ?>?w=400" class="owl-lazy lazy2 Sirv" alt="">
-
-													<?php } else {
-													if ($row['image'] == "") { ?>
-
-														<img src="images/logo_new.jpg" data-src="images/logo_new.jpg" class="owl-lazy" alt=""> <?php
-
-																																			} else { ?> <img data-src="<?php echo $image_cdn; ?>about_images/<?php echo $row['image'] ?>?w=200" class="owl-lazy lazy2 Sirv" alt=""> <?php }
-																																						} ?>
-								  
-								</form></td>
-								
-								<td>
-									<select class='city' name="city" style="" data-id="<?php echo $row['id']; ?>">
-									<option>Select city</option>
-									<?php
-									$sql = mysqli_query($conn, "SELECT CityName  FROM city WHERE 0=0 GROUP BY CityName");
-									$selected = '';
-									while($data = mysqli_fetch_array($sql))
-									{
-									if($row['city'] == $data['CityName']){
-									$selected= 'selected';
-									}else{
-									$selected = '';
-									}
-									echo'<option data-id="'.$row['id'].'" value="'.$data['CityName'].'" '.$selected.'>'.$data['CityName'].'</option>';
-									}
-
-									?>
-									</select>
-								</td>
-								  <td>
-                        	    	<select class='default_lang' name="default_lang" style="" data-id="<?php echo $row['id']; ?>">
-											<option value='1' <?php if($default_lang==1)echo "selected"; ?>>English</option>
-											<option value='2' <?php if($default_lang==2)echo "selected"; ?>>Chiness</option>
-											<option value='3' <?php if($default_lang==3)echo "selected"; ?>>Malaysian</option>
-
-                                    </select>
-
-                        	    </td>
-								<td>
-									<textarea  style="min-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control mapSearch" rows="5" name="google_map"><?php if(isset($row['google_map'])){ echo $row['google_map']; }?></textarea></td>
-                                
-								<td><?php echo $row['mobile_number'];  ?></td>
-                                <td><?php echo $row['account_type'];?></td>
-                        		<td><?php echo $row['balance_usd'];  ?></td>
-                        		<td><?php echo $row['balance_myr'];  ?></td>
-                        		<td><?php echo $row['balance_inr'];  ?></td>
-                        		<td><?php  $date=$row['joined'];
-                        	        echo $joinigdate=date("Y-m-d h:i:sa",$date);  ?>
-                        	    </td>
-                        	    <td>
-                        	    	<select class='service' name="service" style="">
-											<option>Select Nature of Business</option>
-											<?php
-												$sql = mysqli_query($conn, "SELECT * FROM service WHERE status=1");
-	                                           	$selected = '';
-	                                           	while($data = mysqli_fetch_array($sql))
-	                                           	{
-	                                           		if($data['id'] == $row['service_id']){
-	                                           			$selected= 'selected';
-	                                           		}else{
-	                                           			$selected = '';
-	                                           		}
-	                                           	 	echo'<option data-id="'.$row['id'].'" value="'.$data['id'].'" '.$selected.'>'.$data['short_name'].'</option>';
-	                                           	}
-
-											?>
-                                        </select>
-
-                        	    </td>
-								<td><input type="text" class="grup_save" data_id="<?php echo $row['id']; ?>" value="<?php echo $row['whatapp_group_name'];?>" class="form-control"/></td>
-								
-                        	    <td>
-                        	        <select class='status' data-id="<?php echo $row['id']; ?>" >
-                                	    <option>Select Status</option>
-                                	    <option value='1' <?php echo $row['isLocked']=='1' ? 'selected' : ''?>>Blocked</option>
-                                	    <option value='0' <?php echo $row['isLocked']=='0' ? 'selected' : ''?>>Unblocked</option>
-                        	        </select>
-                        	    </td>
-								  <td>
-                        	        <select class='show_business' data-id="<?php echo $row['id']; ?>" >
-                                	    <option>Merchant Status</option>
-                                	    <option value='1' <?php echo $row['show_business']=='1' ? 'selected' : ''?>>Show</option>
-                                	    <option value='0' <?php echo $row['show_business']=='0' ? 'selected' : ''?>>Hide</option>
-                        	        </select>
-                        	    </td>   
-								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="sst_rate" placeholder="%" class="form-control sst_rate" value="<?php echo $row['sst_rate'];?>"></td>   
-								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="delivery_rate" placeholder="%" class="form-control delivery_rate" value="<?php echo $row['delivery_rate'];?>"></td>   
-								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="vendor_comission" placeholder="%" class="form-control vendor_comission" value="<?php echo $row['vendor_comission'];?>"></td>   
-								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="special_price_value" placeholder="" class="form-control special_price_value" value="<?php echo $row['special_price_value'];?>"></td>   
-								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="order_extra_charge" placeholder="" class="form-control order_extra_charge" value="<?php echo $row['order_extra_charge'];?>"></td>   
-								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="price_hike" placeholder="" class="form-control price_hike" value="<?php echo $row['price_hike'];?>"></td>   
-								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="custom_msg_time" placeholder="" class="form-control custom_msg_time" value="<?php echo $row['custom_msg_time'];?>"></td>   
-								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="popular_restro" placeholder="" class="form-control popular_restro" value="<?php echo $row['popular_restro'];?>"></td>   
-								<td><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="show_merchant" placeholder="" class="form-control show_merchant" value="<?php echo $row['show_merchant'];?>"></td>   
-								<!--td>
-									<div class="form-group checkbox-checked">
-											
-											<input type="checkbox" class="delivery_select" selected_user_id="<?php echo $row['id']; ?>" selected_type="delivery_take_up" name="delivery_take_up" <?php if($row['delivery_take_up'] == '1') echo "checked='checked'";?>> Take away<br>
-											<input type="checkbox" class="delivery_select" selected_user_id="<?php echo $row['id']; ?>" selected_type="delivery_dive_in" name="delivery_dive_in" <?php if($row['delivery_take_up'] == '1') echo "checked='checked'";?>> Dine in<br>
-   
-									</div>
-								</td!-->
-                        	    <td><a href="user_edit.php?id=<?php echo $row['id'];?>"><i style="font-size: 20px;" class="fa fa-eye"></i></a></td>
-                                <td class="del" data-toggle="modal" data-target="#delModal" data-del="<?php echo $row['id']; ?>"><i style="font-size: 20px;" class="fa fa-trash"></i></td>
-                              </tr>
-                    	<?php
-                            $i++;  
-                    	}?>
+							foreach($c_restro as $s)
+							{
+					
+								 ?>
+								  <tr>
+								     <td><?php echo $i; ?></td>
+									 
+									  <td><?php echo $s['Restaurant_Name']; ?></td>
+									 <td><a href="https://www.foodpanda.my<?php echo $s['URL'] ?>" target="_blank"> <button class="button buttom_primary">Visit</button></a></td>
+									
+									 <td><img width="250px"  height="250px" src='<?php echo $s['Image_URL']; ?>'/></td>
+									 <td></td>
+									 <td></td>
+								  </tr>
+							<?php
+								$i++;  
+							}?>
                 	</tbody>
 					</table>
-					<?php if($rec_count>25){ ?>    
-					<p style="float:right;">
-					 <?php
-								if( $page > 0 ) {
-									$last = $page - 2;
-  									echo "<a href = \"$_PHP_SELF?"."page=$last\">Last $rec_limit Records</a> |";
-									echo "<a href = \"$_PHP_SELF?"."page=$page\">Next $rec_limit Records</a> |";
-  									
-								 }else if( $page == 0 ) {
-									 echo "<a href = \"$_PHP_SELF?"."page=1\">Next $rec_limit Records</a> |";
-								
-								 }else if( $left_rec < $rec_limit ) {
-									$last = $page - 2;
-									 echo "<a href = \"$_PHP_SELF?"."page=$last\">Last $rec_limit Records</a> |";
-									
-								 }
-							?>
-					</p>
-					<?php } ?>
+					
 				</div>
 			</main>
         </div>

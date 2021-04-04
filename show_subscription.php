@@ -85,7 +85,7 @@ $subscription_name = $subscription_data['plan_name'];
 <body class="header-light sidebar-dark sidebar-expand pace-done">
    <?php
         $merchant_id=$_SESSION['login'];
-		$sql="select users.name,users.mobile_number,membership_plan.plan_name,user_membership_plan.* from user_membership_plan inner join membership_plan on membership_plan.id=user_membership_plan.plan_id 
+		$sql="select users.name,users.dob,users.mobile_number,membership_plan.plan_name,user_membership_plan.* from user_membership_plan inner join membership_plan on membership_plan.id=user_membership_plan.plan_id 
 		inner join users on users.id=user_membership_plan.user_id where user_membership_plan.merchant_id='$merchant_id' and user_membership_plan.plan_id='$plan_id' and user_membership_plan.plan_active='y'";
 		$result = $conn->query($sql);
 		$rec_count =$result->num_rows;
@@ -98,7 +98,7 @@ $subscription_name = $subscription_data['plan_name'];
             $offset = 0;
          }
 		$left_rec = $rec_count - ($page * $rec_limit);
-		$sql2="select users.name,users.mobile_number,membership_plan.plan_name,user_membership_plan.* from user_membership_plan inner join membership_plan on membership_plan.id=user_membership_plan.plan_id 
+		$sql2="select users.name,users.dob,users.mobile_number,membership_plan.plan_name,user_membership_plan.* from user_membership_plan inner join membership_plan on membership_plan.id=user_membership_plan.plan_id 
 		inner join users on users.id=user_membership_plan.user_id where user_membership_plan.merchant_id='$merchant_id' and user_membership_plan.plan_active='y' and user_membership_plan.plan_id='$plan_id' LIMIT $offset, $rec_limit";
 		$result2 = $conn->query($sql2);
 		if ($result2->num_rows > 0) {
@@ -151,6 +151,7 @@ $subscription_name = $subscription_data['plan_name'];
 								<th>User Name</th>
 
 								<th>Mobile</th>
+								<th>DOB</th>
 
 								
 								<th>Trial Purchase</th>
@@ -194,7 +195,7 @@ $subscription_name = $subscription_data['plan_name'];
 									<td><?php echo $key['name']; ?></td>
 
 									<td><?php echo $key['mobile_number']; ?></td>
-
+									<td><?php echo date('F d, Y',strtotime($key['dob']));?></td>
 									
 
 									<td><?php echo date('F d, Y h:i:A', strtotime($created_date)); ?></td>	

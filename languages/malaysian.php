@@ -364,8 +364,8 @@
 	$language['review'] ="Review";
 	$language['detail'] ="Detail"; 
 	$language['difficulty'] ="Have difficulty in placing order? place through whatapp";   
-	$language['search_by_location'] ="Search by location"; 
-$language['near_by_shop_2'] ="Nearby shops"; 
+	$language['search_by_location'] ="Search by location (385 shops)"; 
+$language['near_by_shop_2'] ="Nearby shops (385 shops)"; 
 $language['rider_info'] ="Rider info";        
 $language['new_timing_working'] ="Multiple Working";  
 $language['post_job_list'] ="Post/Search jobs";  
@@ -413,5 +413,11 @@ $language['label_pay_with_internet_banking'] = 'Bayar dengan Perbankan Internet 
 $language['label_bank_name'] = 'Nama bank';
 $language['label_bank_account'] = 'Akaun bank';
 $language['label_enquiry'] = 'Pertanyaan';
+$language['customer_urged'] = '*Pelanggan diminta untuk tidak membayar lebih daripada jumlah yang perlu dibayar sebelum berunding dengan pentadbir kami. Sekiranya anda mempunyai keraguan, jangan membayar kepada penunggang. Anda masih boleh membayar melalui perbankan internet setelah selesai makan.';
+$language['outstation_charge'] = 'Outstation charges:';
+$language['full_delivery_charges'] = 'For Outstation customer only';
+$language['full_postcode_outstation'] = 'Outstation charges ( >15km, RM 1/km)';
+$language['more_categories'] = 'Lebih banyak kategori';
+
 
 ?>

@@ -1,5 +1,4 @@
 <?php
-
 function toSeconds($date){
   $a = explode(":", $date); 
   // var_dump($a);

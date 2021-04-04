@@ -156,6 +156,7 @@ $a_m="coupon";
 							
 							<th>Remaning Coupon</th>
 							<th>Per user use</th>
+							<th>Coupon Type</th>
 							<th>Status </th>
 							<th>Action </th>
 							
@@ -199,7 +200,16 @@ $a_m="coupon";
 									<td><?php if(($row['valid_to']!='0000-00-00 00:00:00')){ echo date('M d, Y', strtotime($row['valid_to']));} else { echo "--";}  ?>
 								    <td><?php echo $row['remain_user']; ?></td>
 								    <td><?php echo $row['per_user_count']; ?></td>
-
+									<td><?php
+										if($row['coupon_allot']==2)
+										{
+											echo "Specific user based";
+										}
+										else
+										{
+											echo "ALL";
+										}
+									?></td>
 									<td><?php if ($row['status'] == '1'): ?>
 
 										<badge class="badge badge-success"><?php echo $language["active"];?></badge>

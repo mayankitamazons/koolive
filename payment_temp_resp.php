@@ -1,6 +1,8 @@
 <?php
 include("config.php");
+session_start(); 
 include_once ('IPay88.class.php');
+
 
 function ceiling($number, $significance = 1)
 {
@@ -33,6 +35,7 @@ $ipay88 = new IPay88('M31571');
 $response = $ipay88->getResponse();
 
 
+//echo $_SESSION['tmp_login'];exit;
 $datetime = date('Y-m-d H:i:s');
 
 $temp_order_id = str_replace("temp_orderid","",$response['data']['Remark']);
@@ -71,14 +74,22 @@ if(isset($order_data))
 {
 	
 	extract($order_data);
+	$merchant_id = $srow['t_m_id'];	 
+	$tmp_login = $srow['t_user_id'];
 	
-	 $merchant_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE id='".$merchant_id."'"));
-	 $guest_permission=$merchant_data['guest_permission'];
-	 $referral_by=$merchant_data['referral_id'];
-	 $price_hike=$merchant_data['price_hike'];
-	 $write_up_share=$merchant_data['write_up_share'];
-	 $auto_accept_order=$merchant_data['auto_accept_order'];
-	 $merchant_mobile_no=$merchant_data['mobile_number'];
+	if($tmp_login != 0){
+		$_SESSION['login'] = $tmp_login;
+	}
+	
+	//exit;
+	$merchant_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE id='".$merchant_id."'"));
+	 
+	$guest_permission=$merchant_data['guest_permission'];
+	$referral_by=$merchant_data['referral_id'];
+	$price_hike=$merchant_data['price_hike'];
+	$write_up_share=$merchant_data['write_up_share'];
+	$auto_accept_order=$merchant_data['auto_accept_order'];
+	$merchant_mobile_no=$merchant_data['mobile_number'];
 	 $online_pay=0;
 	 if($merchant_data['credit_check'] || $merchant_data['wallet_check'] || $merchant_data['boost_check'] || $merchant_data['grab_check']
 	 || $merchant_data['wechat_check'] || $merchant_data['touch_check'] || $merchant_data['fpx_check'])
@@ -153,11 +164,14 @@ if(isset($order_data))
 		echo "Your number has been barred from placing order, please contact 012-3115670 for clarification.";
 		die;
 	}
+	
+	
+	//echo "logincount==".$logincount;
 	if($logincount>0)
 	{
 		$userdata=mysqli_fetch_assoc($loginmatch);
 		$user_id=$userdata['id'];
-		
+		//echo "1==".$user_id;exit;
 		$user_mobile=$userdata['mobile_number'];
 		if($mobile_check==$user_mobile)
 		{
@@ -211,9 +225,17 @@ if(isset($order_data))
 			$code = uniqid();
 			$ref = $mobile_number." ".$code;
 			$user_role=1;
+			$name = '';
+			$referral_by = str_replace("'","",$referral_by);
+			$reocrd=mysqli_query($conn, "INSERT INTO users SET isLocked='0',referral_id='$ref',referred_by='".$referral_by."',name='".$name."',user_roles='$user_role',mobile_number='$mobile_check',guest_user='y',login_status='1',password_created='$password_created',otp_verified='$otp_verified'");
+			$user_id=mysqli_insert_id($conn);
 			
-			$reocrd=mysqli_query($conn, "INSERT INTO users SET isLocked='0',referral_id='$ref',referred_by='$referral_by',name='$name',user_roles='$user_role',mobile_number='$mobile_check',guest_user='y',login_status='1',password_created='$password_created',otp_verified='$otp_verified'");
-            $user_id=mysqli_insert_id($conn);
+			if($tmp_user_id == 0){
+				$_SESSION['tmp_login'] = $user_id;
+			}
+			
+			
+			
 			$user_mobile="60".$mobile_number;   
 			$newuser="y";
 			$date = date('Y-m-d H:i:s');
@@ -253,11 +275,16 @@ if(isset($order_data))
          
 		
 	}
-	
+	/*
 	  if($_SESSION['login']=='')
 	  {
 		$_SESSION['tmp_login']=$user_id;
-	  }		
+	  }	*/	
+		if($tmp_user_id == 0){
+			$_SESSION['tmp_login'] = $user_id;
+		}
+		#echo $_SESSION['tmp_login'];exit;
+			
 	// insert data into order table 
 		$stl_key = isset($order_data['stl_key']) ? $order_data['stl_key'] : '';
 		$date = date('Y-m-d H:i:s');
@@ -302,10 +329,10 @@ if(isset($order_data))
 		else
 		{
 			$show_pick_up="Delivery";
-			if($order_extra_charge=='' || $order_extra_charge==0)
+			/*if($order_extra_charge=='' || $order_extra_charge==0)
 			{
 				$order_extra_charge=2.99;
-			}
+			}*/
 		}
 		if($merchant_id==7634)
 		{
@@ -667,7 +694,11 @@ if(isset($order_data))
 					$order_refer_id=0;
 					$total_refferal_amount=0;
 				}  
-			 	     $sqlFinalIns = "INSERT INTO order_list SET r_code='$r_code',ipay_p_id='$ipay_p_id',ipay_payment_status	='$ipay_payment_status',pay_transid = '$pay_transid',ipay_message='$ipay_message',order_refer_id='$order_refer_id',total_refferal_amount='$total_refferal_amount',order_time_shop_on='$order_time_shop_on',order_lat='$latitude',order_lng='$longitude',status='$status',special_delivery_amount='$special_delivery_amount',price_hike='$price_hike',pickup_type='$show_pick_up',vendor_comission=$vendor_total,plastic_box='$plastic_box',deliver_tax_amount='$deliver_tax_amount',rebate_applicable='$rebate_applicable',membership_discount_input='$membership_discount_input',membership_applicable='$membership_applicable',order_extra_charge='$order_extra_charge',remark_extra='$remark_extra',rebate_amount='$rebate_amount',prepaid='$prepaid',membership_discount='".$discount."',coupon_id='$coupon_id',coupon_discount='".$coupon_discount."',coupon_code='".$coupon_code."',membership_plan_id='$membership_plan_id',total_cart_amount='$total_cart_amount',total_rebate_amount='$total_rebate_amount',wallet_paid_amount='$wallet_paid_amount',online_pay='$online_pay',payment_alert='$payment_alert',user_name='$user_name',user_mobile='$user_mobile',wallet='fpx',varient_type='$v_str',product_id='$pro_id',  user_id='$user_id', merchant_id='$m_id', quantity='$qty_list', amount='$p_price',product_code='$p_code', remark='$option', location='".$location."', table_type='".$table_type."',section_type='$section_type',created_on='$date', invoice_no='$invoice_no',newuser='$newuser',show_alert='$show_alert',section_saved='$section_saved',agent_code='$agent_code'";
+				
+								$territory_price = $territory_hidden_id."|".$postcode_delivery_charge_hidden_price;
+
+			 	     
+			 	     $sqlFinalIns = "INSERT INTO order_list SET free_delivery_prompt='$free_delivery_status',territory_price='$territory_price', speed_delivery_amount = '$speed_delivery_amount',r_code='$r_code',ipay_p_id='$ipay_p_id',ipay_payment_status	='$ipay_payment_status',pay_transid = '$pay_transid',ipay_message='$ipay_message',order_refer_id='$order_refer_id',total_refferal_amount='$total_refferal_amount',order_time_shop_on='$order_time_shop_on',order_lat='$latitude',order_lng='$longitude',status='$status',special_delivery_amount='$special_delivery_amount',price_hike='$price_hike',pickup_type='$show_pick_up',vendor_comission=$vendor_total,plastic_box='$plastic_box',deliver_tax_amount='$deliver_tax_amount',rebate_applicable='$rebate_applicable',membership_discount_input='$membership_discount_input',membership_applicable='$membership_applicable',order_extra_charge='$order_extra_charge',remark_extra='$remark_extra',rebate_amount='$rebate_amount',prepaid='$prepaid',membership_discount='".$discount."',coupon_id='$coupon_id',coupon_discount='".$coupon_discount."',coupon_code='".$coupon_code."',membership_plan_id='$membership_plan_id',total_cart_amount='$total_cart_amount',total_rebate_amount='$total_rebate_amount',wallet_paid_amount='$wallet_paid_amount',online_pay='$online_pay',payment_alert='$payment_alert',user_name='$user_name',user_mobile='$user_mobile',wallet='fpx',varient_type='$v_str',product_id='$pro_id',  user_id='$user_id', merchant_id='$m_id', quantity='$qty_list', amount='$p_price',product_code='$p_code', remark='$option', location='".$location."', table_type='".$table_type."',section_type='$section_type',created_on='$date', invoice_no='$invoice_no',newuser='$newuser',show_alert='$show_alert',section_saved='$section_saved',agent_code='$agent_code'";
 
 				//echo $sqlFinalIns;exit;
 				$test_method = mysqli_query($conn, $sqlFinalIns);
@@ -678,7 +709,7 @@ if(isset($order_data))
 				if($test_method)
 				{
 					$merchant_id = $_SESSION['AjaxCartResponse']['merchant_id'];
-					unset($_SESSION['AjaxCartResponse'][$merchant_id]);  
+					unset($_SESSION['AjaxCartResponse'][$m_id]);  
 					$sms_to=$user_mobile;
 					$rand= substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),1,4);
 					$url="https://www.koofamilies.com/orderlist.php?did=".$user_id."&vs=".$rand."&oid=".$order_id;    
@@ -1074,8 +1105,8 @@ if(isset($order_data))
 				$v_order++;
 			}
 		  }
-		  $send_url=$site_url."/orderlist.php"."?vs=".md5(rand());
-		   header("Location:$send_url");
+		  $send_url=$site_url."/orderlist.php"."?payid=".$user_id."&vs=".md5(rand());
+		  header("Location:$send_url");
 		}
 	   else
 	   {  

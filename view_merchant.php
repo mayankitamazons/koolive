@@ -2,13 +2,19 @@
 include ("config.php");
 include_once ('php/Section.php');
 
+include_once ('IPay88.class.php'); //include payment gateway Files
+$ipay88 = new IPay88('M31571'); // MerchantCode
+$ipay88->setMerchantKey('IzXIhfJHUJ'); /*YOUR_MERCHANT_KEY*/
+$ipay88->generateSignature();
+$ipay88_fields = $ipay88->getFields();
+$payment_signature = $ipay88_fields['Signature'];
+
 // Load merchant's product with QR
 $p_status = '';
- $dine_in = "n";
+$dine_in = "n";
 
 if (!empty($_GET['status']))
 {
-
     $p_status = $_GET['status'];
 }
 
@@ -309,11 +315,18 @@ if ($sectionsList)
 }
 
 // $sectionTablesList = $sectionTablesObj->getList($sectionTableFilter);
-$merchant_detail = isset($_SESSION['login']) ? mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE id='" . $_SESSION['login'] . "'")) : '';
+$bank_data = isset($_SESSION['login']) ? mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE id='" . $_SESSION['login'] . "'")) : '';
 
-$check_number = $merchant_detail['mobile_number'];
+$check_number = $bank_data['mobile_number'];
+if($bank_data)
+{
+	 $cq="select * from coupon_specific_allot where user_mobile_no='$check_number'";
+	$special_coupon=mysqli_query($conn,$cq);
+	$special_coupon_count = mysqli_num_rows($special_coupon);
+	
+}
 $total_work = "n";
-$user_koo_coin = $merchant_detail['balance_inr'];
+$user_koo_coin = $bank_data['balance_inr'];
 $today_day=strtolower(date('l'));
 $sql1 = "SELECT SQL_NO_CACHE * FROM `timings` WHERE day='$today_day' and `merchant_id` =" . $_SESSION['merchant_id'];
 $tresult1 = mysqli_query($conn, $sql1);
@@ -969,7 +982,7 @@ else
 
                         <div class="rating_menuss"><a class="merchant_ratings 3button" href="<?php echo $site_url; ?>/rating_list.php"><?php echo $language["rating"] ?> </a></div>
 
-                        <div class="rating_menuss">
+                        <!--div class="rating_menuss">
 
                             <?php if ($merchant_detail['google_map'])
     { ?>
@@ -994,7 +1007,7 @@ else
 
 
 
-                        </div>
+                        </div!-->
 
 
 
@@ -1056,6 +1069,234 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                 </div>
 
                 <p style="color:red;" id="error_label"></p>
+				
+				
+				
+<!--start - free delivery--->
+<style>
+@media only screen and (max-width: 761px)
+.tip {
+    margin: 3em 0 2em;
+}
+
+.tab_fr {
+   /* margin-left: 2.5em!important;*/
+}
+
+.tip {
+    background-color: #fffbce;
+    padding: 0 2em 2em;
+   /* margin: 3.2em 14em 2em 0;*/
+    display: table;
+	margin-top:40px;
+}
+
+span.title_fr {
+    background: #ffed00;
+    padding: .6em 1.5em;
+    font-weight: 600;
+    font-size: 1.13em;
+    top: -17px;
+    left: -28px;
+    display: inline-block;
+    position: relative;
+}
+
+span.title_fr:before {
+    font-family: FontAwesome;
+    content: "\f0d1";
+    margin-right: 7px;
+    font-size: larger;
+}
+
+.tip p {
+    margin: 0!important;
+}
+#ten-countdown{
+	color:red;
+	font-weight:bold;
+}
+</style>
+<?php 
+$terr_id_last_order = '';
+$lstorder_location  = '';
+if (isset($_SESSION['login']))
+{
+	$rows_od = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM order_list WHERE user_id= ".$_SESSION['login']." order by created_on desc limit 0,1"));
+	//echo "SELECT * FROM order_list WHERE user_id= ".$_SESSION['login']." order by created_on desc limit 0,1";
+	$currenttimestamp = date('Y-m-d H:i:s'); //
+	$free_delivery_popup = 'no'; 
+	
+	if(count($rows_od) > 0 ){
+		$free_delivery_prompt = $rows_od['free_delivery_prompt'];
+		#echo "offer".$free_delivery_prompt;
+		$territory_price_array = explode("|",$rows_od['territory_price']);
+		$terr_id_last_order = $territory_price_array[0];
+		$terr_price = $territory_price_array[1];
+		$lstorder_location = $rows_od['location'];
+		
+		
+		$created_timestamp_od = $rows_od['created_on'];
+		$curr_time_od = strtotime($currenttimestamp); //currenttime
+		$od_timestmp = strtotime($created_timestamp_od); //ordertime
+		
+		$diff =  round(abs($od_timestmp - $curr_time_od) / 60,2);
+		$chk_time = 15 - $diff;
+		/*
+		echo "currenttimestamp:".$currenttimestamp;
+		echo '<br/>';
+		
+		echo "order time:".$created_timestamp_od;
+		echo '<br/>';
+		
+		echo "last terr id".$terr_id_last_order;
+		echo '<br/>';
+		
+		echo $diff."===".$chk_time;*/
+		if($free_delivery_prompt == 0){
+			// free delivery
+			if($diff < 15){
+				// free delivery
+				$free_delivery_popup = 'yes';
+			}
+			if($diff > 15){
+				//  NO free delivery
+				$free_delivery_popup = 'no';
+			}
+		}
+		
+		//echo "=============".$free_delivery_popup;
+	}
+}
+?>
+<script>
+function countdown( elementName, minutes, seconds )
+{
+    var element, endTime, hours, mins, msLeft, time;
+
+    function twoDigits( n )
+    {
+        return (n <= 9 ? "0" + n : n);
+    }
+	var x = 1;
+    function updateTimer()
+    {
+		console.log('###test###');
+        msLeft = endTime - (+new Date);
+		var additonal_delivery_charges = $('#additonal_delivery_charges').val();
+		var terr_id_last_order = '<?php echo $terr_id_last_order;?>';
+		var terr_id = $(".postcode_main_div").val();
+		var terr_price = $(".postcode_main_div").find('option:selected').attr('price_optn');
+		
+		var free_delivery_status = $("#free_delivery_status").val();			
+        		
+		//console.log("000000000000============"+terr_id);		
+		if ( msLeft < 1000 ) {
+            element.innerHTML = "0:00";
+			$(".hurry_div").html('');
+			$(".hurry_div").hide();
+			$(".hurry_div").css('background-color','none');
+			//$(".hurry_div").html('<span class="title_fr">Get Free Delivery!!</span><p>Order Now and get Free Delivery on your next order in 10 Minutes</p>');
+			var d_charges = "<?php echo $merchant_detail['order_extra_charge'];?>";
+			$("#delivery_label").show();
+			$('#additonal_delivery_charges').val(additonal_delivery_charges);
+			$("#free_delivery_status").val(0);
+
+			if(d_charges != ''){
+				$("#delivery_charges").val(d_charges);
+				$("#order_extra_label").html(d_charges);
+				$("#order_extra_charge").val(d_charges);
+			}else{
+				$("#delivery_charges").val('2.99');
+				$("#order_extra_label").html('2.99');
+				$("#order_extra_charge").val('2.99');
+			}
+			$("#postcode_delivery_charge_price").html(terr_price);
+			$("#postcode_delivery_charge_hidden_price").val(terr_price);
+			$("#free_delivery_status").val(0);
+			totalcart();
+        } else {
+			
+			//$("#territory_hidden_id").val(terr_id);
+			//console.log(terr_id_last_order+"====="+terr_id);
+			$("#free_delivery_status").val(1);
+			if(terr_id_last_order == terr_id){
+				//console.log('#same###');
+				$("#delivery_charges").val('0.00');
+				$("#delivery_label").show();
+				$("#order_extra_label").html('0.00');
+				$("#order_extra_charge").val('0.00');
+				$("#free_delivery_status").val(1);
+
+				$('#additonal_delivery_charges').val('0.00');
+				
+				$("#territory_hidden_id").val(terr_id);
+				
+				$("#postcode_delivery_charge_price").html('0.00');
+				$("#postcode_delivery_charge_hidden_price").val('0.00');
+				totalcart();
+			}else{
+				//console.log('nottt');
+				$("#free_delivery_status").val(0);
+
+				var d_charges = "<?php echo $merchant_detail['order_extra_charge'];?>";
+				$("#delivery_label").show();
+				$('#additonal_delivery_charges').val(additonal_delivery_charges);
+				if(d_charges != ''){
+					$("#delivery_charges").val(d_charges);
+					$("#order_extra_label").html(d_charges);
+					$("#order_extra_charge").val(d_charges);
+				}else{
+					$("#delivery_charges").val('2.99');
+					$("#order_extra_label").html('2.99');
+					$("#order_extra_charge").val('2.99');
+				}
+				$("#postcode_delivery_charge_price").html(terr_price);
+			    $("#postcode_delivery_charge_hidden_price").val(terr_price);
+				totalcart();
+			}
+			
+			
+			
+            time = new Date( msLeft );
+            hours = time.getUTCHours();
+            mins = time.getUTCMinutes();
+            element.innerHTML = (hours ? hours + ':' + twoDigits( mins ) : mins) + ':' + twoDigits( time.getUTCSeconds() );
+            setTimeout( updateTimer, time.getUTCMilliseconds() + 500 );
+        }
+		x++;
+    }
+
+    element = document.getElementById( elementName );
+    endTime = (+new Date) + 1000 * (60*minutes + seconds) + 500;
+    updateTimer();
+}
+
+
+</script>
+<?php if($free_delivery_popup == 'yes'){?>
+<script>
+$(document).ready(function(){
+	countdown( "ten-countdown", <?php echo $chk_time;?>, 0 );
+});
+</script>
+<?php }?>
+
+<?php if($free_delivery_popup == 'yes'){?>
+	<br/>
+	<div class="tip tab_fr hurry_div" style="display:block;">
+	<span class="title_fr">Hurry Up!!</span>
+	<p>Congratulation!! Place your free Delivery order within  <span id="ten-countdown"></span> Minutes</p>
+	</div>
+
+<?php }/*else{?>
+	<br/>
+	<div class="tip tab_fr">
+	<span class="title_fr">Get Free Delivery!!</span>
+	<p>Order Now and get Free Delivery on your next order in 10 Minutes</p>
+	</div>
+<?php }*/?>
+<!-- end - free delivery--->
 
 
 
@@ -1585,7 +1826,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                                 <div class="row">
 
                                     <div style="float:left;width:80%;margin-left:5%;">
-                                        <input class="form-control comment" id="mapSearch" name="location" placeholder="<?php echo $language['full_address']; ?>" style="margin: 0 !important;">
+                                        <input class="form-control comment" id="mapSearch" name="location" placeholder="<?php echo $language['full_address']; ?>" style="margin: 0 !important;" value="<?php echo $lstorder_location ;?>">
                                     </div>
                                     <a  class="btn btn-primary"  onclick="currentLocation();"><?php echo $language['fetch_map']; ?></a>
                                     <a  class="btn btn-primary" onclick="pastaddress();"><?php echo $language['saved_address']; ?></a>  
@@ -1601,7 +1842,54 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                         </div>
 
 
-
+</br>
+						<?php if($free_delivery_popup == 'yes'){?>
+						<input type="hidden" name="free_delivery_status" id="free_delivery_status" value="1"/>
+						<?php }else{?>
+						<input type="hidden" name="free_delivery_status" id="free_delivery_status" value="0"/>
+						<?php }?>
+						
+						<!---Start POstcode-->
+<style>
+.frmSearch {border: 1px solid #a8d4b1;background-color: #c6f7d0;margin: 2px 0px;padding:40px;border-radius:4px;}
+#country-list{float:left;list-style:none;margin-top: 41px;margin-left: 2px;padding:0;width:190px;position: absolute;}
+#country-list li{padding: 10px; background: white; border-bottom: white 1px solid;}
+#country-list li:hover{background:#ece3d2;cursor: pointer;}
+#search-box{padding: 10px;border: #a8d4b1 1px solid;border-radius:4px;}
+</style>
+						<div class=" postalbx">
+							<label class="post_code" style="display:grid;align-content:center;text-align:left;">
+							<?php echo $language['full_postcode_outstation'];?>
+							</label>
+							<div class="row">
+								<div style="float:left;width:80%;margin-left:5%;" class="">
+									<input type="hidden" name="territory_hidden_id" id="territory_hidden_id" value=""/>
+									<input type="hidden" name="merchant_territory_hidden_id" id="merchant_territory_hidden_id" value="<?php echo $merchant_detail['m_territory_id'];?>"/>
+									<!--
+									<input class="form-control comment" placeholder="Please start type area name" autocomplete="false" m_terr_id="<?php echo $merchant_detail['m_territory_id'];?>" delivery_price="<?php echo number_format($merchant_detail['order_extra_charge'], 2); ?>" id="postcode" name="postcode" placeholder="Postcode" style="margin: 0 !important;">-->
+									<?php 
+									$query_new = "select terr.* from territory as terr where t_label = (select t_label from territory where t_id = '".$merchant_detail['m_territory_id']."') order by t_location_name asc";
+									$total_rows = mysqli_query($conn,$query_new);?>
+									<select name="postcode_main_div" class="postcode_main_div form-control" >
+									<option value=""><?php echo $language['full_delivery_charges'];?></option>
+									<?php while ($srow=mysqli_fetch_assoc($total_rows)){
+										$price = $srow["t_price"] + $merchant_detail['order_extra_charge'];
+										$price = number_format($price, 2);
+										if($srow["t_id"] == $terr_id_last_order){
+									?>
+									<option selected value="<?php echo $srow["t_id"];?>" price_optn='<?php echo $srow["t_price"];?>'><?php echo $srow["t_location_name"].' - RM '.$price;?></option>
+										<?php }else{?>
+										<option value="<?php echo $srow["t_id"];?>" price_optn='<?php echo $srow["t_price"];?>'><?php echo $srow["t_location_name"].' - RM '.$price;?></option>
+										<?php }?>
+									<?php }?>
+									<option value="-1" price_optn="0.00">Others (within 30km)</option>
+									</select>
+									<div id="suggesstion-box"></div>
+								</div>
+							</div>
+                        </div>
+						<!-- ENd Postcode-->
+						
 
 
 
@@ -1662,7 +1950,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                         </div>
                         <?php if ($merchant_detail['special_price_value'] && $_SESSION['langfile'] != 'malaysian')
         { ?>
-                            <div class="row" style="min-height: 41px;margin:2%;padding-bottom: 1%;">
+                            <div class="row " style="min-height: 41px;margin:2%;padding-bottom: 1%;">
 
                                 <div class="special_price_value" style="max-width:60%;box-shadow: rgba(0, 0, 0, 0.16) 0px 2px 5px 0px, rgba(0, 0, 0, 0.12) 0px 2px 10px 0px; font-weight: bold; border-right: 1px solid black; padding-top: 2%; padding-bottom: 1%; background:rgb(81, 210, 183) none repeat scroll 0% 0%; color: rgb(85,85,85);">
 
@@ -1675,7 +1963,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
         } ?>
 		    <?php if ($merchant_detail['speed_delivery'])
         { ?>
-                            <div class="row" style="min-height: 41px;margin:2%;padding-bottom: 1%;">
+                            <div class="row sp_main_div" style="min-height: 41px;margin:2%;padding-bottom: 1%;">
 
                                 <div class="speed_price_value" style="max-width:60%;box-shadow: rgba(0, 0, 0, 0.16) 0px 2px 5px 0px, rgba(0, 0, 0, 0.12) 0px 2px 10px 0px; font-weight: bold; border-right: 1px solid black; padding-top: 2%; padding-bottom: 1%; background:rgb(81, 210, 183) none repeat scroll 0% 0%; color: rgb(85,85,85);">
 
@@ -1820,12 +2108,12 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
                             </small>
 
-                            <?php if ($merchant_detail)
+                            <?php if ($bank_data)
         {
 
-            $member_id = $merchant_detail['id'];
+            $member_id = $bank_data['id'];
 
-            $mobile_check = $merchant_detail['mobile_number'];
+            $mobile_check = $bank_data['mobile_number'];
 
             $merchant_id = $merchant_detail['id'];
 
@@ -1923,6 +2211,8 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
             $u_id = $_SESSION['login'];
 
             $rows = mysqli_num_rows(mysqli_query($conn, "SELECT id,user_id,agent_code FROM order_list WHERE agent_code IS NOT NULL AND NOT agent_code = '' AND user_id='$u_id'"));
+			
+			
         }
         else
         {
@@ -2067,6 +2357,18 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                                         <input type="hidden" name="speed_delivery_amount" id="speed_delivery_amount" value="0" />   
                                         <input type="hidden" name="pickup_type" id="pickup_type" value="takein" />
                                     </div>
+									
+									<!---postcode--->
+									<div class="" style="display:none;" id="postcode_delivery_charge">
+                                        <div style="grid-template-columns:.2fr 2fr;grid-column-gap: 10px;vertical-align: middle;align-content:center;font-weight: bold;font-size: 15px;margin-top:1%;">
+                                            <?php echo $language['outstation_charge']; ?> Rm <span id="postcode_delivery_charge_price">0.00</span>
+											
+                                        </div>
+										<input type="hidden" name="postcode_delivery_charge_hidden_price" id="postcode_delivery_charge_hidden_price" value="0.00"/>
+                                    </div>
+								<!---postcode--->
+								
+								
                                     <div style="display:none;" class="membership_discount_label">
                                         <div style="grid-template-columns:.2fr 2fr;grid-column-gap: 10px;vertical-align: middle;align-content:center;font-weight: bold;font-size: 15px;">
                                             <?php echo ucfirst(strtolower($language['membership_discount'])); ?>: Rm <span class="membership_discount_value"><?php echo number_format($merchant_detail['order_extra_charge'], 2); ?></span>
@@ -2146,6 +2448,15 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                                 </div>
                             <?php
         }  ?>
+		
+		
+		<div class="col-xs-3 " style="margin-left:1%;" >
+<button type="button" class="btn btn-block btn-primary submit_button internet_banking_fpx banking_od_btn" name="internet_banking_fpx" style="margin-top:3%;width:100% !important;box-shadow: -3px 3px #35cbab, -2px 2px orange, -1px 1px orange;border: 1px solid #35cbab;">
+Internet Banking ( FPX )
+</button>
+</div>
+		
+		
                             <div class="col-xs-4 online_label" style="margin-left:1%;">   
 
                                 
@@ -2211,6 +2522,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                             <?php
         } ?>
 							<span style="color:red;"><?php echo $language['sms_text']; ?></span>
+							<span style="color:#03a9f3"><?php echo $language['customer_urged']; ?></span>
 							<p><?php echo $language['speed_text']; ?></p>
                      
                             <span id="cash_order_process" style="color:red;display:none;font-weight:bold;">Please wait......., we are processing your order..</span>
@@ -2258,6 +2570,8 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
                     <input type="hidden" id="special_input_bal" name="special_input_bal" value="<?php echo $special_bal; ?>" />
                     <input type="hidden" id="koo_balance" name="koo_balance" value="<?php echo $koo_balance; ?>" />
+					<input type="hidden" name="hidden_final_cart_price" id="hidden_final_cart_price" value="0"/>
+
 
 
 
@@ -2273,6 +2587,42 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 
                 </form>
 
+
+
+						
+				<!-- Start Hidden field for ipay88 payment-->
+				<?php
+				$ipay88->setField('RefNo', 'IPAY0000000001');
+				$ipay88->setField('Amount', '1.00');
+				$ipay88->setField('Currency', 'myr');
+				$ipay88->setField('ProdDesc', 'koofamilies_merchnt_product');
+				$ipay88->setField('UserName', 'usernumber1');
+				$ipay88->setField('UserEmail', 'email@example.com');
+				$ipay88->setField('UserContact', '0123456789');
+				/*$ipay88->setField('CCName', 'test');
+				$ipay88->setField('ccno', '4444333322221111');
+				$ipay88->setField('S_bankname', 'eWAY');
+				*/$ipay88->setField('Remark', 'this is testing product and orderid #1');
+				$ipay88->setField('Lang', 'utf-8');
+				$ipay88->setField('ResponseURL', 'https://koofamilies.com/payment_temp_resp.php');
+				//$ipay88->setField('BackendURL', 'https://koofamilies.com/payment_backresp.php');
+
+				$ipay88->generateSignature();
+
+				$ipay88_fields = $ipay88->getFields();
+				?>
+				<?php if (!empty($ipay88_fields)): ?>
+					<form action="<?php echo Ipay88::$epayment_url; ?>" method="post" id="ipay88_form">
+						<?php foreach ($ipay88_fields as $key => $val): ?>
+						 <input type="hidden" name="<?php echo $key; ?>" id="<?php echo $key; ?>" value="<?php echo $val; ?>" />
+						<?php endforeach; ?>
+						<INPUT type="hidden" name="BackendURL" value="https://koofamilies.com/payment_backresp.php">
+						<input type="hidden" value="Submit" name="Submit"  />
+					</form>
+				  <?php endif; ?>
+				<!-- END Hidden field for ipay88 payment-->
+		
+		
                 <form id="paypal_form" action="<?php echo $paypalUrl; ?>" method="post">
 
                     <div class="panel price panel-red" style="padding:50px 5px;">
@@ -3698,7 +4048,7 @@ while ($data = mysqli_fetch_array($sql))
 							<div class="col-md-12 pad0">
 							
 								<h6 style="margin-top:10px">Boostpay Number(Chong woi joon): <b>+60123115670</b></h6>
-								<h6 style="margin:0px">Touch & Go account (Wong Siew Foon): <b>+60127722783</b></h6>
+								<h6 style="margin:0px">Touch & Go account ( Chong Woi joon): <b>+6012-3115670</b></h6>
 								<div style="width: 100%;text-align: center;">
 									<img class="img-responsive Sirv" data-src="https://koofamilies.sirv.com/touch_go.png" />  
 								</div>
@@ -7118,9 +7468,9 @@ totalcart();
 </style>
 
 <?php
-if ($merchant_detail['custom_msg_time'])
+if ($bank_data['custom_msg_time'])
 
-$c_time = $merchant_detail['custom_msg_time'];
+$c_time = $bank_data['custom_msg_time'];
 
 else 
 
@@ -7159,7 +7509,12 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
         // alert(4);
         
-        
+        var special_coupon_count="<?php echo $special_coupon_count; ?>";
+		// alert(special_coupon_count);
+		if(special_coupon_count>0)
+		{
+			$("#apply_coupon").click();
+		}
         $('.lazy').lazy({
 
             placeholder: "https://koofamilies.com/img/logo.png"
@@ -7209,6 +7564,8 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 			else
 			$('.koo_cashback_accept').show();
             $('.special_price_value').hide();
+			$('.sp_main_div').hide();
+			
             $('.plastic_remark').hide();
             $('#delivery_label').hide();
             $("#divein").prop("checked", true);
@@ -7230,6 +7587,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             $('#pickup_type').val('divein');
 
             $('.name_mer').hide();
+			$('.postalbx').hide();
 
             $("#takeaway_select").prop("checked", false);
 
@@ -7483,6 +7841,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             $(this).css("color", "white");
 
             $('.name_mer').show();
+			$('.postalbx').show();
 
             $('#delivery_label').show();
 
@@ -7491,6 +7850,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             $("#takeaway_select").prop("checked", true);
             if(special_price_value)
                 $('.special_price_value').show();
+				$('.sp_main_div').show();
 
             $("#divein").prop("checked", false);
 			// alert(koo_cashback_accept);
@@ -7582,8 +7942,18 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
         });
         $(".divert").click(function(e) {
             // alert(3);
+			console.log('dive___in');
 			var koo_cashback_accept_dive_in="<?php echo $merchant_detail['koo_cashback_accept_dive_in'] ?>";
             $('.special_price_value').hide();
+			$('.sp_main_div').hide();
+			//speed_delivery
+			if ($('#speed_delivery').prop('checked')) {
+				$('#speed_delivery').prop('checked', false); // Unchecks it
+				$('.speed_price_value').css("background-color", "#51D2B7");
+                $('.speed_price_value').css("color", "#555");
+                $('#speed_delivery_amount').val(0);
+			}
+			
             $('#pickup_type').val('divein');
             totalcart();
             $('#transfer_name_label').hide();
@@ -7609,6 +7979,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 			}
 
             $('.name_mer').hide();
+			$('.postalbx').hide();
 
             $("#takeaway_select").prop("checked", false);
 
@@ -10495,14 +10866,15 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
                         {
 
-                            var deliver_tax_amount = calculatepercentage(totalsale, delivery_tax);
+                            console.log("tax_1");
+							var deliver_tax_amount = calculatepercentage(totalsale, delivery_tax);
 
                         }
 
                     } else
 
                     {
-
+						console.log("tax_2");
                         var deliver_tax_amount = 0;
 
                     }
@@ -10513,7 +10885,9 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
                 {
                     
-                    var fix_delivery_val = "<?php echo $merchant_detail['order_extra_charge']; ?>";
+                  //  var fix_delivery_val = "<?php echo $merchant_detail['order_extra_charge']; ?>";
+				  var fix_delivery_val = "<?php echo $merchant_detail['delivery_charges']; ?>";
+                
                 if (delivery_charges == 0) {
                     if (fix_delivery_val)
                         var delivery_charges = fix_delivery_val;
@@ -10535,7 +10909,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                         if (parseFloat(delivery_tax) > 0)
 
                         {
-
+							console.log("tax_3");
                             var deliver_tax_amount = calculatepercentage(totalsale, delivery_tax);
 
                         }
@@ -10662,7 +11036,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                 {
 
                     // var sst_amount=calculatepercentage(total_amount,sst_tax);
-
+console.log("2");
                     $('.delivery_tax_amount_label').show();
 
                     $('.delivery_tax_amount_value').html(parseFloat(deliver_tax_amount).toFixed(2));
@@ -10911,7 +11285,9 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             } else if (pickup_type == "takein")
 
             {
-                var fix_delivery_val = "<?php echo $merchant_detail['order_extra_charge']; ?>";
+                //var fix_delivery_val = "<?php echo $merchant_detail['order_extra_charge']; ?>";
+				var fix_delivery_val = "<?php echo $merchant_detail['delivery_charges']; ?>";
+                
                 if (delivery_charges == 0) {
                     if (fix_delivery_val)
                         var delivery_charges = fix_delivery_val;
@@ -11038,7 +11414,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             if (parseFloat(deliver_tax_amount) > 0)
 
             {
-
+console.log("3");
                 $('.delivery_tax_amount_label').show();
 
                 $('.delivery_tax_amount_value').html(parseFloat(deliver_tax_amount).toFixed(2));
@@ -11195,7 +11571,9 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
 
 
-            var fix_delivery_val = "<?php echo $merchant_detail['order_extra_charge']; ?>";    
+           // var fix_delivery_val = "<?php echo $merchant_detail['order_extra_charge']; ?>";    
+			var fix_delivery_val = "<?php echo $merchant_detail['delivery_charges']; ?>";
+                
             var user_lat = $('#user_lat').val();
 
             if (!user_lat)
@@ -11948,6 +12326,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
         }
         // alert(pickup_type);
+		//console.log(pickup_type);
         if (pickup_type == "divein")
 		{
 
@@ -11958,7 +12337,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                 if (parseFloat(delivery_tax) > 0)
 
                 {
-
+					console.log("tax_5");
                     var deliver_tax_amount = calculatepercentage(totalsale, delivery_tax);
 
                 }
@@ -11968,7 +12347,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             {
 
 
-
+console.log("tax_6");
                 var deliver_tax_amount = 0;
 
             }
@@ -11978,7 +12357,10 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
         } else if (pickup_type == "takein")
 
         {
-            var fix_delivery_val = "<?php echo $merchant_detail['order_extra_charge']; ?>";
+			
+           // var fix_delivery_val = "<?php echo $merchant_detail['order_extra_charge']; ?>";
+			var fix_delivery_val = "<?php echo $merchant_detail['delivery_charges']; ?>";
+			
             if (delivery_charges == 0) {
                 if (fix_delivery_val)
                     var delivery_charges = fix_delivery_val;
@@ -12001,7 +12383,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                 if (parseFloat(delivery_tax) > 0)
 
                 {
-
+					console.log("tax_7");
                     var deliver_tax_amount = calculatepercentage(totalsale, delivery_tax);
 
                 }
@@ -12110,6 +12492,12 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
             }
 
+			//postcode value
+			var terr_amount = $("#postcode_delivery_charge_price").html();
+			if(terr_amount != '0.00'){
+				final_charge = parseFloat(final_charge) + parseFloat(terr_amount)
+			}
+			
             $('.final_amount_label').show();
 
             $('.final_amount_value').html(parseFloat(final_charge).toFixed(2));
@@ -12191,10 +12579,17 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
                 $('.membership_discount_value').html(membership_discount);
 
+
                 $('.final_amount_label').show();
 
                 var final_charge = (parseFloat(totalsale) + parseFloat(delivery_charges)) + parseFloat(special_delivery_amount)+ parseFloat(speed_delivery_amount) - parseFloat(membership_discount) - parseFloat(coupon_discount);
 
+				//postcode price
+				var terr_amount = $("#postcode_delivery_charge_price").html();
+				if(terr_amount != '0.00'){
+					final_charge = parseFloat(final_charge) + parseFloat(terr_amount)
+				}
+				
                 $('.final_amount_value').html(parseFloat(final_charge).toFixed(2));
             }
         }
@@ -12211,6 +12606,8 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
         // alert(deliver_tax_amount);
         if (parseFloat(deliver_tax_amount) > 0)
         {
+			console.log("1");
+			console.log(pickup_type);    
             $('.delivery_tax_amount_label').show();
             $('.delivery_tax_amount_value').html(parseFloat(deliver_tax_amount).toFixed(2));
             var final_charge = (parseFloat(final_charge) + parseFloat(deliver_tax_amount));
@@ -12219,6 +12616,13 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             $('.delivery_tax_amount_label').hide();
             $('.delivery_tax_amount_value').html('');
         }
+		
+		//postcode value
+			var terr_amount = $("#postcode_delivery_charge_price").html();
+			if(terr_amount != '0.00'){
+				final_charge = parseFloat(final_charge) + parseFloat(terr_amount)
+			}
+			
         $('.final_amount_label').show();
         $('#deliver_tax_amount').val(deliver_tax_amount);
         $('#final_cart_amount_label').html(final_charge);
@@ -12446,6 +12850,235 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             });
         }
     });
+	
+	
+	
+	
+$(document).ready(function(){
+	$(".internet_banking_fpx").click(function(){
+		
+		console.log('fpx_data');
+		//$("#order_place").attr('action','temp_order_save.php');
+		//$(".internet_banking_fpx").
+		var product_qty = $('.product_qty').val();
+		var table_type = $('#table_type').val();
+		var number = $('#mobile_number').val();
+		var pickup_type = $('#pickup_type').val();
+		var shop_close_time = $('#shop_close_time').val();
+		var total_rebate = 0;
+		var total_amount = 0;
+		var s_flag = true;
+		if ((product_qty == null) || (product_qty == '')) {
+			$('#show_msg').html("<?php echo $language['no_product_added']; ?>");
+			$('#AlerModel').modal('show');
+			var s_flag = false;
+			return false;
+		}
+		if (number.length >= 9 && number.length <= 12 && (number[0] == 1 || number[0] == 6 || number[0] == 0)) {
+			$('#mobile_error').hide();
+			if (number[0] == 0) {
+				number = number.slice(1);
+			}
+		} else {
+			$('#mobile_number').focus();
+			$('#mobile_error').show();
+			var s_flag = false;
+		}
+		/*var postcode_main_div = $('.postcode_main_div').val();
+		$(".postcode_main_div").removeAttr('css');
+		if(postcode_main_div == ''){
+			$(".postcode_main_div").focus();
+			$(".postcode_main_div").css('border','1px solid red');
+			return false;
+		}*/if ($('#table_type').prop('required')) {
+			if (table_type == '') {
+				$('#table_type').focus();
+				var s_flag = false;
+			}
+
+		}
+		if (pickup_type == "takein") {
+			var mapSearch = $('#mapSearch').val();
+
+			if (mapSearch == '') {
+				$('#location_error').show();
+				$('#mapSearch').focus();
+				var s_flag = false;
+			} else {
+				$('#location_error').hide();
+			}
+		} else {
+			$('#location_error').hide();
+		}
+            if (s_flag)
+
+            {
+                totalcart();
+                $(".rebate_amount").each(function() {
+                    total_rebate += parseFloat($(this).val());
+                });
+
+                $(".p_total").each(function() {
+                    total_amount += parseFloat($(this).val());
+                });
+
+                var delivery_charges = $('#delivery_charges').val();
+                if (delivery_charges > 0)
+                    var order_min_charge = "<?php echo $merchant_detail['order_min_charge']; ?>";
+                else
+                    var order_min_charge = 0;
+
+                if (order_min_charge > 0)
+                {
+                    if (parseFloat(total_amount) < parseFloat(order_min_charge))
+                    {
+                        var msg = "Minimum order is Rm " + order_min_charge;
+                        $('#show_msg').html(msg);
+                        $('#AlerModel').modal('show');
+                        return false;
+                    }
+                }
+                var total_amount = total_amount.toFixed(2);
+                var total_rebate = total_rebate.toFixed(2);
+                $('#total_rebate_amount').val(total_rebate);
+                $('#total_cart_amount').val(total_amount);
+                $('#total_cart_amount_label').html(total_amount);
+            } else {
+                return false;
+            }
+		console.log('fpx_data___before');
+		var final_amount_value = $(".final_amount_value").html();
+		$("#hidden_final_cart_price").val(final_amount_value);
+		var str = $("#order_place").serializeArray();
+		$(".internet_banking_fpx").prop('disabled', true);
+		$.ajax({  
+			type: "POST",  
+			url: "temp_order_save.php",  
+			data: str,  
+			success: function(value) { 
+				
+				var json = $.parseJSON(value);
+				//return false;
+				//$("#paymentid").val();
+				$("#RefNo").val(json.refNo);
+				$("#Amount").val(final_amount_value);
+				$("#ProdDesc").val(json.proddesc);
+				$("#UserName").val(json.username);
+				$("#UserEmail").val(json.useremail);
+				$("#UserContact").val(json.usercontact);
+				$("#Remark").val(json.remark_ipay88);
+				$("#Signature").val(json.signature);
+				//sleep(10);
+				$("#ipay88_form").submit();
+				/*setTimeout(
+					  function() 
+					  {
+						//do something special
+							$("#ipay88_form").submit();
+					  }, 500);*/
+				}
+		});
+		return false;
+	});
+});
+
+$(document).ready(function(){
+		//$("#postcode").css("background","#FFF url(ajax-loader.gif) no-repeat 165px");
+		$("#postcode").keyup(function(){
+			var delivery_price = $(this).attr('delivery_price');
+			
+			var merchant_territory_hidden_id =  $(this).attr('m_terr_id');
+			console.log(merchant_territory_hidden_id);
+			$.ajax({
+			type: "POST",
+			url: "ajaxcartresponse.php",
+			data:'type=searchpostcode&delivery_price='+delivery_price+'&merchant_territory_hidden_id='+merchant_territory_hidden_id+'&keyword='+$(this).val(),
+			beforeSend: function(){
+				$("#postcode").css("background","#FFF url(ajax-loader.gif) no-repeat 165px");
+			},
+			success: function(data){
+				$("#suggesstion-box").show();
+				$("#suggesstion-box").html(data);
+				$("#postcode").css("background","#FFF");
+			}
+			});
+		});
+		
+		//$(".postcode_main_div").delegate(".liclass", "click", function() {
+		$(".postcode_main_div").change(function() {
+			$("#postcode_delivery_charge").show();
+			var terr_id = $(this).val();
+			
+			
+			var text_html = $("#liid_"+terr_id).html();
+			var price = $(this).find('option:selected').attr('price_optn');//$('option:selected', this).attr('price');//$(this).attr('price');
+			var terr_id_last_order = '<?php echo $terr_id_last_order;?>';
+			//console.log(terr_id_last_order+"-------"+terr_id);
+			var free_delivery_status = $("#free_delivery_status").val();
+			console.log(free_delivery_status);
+			if(free_delivery_status == 1){
+				if(terr_id_last_order == terr_id){
+					console.log('#same');
+					$("#territory_hidden_id").val(terr_id);
+					$("#delivery_charges").val('0.00');
+					$("#delivery_label").show();
+					$("#order_extra_label").html('0.00');
+					$("#order_extra_charge").val('0.00');
+					
+					$('#additonal_delivery_charges').val('0.00');
+					$("#free_delivery_status").val(1);
+					
+					$("#postcode_delivery_charge_price").html('0.00');
+					$("#postcode_delivery_charge_hidden_price").val('0.00');
+					totalcart();
+				}
+			}else{
+				if(terr_id != 0){
+				console.log('#1');
+				$("#free_delivery_status").val(0);
+
+				var additonal_delivery_charges = $('#additonal_delivery_charges').val();
+				$('#additonal_delivery_charges').val(additonal_delivery_charges);
+				//$("#postcode").val(text_html);
+				$("#territory_hidden_id").val(terr_id);
+				$("#postcode_delivery_charge_price").html(price);
+				$("#postcode_delivery_charge_hidden_price").val(price);
+				$("#suggesstion-box").hide();
+				var d_charges = "<?php echo $merchant_detail['order_extra_charge'];?>";
+				$("#delivery_label").show();
+				
+				if(d_charges != ''){
+					console.log(d_charges);
+					$("#delivery_charges").val(d_charges);
+					$("#order_extra_label").html(d_charges);
+					$("#order_extra_charge").val(d_charges);
+				}else{
+					$("#delivery_charges").val('2.99');
+					$("#order_extra_label").html('2.99');
+					$("#order_extra_charge").val('2.99');
+				}
+			}else{
+				console.log('#2');
+				$("#free_delivery_status").val(0);
+
+				var additonal_delivery_charges = $('#additonal_delivery_charges').val();
+				$('#additonal_delivery_charges').val(additonal_delivery_charges);
+				
+				//$("#postcode").val('');
+				$("#territory_hidden_id").val(terr_id);
+				$("#postcode_delivery_charge_price").html('0.00');
+				$("#postcode_delivery_charge_hidden_price").val('0.00');
+				$("#suggesstion-box").hide();
+			}
+			
+			
+			}
+			totalcart();
+			
+		});
+
+	
+});
 </script>
 <?php if(count($_SESSION['AjaxCartResponse'][$cart_merchant_id])> 0){?>
 <script>

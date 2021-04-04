@@ -1,9 +1,19 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
- error_reporting(E_ALL);
- // $command = escapeshellcmd('enter_rest_link_get_everything.py https://www.foodpanda.my/restaurant/q8pd/xing-fu-tang-sutera');
- $command = escapeshellcmd('allcityname.py');
+	echo '=======================allcityname================<br/>';
+    $command = escapeshellcmd('python3 allcityname.py');
     $output = shell_exec($command);
     echo $output;
+	
+	echo '<br/>=======================select_city_all_restaurants================<br/>';
+	$command = escapeshellcmd('python3 select_city_all_restaurants.py kuala-lumpur');
+    $output = shell_exec($command);
+    echo $output;
+	
+	
+	echo '<br/>======================enter_rest_link_get_everything =================<br/>';
+	$command = escapeshellcmd('python3 enter_rest_link_get_everything.py');
+    $output = shell_exec($command);
+    echo $output;
+	
+	
 ?>

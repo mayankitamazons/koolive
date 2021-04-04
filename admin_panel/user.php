@@ -23,11 +23,25 @@ if( isset($_GET{'page'} ) ) {
          }
            
 $left_rec = $rec_count - ($page * $rec_limit);
-    $query="select * from users Where user_roles = 1 order by id desc LIMIT $offset, $rec_limit";
+    // $query="select * from users Where user_roles = 1 order by id desc LIMIT $offset, $rec_limit";
+	$query="SELECT
+  u.*,
+  COUNT(o.id) AS total_order
+FROM
+  users as u
+LEFT JOIN order_list as o ON u.mobile_number = o.user_mobile where u.user_roles=1
+GROUP BY u.id order by total_order desc LIMIT $offset, $rec_limit";
 if($_POST['m_id'])
 {
 	$m_id=$_POST['m_id'];
 	 $query="select * from users Where user_roles = 1 and id='$m_id'";
+	 $query="SELECT
+  u.*,
+  COUNT(o.id) AS total_order
+FROM
+  users as u
+LEFT JOIN order_list as o ON u.mobile_number = o.user_mobile where u.id=$m_id
+GROUP BY u.id order by total_order desc";
 	 // $query="select SQL_NO_CACHE users.*,about.image from users left join about on users.id=about.userid Where users.user_roles = 2 and users.id='$m_id' order by name desc LIMIT $offset, $rec_limit";
 	 // $query="select SQL_NO_CACHE * from users Where user_roles = 2 and id='$m_id' order by name desc LIMIT $offset, $rec_limit";
 }
@@ -187,7 +201,9 @@ $a_m="member";
 							<th>Particular</th>
 							<th>Name</th>
 							<th>User id</th>
-							<th>Mobile Nmber</th>
+							<th>Mobile Number</th>
+							<th>Total Order</th>
+							<th> </th>
 							<th>K Type</th>
 							<th>Koo CashBack</th>
 							<th>MYR Wallet</th>
@@ -195,6 +211,7 @@ $a_m="member";
 							<th>Joining Date</th>
 							<th>Status</th>
 							<th>View</th>
+							
 							<th>Delete</th>
 						  </tr>
 					    </thead>
@@ -209,6 +226,10 @@ $a_m="member";
                         		 <td> <?php echo $row['id']; ?> </td>
                                
                                 <td><?php echo $row['mobile_number'];  ?></td>
+                                <td><?php echo $row['total_order'];  ?></td>
+								 <td><a target="_blank" href="../orderlist.php?did=<?php echo $row['id'];?>"><i style="font-size: 60px;" class="fa fa-info"></i></a>
+								</td>
+							       
                                 <td><?php echo $row['account_type'];?></td>
 								<td>
 								<input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="balance_inr" placeholder="%" class="form-control balance_inr" value="<?php echo $row['balance_inr'];?>">
@@ -227,7 +248,8 @@ $a_m="member";
                                 	    <option value='0' <?php echo $row['isLocked']=='0' ? 'selected' : ''?>>Unblocked</option>
                         	        </select>
                         	    </td>
-                        	    <td><a href="user_edit.php?id=<?php echo $row['id'];?>"><i style="font-size: 20px;" class="fa fa-eye"></i></a></td>
+                        	    <td><a href="user_edit.php?id=<?php echo $row['id'];?>"><i style="font-size: 20px;" class="fa fa-eye"></i></a>	</td>
+								
                                 <td class="del" data-toggle="modal" data-target="#delModal" data-del="<?php echo $row['id']; ?>"><i style="font-size: 20px;" class="fa fa-trash"></i></td>
                               </tr>
                     	<?php

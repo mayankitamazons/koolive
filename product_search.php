@@ -12,9 +12,22 @@ if (empty($_SESSION["langfile"])) {
 }
 require_once("languages/" . $_SESSION["langfile"] . ".php");
 
+
+// product search based on location 
+$LOCSQL = '';
+//echo $_SESSION['locationsort'];
+if($_SESSION['locationsort'])
+{
+	$LOCSQL = "and users.city='".$_SESSION['locationsort']."'" ;
+}
+else
+{
+	$LOCSQL='';
+}
+
 $issetProduct = true;
-if (!isset($_GET['p']) || $_GET['p'] == '')
-    $issetProduct = false;
+//if (!isset($_GET['p']) || $_GET['p'] == '')
+//    $issetProduct = false;
 
 if (!isset($_GET['rdm'])) {
     header("location: ./product_search.php?" . $_SERVER['QUERY_STRING'] . '&rdm=' . md5(rand(0, 1000)));
@@ -64,10 +77,10 @@ if ($issetProduct) {
 
     // $sql = "SELECT user_id AS u_id, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id ORDER BY {$orderby} {$orderbyDirection} limit 12 offset $offset";
 
-    $sql = "SELECT user_id AS u_id, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id ORDER BY {$orderby} {$orderbyDirection} limit 12 offset $offset";
+    $sql = "SELECT user_id AS u_id,users.working_text,users.not_working_text, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id $LOCSQL GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 $LOCSQL INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id ORDER BY {$orderby} {$orderbyDirection} limit 12 offset $offset";
 
     // This SQL is used to have the number of restaurants
-    $sql2 = "SELECT user_id AS u_id, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id";
+    $sql2 = "SELECT user_id AS u_id, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id $LOCSQL GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 $LOCSQL INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id";
 
     $q = mysqli_query($conn, $sql);
     $q2 = mysqli_query($conn, $sql2);
@@ -229,7 +242,14 @@ function ceiling($number, $significance = 1)
                             <div class="icon"></div>
                         </div>
                     </div>
-                    <a href="./index.php?vs=<?=md5(rand()) ?>" class="btn btn-success" style="background-color: #589442;color:#fff;"><?=$language["search_by_company"] ?></a>
+                    <a href="./index.php?vs=<?=md5(rand()) ?>" class="btn btn-success" style="background-color: red;color:#fff;box-shadow:-3px 3px #fa7953, -2px 2px #fa7953, -1px 1px #fa7953;border-color:red;"><?=$language["search_by_company"] ?>
+					
+					<img class="Sirv sirv-image-loaded" data-src="https://koofamilies.sirv.com/shop.png" srcset="https://koofamilies.sirv.com/shop.png?scale.option=fill&amp;scale.width=32&amp;scale.height=32" src="https://koofamilies.sirv.com/shop.png?scale.option=fill&amp;scale.width=32&amp;scale.height=32" style="max-width: 32px;">
+					
+					<img class="Sirv sirv-image-loaded" data-src="https://koofamilies.sirv.com/shop.png" srcset="https://koofamilies.sirv.com/shop.png?scale.option=fill&amp;scale.width=32&amp;scale.height=32" src="https://koofamilies.sirv.com/shop.png?scale.option=fill&amp;scale.width=32&amp;scale.height=32" style="max-width: 32px;">
+					
+					<img class="Sirv sirv-image-loaded" data-src="https://koofamilies.sirv.com/shop.png" srcset="https://koofamilies.sirv.com/shop.png?scale.option=fill&amp;scale.width=32&amp;scale.height=32" src="https://koofamilies.sirv.com/shop.png?scale.option=fill&amp;scale.width=32&amp;scale.height=32" style="max-width: 32px;">
+					</a>
                 </div>
             </div>
         </div>
@@ -253,17 +273,22 @@ function ceiling($number, $significance = 1)
                         $number_ratings = $product['ratings'];
                         
 
-                        $get_workingHr = mysqli_fetch_assoc(mysqli_query($conn, "SELECT start_time , end_time , merchant_id FROM `timings` WHERE   DAY = DAYNAME( NOW() )AND  merchant_id = '$user_id' "));
+                        $get_workingHr = mysqli_fetch_assoc(mysqli_query($conn, "SELECT start_time , end_time , merchant_id, DAY FROM `timings` WHERE   DAY = DAYNAME( NOW() )AND  merchant_id = '$user_id' "));
 						//echo $get_workingHr['start_time'] ;	
 						//echo "SELECT start_time , end_time , merchant_id FROM `timings` WHERE   DAY = DAYNAME( NOW() )AND  merchant_id = '$user_id' " ;
                         $inWorkingHours = false;
+						
                         if (!empty($get_workingHr['start_time']) && !empty($get_workingHr['end_time'])) {
 							 $currentTime    = strtotime(date("H:i"));
 							 
 							  if (strtotime($get_workingHr['start_time']) < $currentTime && $currentTime < strtotime($get_workingHr['end_time'])) {
                                     $inWorkingHours = true;
 									
-                                 }
+                                 }else{
+									$work_str="Working Time :".$get_workingHr['start_day']." ".$get_workingHr['start_time']." to "." ".$get_workingHr['end_day']." ".$get_workingHr['end_time'];
+									//echo $work_str;
+									
+								 }
 								
                             /**
 							$daysArr = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -290,7 +315,7 @@ function ceiling($number, $significance = 1)
                             }
 							**/
                         }
-                    ?>
+						?>
                         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
                             <div class="card strip showLoader6">
                                 <figure class="showLoader6" style="border-radius: 5px 5px 0 0">
@@ -342,10 +367,20 @@ function ceiling($number, $significance = 1)
                                         </div>
                                         <?php
                                          if(!$inWorkingHours){
+											 //$work_str="Working Time :".$rd['start_day']." ".$rd['start_time']." to "." ".$rd['end_day']." ".$rd['end_time'];
+											 
                                         ?>
-                                        <div class="col-md-12 p-0 text-danger"><?=$language['shop_closed_order_later'] ?></div>
+                                        <div class="col-md-12 p-0 text-danger"><?php //echo $language['shop_closed_order_later'] ?>
+										<?php echo $product['working_text'];?> 
+										
+										<?php 
+										if($product['not_working_text'] != ''){
+											echo ",".$product['not_working_text'];
+										}?>
+										</div>
                                         <?php
                                         }
+										//echo $working_staus;
                                         ?>
                                         <div class="col-md-12 p-0">
                                             <b><?= $product['product_name'] ?> price:</b> <span class="text-info">Rm <?= ceiling($product['product_price_hike'], 0.05); ?></span>

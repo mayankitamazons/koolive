@@ -65,7 +65,7 @@ for data in data_all:
         rest_img=data.find('div',class_='b-lazy vendor-picture')['data-src']
         res_img=(rest_img.split('?'))[0]
     except:
-        rest_img="N/A"
+        res_img="N/A"
 
     try:
         rat=data.find('span',class_='rating').text.strip() 
@@ -183,7 +183,7 @@ for data in item:
         restaurant_full_name.append(restaurant_name)
         # restaurant_url.append(rest_url)
         budget_symbol.append(symbol)           ###### other info lists appended here  ##############
-        rest_image_url.append(rest_img)
+        rest_image_url.append(res_img)
         tags.append(tgs)
         rating.append(rat) 
         rating_count.append(count)  #no. of people votes taken for the rating
@@ -425,34 +425,35 @@ except:
 
 
 
-final_dct={'Restaurant Name': restaurant_full_name,
-'Restaurant Name in Chinese': restaurant_full_name_zh,
-'Restaurant URL': restaurant_url,
-'Address':address,
-'Address Chinese':address_zh,
-'Budget Symbol': budget_symbol,
-'Opening Time':opening_time,
-'Opening Time Chinese':opening_time_zh,
-'Delivery Hours':delivery_hours,
-'Delivery Hours Chinese':delivery_hours_zh,
-'Rating':rating,
-'Rating Count':rating_count,
-'Image URL':image_url,
-'Longitude':longitude,
-'Latitude':latitude,
-'Tags': tags,
-'Tel No.': telephone,
-'Postal Code': postalcode,
-'Dish Category Title':dish_category_title,
-'Dish Category Title Chinese':dish_category_title_zh,
-'Dish Name':dish_name,
-'Dish Name Chinese':dish_name_zh,
-'Dish Description Chinese':dish_description_zh,
-'Original Price':original_price,
-'Discounted Price':discounted_price,
-'Product Variations': prod_variations,
-'Product Variations Chinese': prod_variations_zh,
-'Image URL':image_url}
+final_dct={'restaurant_full_name': restaurant_full_name,
+'restaurant_full_name_zh': restaurant_full_name_zh,
+'restaurant_url': restaurant_url,
+'address':address,
+'address_zh':address_zh,
+'budget_symbol': budget_symbol,
+'opening_time':opening_time,
+'opening_time_zh':opening_time_zh,
+'delivery_hours':delivery_hours,
+'delivery_hours_zh':delivery_hours_zh,
+'rating':rating,
+'rating_count':rating_count,
+'rest_image_url':rest_image_url,
+'longitude':longitude,
+'latitude':latitude,
+'tags': tags,
+'telephone': telephone,
+'postalcode': postalcode,
+'dish_category_title':dish_category_title,
+'dish_category_title_zh':dish_category_title_zh,
+'dish_name':dish_name,
+'dish_name_zh':dish_name_zh,
+'dish_description':dish_description,
+'dish_description_zh':dish_description_zh,
+'original_price':original_price,
+'discounted_price':discounted_price,
+'image_url':image_url,
+'prod_variations': prod_variations,
+'prod_variations_zh': prod_variations_zh}
 
 
 # for k,v in final_dct.items():
@@ -478,6 +479,7 @@ print(json_out)
 # df.to_csv(filename)
 # print('Exported to csv')
 # print('Check '+filename)
+
 
 
 

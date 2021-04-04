@@ -108,7 +108,7 @@ $language["id"] = "id";
 $language["distance"] = "Distance";  
 $language["view"] = "View";  
 $language["scan_qr"] = "Scan Qr Code";  
-$language["search_by_company"] = "Search By Company Name";  
+$language["search_by_company"] = "Search By Shops";//"Search By Company Name";  
 $language["search_product_name"] = "Search By Product Name";  
 $language["search"] = "Search";  
 $language["qr_code"] = "Qr Code";   
@@ -357,9 +357,9 @@ $language['grand_total'] ="Grand total";
 $language['review'] ="Review";        
 $language['detail'] ="Detail";        
 $language['difficulty'] ="Have difficulty in placing order? </br>place through whatapp";        
-$language['search_by_location'] ="Search by location (365 shops)"; 
+$language['search_by_location'] ="Search by location (385 shops)"; 
 $language['post_job_list'] ="Post/Search jobs";     
-$language['near_by_shop_2'] ="Nearby shops";        
+$language['near_by_shop_2'] ="Nearby shops (385 shops)";        
 $language['rider_info'] ="Rider info";          
 $language['new_timing_working'] ="Multiple Working";    
 $language['shop_closed_order_later'] ="The shop is closed now, you can still order for later delivery.";        
@@ -409,5 +409,9 @@ $language['label_bank_name'] = 'Bank Name';
 $language['label_bank_account'] = 'Bank Account';
 $language['label_enquiry'] = 'Enquiry';
 
-
+$language['customer_urged'] = '*Customer is urged not to pay more than the payable amount before consulting with our admin. If you have any doubt, please do not pay to rider. You can still pay through internet banking after you finish eating your meal.';
+$language['outstation_charge'] = 'Outstation charges:';
+$language['full_delivery_charges'] = 'For Outstation customer only';
+$language['full_postcode_outstation'] = 'Outstation charges ( >15km, RM 1/km)';
+$language['more_categories'] = 'More categories';
 ?>

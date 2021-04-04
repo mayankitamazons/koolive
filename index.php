@@ -1,8 +1,7 @@
 <?php 
 include('config.php');
-$_SESSION["locationsort"] = 'Kulai';
 /* language - 18/01/2021 */
-/*if($_SESSION['langfile'] == 'english'){
+if($_SESSION['langfile'] == 'english'){
 	$open_language_modal = 1; //1=>open popup 0=>not open
 }
 if(isset($_SESSION['user_id']) && $_SESSION['user_id']!= ''){
@@ -34,10 +33,8 @@ if(isset($_GET['language'])){
 		}
 	}
 }
-*/
-if(isset($_GET['language'])){
-	$_SESSION["langfile"] = $_GET['language'];
-}
+
+
 if(isset($_SESSION["langfile"]) && $_SESSION["langfile"] !=''){
 	require_once ("languages/".$_SESSION["langfile"].".php");
 }
@@ -45,9 +42,7 @@ if(isset($_SESSION["langfile"]) && $_SESSION["langfile"] !=''){
 
 
 if(isset($_REQUEST['locationsort'])){
-	
 	$_SESSION["locationsort"] = @$_GET['locationsort'];
-	
 }
 $LocaSt=$_SESSION['locationsort'];
 if($_SESSION['locationsort'] && $LocaSt)
@@ -58,11 +53,6 @@ else
 {
 	$LOCSQL='';
 }
-
-
-
-
-
 
 
 
@@ -161,7 +151,7 @@ if(isset($_POST['merchant_select_form']))
 <?php if(empty(@$_SESSION["locationsort"])) { ?>
 <script>
     $(document).ready(function(){
-        //$("#myModal").modal('show');
+        $("#myModal").modal('show');
     });
 </script>
 <?php } ?>
@@ -182,18 +172,16 @@ if(isset($_POST['merchant_select_form']))
 					while($data = mysqli_fetch_array($sql))
 					{
 					?>
-					<!--<p><a data-dismiss="modal" href="" onclick="window.location.assign('https://www.koofamilies.com/index.php?locationsort=<?php echo $data['CityName'] ?>') ; return false;"><button class="locationbutton btn btn-primary"><?php echo $data['CityName'] ?></button></a></p>
-					-->
 					<p><a href="javascript:void(0);" link="https://www.koofamilies.com/index.php?locationsort=<?php echo $data['CityName'] ?>" class="locationbutton btn btn-primary"><?php echo $data['CityName'] ?></a></p>
+					
 					
 					<?php	
 					}	  
 					?>
-                </form>
-					<img src="img/ajax-loader.gif" class="ajx_location_resp" style="display:none;"/>
+				</form>
+					<img src="ajax-loader.gif" class="ajx_location_resp" style="display:none;"/>
 					&nbsp;
 					<span class="please_wait_text1" style="display:none;color:red">Please wait ....</span>
-				
 				
 				
             </div>
@@ -205,9 +193,8 @@ if(isset($_POST['merchant_select_form']))
 </div>
 
 
-
 <?php /* Language Model - 18/01/2021 */?>
-<?php /*if($open_language_modal == 1 && $_SESSION["locationsort"] != ''){?>
+<?php if($open_language_modal == 1 && $_SESSION["locationsort"] != ''){?>
 <script>
     $(document).ready(function(){
 		$("#myModal_language").modal({
@@ -232,10 +219,11 @@ if(isset($_POST['merchant_select_form']))
 					<a href="index.php?vs=<?php echo md5(rand()); ?>&language=chinese" class="btn btn-success btn_language" >华语</a>
 					<a href="index.php?vs=<?php echo md5(rand()); ?>&language=malaysian" class="btn btn-info btn_language" >Malay</a>
 					<br/>
-					<img src="img/ajax-loader.gif" class="ajx_lang_resp" style="display:none;padding-top:10px"/>
+					<img src="ajax-loader.gif" class="ajx_lang_resp" style="display:none;padding-top:10px"/>
 					&nbsp;
 					<span class="please_wait_text" style="display:none;color:red">Please wait ....</span>
 					
+							  
 				</form>
             </div>
 			<div class="modal-footer">
@@ -244,8 +232,7 @@ if(isset($_POST['merchant_select_form']))
         </div>
     </div>
 </div>
-
-<?php }*/?>
+<?php }?>
 <?php /* Language Model - 18/01/2021 */?>
 
 
@@ -289,6 +276,46 @@ if(isset($_POST['merchant_select_form']))
 		z-index: "-1" !important;
 	}
 </style>
+	
+	
+	<div class="page_loader2">
+		<span id="load2"></span>
+	</div>
+	<style>
+	/*loader Css */
+	.page_loader2 {
+		display:none;
+		position: fixed;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 100%;
+		z-index: 999999;
+		background-color: rgba(255, 255, 255, 0.5);
+	}
+
+	#load2 {
+		background-image: url("ajax-loader2.gif");
+		background-position: center center;
+		background-repeat: no-repeat;
+		bottom: 0;
+		height: auto;
+		left: 0;
+		margin: auto;
+		position: absolute;
+		right: 0;
+		top: 0;
+		width: 100%;
+		max-width: 200px;
+		background-size: contain;
+	}
+
+	.load_parentcss2 {
+		background: "transparent" !important;
+		z-index: "-1" !important;
+	}
+</style>
+	
 	<?php
 	 
       function checktimestatus($time_detail)
@@ -465,12 +492,22 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 										<div class="col-lg-6">
 											<div class="form-group">
 											
-											<span id="please_wait" style="color:red;display:none;">Please wait.....</span>
+											<span id="please_wait" style="color:red;display:none;">Please wait.....
+											<?php //echo "===".$_SESSION['langfile'];?></span>
 												<select class="merchant_select form-control" name="merchant_select">
 												   <option value="-1"><?php echo $language['search_by_company']; ?></option>
 													<?php
 														
-														$select =mysqli_query($conn,"SELECT SQL_NO_CACHE  name,id,mobile_number FROM users WHERE name LIKE isLocked='0' and show_merchant=1  and user_roles=2 $LOCSQL");
+														if($_SESSION['langfile'] == 'malaysian'){
+															//don't show the chinese merchnt shop
+															$q_shop = "SELECT SQL_NO_CACHE  name,user_language,id,mobile_number FROM users WHERE name LIKE isLocked='0' and show_merchant=1 and default_lang !='2' and user_roles=2 $LOCSQL";
+														}else{
+															$q_shop = "SELECT SQL_NO_CACHE  name,user_language,id,mobile_number FROM users WHERE name LIKE isLocked='0' and show_merchant=1  and user_roles=2 $LOCSQL";
+														}
+														
+														//$select =mysqli_query($conn,"SELECT SQL_NO_CACHE  name,user_language,id,mobile_number FROM users WHERE name LIKE isLocked='0' and show_merchant=1  and user_roles=2 $LOCSQL");
+														$select =mysqli_query($conn,$q_shop);
+														
 														
 														while ($row=mysqli_fetch_assoc($select)) 
 														{
@@ -503,213 +540,287 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 					<div class="col-xl-12 col-lg-12 col-md-12">
 					<button type="button" data-toggle="modal" data-target="#myModal" style="margin-top:2%;background-color:pink;padding: 13px;width: 100%;color: black;border-radius: 4px;color;black" ><?php echo $language['reselect_location']; ?></button>
 					</div>
+				</div>
+			</div>
+				
+		</div>
+		
+		
+		<!----Start CODE 10.02.2021------------->
+		<style>
+		.service_m_item {
+    text-align: center;
+    margin-bottom: 25px;
+}
+.service_m_item .service_img_inner {
+    border: 1px dashed #cecece;
+    display: inline-block;
+    border-radius: 50%;
+    padding: 5px;
+}.service_m_item .service_img {
+    overflow: hidden;
+    position: relative;
+    z-index: 3;
+}.rounded-circle {
+    border-radius: 50%!important;
+}.service_main_item_inner{
+	width:100%;
+	margin-top:45px;
+}.service_text{
+	padding:10px;
+}
+.h4_shop_cat_round{
+	font-size:20px !important;
+}
+img {
+    max-width: 100%;
+}@media screen and (max-width:991px){
+.service_text {
+    padding: 10px 0;
+    text-align: center;
+}
+
+.service_text a {
+    display: block;
+}
+
+.service_text a h4 {
+    font-size: 17px !important;
+}
+.service_main_item_inner{
+	margin-left:0px  !important; 
+}
+}
+img.loading-icon {
+    margin: 0 auto;
+}
+
+.carousel_4 {
+	margin-top: 30px;
+}
+.carousel_4 .strip figure{
+	background-color: #ffffff;
+}
+.carousel_4 .owl-item .owl-lazy {
+    max-width: 100% !important;
+    height: 100%;
+    object-fit: cover;
+}
+.carousel_4 .strip figure{
+	height: 290px;
+}
+.carousel_4 .strip figure .item_title {
+    min-height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: yellow !important;
+    padding: 10px !important;
+}
+.strip figure .item_title h3
+{
+	color:black !important;
+}
+.carousel_4  .owl-nav {
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0;
+    left: 0;
+}
+
+.carousel_4 button.owl-prev {
+    left: -40px;
+    position: absolute;
+}
+.carousel_4 button.owl-prev {
+    left: -40px;
+    position: absolute;
+}
+.carousel_4 button.owl-next{
+	 right: -40px;
+    position: absolute;
+}
+@media screen and (max-width:1310px){
+	.carousel_4 button.owl-prev {
+		left: 0;
+		background: #ddd !important;
+	}
+	.carousel_4 button.owl-next{
+		right: 0px;
+		background: #ddd !important;
+	}
+}
+@media screen and (max-width:767px){
+	span.select2.select2-container.select2-container--default {
+	    width: 100% !important;
+	}
+}
+.more_category_box{
+display:none;
+}
+</style>
+		<div class="row service_main_item_inner">
+					<?php 
+						$class_query = "SELECT * FROM `classfication_service` where status = 'y'  ORDER BY `classfication_service`.`category_order` ASC";
+						$select_query =mysqli_query($conn,$class_query);
+						$s = 1;	
+						while ($row_class=mysqli_fetch_assoc($select_query)) 
+						{
+							$cls_more_cat = '';
+								if($s > 6){
+									$cls_more_cat = 'more_category_box';
+								}
+								if($_SESSION['langfile'] == "chinese" ){
+									$cates_name = $row_class['classification_name_chiness'];
+								}else{
+									$cates_name = $row_class['classification_name'];
+								}
+
+						//echo $s;
+					?>
+
 					
-					<div class="container" style="margin-top: 5px;">
-					 <?php 
-				$sql="select SQL_NO_CACHE set_working_hr.*,users.mobile_number,users.name,users.address,users.login_status,users.id,about.image,users.shop_open,cs.shift_pos 
-					 from classification_arrange_system as cs inner join users on users.id=cs.merchant_id LEFT JOIN about on  users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id 
-					 where cs.classfication_id='3' and users.user_roles = 2  and users.shop_open=1 $LOCSQL group by users.id
-                ORDER BY cs.shift_pos  ASC  limit 20";
-				
-				
 
-
-				// $sql  = "SELECT SQL_NO_CACHE  set_working_hr.*,users.mobile_number,users.name,users.address,users.login_status,users.id,about.image,users.shop_open FROM `users` 
-                // LEFT JOIN about on  users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where users.user_roles = 2 and users.popular_restro=1 and users.shop_open=1 group by users.id
-                // ORDER BY users.popular_sort_order  ASC  limit 20";   
-                $result = mysqli_query($conn,$sql);                  
-                $totalpo=mysqli_num_rows($result);
-                 if($totalpo>0){ 
-            
-            ?>
-			<div class="main_title" style="margin:0px;">
-				<span><em></em></span>
-				<div class="row">
-				  <div class="col-md-8"><h2 style="text-align: left;color: white;"><?php echo $language['popular_restaurants']; ?></h2></div>
-				 
-				  <div style="margin:5px 0 0 0;float: left;" class="col-md-2">
-				<a href="merchant_find.php">View All</a>
-				</div>
-				</div>
-				
-            </div>
-           
-			
-			<div class="owl-carousel owl-theme carousel_4">
-            
-			<?php if(mysqli_num_rows($result)>0){
-                while($rd=mysqli_fetch_assoc($result)){
-                     // print_r($rd);
-					$working="y";
-					 if($rd['start_day']){
-						 $time_detail['starday']=$rd['start_day'];
-						 $time_detail['endday']=$rd['end_day'];
-						 $time_detail['starttime']=$rd['start_time'];
-						 $time_detail['endttime']=$rd['end_time'];
+					<?php if($s == 6){
+						//if($s > 6){
+						?>
 						
-						 $working=checktimestatus($time_detail);
-						 // $work_str="Working Time :".$rd['start_day']." ".$rd['start_time']." to "." ".$rd['end_day']." ".$rd['end_time'];
-					 }   
-					 if($working=="y")
-					 {
-                    ?>
-                    
-                    <div class="item">   
-			        <div class="strip showLoader6">
-			            <figure>
-			                <!-- <span class="ribbon off">-30%</span> -->
-							<?php if($rd['image']==""){ ?>
-							<img src="images/logo_new.jpg" data-src="images/logo_new.jpg" class="owl-lazy" alt=""> <?php
-							}else{ ?> <img  data-src="<?php echo $image_cdn; ?>about_images/<?php echo $rd['image']?>?w=200" class="owl-lazy lazy2 Sirv" alt=""> <?php }?>
-			                
-			                <a href="view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $rd['mobile_number'];?>" class="strip_info">
-			                    <!-- <small>Pizza</small> -->
-			                    <div class="item_title">
-                                      <h3><?php echo $rd['name']?></h3>
+						<div class="col-lg-2 col-4">
+							<div class="service_m_item">
+								<div class="service_img_inner">
+									<div class="service_img">
+										<img class="rounded-circle more_category" category="more_cate" src="images/more_category.png" alt="">
+									</div>
+								</div>
+								<div class="service_text">
+									<a href="javascript:void(0)" class="more_category" category="more_cat"><h4 class="more_cat_text">
 									
-			                        <!--small><?php if($work_str==""){
-										echo "<br>";
-									}else{ echo $work_str;}?></small!-->
-			                    </div>
-			                </a>
-			            </figure>
-			            <ul>
-                            <?php
-                               
-                            if($rd['shop_open'] == 1 || $working=='y'){ ?>   
-                               <li><a href="view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $rd['mobile_number'];?>"><span class="loc_open">Now Open</span></a></li>
-                         <?php   }else{ ?>
-                                <li><span class="loc_closed">Now Closed</span></li>
-                        <?php    }
-                            ?>
-			                
-			            </ul>
-			        </div>
-                </div>
-					 <?php }
-                }
-            } ?>
-			    
-			  
-			</div>
-				 <?php } ?>
-			
-		</div>
-				</div>
-			</div>
+									<?php echo $language['more_categories'];?>
+									</h4></a>
+								</div>
+							</div>
+						</div>
 				
-		</div>
-		<?php 
-		// list all classfication business 
-		if($_SESSION["langfile"]=="malaysian")
-		 $l_q="select sql_no_cache * from classfication_service where status='y' and id!='3' and mal_version='y'";
-		else
-		$l_q="select sql_no_cache * from classfication_service where status='y' and id!='3'";    
-	 
-		$l_query=mysqli_query($conn,$l_q);
-		 $current_lang=$_SESSION["langfile"];
-		 $classi_name=[];
-		 $classi_count=[];
-		while($l_r=mysqli_fetch_assoc($l_query))
-		{
-			$classi_name[]="classi_".$l_r['id'];
-			
-			$c_id=$l_r['id'];
-			   $sql="select SQL_NO_CACHE users.banner_image,users.name, users.address,service.short_name,about.image,users.mobile_number,set_working_hr.*,
-			  users.order_extra_charge,users.delivery_plan,users.not_working_text,users.not_working_text_chiness 
-			  from classification_arrange_system as cs   inner join users on users.id=cs.merchant_id left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where cs.classfication_id='$c_id' 
-			  and users.user_roles = 2 and users.shop_open=1 $LOCSQL group by users.id ORDER BY cs.shift_pos ASC limit 20 ";
-			
-			 $classification_name=$l_r['classification_name']; 
-			if($current_lang=="chinese" && $l_r['classification_name_chiness'])
-			{
-				$classification_name=$l_r['classification_name_chiness']; 
-			} if($current_lang=="malaysian" && $l_r['classification_name_mal'])
-			{
-			   $classification_name=$l_r['classification_name_mal']; 	
+					<?php //}
+}else{
+if($row_class['image'] != ''){
+	$imgs = $row_class['image'];
+}else{
+	$imgs = 'no-image.png';
+}
+?>
+<div class="col-lg-2 col-4 <?php echo $cls_more_cat;?> ">
+                        <div class="service_m_item">
+                            <div class="service_img_inner">
+                                <div class="service_img">
+                                    <img class="rounded-circle shop_cat_round" category="<?php echo $row_class['id'];?>" src="images/<?php echo $imgs;?>" alt="">
+                                </div>
+                            </div>
+                            <div class="service_text">
+                                <a href="javascript:void(0)" class="shop_cat_round" category="<?php echo $row_class['id'];?>"><h4 class="h4_shop_cat_round"><?php echo $cates_name;?></h4></a>
+                            </div>
+                        </div>
+                    </div>
+					<?php }?>
+					
+				<?php $s++;}?>
+<?php /*?>
+                    <div class="col-lg-2 col-4">
+                        <div class="service_m_item">
+                            <div class="service_img_inner">
+                                <div class="service_img">
+                                    <img class="rounded-circle shop_cat_round" category="popular" src="images/popular.png" alt="">
+                                </div>
+                            </div>
+                            <div class="service_text">
+                                <a href="javascript:void(0)" class="shop_cat_round" category="popular"><h4 class="h4_shop_cat_round">Popular Shops</h4></a>
+                            </div>
+                        </div>
+                    </div>
+					<div class="col-lg-2 col-4">
+                        <div class="service_m_item">
+                            <div class="service_img_inner">
+                                <div class="service_img">
+                                    <img class="rounded-circle shop_cat_round" category="veg" src="images/vegan.png" alt="">
+                                </div>
+                            </div>
+                            <div class="service_text">
+                                <a href="javascript:void(0)" class="shop_cat_round" category="veg"><h4 class="h4_shop_cat_round">Vegetarian Shops</h4></a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-2 col-4">
+                        <div class="service_m_item">
+                            <div class="service_img_inner">
+                                <div class="service_img">
+                                    <img class="rounded-circle shop_cat_round" category="milktea" src="images/milk_tea.png" alt="">
+                                </div>
+                            </div>
+                            <div class="service_text">
+                                <a href="javascript:void(0)" class="shop_cat_round" category="milktea"><h4 class="h4_shop_cat_round">Milk Teas Shops</h4></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-4">
+                        <div class="service_m_item">
+                            <div class="service_img_inner">
+                                <div class="service_img">
+                                    <img class="rounded-circle shop_cat_round" category="fastfood" src="images/fast-food.png" alt="">
+                                </div>
+                            </div>
+                            <div class="service_text">
+                                <a href="javascript:void(0)" class="shop_cat_round" category="fastfood"><h4>Fast-food Shops</h4></a>
+                            </div>
+                        </div>
+                    </div>
+					<div class="col-lg-2 col-4">
+                        <div class="service_m_item">
+                            <div class="service_img_inner">
+                                <div class="service_img">
+                                    <img class="rounded-circle shop_cat_round" category="seafood" src="images/sea-food.png" alt="">
+                                </div>
+                            </div>
+                            <div class="service_text">
+                                <a href="javascript:void(0)" class="shop_cat_round" category="seafood"><h4>Sea-Food Shops</h4></a>
+                            </div>
+                        </div>
+                    </div>
+					
+					<div class="col-lg-2 col-4">
+                        <div class="service_m_item">
+                            <div class="service_img_inner">
+                                <div class="service_img">
+                                    <img class="rounded-circle shop_cat_round" category="steambot" src="images/steam-bot.png" alt="">
+                                </div>
+                            </div>
+                            <div class="service_text">
+                                <a href="javascript:void(0)" class="shop_cat_round" category="steambot"><h4>Steambot shops</h4></a>
+                            </div>
+                        </div>
+                    </div>
+                
+<?php */?>
+                </div>
+				
+			<!--start ajax response category data-->
+			<style>
+			.index_hotel:hover{
+				padding:10px !important;
+				background-color: #007bff !important;;
 			}
-			$result = mysqli_query($conn, $sql);
-			$count= mysqli_num_rows($result);
-			
-			if($count>0)
-			{
-		?>
-		<div class="container <?php echo "classi_".$l_r['id']; ?> classi">
-				
-			<div class="main_title">
-				<span><em></em></span>
-				<div class="row">
-				  <div class="col-md-8"><h2 style="text-align: left;"><?php echo $classification_name; ?></h2></div>
-				  <div style="margin: 20px 0 0 0;float: right;" class="col-md-2">
-				  <!--select class="form-control popular_filter">
-					<option value="sort_name">Sort By Name</option>
-					   <option value="sort_distance">Search nearby</option>
-				  </select!-->
-				</div>
-				 
-				</div>
-				
-            </div>
-           
-			
-			<div class="owl-carousel owl-theme carousel_4">
-            
-			<?php if(mysqli_num_rows($result)>0){
-                while($rd=mysqli_fetch_assoc($result)){
-                     // print_r($rd);
-					$working="y";
-					 if($rd['start_day']){
-						 $time_detail['starday']=$rd['start_day'];
-						 $time_detail['endday']=$rd['end_day'];
-						 $time_detail['starttime']=$rd['start_time'];
-						 $time_detail['endttime']=$rd['end_time'];
-						$work_str=$rd['start_day']." ".$rd['start_time']." to ".$rd['end_day']." ".$rd['end_time']; 
-						 $working=checktimestatus($time_detail);
-						 // $work_str="Working Time :".$rd['start_day']." ".$rd['start_time']." to "." ".$rd['end_day']." ".$rd['end_time'];
-					 } 
-					// $working="y";
-					if($working=="y"){
-					
-                    ?>
-                    
-                    <div class="item <?php echo "classi_".$l_r['id']."_child";?>">
-			        <div class="strip showLoader6">
-			            <figure>
-			                <!-- <span class="ribbon off">-30%</span> -->
-							<?php if($rd['banner_image']){  ?>
-								<img ref="banner_image" data-src="<?php echo $image_cdn; ?>banner_image/<?php echo $rd['banner_image']?>?w=400" class="owl-lazy lazy2 Sirv" alt="">
-							<?php } else {if($rd['image']==""){ ?>
-							<img src="images/logo_new.jpg" data-src="images/logo_new.jpg" class="owl-lazy" alt=""> <?php
-							}else{ ?> <img  data-src="<?php echo $image_cdn; ?>about_images/<?php echo $rd['image']?>?w=200" class="owl-lazy lazy2 Sirv" alt=""> <?php } }?>
-			                
-			                <a href="view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $rd['mobile_number'];?>" class="strip_info">
-			                    <!-- <small>Pizza</small> -->
-			                    <div class="item_title">
-                                      <h3><?php echo $rd['name']?></h3>
-									
-			                        <small><?php if($work_str==""){
-										echo "<br>";
-									}else{ echo $work_str;}?></small>
-									<?php if($rd[12] || $rd[13]){ if($rd[13]){ $d_str="Flexible Delivery";} else { $d_str="MYR ".number_format($rd[12],2);} } else { $d_str="Free Delivery";} ?>
-									
-			                    </div>
-			                </a>
-							
-			            </figure>
-						
-			        </div>   
-                </div>
-					<?php }
-                }
-            } ?>
-			    
-			  
-			</div>
-				
-			
+			</style>
+			<span class="scroll_top_ajax"></span>
+		<div class="container ajax_shop_response" style="margin-top: 5px;text-align:center">
+		<img src="images/loading-icon.gif" class="loading-icon" style="display:none"/>
 		</div>
-			<?php }} ?>
-		<!-- /bg_gray -->
+						
+			<!--End ajax response category data-->	
+				
+		
+		<!----END CODE 10.02.2021------------->
+		
+		
 		<!-- popular restaurants  -->
 		<div class="container margin_60_40 search_location_div">
 			<div class="row all_merchant_list">
@@ -718,8 +829,11 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 						<span><em></em></span>
 						<div class="row">
 							  <div class="col-md-8"><h2><?php echo $language['near_by_shop_2']; ?>
-							   &nbsp;
-							  <img src="img/ajax-loader.gif" class="ajx_shop_resp" style="display:none"/></h2></div>   
+							  &nbsp;
+							  <img src="ajax-loader.gif" class="ajx_shop_resp" style="display:none"/>
+							  </h2>
+							  
+							  </div>   
 							
 							  <div style="margin: 20px 0 0 0;float: right;" class="col-md-2">
 							  <select class="form-control all_restro_sort">
@@ -745,7 +859,6 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 						$offset = ($page - 1) * $per_page;
 						//echo 'test';
 					?>
-					 
 					<div class="row config_all_merchant_list" data-template="home" data-sort_by="<?php echo $sort_by ?>" data-type="<?php echo $type; ?>" data-page="<?php echo $page; ?>" data-per_page="<?php echo $per_page; ?>">
 						<!-- html here -->
 					</div>
@@ -793,7 +906,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 					<div class="collapse dont-collapse-sm links" id="collapse_1">
 						<ul>
                             
-							<!--<li><a href="about.php">About us</a></li>-->
+							<li><a href="about.php">About us</a></li>
 							<li><a href="login.php">Add your restaurant</a></li>
 							<li><a href="favorite.php">Favorite Merchant</a></li>
 							<li><a href="login.php">My account</a></li>
@@ -998,16 +1111,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 <script src="extra/js/select2.min_da99e0cfb43d832f77954298a0557ca5.js" defer></script>
   <!-- SPECIFIC SCRIPTS -->
   <script src="extra/js/modernizr.min.js" defer></script>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5D6JWJ3RCH"></script>
-<script src="//rum-static.pingdom.net/pa-60309b987c17460013000172.js" async></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-5D6JWJ3RCH');
-</script>
+  
 	   <script type="text/javascript">
 var map;
 function initMap() {
@@ -1040,9 +1144,11 @@ map = new google.maps.Map($("#map")[0], {
 } 
 	$(document).ready(function() {
 		
+		
+		
 		jQuery(document).on("click", '.btn_language', function() {
 			//delay('20');
-			$(this).delay('10');
+			
 			$('.please_wait_text').show();
 			$('.ajx_lang_resp').show();
 			$(this).prop('disabled', true);
@@ -1064,6 +1170,9 @@ map = new google.maps.Map($("#map")[0], {
 			//$("#load2").show();
 			return false;
 		});
+		
+		
+		
 		
 		jQuery(document).on("click", '.showLoader6', function() {
 			if(window.location.href.includes('orderview.php')) return false;
@@ -1216,14 +1325,13 @@ if ('serviceWorker' in navigator) {
 			$('.page_loader').removeAttr('style');
 			$("#load").removeAttr('style');;
 			$('.page_loader').show();
-			
+			console.log("12");
 			$("#load").show();
-			window.location.href =m_url;	
 			setTimeout(function () {
 				$('.page_loader').hide();
 				$("#load").hide();
-			}, 6000);
-					
+			}, 10000);
+			window.location.href =m_url;			
 		  }
 		});
 		 $("#merchant_submit_form").on("submit", function(e){
@@ -1466,13 +1574,12 @@ if ('serviceWorker' in navigator) {
 			var per_page = $('.config_all_merchant_list').attr('data-per_page');
 			var page = $('.config_all_merchant_list').attr('data-page');
 
+			$(".ajx_shop_resp").show();
 			if(sort_by == "sort_name"){   
 			// location.reload(true);	
 				var sort_by="sort_name";
 
-				$('.page_loader').hide();
-				$(".ajx_shop_resp").show();
-				console.log("3--test1");
+				$('.page_loader').show();
 				$.ajax({
 				  	type: "POST",
 				  	url: "config_r_list.php",
@@ -1480,7 +1587,7 @@ if ('serviceWorker' in navigator) {
 				  	cache: false,
 				  	success: function(data) {
 						$(".ajx_shop_resp").hide();
-					 	$('.config_all_merchant_list').html(data);     
+					 	$('.config_all_merchant_list').html(data);  
 					 	$('.page_loader').hide();
 				  	}
 				});
@@ -1499,8 +1606,8 @@ if ('serviceWorker' in navigator) {
 						var longitude=position.coords.longitude;
 						if(latitude && longitude){
 							$('.page_loader').show();
-							$(".ajx_shop_resp").show();
 							console.log("5");
+							$(".ajx_shop_resp").show();
 							$.ajax({
 				  				type: "POST",
 				  				url: "config_r_list.php",
@@ -1601,13 +1708,98 @@ if ('serviceWorker' in navigator) {
 		 }
 		*/}); 
 		});
+		
+		//ajax shop response
+		$(document).ready(function(){
+			$(".shop_cat_round").click(function(){
+				//$(".ajax_shop_response").focus();
+				//var elmnt = document.getElementsByClassName("scroll_top_ajax");
+				//	elmnt[0].scrollIntoView();
+					
+				$('html, body').animate({
+                    scrollTop: $(".ajax_shop_response").offset().top
+                }, 2000);
+				
+				
+				$(".ajax_shop_response").html('<img src="images/loading-icon.gif" class="loading-icon" style="display:none"/>');
+				$(".loading-icon").show();
+				var category = $(this).attr('category');
+				var cartData = {};
+				cartData['category'] = category;
+				cartData['type'] = category;
+				jQuery.post('/shopcategoryresponse.php', cartData, function (result) {
+				//var response = jQuery.parseJSON(result);
+				//console.log(result);
+					$(".loading-icon").hide();
+					$(".ajax_shop_response").html(result);
+					
+					
+					$('.carousel_4').owlCarousel({
+			items: 4,
+			loop: false,
+			margin: 20,
+			dots:false,
+            lazyLoad:true,
+			navText: ["<i class='arrow_carrot-left'></i>","<i class='arrow_carrot-right'></i>"],
+			nav:true,
+			responsive: {
+			0: {
+				items: 1,
+				nav: false,
+				dots:true
+			},
+			560: {
+				items: 2,
+				nav: false,
+				dots:true
+			},
+			768: {
+				items: 2,
+				nav: false,
+				dots:true
+			},
+			991: {
+				items: 3,
+				nav: true,
+				dots:false
+			},
+			1230: {
+				items: 4,
+				nav: true,
+				dots:false
+			}
+		}
+		});
+
+
+				});
+
+			});
+		});
 	</script>
+<script>
+			$(document).ready(function(){
+				$(".more_category").on("click", function () {
+					var session_lang = "<?php echo $_SESSION['langfile'];?>";
+					var more_cat = 'More categories';
+					var hide_cat = 'Hide categories';
+						
+					if(session_lang == "chinese" ){
+						var more_cat = '更多种类';
+						var hide_cat = '隐藏类型';
+					}
+
+					var txt = $(".more_category_box").is(':visible') ? more_cat : hide_cat;
+					$(".more_cat_text").text(txt);
+					$(".more_category_box").slideToggle();
+				});
+
+			});
+			</script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4BfDrt-mCQCC1pzrGUAjW_2PRrGNKh_U&libraries=places" async defer></script> 
 <script src="https://scripts.sirv.com/sirv.js" defer></script> 
 		 <script type="text/javascript" src="extra/js/jquery.lazy.min_74facba505554b93155d59a4d2d7e78b.js" defer></script>
- <!--<a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
- -->
- <a href="https://chat.whatsapp.com/LdvomJRqXoIG6aXqsf5PgX" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
+ <a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
 
 </body>
 </html>

@@ -95,9 +95,24 @@
 	}
 </style>
 <script>
+
+	
 	// ===== Page Loader ==== 
-	document.onreadystatechange = function() {
+//	document.getElementById('interactive');
+jQuery(window).on('load', function() {
+	console.log('new');
+	$("#load").removeAttr('style');
+	$('.page_loader').hide();
+	$("#load").hide();
+	document.getElementById('load').style.visibility = "hidden";
+	$('#load').parent().css({
+		"background": "transparent",
+		"z-index": "-1"
+	});
+});
+	/*document.onreadystatechange = function() {
 		var state = document.readyState;
+		console.log('my');
 		if (state == 'complete') {
 			setTimeout(function() {
 				document.getElementById('interactive');
@@ -108,16 +123,17 @@
 				});
 			}, 1000);
 		}
-	}
+	}*/
 
 	function removeLoader() {
 		$("#load").removeAttr('style');
 		$('.page_loader').hide();
 		$("#load").hide();
 	}
+	/*
 	jQuery(window).on('load', function() {
-		setTimeout(removeLoader, 2000); //wait for page load PLUS two seconds.
-	});
+		//setTimeout(removeLoader, 2000); //wait for page load PLUS two seconds.
+	});*/
 	jQuery(document).on("click", '.showLoader', function() {
 		$('.page_loader').removeAttr('style');
 		$("#load").removeAttr('style');;

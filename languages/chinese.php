@@ -371,8 +371,8 @@ $language['grand_total'] ="累计";
 $language['review'] ="评论";
 $language['detail'] ="详情"; 
 $language['difficulty'] ="如果还是有困难下单，可以通过 whatapp 这里下单";   
-$language['search_by_location'] ="寻找附近餐厅";   
-$language['near_by_shop_2'] ="附近商店";  
+$language['search_by_location'] ="寻找附近餐厅 (385 家)";   
+$language['near_by_shop_2'] ="附近商店 （385 家）";  
 $language['rider_info'] ="Rider info";     
 $language['new_timing_working'] ="Multiple Working"; 
 $language['post_job_list'] ="Post/Search jobs";    
@@ -420,5 +420,12 @@ $language['label_pay_with_internet_banking'] = '银行转账付款（免手续�
 $language['label_bank_name'] = '银行名字';
 $language['label_bank_account'] = '户口名字';
 $language['label_enquiry'] = '任何询问';
+$language['customer_urged'] = '*请坚决不付给司机超过订单内的价格，除非得到我们Admin的确认。如果不确定价格，可以在拿了食物吃饱后，迟点再银行转账。';
+$language['outstation_charge'] = '外地额外运送费';
+$language['full_delivery_charges'] = '外玻顾客运费参考';
+$language['full_postcode_outstation'] = ' 外玻收费 ( >15km, RM 1/km)';
+$language['more_categories'] = '更多种类';
+
+
 
 ?>

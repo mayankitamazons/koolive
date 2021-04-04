@@ -235,6 +235,7 @@ while ($row=mysqli_fetch_assoc($total_rows1)){
 
 
 <head>
+   <link rel="stylesheet" href="./css/font-awesome.min.css">
 
     <style>
 	  
@@ -1189,10 +1190,42 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 								 <?php echo $row['pay_transid']; ?>
 							<?php }?>
 						<?php }*/?>
+						
+						
 								
 									
 							</td>
-							<td  style="font-size:18px;" class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></td>
+							<td  style="font-size:18px;" >
+							
+							<span class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></span>
+							
+						<?php if($row['ipay_p_id'] != 0){?>
+							<?php if($row['ipay_payment_status'] == 0){?>
+								<br/>
+								 <label class= "btn btn-primary status"  style="background-color:red"> <?php echo $row['ipay_message']; ?></label>
+								 <br/>Transaction Id: 
+								 <?php echo $row['pay_transid']; ?>
+							<?php }?>
+							<?php if($row['ipay_payment_status'] == 1){?>
+								<br/>
+								 <label class= "btn btn-primary status"  style="background-color:green"> Success<?php //echo $row['ipay_message']; ?></label>
+								 <br/>Transaction Id: 
+								 <?php echo $row['pay_transid']; ?>
+							<?php }?>
+						<?php }?>
+						
+						
+						<!-- payment proof -->
+							<br/>
+					  <?php if($row['payment_proof'] != '' ){?>
+						  <label class="btn-sm btn-yellow" style="background-color:#6ea6d6;margin-top:10px;width:150px">
+						  <a class="fancybox" rel="" href="<?php echo $site_url.'/upload/'.$row['payment_proof'];?>" style="color:white" >
+Payment Proof </a>
+						  </label>
+					  <?php }?>
+							<!-- End Payment Proof-->
+							
+							</td>
 						<td style="min-width:167px;"><textarea  style="border:1px solid gray !important;" rows="2" cols="10" order_id="<?php echo $row['id']; ?>" class="form-control rider_info"><?php echo $row['rider_info']." ".$row['rider_name']; ?></textarea></td>
 							<td class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i></td>
 								 <td><?php echo $row['remark_extra']; ?></td>
@@ -1269,6 +1302,10 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 								$incsst=ceiling($incsst,0.05);
 								  $incsst=@number_format($incsst, 2);
 							     $g_total=@number_format($total+$incsst, 2);
+								 $territory_price_array = explode("|",$row['territory_price']);
+								$terr_id = $territory_price_array[0];
+								$territory_price = $territory_price_array[1];
+								 
 							 ?>
 							  <td><?php echo $incsst; ?></td>
 							 
@@ -1278,13 +1315,56 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 							  
 							<?php } else { $g_total=$total;} ?>
 							<td> <?php  echo @number_format($row['deliver_tax_amount'],2); ?></td>
+							
+							<?php /*
 							<td><?php  if($row['special_delivery_amount']){echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)";} else {echo @number_format($row['order_extra_charge'],2); } ?></td>
+							*/?>
+							
+							<td><?php  
+							if($row['special_delivery_amount']>0 && $row['speed_delivery_amount']>0){
+								//echo '1';
+								//echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)"."</br>+".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)";
+								echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)"."</br>+".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)"."+".@number_format($territory_price,2);
+								
+								}
+								else if($row['special_delivery_amount']>0 && $row['speed_delivery_amount']==0){
+								//echo '2';
+								//echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)";
+									echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['special_delivery_amount'],2)."(Chiness Delivery)"."+".@number_format($territory_price,2);
+									
+								}
+								else if($row['special_delivery_amount']==0 && $row['speed_delivery_amount']>0){
+									//echo '3';
+									//echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)";
+									echo @number_format($row['order_extra_charge'],2)."+ ".number_format($row['speed_delivery_amount'],2)."(Speed Delivery)"."+".@number_format($territory_price,2);
+								}
+								else {
+									//echo '4';
+									//echo "..".$row['order_extra_charge'];
+									//echo @number_format($row['order_extra_charge'],2); 
+									echo @number_format($row['order_extra_charge'],2)."<br/>+<br/>".@number_format($territory_price,2); 
+									
+									} ?>
+									
+									<?php if($terr_id == '-1'){?>
+								<label class="btn-sm btn-primary" style="cursor:pointer;background-color:red"> Check AreaName</label>
+								<?php }?>
+									
+								<?php if($row['free_delivery_prompt'] == 1){?>
+								<label class="btn-sm btn-primary" style="cursor:pointer;background-color:green"> 10-minute free delivery</label>
+								<?php }?>
+								
+								
+							</td>
+							
+							
 							<td><?php  echo @number_format($row['membership_discount'],2); ?></td>
 							<td><?php echo @number_format($row['coupon_discount'],2); ?></td>
-							<td><?php  echo @number_format(($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount'])-($row['membership_discount']+$row['coupon_discount']),2); ?></td>
+							<td><?php  echo @number_format(($g_total+$row['order_extra_charge']+$territory_price+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['membership_discount']+$row['coupon_discount']),2); ?></td>
 							
 							<td><?php  echo @number_format($row['wallet_paid_amount'],2); ?></td>
-							<td><?php echo @number_format(($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount'])-($row['wallet_paid_amount']+$row['membership_discount']+$row['coupon_discount']), 2); ?></td>   
+							<td><?php echo @number_format(($g_total+$row['order_extra_charge']+$territory_price+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['wallet_paid_amount']+$row['membership_discount']+$row['coupon_discount']), 2); ?></td>  
+								
                            
                           
                             <td class="products_namess product_name_<?php echo $row['id'];?> test_productss" >
@@ -2332,9 +2412,18 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 
 				  			</div>
 						</div>
-						
+						 <link rel="stylesheet" href="css/fancybox.css" type="text/css" media="screen" />
+   <script type="text/javascript" src="js/fancybox.js"></script>
 </body>
 </html>
+<script>
+$(document).ready(function() {
+	$(".fancybox").fancybox({
+		openEffect	: 'none',
+		closeEffect	: 'none'
+	});
+});  
+</script>
 <!--
 <script>
 $(document).ready(function(){

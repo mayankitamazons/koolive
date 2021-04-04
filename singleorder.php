@@ -99,10 +99,10 @@ if($s_id)
 		{
 			echo "</br>Order id : ".$row['id'];
 		}
-		if($row['order_time_shop_on']=="n")
+		/*if($row['order_time_shop_on']=="n")
 		{
 			echo "</br>Shop closed";
-		}
+		}*/
 		
       
 	}
