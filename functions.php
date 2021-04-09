@@ -59,6 +59,7 @@ if(isset($_POST['method']) && ($_POST['method'] == "onesingalidsave")){
 	echo json_encode($res);
 	die;
 }  
+/*
 if(isset($_POST['method']) && ($_POST['method'] == "riderdetailsave")){ 
 	 extract($_POST);
 	 $up=mysqli_query($conn,"update order_list set rider_info='$rider_info' where id='$order_id'");
@@ -68,7 +69,56 @@ if(isset($_POST['method']) && ($_POST['method'] == "riderdetailsave")){
 	$res = array('msg'=>"Failed to update",'status'=>false);
 	echo json_encode($res);
 	die;
+}*/
+if(isset($_POST['method']) && ($_POST['method'] == "riderdetailsave")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set rider_info='$rider_info', rider_od_assign_time= '".date('Y-m-d H:i:s')."' where id='$order_id'");
+	 if($up)
+		$res = array('msg'=>"Rider detail updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
 }
+if(isset($_POST['method']) && ($_POST['method'] == "cancelorder")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set cancel_order=1,inform_mecnt_status=4 where id='$orderid'");
+	 die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "ridersoptionsave")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set s_rider_option='$rider_option_text' where id='$order_id'");
+	 if($up)
+		$res = array('msg'=>"Rider detail updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+
+/* start :: save admin_bank_price & admin_cash_price*/
+if(isset($_POST['method']) && ($_POST['method'] == "admin_bank_price")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set admin_bank_price='".$_POST['bank_text']."' where id='$order_id'");
+	 if($up)
+		$res = array('msg'=>"Bank price updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "admin_cash_price")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set admin_cash_price='".$_POST['bank_text']."' where id='$order_id'");
+	 if($up)
+		$res = array('msg'=>"Cash price updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+/* END :: save admin_bank_price & admin_cash_price*/
+
 /*Start : info merchnt*/
 /* info merchnt update*/
 if(isset($_POST['data']) && ($_POST['data'] == "infomerchnt")){ 
@@ -113,6 +163,14 @@ if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){
 		else
 		{
 			$name=$user_data['name'];
+		}
+		if($merchant_remark!='')
+		{
+		
+		}
+		else
+		{
+			$merchant_remark=$user_data['merchant_remark'];
 		}
 		// update balance inr 
 		if($balance_inr!='')
@@ -203,7 +261,7 @@ if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){
 		$popular_restro=$user_data['popular_restro'];
 		if($show_merchant=='')
 		$show_merchant=$user_data['show_merchant'];
-        $s=mysqli_query($conn,"update users set whatsapp_link='$whatsapp_link',balance_inr='$balance_inr',foodpanda_link='$foodpanda_link',google_map='$google_map',latitude='$mapLat',longitude='$mapLong',name='$name',order_extra_charge='$order_extra_charge',sst_rate='$sst_rate',custom_msg_time='$custom_msg_time',price_hike='$price_hike',popular_restro='$popular_restro',show_merchant='$show_merchant',special_price_value='$special_price_value',vendor_comission='$vendor_comission',delivery_rate='$delivery_rate',delivery_take_up='$delivery_take_up',delivery_dive_in='$delivery_dive_in' where id='$selected_user_id'");
+        $s=mysqli_query($conn,"update users set merchant_remark='$merchant_remark',whatsapp_link='$whatsapp_link',balance_inr='$balance_inr',foodpanda_link='$foodpanda_link',google_map='$google_map',latitude='$mapLat',longitude='$mapLong',name='$name',order_extra_charge='$order_extra_charge',sst_rate='$sst_rate',custom_msg_time='$custom_msg_time',price_hike='$price_hike',popular_restro='$popular_restro',show_merchant='$show_merchant',special_price_value='$special_price_value',vendor_comission='$vendor_comission',delivery_rate='$delivery_rate',delivery_take_up='$delivery_take_up',delivery_dive_in='$delivery_dive_in' where id='$selected_user_id'");
 		
 		if($s)
 		{
@@ -223,7 +281,7 @@ if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){
 			}
 		}		
 		else
-		{
+		{   
 			$res = array('msg'=>"Failed to update",'status'=>false);
 		}		
 	}

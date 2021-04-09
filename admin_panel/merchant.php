@@ -332,6 +332,7 @@ exit();
 							<th>Particular</th>
 							<th>Merchant id</th>
 							<th style="min-width:200px;">Name</th>
+							<th style="min-width:200px;">Merchant Remark</th>
 							<th> </th>
 							<th style="min-width:200px;">Food Panda Link</th>
 							<th style="min-width:200px;">Whats app Link</th>
@@ -382,6 +383,8 @@ exit();
                         
 								<td style="min-width:200px;">
 								<textarea  style="min-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control real_name" rows="5" name="name"><?php if(isset($row['name'])){ echo $row['name']; }?></textarea></td>
+								<td style="min-width:200px;">
+								<textarea  style="min-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control merchant_remark" rows="5" name="merchant_remark"><?php if(isset($row['merchant_remark'])){ echo $row['merchant_remark']; }?></textarea></td>
 								<td><a target="_blank" href="../orderview.php?did=<?php echo $row['id'];?>"><i style="font-size: 60px;" class="fa fa-info"></i></a>
 								</td>
                                 
@@ -731,6 +734,32 @@ exit();
 						url :'../functions.php',
 						 type:"post",
 						 data:{name:name,method:"adminprofilesave",selected_user_id:selected_user_id},     
+						 dataType:'json',
+						 success:function(result){  
+							var data = JSON.parse(JSON.stringify(result));   
+							if(data.status==true)
+							{  
+							   // location.reload(true);
+								
+							}
+							else
+							{alert('Failed to update');	}
+							
+							}
+				});      
+		}
+		});
+		 $(".merchant_remark").focusout(function(e){
+		var selected_user_id= $(this).attr('selected_user_id');
+		// var selected_user_id= $(this).attr('selected_user_id');
+		var merchant_remark=this.value; 
+		// alert(name);
+		if(merchant_remark!='' && selected_user_id)
+		{  
+		  $.ajax({
+						url :'../functions.php',
+						 type:"post",
+						 data:{merchant_remark:merchant_remark,method:"adminprofilesave",selected_user_id:selected_user_id},     
 						 dataType:'json',
 						 success:function(result){  
 							var data = JSON.parse(JSON.stringify(result));   

@@ -425,6 +425,8 @@ $language['outstation_charge'] = '外地额外运送费';
 $language['full_delivery_charges'] = '外玻顾客运费参考';
 $language['full_postcode_outstation'] = ' 外玻收费 ( >15km, RM 1/km)';
 $language['more_categories'] = '更多种类';
+$language['reselect_location_kulai']="从新选择地区（现在-古来）";
+$language['reselect_location_skudai']="现在是 Skudai";
 
 
 

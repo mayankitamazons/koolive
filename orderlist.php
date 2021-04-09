@@ -97,6 +97,23 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 	 // die;     
 	 $user_order = mysqli_fetch_assoc(mysqli_query($conn,$uq)); 
 	 $totalcount=count($user_order);
+	 
+	 
+	 /* Start riders array */
+	 $riders_query = "select * from tbl_riders where r_status = 1";
+	 $ridersFetch = mysqli_query($conn,$riders_query);
+	 $ridersArray = array();
+	 while($rider_rows = mysqli_fetch_array($ridersFetch)){
+		 $ridersArray[$rider_rows['r_id']]['name'] = $rider_rows['r_name'];
+		 $ridersArray[$rider_rows['r_id']]['r_mobile_number'] = $rider_rows['r_mobile_number'];
+		 $ridersArray[$rider_rows['r_id']]['r_info'] = $rider_rows['r_info'];
+		 $ridersArray[$rider_rows['r_id']]['r_image'] = $rider_rows['r_image'];
+		 $ridersArray[$rider_rows['r_id']]['r_vehicle_number'] = $rider_rows['r_vehicle_number'];
+		 $ridersArray[$rider_rows['r_id']]['r_live_location'] = $rider_rows['r_live_location'];
+	 }
+	 /* END riders array */
+	 
+	 
 	 // print_R($user_order);
 	 // die;
 	  $total_rebate_amount=$user_order['total_rebate_amount'];
@@ -1221,6 +1238,10 @@ span.title_fr:before {
 <audio autoplay> <source src="<?php echo $site_url;?>/images/sound/doorbell-1.mp3" type="audio/mpeg"> Your browser does not support the audio tag. </audio>
     </div>
     <?php } ?>
+	<style>
+	.status_td{
+		max-width:200px;
+	}</style>
             <table class="table table-striped">
                <thead>
                   <tr>
@@ -1230,11 +1251,12 @@ span.title_fr:before {
 					 <th>Invoice Number</th>
             <!--th>Agent code</th!-->
 					 <th class="test_product" style="min-width:240px;"><?php echo $language["row"];?></th>
-					 <th><?php echo $language["status"];?></th>
+					 <th class="status_td"><?php echo $language["status"];?></th>
 					 <th style="color:#09caab;"><?php echo "Order Details";?></th>
 					 <th><?php echo $language["rider_info"];?></th>
 					 <th style="color:#09caab;"><?php echo "Merchant Bank Detail";?></th>
 					 					 <th style="color:#09caab;"><?php echo "Feedback";?></th>
+										   <th><?php echo $language["print"];?></th> 
 					 
 					   <th>Section</th>
 					 <th><?php echo $language["table_number"];?></th>
@@ -1262,7 +1284,7 @@ span.title_fr:before {
                             <th><?php echo $language['bal_payment'];?></th>
                      <th><?php echo $language["mode_of_payment"];?></th>
                      <!--th><?php echo $language["rating_comment"];?></th!-->
-                     <th><?php echo $language["print"];?></th>   
+                     
                      <!--th>K1/K2</th!-->
                   </tr>
                </thead>
@@ -1370,7 +1392,7 @@ span.title_fr:before {
 							</br> </br>  <a href="https://api.whatsapp.com/send?phone=60137285670" target="_blank">	<img src="images/whatapp.png" style="max-width:32px;"/> <?php echo "Feedback/complaint"; ?></a>
 					</td>  
                         <!--  -->
-						<td>
+						<td class="status_td">
                        <?php
                         	$n_status='';  
                                 if($row['status'] == 0)
@@ -1399,13 +1421,28 @@ span.title_fr:before {
 									$s_color="";
 								}
 								
+								if($row['rider_complete_order'] == 1){
+									$n_status='';
+									$sta ='completed';
+									// $sta = "Accepted";
+									$s_color="green";
+								}	
+								if($row['cancel_order'] == 1){
+									$n_status='';
+									$sta ='Cancelled';
+									// $sta = "Accepted";
+									$s_color="#eca7a7";
+									$b_color = "border-color:#eca7a7";
+								}
+								
+								
 						?>
                         <?php if($row['popup']==0 && $row['status'] == 1 )
                         {
                             //echo $row['id'];
                         }
                         ?>
-                        <label class= "btn btn-primary status" data-id="<?php echo $row['order_id']; ?>" style="cursor:pointer;background-color:<?php echo $s_color;?>"> <?php echo $sta; ?></label>
+                        <label class= "btn btn-primary status" data-id="<?php echo $row['order_id']; ?>" style="cursor:pointer;width:150px;background-color:<?php echo $s_color;?>;<?php echo $b_color;?>"> <?php echo $sta; ?></label>
 						
 						<?php if($row['ipay_p_id'] != 0){?>
 							<?php if($row['ipay_payment_status'] == 0){?>
@@ -1423,7 +1460,92 @@ span.title_fr:before {
 						<?php }?>
                      </td> 
 					 <td style="font-size:18px;" class="s_order_detail btn btn-blue" order_id='<?php echo $row['order_id']; ?>'> Detail</td>
-					 <td><?php echo $row['rider_info']; ?></td>
+					 <td>
+					 <?php //echo $row['rider_info']; ?>
+					 <?php if($row['cancel_order'] != 1){?>
+					 <!-- Showing riderinfo--->
+					 <?php if($row['rider_info'] != '0'){
+						 //echo "===".$row['rider_info'];
+						 //print_r($ridersArray[$row['rider_ifo']]);
+						$rider_name = $ridersArray[$row['rider_info']]['name'];
+						$r_mobile_number = $ridersArray[$row['rider_info']]['r_mobile_number'];
+						$r_live_location = $ridersArray[$row['rider_info']]['r_live_location'];
+						$r_vehicle_number = $ridersArray[$row['rider_info']]['r_vehicle_number'];
+						$r_image = $ridersArray[$row['rider_info']]['r_image'];
+					 }?>
+					 <div style="width:200px">
+					<?php if($row['s_rider_option'] != 0){
+						$s_label1 = 'We are still desperately trying to contact the merchant,<br/> once the order is confirmed with merchant, we will inform you. Meanwhile, <br/>our rider is on his way to merchant shop checking.';
+						$s_label2 = 'Rider Listings';
+						$s_label3 = 'Shop closed, Cancel!';
+						$s_label4 = 'Merchant is preparing your foods. Please wait. Rider is waiting';
+						if($_SESSION["langfile"] == 'chinese'){
+							$s_label1 = '我们正在尽最大努力联系商家以确认你的订单。我们的司机已经出发到商家地点以确认商家是否营业！';
+							$s_label2 = '骑手列表';
+							$s_label3 = '商家休息，订单取消！';
+							$s_label4 = '商家正在准备食物，食物完成后，我们的司机就会把美食送上';
+						}
+						if($row['s_rider_option'] == 1){
+							echo $s_label1;
+						}else if($row['s_rider_option'] == 2){
+							//echo $s_label2;
+						}else if($row['s_rider_option'] == 3){
+							echo $s_label3;
+						}else if($row['s_rider_option'] == 4){
+							echo $s_label4;
+						}
+						?>
+					<?php }?>
+					</div>
+					<?php 
+					//echo $row['rider_complete_time']."===".Date('Y-m-d H:i:s');
+					$hours_2 = 0;
+					if($row['rider_complete_time']!= '0000-00-00 00:00:00'){
+						$rider_od_complete_time = $row['rider_complete_time'];
+						$complete_time = new DateTime($rider_od_complete_time);
+						$now2 = new DateTime(Date('Y-m-d H:i:s'));
+						$interval_2 = $complete_time->diff($now2);
+						$hours_2 = $interval_2->h;
+						$minutes_2 = $interval_2->i;
+					}
+					
+					if($hours_2 < 1){
+					?>
+						<?php if($row['s_rider_option'] == 2){?>
+						<div style="width:200px">
+						<?php	
+						$rider_img = $site_url."/admin_panel/uploads/riders/".$r_image;
+						if($r_image != ''){?>
+						<img src="<?php echo $rider_img;?>" height="50px" width="50px">
+						<?php }?>
+						
+						<b>Name:</b> <?php echo $rider_name;?><br/>
+						<b>Number:</b> <?php echo $r_mobile_number;?><br/>
+						<b>Vehicle:</b> <?php echo $r_vehicle_number;?><br/>
+						
+						<?php if($row['rider_arrive_shop'] != '0000-00-00 00:00:00' || $row['rider_complete_order'] == 1){?>
+						<b>Track:</b> <a href="<?php echo $r_live_location;?>" class=""><label class="btn btn-sm btn-primary">Track Location </label></a>
+						<?php }else{?>
+						<b>Track:</b>  <b style="color:red">Attempting to connect rider's Location.... Try 10 minutes later.</b> 
+						<?php }?>
+						
+						
+						</div>
+					<?php }
+				 }else{
+					?>
+					<?php if($row['s_rider_option'] == 2){?>
+					<b>Name:</b> <?php echo $rider_name;?><br/>
+					<?php }?>
+				  <?php }?>
+					
+					
+					
+					<!-- END Riderinfo -->
+				  <?php }?>
+					 
+					 </td>
+					 
 					  <td><span class="btn btn-yellow bank_detail" merchant_id="<?php echo $row['merchant_id']; ?>"  row="<?php echo $row['name']; ?>" style="color:black;">Bank Detail</span>
 					  <!--- Payment proof --->
 					  <br/>
@@ -1469,6 +1591,11 @@ Payment Proof </a>
 
 					  <?php } ?>
 					  </td> 
+					    <?php if($row['status'] == 4 || $row['status']==5 || $row['status'] ==2 || $row['status']==1){ ?>    
+                       
+                      <td><a target="_blank" href="print.php?id=<?php echo $row['order_id'];?>&merchant=<?php echo $row['merchant_id']?>">Print</a></td>   
+                      <!--td><?php echo $user_name['account_type']; ?></td!-->
+                      <?php }?>  
 					   <td><?php echo $section_type['name'];?></td>
                          <td><?php echo $row['table_type'];?></td>
                         
@@ -1656,11 +1783,7 @@ Payment Proof </a>
 								<label class="dp_lab"  data-id="<?php echo $row['id'];  ?>" data-oid="<?php echo $total;?>" data-orid="<?php echo $row['id']; ?>">Click Here</label>
 								<?php// }   ?>
 							</td!-->                
-                     <?php if($row['status'] == 4 || $row['status']==5 || $row['status'] ==2 ){ ?>
-                       
-                      <td><a target="_blank" href="print.php?id=<?php echo $row['order_id'];?>&merchant=<?php echo $row['merchant_id']?>">Print</a></td>
-                      <!--td><?php echo $user_name['account_type']; ?></td!-->
-                      <?php }?>   
+                    
                   </tr>
                   <?php  	 $i++; ?>
 

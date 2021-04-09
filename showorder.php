@@ -40,8 +40,12 @@ exit();
 }
 if (empty($_SESSION["langfile"])) { $_SESSION["langfile"] = "english"; }
     require_once ("languages/".$_SESSION["langfile"].".php");
- $query="select  order_list.*,u.shop_open,u.working_text,u.working_text_chiness,u.not_working_text_chiness,u.not_working_text,u.name as merchant_name,u.mobile_number as merchant_mobile_number,u.whatsapp_link,u.foodpanda_link,u.vendor_comission as vc_user, u.price_hike as price_hike_user from order_list inner join 
-users as u on u.id=order_list.merchant_id  order by order_list.id desc limit 0,100";
+// $query="select  order_list.*,u.shop_open,u.working_text,u.working_text_chiness,u.not_working_text_chiness,u.not_working_text,u.name as merchant_name,u.latitude,u.longitude,u.mobile_number as merchant_mobile_number,u.whatsapp_link,u.foodpanda_link,u.vendor_comission as vc_user, u.price_hike as price_hike_user from order_list inner join users as u on u.id=order_list.merchant_id  order by order_list.id desc limit 0,100";
+
+$query="select  order_list.*,u.shop_open,u.working_text,u.working_text_chiness,u.not_working_text_chiness,u.not_working_text,u.name as merchant_name,user.latitude,user.longitude,u.mobile_number as merchant_mobile_number,u.whatsapp_link,u.foodpanda_link,u.vendor_comission as vc_user, u.price_hike as price_hike_user from order_list 
+inner join users as u on u.id=order_list.merchant_id  
+inner join users as user on user.id=order_list.user_id
+order by order_list.id desc limit 0,100";
 
 
 $current_time = date('Y-m-d H:i:s');
@@ -77,6 +81,20 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 </head>
 <body>
 
+<?php 
+$order_pedning_count = 0;
+$pending_orders =  mysqli_query($conn,'select count(*) as order_cnt from order_list where rider_info = 0 and cancel_order!=1 and created_on >"2021-04-07 12:00:00"');
+$pending_order_count = mysqli_fetch_assoc($pending_orders);
+
+$order_pedning_count = $pending_order_count['order_cnt'];
+
+$riders_processjob = mysqli_query($conn,"select r.r_id,count(od.id)as ordercount from tbl_riders as r LEFT JOIN order_list as od ON od.rider_info = r.r_id and rider_complete_order = 0 where r_status = 1 and r_online = 1 group by r.r_id");
+$riderJobArray = array();
+while($rjob_result = mysqli_fetch_assoc($riders_processjob)){
+	$riderJobArray[$rjob_result['r_id']] = $rjob_result['ordercount'];
+}	
+						
+?>
 <div class="container">
   <h2>Latest Order</h2>
           
@@ -89,7 +107,7 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 		 <th>Order Status</th>
 		   <th>Action</th>
         <th>Detail</th>
-		<th>Rider Info</th>
+		<th>Rider Info <span style="color:red;font-size:22px">(<?php echo $order_pedning_count?>)</span></th>
         <th>Write up</th>
       
         <th>User Detail</th>
@@ -138,6 +156,20 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 									// $sta = "Accepted";
 									$s_color="";
 								}
+								if($row['rider_complete_order'] == 1){
+									$n_status='';
+									$sta ='completed';
+									// $sta = "Accepted";
+									$s_color="green";
+								}	
+								if($row['cancel_order'] == 1){
+									$n_status='';
+									$sta ='Cancelled';
+									// $sta = "Accepted";
+									$s_color="#eca7a7";
+									$b_color = "border-color:#eca7a7";
+								}
+								
 		 $dteDiff  = date_diff($date, date_create($current_time));
                               $diff_day = $dteDiff->d;
                               if($diff_day != '0') $diff_day .= ' days ';
@@ -160,8 +192,24 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
                                   if($row['status'] == 0){?>
                                     <p style="color: red;"><?php echo $diff_time; ?></p> <?php 
                                   }?>
+								  
+								  <!-- payment proof -->
+							<br/>
+					  <?php if($row['payment_proof'] != '' ){?>
+						  <label class="btn-sm btn-yellow" style="background-color:#6ea6d6;margin-top:10px;width:150px">
+						  <a class="fancybox" rel="" href="<?php echo $site_url.'/upload/'.$row['payment_proof'];?>" style="color:white" >
+Payment Proof </a>
+						  </label>
+					  <?php }else{?>
+					  <label class="btn-sm btn-yellow" style="background-color:#fb9678;border-color:#fb9678;margin-top:10px;width:150px;color:white">
+					  No payment proof !!
+						  </label>
+					  <?php }?>
+							<!-- End Payment Proof-->
+							
+							
                             </td>
-		   <td><input type="button" next_status="<?php echo $n_status; ?>" style="background-color:<?php echo $s_color;?>" class= "status btn btn-primary" value="<?php  echo $sta;?>" status="<?php echo $row['status'];?>" data-invoce='<?php echo $row['invoice_no'];?>' data-id="<?php echo $row['id']; ?>"/>
+		   <td><input type="button" next_status="<?php echo $n_status; ?>" style="background-color:<?php echo $s_color;?>;<?php echo $b_color;?>" class= "status btn btn-primary" value="<?php  echo $sta;?>" status="<?php echo $row['status'];?>" data-invoce='<?php echo $row['invoice_no'];?>' data-id="<?php echo $row['id']; ?>"/>
 
 
 
@@ -382,6 +430,9 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 			}else if($row['inform_mecnt_status'] == 3){
 				$labels = 'Rider buy himself';
 				$lab_cls = 'green';
+			}else if($row['inform_mecnt_status'] == 4){
+				$labels = 'Order Cancelled';
+				$lab_cls = 'red';
 			}else{
 				$labels = '';
 				$lab_cls = '';
@@ -412,13 +463,167 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 			<b>Invoice No:</b> # <?php echo $row['invoice_no']; ?>
 		<?php }?>
 		<!-- END---->
+		
+		<!-- Start Cancel Order --->
+		<?php if($row['cancel_order'] == 1){?>
+		<?php }else{?>
+		<br/>
+		<a style="background-color:#eca7a7;border-color:#eca7a7;" class="btn btn-danger cancel_order cancel_order_<?php echo $row['id']; ?>" order_id='<?php echo $row['id']; ?>' href="javascript:void(0);">Cancel Order</a>
+		<?php }?>
+		<br/>
+		
+		
+		
+		<!-- END Cancel order-->
+		
 		</td>
 		
-	
+		<!--
 		<td style="min-width:190px;"><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="rider_info" placeholder="%" class="form-control rider_info" value="<?php echo $row['rider_info'];?>"></td>
-        	<td class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i></td>
+		-->
+		<td style="min-width:190px;">
+		<!--
+		<input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="rider_info" placeholder="%" class="form-control rider_info" value="<?php echo $row['rider_info'];?>">
+		-->
+		<?php if($row['cancel_order'] != 1){?>
+		<!-- Start select online Riders-->
+		
+		<style>
+		select#rider_info option {
+			background: white;
+		}
+		select.rider_info_select{
+			background:red;
+			color:white;
+			font-weight:bold;
+			border-color:red;
+			
+		}
+</style>
+						<?php 
+						$riders_query = "select * from tbl_riders where r_status = 1 and r_online = 1";
+						//$riders_query = "select (select count(*) as dd from order_list as od where od.rider_info = r.r_id and rider_complete_order = 0 ) as rider_process_count,r.* from tbl_riders as r where r_status = 1 and r_online = 1";
+						$ridersFetch = mysqli_query($conn,$riders_query);
+						?>
+						<select name="rider_info" id="rider_info" class="form-control rider_info <?php if($row['rider_info'] == 0){?>rider_info_select <?php }?>" order_id="<?php echo $row['id']; ?>">
+						<option value="0" style="color:black"  >Select Riders</option>
+						<?php 
+						$riderNew_array = array();
+						while($r_value = mysqli_fetch_assoc($ridersFetch)){
+							$riderNew_array[$r_value['r_id']]['link'] = $r_value['r_link'];
+							$riderNew_array[$r_value['r_id']]['r_live_location'] = $r_value['r_live_location'];
+							if($riderJobArray[$r_value['r_id']] == 0){
+								$r_css = "green";
+							}else if($riderJobArray[$r_value['r_id']] != 0){
+								$r_css = "red";
+							}else{
+								$r_css = "black";
+							}
+							?>
+							<?php if($row['rider_info'] == $r_value['r_id']){?>
+							<option selected  value="<?php echo $r_value['r_id']; ?>" style="color:<?php echo $r_css;?>" ><?php echo "Jobs:".$riderJobArray[$r_value['r_id']]." ".$r_value['r_name']."(".$r_value['r_mobile_number'].")"; ?></option>
+							<?php }else{?>
+							<option   value="<?php echo $r_value['r_id']; ?>" style="color:<?php echo $r_css;?>"><?php echo "Jobs:".$riderJobArray[$r_value['r_id']]." ".$r_value['r_name']."(".$r_value['r_mobile_number'].")"; ?></option>
+							<?php }?>
+						<?php }?>
+						</select>
+						
+						<br/>
+						<?php 
+						$s_label1 = 'We are still desperately trying to contact the merchant,<br/> once the order is confirmed with merchant, we will inform you. Meanwhile, <br/>our rider is on his way to merchant shop checking.';
+						$s_label2 = 'Rider Listings';
+						$s_label3 = 'Shop closed, Cancel!';
+						$s_label4 = 'Merchant is preparing your foods. Please wait. Rider is waiting';
+						if($_SESSION["langfile"] == 'chinese'){
+							$s_label1 = '我们正在尽最大努力联系商家以确认你的订单。我们的司机已经出发到商家地点以确认商家是否营业！';
+							$s_label2 = '骑手列表';
+							$s_label3 = '商家休息，订单取消！';
+							$s_label4 = '商家正在准备食物，食物完成后，我们的司机就会把美食送上';
+						}
+						?>
+						<select name="s_rider_option" id="s_rider_option_<?php echo $row['id']; ?>" class="form-control s_rider_option"  order_id="<?php echo $row['id']; ?>">
+								<option value="0">Select Option</option>
+								<option <?php if($row['s_rider_option'] == '1'){ echo 'selected';}?> value="1"><?php echo $s_label1;?></option>
+								<option <?php if($row['s_rider_option'] == '2'){ echo 'selected';}?> value="2"><?php echo $s_label2;?></option>
+								<option <?php if($row['s_rider_option'] == '3'){ echo 'selected';}?> value="3"><?php echo $s_label3;?></option>
+								<option <?php if($row['s_rider_option'] == '4'){ echo 'selected';}?> value="4"><?php echo $s_label4;?></option>
+						</select>
+						<br/>
+						<?php 
+						//echo "==".$row['rider_info'];
+						if($row['rider_info'] != '0'){?>
+						<a href="<?php echo $riderNew_array[$row['rider_info']]['link'];?>" target="_blank" class="btn btn-sm btn-primary " >Rider Link</a>
+						<?php if($row['rider_complete_order'] != 1){?>
+						<a href="<?php echo $riderNew_array[$row['rider_info']]['r_live_location'];?>" target="_blank" class="btn btn-sm btn-primary " >Live Location</a>
+						<?php }?>
+						<br/>
+						<?php }?>
+						<?php
+						//echo $row['rider_info'];
+						if($row['rider_info'] != '' && $row['rider_info'] != '0'){
+							$rider_od_assign_time = $row['rider_od_assign_time'];
+							$assign_date = new DateTime($rider_od_assign_time);
+							$now = new DateTime(Date('Y-m-d H:i:s'));
+							$interval = $assign_date->diff($now);
+							$hours = $interval->h;
+							$minutes = $interval->i;
+							
+							if($minutes > 3){
+								//echo $minutes."===".$row['rider_accept_id'];
+								if($row['rider_accept_id'] == 0){
+								?>
+								<br/>
+								<span class="btn btn-sm btn-danger blink_info_button">Rider not accept order yet!!</span>
+								<?php	
+								}
+							}
+						} 
+						
+						if($row['rider_info'] != '' && $row['rider_info'] != '0'){
+							$rider_od_accept_time = $row['rider_od_accept_time'];
+							$accept_time = new DateTime($rider_od_accept_time);
+							$now2 = new DateTime(Date('Y-m-d H:i:s'));
+							$interval_2 = $accept_time->diff($now2);
+							$hours_2 = $interval_2->h;
+							$minutes_2 = $interval_2->i;
+							
+							//echo $minutes_2;
+							if($minutes_2 > 20){
+								//echo $minutes."===".$row['rider_accept_id'];
+								if($row['rider_accept_id'] != 0 && $row['rider_arrive_shop'] == '0000-00-00 00:00:00'){
+								?>
+								<br/>
+								<span class="btn btn-sm btn-danger blink_info_button">Rider not reached shop yet!!</span>
+								<?php	
+								}
+							}
+						} 
+						
+						
+						?>
+						<!-- END select online Riders-->
+	 <?php }?>
+		</td>
+       
+	   
+        	<!--<td class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i></td>-->
+		<td >
+			
+			<a style="display:none" class="btn btn-primary copy-text cust_<?php echo $row['id'];?>" onclick="copyToCustAdd('#writeup_set_<?php  echo $row['id'];?>','cust_<?php echo $row['id'];?>','<?php echo $row['id'];?>')"> Copy </a>
+			
+			<a style="display:none" class="btn btn-primary  copy-text orderdeatils_<?php echo $row['id'];?>" onclick="copyToOrderDetails('#od_copy_details_<?php  echo $row['id'];?>','orderdeatils_<?php echo $row['id'];?>')"> Copy Order Details </a>
+			<br/>
+			<span class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i><span></td>
+		
+		
 		<td>
-		<?php if($r['user_name']){  echo $r['user_name']."- ".$r['user_mobile']; } else { echo $r['user_mobile'];} ?>
+		<?php 
+		if($r['user_name']){  echo $r['user_name']."- ".$r['user_mobile']; } else { echo $r['user_mobile'];} ?>
+		
+		<br/>
+		<b>Latitude:</b> <?php echo $r['latitude'];?><br/>
+		<b>Longtitude:</b> <?php echo $r['longitude'];?><br/>
+		
 		
 		<?php if($row['ipay_p_id'] != 0){?>
 							<?php if($row['ipay_payment_status'] == 0){?>
@@ -556,6 +761,7 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 							<option value="1">Inform already</option>
 							<option value="2">Cannot reach  merchant, now inform customer rider is otw checking</option>
 							<option value="3">Rider buy himself</option>
+							<option value="4">Order Cancelled</option>
 						</select>
 					</div>
 					
@@ -602,6 +808,8 @@ $(document).ready(function(){
 							// alert(data);
 							// $(this).text(data);
 							document.getElementById(input_id).innerHTML =data;
+							$(".orderdeatils_"+s_id).show();
+							$(".cust_"+s_id).show();
 							// $('#write_up_input').val(data);
 							 // var copyText = document.getElementById("write_up_input");
 							  // copyText.select();
@@ -631,7 +839,7 @@ $(document).ready(function(){
                 });
 		  $("#orderdetailmodel").modal("show"); 
 	  });
-	   $(".rider_info").focusout(function(e){
+	  /* $(".rider_info").focusout(function(e){
 		var selected_user_id= $(this).attr('selected_user_id');
 		var rider_info=this.value;
 		if(rider_info!='' && selected_user_id)
@@ -656,7 +864,88 @@ $(document).ready(function(){
 		} 
 	});
 	  
-	  	    setInterval(function(){ 
+	  */	
+
+
+/*rider javacript*/
+	 	$(".rider_info").change(function(e){
+		var order_id= $(this).attr('order_id');
+		var s_rider_option = $("#s_rider_option_"+order_id).val();
+		
+		var rider_text=this.value;
+		
+		if(rider_text!='' && order_id)
+		{
+			if(rider_text == 0){
+				var cnfrmDelete = confirm("Are You Sure Withdraw Current Riders ?");
+			}else{
+				var cnfrmDelete = confirm("Are You Sure Assign This Riders ?");
+				
+			}
+			if(cnfrmDelete==true){
+				  
+				  $.ajax({
+							url :'functions.php',
+							 type:"post",
+							 data:{rider_info:rider_text,method:"riderdetailsave",order_id:order_id},     
+							 dataType:'json',
+							 success:function(result){  
+								var data = JSON.parse(JSON.stringify(result));   
+								if(data.status==true)
+								{
+									if(s_rider_option == 0){
+										$("#s_rider_option_"+order_id).val('2');
+										//console.log('here');
+										$(".s_rider_option").trigger('change');
+										
+										
+										
+									}
+									location.reload(); 
+								}
+								else
+								{alert('Failed to update');	}
+								
+								}
+						});      
+				} else{
+					//$(this).val('');
+					location.reload(); 
+				}
+		}
+		
+		
+	});
+	
+
+	$(".s_rider_option").change(function(){
+		var order_id= $(this).attr('order_id');
+		var rider_option_text=this.value;
+		if(rider_option_text!='')
+		{
+			$.ajax({
+				url :'functions.php',
+				type:"post",
+				data:{rider_option_text:rider_option_text,method:"ridersoptionsave",order_id:order_id},     
+				dataType:'json',
+				success:function(result){  
+				var data = JSON.parse(JSON.stringify(result));   
+				if(data.status==true)
+				{
+				}
+				else
+				{alert('Failed to update');	}
+				
+				}
+			}); 
+						
+		}
+	});
+	
+	
+	  
+/*End riders*/
+	  setInterval(function(){ 
 				
 					var s_token=generatetokenno(16);
 						var r_url="https://www.koofamilies.com/showorder.php?ms="+s_token;
@@ -724,6 +1013,79 @@ $(document).ready(function(){
 
 
 </script>
+<link rel="stylesheet" href="css/fancybox.css" type="text/css" media="screen" />
+<script type="text/javascript" src="js/fancybox.js"></script>
+
+<script>
+$(document).ready(function() {
+	$(".fancybox").fancybox({
+		openEffect	: 'none',
+		closeEffect	: 'none'
+	});
+}); 
+
+
+/*Copy writeup*/
+function copyToCustAdd(element,clsn,orderid) {
+	  var $temp = $("<textarea>");
+	  $("body").append($temp);
+	  $("#od_copy_details_"+orderid).removeAttr('id');
+	  var html = $(element).html();
+	  $(element).find('p').attr('id',"od_copy_details_"+orderid);
+	  html = html.replace(/<br>/g, "\n"); // or \r\n
+	  html = html.replace(/<b>/g, ""); // or \r\n
+	  html = html.replace(/<\/b>/g, ""); // or \r\n
+	  html = html.replace(/<u>/g, ""); // or \r\n
+	  html = html.replace(/<\/u>/g, ""); // or \r\n
+	  html = html.replace(/<\/p>/g, ""); // or \r\n
+	  html = html.replace(/<p>/g, ""); // or \r\n
+	  html = html.replace(/&nbsp;/g, ""); // or \r\n
+	  
+	  
+	  $temp.val(html).select();
+	  document.execCommand("copy");
+	  $temp.remove();
+	  $("."+clsn).html('copied'); 	
+}
+//copy orderdetails
+function copyToOrderDetails(element,clsn) {
+	  var $temp = $("<textarea>");
+	  $("body").append($temp);
+	  var html = $(element).html();
+	  html = html.replace(/<br>/g, "\n"); // or \r\n
+	  html = html.replace(/<b>/g, ""); // or \r\n
+	  html = html.replace(/<\/b>/g, ""); // or \r\n
+	  html = html.replace(/<u>/g, ""); // or \r\n
+	  html = html.replace(/<\/u>/g, ""); // or \r\n
+	   html = html.replace(/&nbsp;/g, ""); // or \r\n
+	  $temp.val(html).select();
+	  document.execCommand("copy");
+	  $temp.remove();
+	  $("."+clsn).html('Copied Orderdetails'); 	
+}
+
+$(document).ready(function(){
+	$(".cancel_order").click(function(){
+		var orderid = $(this).attr('order_id');
+		var cnfrmDelete = confirm("Are You sure to cancel order?");
+		if(cnfrmDelete==true){
+			$.ajax({
+					url:'functions.php',
+					method:'POST',
+					data:{method:'cancelorder',orderid:orderid},
+					success:function(res){
+						//console.log(res);
+						location.reload(true);
+					}
+				});	
+		}
+	});
+});
+ 
+</script>
+
+
+
 </body>
 
 </html>

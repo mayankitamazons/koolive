@@ -418,6 +418,7 @@ $language['outstation_charge'] = 'Outstation charges:';
 $language['full_delivery_charges'] = 'For Outstation customer only';
 $language['full_postcode_outstation'] = 'Outstation charges ( >15km, RM 1/km)';
 $language['more_categories'] = 'Lebih banyak kategori';
-
+$language['reselect_location_kulai']="Sekarang Kulai";
+$language['reselect_location_skudai']="Sekarang Skudai";
 
 ?>

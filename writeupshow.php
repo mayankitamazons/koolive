@@ -19,6 +19,9 @@ if($s_id)
 	$m_id=$row['merchant_id'];
 	$merchant_name=mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE id='".$m_id."'"));
 	$sstper=$merchant_name['sst_rate'];
+	$merchant_latitude = $merchant_name['latitude'];
+	$merchant_longitude = $merchant_name['longitude'];
+	$merchant_location = $merchant_name['google_map'];
 	if($row)
 	{
 		$product_ids = explode(",",$row['product_id']);
@@ -160,9 +163,9 @@ if($s_id)
 		if($row['coupon_discount']=='')
 			$row['coupon_discount']=0;
 		if($row['special_delivery_amount']==0)
-		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']." ".$speed_delivery_price.$territory_price.")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br>Order from:</br>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."".$user_location."</br> Order Detail:</br>";
+		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']." ".$speed_delivery_price.$territory_price.")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br>Order from:</br>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."".$user_location."</br> <p id='od_copy_details_".$row['id']."'>Order Detail:</br>";
 		else
-		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']."+".$row['special_delivery_amount']." ".$speed_delivery_price.$territory_price.")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br> Order from:</b>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."".$user_location."</br> Order Detail:</br>";
+		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']."+".$row['special_delivery_amount']." ".$speed_delivery_price.$territory_price.")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br> Order from:</b>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."".$user_location."</br> <p id='od_copy_details_".$row['id']."'>Order Detail:</br>";
 		$p=1;
 		$msg_str.="Invoice No: ".$row['invoice_no']."<br>";
 		foreach ($product_ids as $key )
@@ -196,24 +199,48 @@ if($s_id)
 					$msg_str.=  "</br>";
 					}
 			}
-		   
+			$msg_str.=  "</br>";
 			$i++;
 			$p++;
 		}
+		$msg_str .= "Total qty : ".$total_qun."<br/>";
+		$msg_str .="</p>";
 		if($row['location'])
 		{
 			$latlng=$row['order_lat'].",".$row['order_lng'];
-		// $msg_str.="Map Link : http://maps.google.com/maps?q=".urlencode($row['location'])."</br>";    
+		    // $msg_str.="Map Link : http://maps.google.com/maps?q=".urlencode($row['location'])."</br>";    
 			if($row['order_lat'] && $row['order_lng'])
 			{
-			$msg_str.="Map Link :https://www.google.com/maps/place/".urlencode($row['location']).",/@".$latlng.",17z/data=!3m1!4b1!4m5!3m4!1s0x396dc85b42c5e27f:0x22577f7c977bcb36!8m2!3d".$latlng."</br>"; ;     
+			$msg_str.="Customer Link :https://www.google.com/maps/place/".urlencode($row['location']).",/@".$latlng.",17z/data=!3m1!4b1!4m5!3m4!1s0x396dc85b42c5e27f:0x22577f7c977bcb36!8m2!3d".$latlng."</br>"; ;     
 			}
 			 else
 			 {
-			 $msg_str.="Map Link : http://maps.google.com/maps?q=".urlencode($row['location'])."</br>";    
+			 $msg_str.="Customer Link : http://maps.google.com/maps?q=".urlencode($row['location'])."</br>";    
 			 }			 
 		}
-		$msg_str.="Total qty : ".$total_qun." --End--</br>";
+		
+		$merchant_latitude = $merchant_name['latitude'];
+		$merchant_longitude = $merchant_name['longitude'];
+		$merchant_location = $merchant_name['google_map'];
+		if($merchant_location)
+		{
+			$latlng=$merchant_latitude.",".$merchant_longitude;
+		    // $msg_str.="Map Link : http://maps.google.com/maps?q=".urlencode($row['location'])."</br>";    
+			if($merchant_latitude && $merchant_longitude)
+			{
+			$msg_str.="Merchant Link :https://www.google.com/maps/place/".urlencode($merchant_location).",/@".$latlng.",17z/data=!3m1!4b1!4m5!3m4!1s0x396dc85b42c5e27f:0x22577f7c977bcb36!8m2!3d".$latlng."</br>"; ;     
+			}
+			 else
+			 {
+			 $msg_str.="Merchant Link : http://maps.google.com/maps?q=".urlencode($merchant_location)."</br>";    
+			 }			 
+		}
+		
+		
+		
+		
+		
+		$msg_str.=" --End--</br>";
 		
 		echo $msg_str;   
 	}

@@ -59,13 +59,19 @@ else
 if (empty($_SESSION["langfile"])) { $_SESSION["langfile"] = "english"; }
 require_once ("languages/".$_SESSION["langfile"].".php");
 
+$join_lang = '';
+if($_SESSION['langfile']){
+	//$join_lang = "&language=".$_SESSION['langfile']
+}
+					
 if(empty($_GET['vs']))
 {
-	$url="index.php?vs=".md5(rand());
+	$url="index.php?vs=".md5(rand()).$join_lang;
 
 header("Location:$url");
 exit();
-} 
+}
+ 
 if(isset($_POST['merchant_select_form']))
 {
 	if($_POST['merchant_select'])
@@ -169,6 +175,7 @@ if(isset($_POST['merchant_select_form']))
 					<?php 
 					$sql = mysqli_query($conn, "SELECT CityName  FROM city WHERE 0=0 GROUP BY CityName");
 					$selected = '';
+					
 					while($data = mysqli_fetch_array($sql))
 					{
 					?>
@@ -210,11 +217,12 @@ if(isset($_POST['merchant_select_form']))
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Select your Language </h5>
+                <h5 class="modal-title">Select your Language <?php //echo "===".$_SESSION["locationsort"];?> </h5>
                 <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
             </div>
             <div class="modal-body">
 				<form name="language_form" id="language_form">
+				
 					<a href="index.php?vs=<?php echo md5(rand()); ?>&language=english" class="btn btn-primary btn_language" >English</a>
 					<a href="index.php?vs=<?php echo md5(rand()); ?>&language=chinese" class="btn btn-success btn_language" >华语</a>
 					<a href="index.php?vs=<?php echo md5(rand()); ?>&language=malaysian" class="btn btn-info btn_language" >Malay</a>
@@ -538,7 +546,21 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 					</div>
 					
 					<div class="col-xl-12 col-lg-12 col-md-12">
-					<button type="button" data-toggle="modal" data-target="#myModal" style="margin-top:2%;background-color:pink;padding: 13px;width: 100%;color: black;border-radius: 4px;color;black" ><?php echo $language['reselect_location']; ?></button>
+					<button type="button" data-toggle="modal" data-target="#myModal" style="margin-top:2%;background-color:pink;padding: 13px;width: 100%;color: black;border-radius: 4px;color;black" >
+					<?php 
+					//echo $_SESSION['locationsort']."==".$open_language_modal;
+								if($_SESSION['locationsort'] == 'Kulai'){
+									echo $language['reselect_location_kulai'];
+								}
+								if($_SESSION['locationsort'] == 'Skudai/Tmn Rini'){
+									echo $language['reselect_location_skudai'];
+								}
+								
+
+					
+					
+					?>
+					</button>
 					</div>
 				</div>
 			</div>
@@ -1803,3 +1825,23 @@ if ('serviceWorker' in navigator) {
 
 </body>
 </html>
+<script>
+<!-- Facebook Pixel Code -->
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '229277018358702');
+  fbq('track', 'PageView');
+</script>
+<noscript>
+  <img height="1" width="1" style="display:none" 
+       src="https://www.facebook.com/tr?id={your-pixel-id-goes-here}&ev=PageView&noscript=1"/>
+</noscript>
+<!-- End Facebook Pixel Code -->
+</script>

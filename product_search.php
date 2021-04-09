@@ -30,6 +30,7 @@ $issetProduct = true;
 //    $issetProduct = false;
 
 if (!isset($_GET['rdm'])) {
+	//echo 'XX';
     header("location: ./product_search.php?" . $_SERVER['QUERY_STRING'] . '&rdm=' . md5(rand(0, 1000)));
 }
 
@@ -146,7 +147,7 @@ function ceiling($number, $significance = 1)
     <header class="header_in clearfix element_to_stick">
         <div class="container">
             <div id="logo">
-                <a href="/">
+                <a href="index.php?vs=<?php echo md5(rand()); ?>">
                     <img src="svgLog_first.svg" width="140" height="35" alt="" class="logo_sticky">
                 </a>
             </div>
@@ -537,7 +538,7 @@ function ceiling($number, $significance = 1)
                 if (latitude && longitude) {
                     let needsReload = false;
                     if (!(url.has('lat') === true && url.has('lng') === true))
-                        window.location.href = `./product_search.php?p=<?= $searchProduct ?>&orderby=${$("#sort_fields").find("option:selected").val()}&direction=<?= ($orderbyDirection === 'ASC') ? 'desc' : 'asc' ?>&lat=${latitude}&lng=${longitude}&pg=<?=$_GET['pg']; ?>`;
+                       // window.location.href = `./product_search.php?p=<?= $searchProduct ?>&orderby=${$("#sort_fields").find("option:selected").val()}&direction=<?= ($orderbyDirection === 'ASC') ? 'desc' : 'asc' ?>&lat=${latitude}&lng=${longitude}&pg=<?=$_GET['pg']; ?>`;
                 }
             });
 
