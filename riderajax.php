@@ -81,6 +81,13 @@ if(isset($_POST['data']) && $_POST['data']=='reach_shop'){
 
 	$query_up = "UPDATE `order_list` SET rider_arrive_shop = '".$rider_arrive_shop."'  WHERE `id` = ".$order_id;
 	mysqli_query($conn, $query_up);
+	
+	
+	$query_up2 = "UPDATE `order_list` SET  rider_m_price_diff = '".$_POST['final_order_amount']."' WHERE `id` = ".$order_id;
+	mysqli_query($conn, $query_up2);
+	
+	
+	
 
 	if($query_up){echo true;}else{die();}
 }
@@ -95,8 +102,13 @@ if(isset($_POST['data']) && $_POST['data']=='merchnt_update'){
 	$cash_amount = $_POST['cash_amount'];
 	$mode = $_POST['mode'];
 	$submit_date = date('Y-m-d H:i:s');
-
-	$receipt_photo = $_FILES['receipt_photo']['name'];
+	$receipt_photo = "";
+	$food_photo = "";
+	//$price_diff = "";
+	$reason_diff = "";
+	$riderid = $_POST['riderid'];
+	
+	/*$receipt_photo = $_FILES['receipt_photo']['name'];
 	$food_photo = $_FILES['food_photo']['name'];
 
 	// upload receipt image
@@ -120,12 +132,11 @@ if(isset($_POST['data']) && $_POST['data']=='merchnt_update'){
 		$food_image_file = $food_name_file.".".$ext;
 		move_uploaded_file($_FILES["food_photo"]["tmp_name"], $path1.$food_image_file);
 	}
-	
+	*/
 	
 	$query_up = "UPDATE `order_list` SET rider_cash_amount = '".$cash_amount."' , rider_bank_amount = '".$bank_amount."', rider_total_amount = '".$paid_amount."', rider_m_receipt_img = '".$receipt_image_file."', rider_m_food_img = '".$food_image_file."', rider_m_price_diff = '".$price_diff."', rider_reason_dif = '".$reason_diff."', update_merchnt_details = '".$submit_date."'   WHERE `id` = ".$orderid;
-	
-	
 	mysqli_query($conn, $query_up);
+	
 	if($query_up){echo true;}else{die();}
 }
 
@@ -136,7 +147,31 @@ if(isset($_POST['data']) && $_POST['data']=='complete_order'){
 
 	$query_up = "UPDATE `order_list` SET rider_complete_order = 1, rider_complete_time = '".$rider_complete_time."'  WHERE `id` = ".$order_id;
 	mysqli_query($conn, $query_up);
-
+	
+	//start save data in riders_cash_history
+	$query_order = mysqli_query($conn, "select * from order_list where id = ".$order_id."");
+	$od_q = mysqli_fetch_assoc($query_order);
+	$admin_cash_price = $od_q['admin_cash_price'];
+	$admin_commission_price = $od_q['admin_commission_price'];
+	$rider_cash_amount = $od_q['rider_cash_amount'];
+	$rc_cash_price = $admin_cash_price - $rider_cash_amount;
+	
+	$select_q = mysqli_query($conn, "select * from riders_cash_history where rc_od_id = ".$order_id." and rc_r_id = ".$riderid."");
+	$assoc_q = mysqli_fetch_assoc($select_q);
+	$rc_id = $assoc_q['rc_id'];
+	if($rc_id != ''){
+		//update
+		//echo '1';
+		$query_rc = "UPDATE `riders_cash_history` SET rc_cash_price = '".$rc_cash_price."',rc_commission = '".$admin_commission_price."' , rc_updateddate = '".$rider_complete_time."'   WHERE `rc_id` = ".$rc_id;
+		//echo $query_rc;
+		mysqli_query($conn, $query_rc);
+	}else{
+		//insert
+		$qu_in = "INSERT INTO `riders_cash_history` (`rc_r_id`, `rc_od_id`, `rc_cash_price`,`rc_commission`, `rc_handover_admin`, `rc_createddate`) VALUES ( '".$riderid."', '".$order_id."', '".$rc_cash_price."','".$admin_commission_price."', '0', '".$rider_complete_time."');";
+		mysqli_query($conn, $qu_in);
+	}
+	
+	//end
 	if($query_up){echo true;}else{die();}
 }
 

@@ -36,6 +36,16 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 	$query = mysqli_query($conn,"UPDATE `tbl_riders` SET `r_status`=0 WHERE r_id='$id'");
 	if($query){echo true;}else{die();}
 }
+if(isset($_GET['data'])&&$_GET['data']=='handover_cash'){
+	$r_id = $_GET['r_id'];
+	$submit_date = date('Y-m-d H:i:s');
+	$query_rc = "UPDATE `riders_cash_history` SET rc_handover_admin = 1 , rc_handover_date = '".$submit_date."'   WHERE `rc_r_id` = ".$r_id;
+	mysqli_query($conn, $query_rc);
+	if($query){echo true;}else{die();}
+}
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en" style="" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths">
@@ -158,6 +168,7 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 								<th>Vehicle Number</th>
                                 <th>Mobile</th>
 								<th>Info</th>
+								<th>Handover Cash</th>
 							    <th>Action</th>
 						  </tr>
 					    </thead>
@@ -166,6 +177,14 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
                         $i=1;
 						$riders = mysqli_query($conn, "SELECT * from tbl_riders where r_status = 1 order by r_id desc");
 					    while($row=mysqli_fetch_assoc($riders)){
+							$rider_pending_cash_price = '0';
+							$rider_pen_commission = '0';
+							$rider_pending_cash = mysqli_query($conn,"SELECT sum(rc_cash_price) as sum_cash,sum(rc_commission) as commisssion FROM `riders_cash_history` where rc_r_id = ".$row['r_id']." and rc_handover_admin = 0");
+							
+							$rider_cash_asscoc = mysqli_fetch_assoc($rider_pending_cash);
+							$rider_pending_cash_price = $rider_cash_asscoc['sum_cash'];
+							$rider_pen_commission = $rider_cash_asscoc['commisssion'];
+							
 							 ?>
                         	  <tr>
                                 <td><?php echo $i;?></td>
@@ -185,20 +204,28 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 								<td><?php echo isset($row['r_vehicle_number'])?$row['r_vehicle_number']:'';?></td>
                                 <td><?php echo isset($row['r_mobile_number'])?$row['r_mobile_number']:'';?></td>
 								<td><?php echo isset($row['r_info'])?$row['r_info']:'';?></td>
+								<td><b>Cash:</b> RM <?php echo number_format($rider_pending_cash_price,2);?>
+									<br/>
+									<b>Commission:</b> RM <?php echo number_format($rider_pen_commission,2);?>
+								<?php if($rider_pending_cash_price != 0){?>
+									<a href="javascript:void(0);" class="btn btn-sm btn-primary handover_cash" r_id="<?php echo $row['r_id']?>" style="cursor:pointer;background-color:red;color:white;border:red">Clear</a>
+								<?php }?>
+								
+								</td>
 								<td>
-									<a class="mr-4" href="addrider.php?r_id=<?php echo $row['r_id']?>" title="Edit">
+									<a class="mr-2" href="addrider.php?r_id=<?php echo $row['r_id']?>" title="Edit">
 										<i class="fa fa-pencil" aria-hidden="true"></i>
 									</a>
-									<a href="javascript:void(0)" class="deleteRecord mr-4" jId="<?php echo $row['r_id']?>" title="Delete">
+									<a href="javascript:void(0)" class="deleteRecord mr-2" jId="<?php echo $row['r_id']?>" title="Delete">
 										<i class="fa fa-trash" aria-hidden="true"></i>
 									</a>
 									
-									<a class="mr-4"  target="_blank" href="<?php echo $row['r_link']?>" title="View Rider's page">
+									<a class="mr-2"  target="_blank" href="<?php echo $row['r_link']?>" title="View Rider's page">
 										<i class="fa fa-eye" aria-hidden="true"></i>
 									</a>
 									
 									
-									<a class="mr-4"  target="_blank" href="workingrider.php?r_id=<?php echo $row['r_id']?>" title="View Rider's Hours">
+									<a class="mr-2"  target="_blank" href="workingrider.php?r_id=<?php echo $row['r_id']?>" title="View Rider's Hours">
 										<i class="fa fa-clock-o" aria-hidden="true"></i>
 									</a>
 									
@@ -320,6 +347,25 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 		  });	
 	}
   });
+  
+  
+  
+  $(".handover_cash").click(function(){
+
+	var r_id = $(this).attr('r_id');
+	var cnfrmDelete = confirm("Are You Sure Clear Amount ?");
+	if(cnfrmDelete==true){
+		  $.ajax({
+				url:'riders.php',
+				method:'GET',
+				data:{data:'handover_cash',r_id:r_id},
+				success:function(res){
+					location.reload(true);
+					}
+		  });	
+	}
+  });
+  
 	
 	
 				

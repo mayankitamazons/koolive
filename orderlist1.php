@@ -298,7 +298,7 @@ $months = floor(($diff - $years * 365*60*60*24)
 <html lang="en" style="" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths">
    <head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
       <link rel="stylesheet" href="./css/font-awesome.min.css">
-
+	<link rel="stylesheet" href="./css/ordercss.css">
      <style type="text/css">
 			
 
@@ -1109,7 +1109,7 @@ input[name='p_total[]'],input[name='p_price[]']{
       <!-- SIDEBAR -->
       <?php include("includes1/sidebar.php"); ?>
       <!-- /.site-sidebar -->
-      <main class="main-wrapper clearfix" style="min-height: 522px;">
+      <main class="main-wrapper clearfix orderlistdetail-wrapper" style="min-height: 522px;">
          <div class="row" id="main-content" style="padding-top:25px">
          <div class="well">.
 		  <!-- <a style="text-align:center;width:100%;" href="https://play.google.com/store/apps/details?id=com.koobigfamilies.app" target="blank">
@@ -1242,6 +1242,367 @@ span.title_fr:before {
 	.status_td{
 		max-width:200px;
 	}</style>
+	<div id="main">
+		<div class="main-container">
+			<div class="main-accordion" id="faq">
+			<?php  $i =1;
+                  while ($row=mysqli_fetch_assoc($total_rows)){
+					
+						$wallet=$row['wallet'];
+						if($wallet=="myr_bal")
+						$wal_label="MYR WALLET";
+						else if($wallet=="inr_bal")
+						$wal_label="KOO COIN";
+						 else if($wallet=="usd_bal")
+						$wal_label="CF WALLET";
+						else if($wallet=="cash")
+							$wal_label="CASH";
+						else $wal_label=$wallet;
+                  	$product_ids = explode(",",$row['product_id']);
+                  	$quantity_ids = explode(",",$row['quantity']);
+                  	$product_code = explode(",",$row['product_code']);
+                  	$remark_ids = explode("|",$row['remark']);
+                  	$c = array_combine($product_ids, $quantity_ids);
+                  	$amount_val = explode(",",$row['amount']);
+                    $amount_data = array_combine($product_ids, $amount_val);
+                    $total_data = array_combine($quantity_ids, $amount_val);
+                    $created =$row['created_on'];
+                    $date=date_create($created);
+					$section_type=$row['section_type'];
+					 $section_id=$section_type;
+					 $sstper=$row['m_sst_rate'];
+					 $merchant_id=$user_order['merchant_id'];
+					 if($section_type)
+					 {
+					  $section_type = mysqli_fetch_assoc(mysqli_query($conn, "SELECT name FROM sections WHERE id ='".$section_type."'"));
+					 
+					 }
+					 $table_type=$row['table_type'];
+                    $new_time = explode(" ",$created);
+					
+					$total = 0;
+					foreach ($amount_val as $key => $value){
+						if( $quantity_ids[$key] && $value ) {
+							$total =  $total + ($quantity_ids[$key] *$value );
+						} 
+					}
+					$sstper=$row['m_sst_rate'];			
+					$incsst = ($sstper / 100) * $total;
+					$incsst=@number_format($incsst, 2);
+					$incsst=ceiling($incsst,0.05);
+					 $incsst=@number_format($incsst, 2);
+					$g_total=@number_format($total+$incsst, 2);
+					$territory_price_array = explode("|",$row['territory_price']);
+					$terr_id = $territory_price_array[0];
+					$territory_price = $territory_price_array[1];
+					
+                   
+                  ?>
+			<!-- Loop of order --->
+			<div class="card">
+				<div class="card-header" id="faqhead<?php echo $i;?>">
+					<a href="#" class="btn btn-header-link <?php if($i != 1){echo 'collapsed';}?> " data-toggle="collapse" data-target="#faq<?php echo $i;?>"
+					aria-expanded="true" aria-controls="faq<?php echo $i;?>">
+						<span class="tn_order_no">ORDER NO: #<?php echo $row['invoice_no'];?> </span>
+						<span class="tn_order_date">  Date: <?php echo date_format($date,"M d,Y");  ?></span>
+						<span class="tn_order_total">  Order Total: RM.<?php  echo @number_format(($g_total+$row['od_extra_charge']+$territory_price+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['membership_discount']+$row['coupon_discount']),2); ?> </span>
+					</a>
+				</div>
+
+				<div id="faq<?php echo $i;?>" class="collapse <?php if($i == 1){echo 'show';}?>" aria-labelledby="faqhead<?php echo $i;?>" data-parent="#faq">
+					<div class="card-body">
+						<div class="form-row">
+							<div class="col-md-6 col-lg-6">
+								
+								<div class="tn_mer_name">
+									<span><?php echo $row['merchant_name'];  ?></span>
+									<span class="tm_hotline">
+									
+									
+									<?php 
+									if($row['chat_with_merchant'])
+									{
+										if($row['chat_group'])
+										{
+									?>
+											<a href="<?php echo $row['chat_with_merchant']; ?>" target="_blank"><i class="fa fa-whatsapp" aria-hidden="true" style="font-size: 20px;"></i></a>
+										<?php }
+										else  
+										{?>
+											<a href="https://api.whatsapp.com/send?phone=<?php  echo $row['chat_with_merchant']?>" target="_blank"><i class="fa fa-whatsapp" aria-hidden="true" style="font-size: 20px;"></i></a>
+										<?php }
+										}
+										else
+										{
+									   $chat_merchant_list = array(6958,6956, 7634,7785,7799,7839,7808,7818,7846,7912,7953,7837,7209,7462,7209,7723,7674,7663,7726,7703,7554,6960,7658,7662,7462); 
+										if (in_array($row['merchant_id'], $chat_merchant_list)) { ?>
+											<a href="https://chat.whatsapp.com/J4wcS4riADaBBrvY60c8f3" target="_blank"><i class="fa fa-whatsapp" aria-hidden="true" style="font-size: 20px;"></i></a>
+										<?php } else { ?>
+										<a href="https://api.whatsapp.com/send?phone=<?php  echo $row['merchant_mobile_number']?>" target="_blank"><i class="fa fa-whatsapp" aria-hidden="true" style="font-size: 20px;"></i></a>
+										<?php } } ?> 
+							
+									
+									
+									
+									</span>
+									<br/>
+								</div>
+								<span class="tm_product_qty"><b>Ordered Product:</b> <?php echo count($product_ids);?> </span> <br/>
+								<span class="tm_product_qty"><b>Payment Mode:</b> <?php echo $wal_label;?> </span><br/>
+								<?php if($row['ipay_p_id'] != 0){?>
+									<?php if($row['ipay_payment_status'] == 0){?>
+										<span class="tm_product_qty" style="background-color:red;padding:10px"><b><?php echo $row['ipay_message']; ?></b></span><br/>
+										<span class="tm_product_qty"><b>Transaction Id:</b><?php echo $row['pay_transid']; ?></span><br/>
+									<?php }?>
+									<?php if($row['ipay_payment_status'] == 1){?>
+										 <span class="tm_product_qty"   style="background-color:green;padding:10px"> Success<?php //echo $row['ipay_message']; ?></span><br/>
+										 <span class="tm_product_qty"><b>Transaction Id:</b><?php echo $row['pay_transid']; ?></span><br/>
+									<?php }?>
+								<?php }?>
+						
+								<span class="tm_product_qty"><b>Remark:</b> <?php echo $row['remark_extra'];?> </span>
+								<br/>
+								<?php if($row['free_delivery_prompt'] == 1){?>
+								<label class="btn-sm btn-primary" style="cursor:pointer;background-color:green;width:40%"> 10-minute free delivery</label>
+								<?php }?>
+								
+								
+								
+								<div class="btn-box-wrap mt-4">
+										
+										<span class="btn-border s_order_detail " order_id='<?php echo $row['order_id']; ?>'   title="View Details">
+										<i class="fa fa-cart-arrow-down  mr-2"></i>Product Detail
+										</span>
+										
+										<span class="btn-border bank_detail" merchant_id="<?php echo $row['merchant_id']; ?>"  row="<?php echo $row['name']; ?>" title="Bank Details">
+											<i class="fa fa-university   mr-2"></i>Bank Detail
+										</span>
+											
+											
+										<?php if($row['status']){
+						    				    if(($row['status']!=1 && $row['reviewed']==1 )){$review_given="y";}else{$review_given="n";}
+										?>  
+											<span class="btn-border review_detail" invoice_id="<?php echo $row['invoice_no']; ?>" order_id="<?php echo $row['order_id']; ?>" review_status="<?php echo $review_given; ?>" skiped_review="<?php echo $row['skiped_review']; ?>" ><i class="fa fa-star   mr-2"></i>Feedback</span>
+										<?php } ?>
+					  
+									
+										
+										</div> 
+										<?php if($row['payment_proof'] != '' ){?>
+										<label class="btn-border mx-0" style="">
+											<a class="fancybox" rel="" href="<?php echo $site_url.'/upload/'.$row['payment_proof'];?>" style="color:#000">
+											Payment Proof </a>
+											<a href="javascript:void(0)" class="delete_paymentproof" orderid="<?php echo $row['order_id']; ?>" style="color:#000"><i class="fa fa-trash" style="margin-left:20px"> </i></a>
+										</label>
+										<?php }else{?>
+										
+										<form method="post" id="image-form_<?php echo $row['order_id']; ?>" class="image-form" orderid='<?php echo $row['order_id']; ?>' enctype="multipart/form-data" onSubmit="return false;" style="min-height:0px !important;">
+										<div class="input-group mt-3 mb-3 input-has-value flex-wrap">
+											
+											<input type="file" name="file" class="file" style="visibility: hidden;position: absolute;">
+											<input type="text" class="form-control payment_proof" disabled="" placeholder="Payment Proof" id="file" style="width:130px">
+											<br>
+											<div class="input-group-append">
+												<button type="button" class="browse btn btn-primary rounded-0">Browse</button>
+											</div>
+											&nbsp;&nbsp;
+											<input type="submit" name="submit" value="Upload" class="btn btn-danger btn_proof_upload rounded-0">
+										</div>
+										</form>
+										<?php }?>
+										
+										
+										
+										
+									</div>
+									<div class="col-md-6 pl-md-5">
+										<div class="n_order_delivery  ">
+											<p class="n_ship_add pt-0">Shipping Address</p>
+											<p class="tn_add">
+											<a class="" target="_blank" href="http://maps.google.com/maps?q=<?php echo  $row['location']; ?>"> <?php echo $row['location'];?></a>
+											</p>
+											<p class="tn_add"><b>Tel. No:</b> <?php if($row['number_lock'] == 0){echo $row['mobile_number'];}else{echo '-';}?></p>
+										</div>
+										
+
+							<?php if($row['cancel_order'] != 1 && $row['rider_complete_order'] != 1 && $row['rider_info'] != 0){//if($row['cancel_order'] != 1){?>
+							<hr class="mt-3 mb-4 mx-0" />
+							<div class="media rider-media align-items-center flex-column flex-sm-row">
+							<?php 	if($row['rider_info'] != '0'){
+										$rider_name = $ridersArray[$row['rider_info']]['name'];
+										$r_mobile_number = $ridersArray[$row['rider_info']]['r_mobile_number'];
+										$r_live_location = $ridersArray[$row['rider_info']]['r_live_location'];
+										$r_vehicle_number = $ridersArray[$row['rider_info']]['r_vehicle_number'];
+										$r_image = $ridersArray[$row['rider_info']]['r_image'];
+									}
+									if($row['s_rider_option'] != 0){
+										$s_label1 = 'We are still desperately trying to contact the merchant,<br/> once the order is confirmed with merchant, we will inform you. Meanwhile, <br/>our rider is on his way to merchant shop checking.';
+										$s_label2 = 'Rider Listings';
+										$s_label3 = 'Shop closed, Cancel!';
+										$s_label4 = 'Merchant is preparing your foods. Please wait. Rider is waiting';
+										if($_SESSION["langfile"] == 'chinese'){
+											$s_label1 = '我们正在尽最大努力联系商家以确认你的订单。我们的司机已经出发到商家地点以确认商家是否营业！';
+											$s_label2 = '骑手列表';
+											$s_label3 = '商家休息，订单取消！';
+											$s_label4 = '商家正在准备食物，食物完成后，我们的司机就会把美食送上';
+										}
+										if($row['s_rider_option'] == 1){
+											$rs_label = $s_label1;
+											echo '<p style="color:red">'.$s_label1.'</p>';
+										}else if($row['s_rider_option'] == 2){
+											$rs_label = $s_label2;
+											//echo '<p>'.$s_label2.'</p>';
+										}else if($row['s_rider_option'] == 3){
+											$rs_label = $s_label3;
+											echo '<p style="color:red">'.$s_label3.'</p>';
+										}else if($row['s_rider_option'] == 4){
+											$rs_label = $s_label4;
+											echo '<p style="color:red">'.$s_label4.'</p>';
+										}
+									}		
+										$hours_2 = 0;
+										if($row['rider_complete_time']!= '0000-00-00 00:00:00'){
+											$rider_od_complete_time = $row['rider_complete_time'];
+											$complete_time = new DateTime($rider_od_complete_time);
+											$now2 = new DateTime(Date('Y-m-d H:i:s'));
+											$interval_2 = $complete_time->diff($now2);
+											$hours_2 = $interval_2->h;
+											$minutes_2 = $interval_2->i;
+										}
+										if($row['rider_complete_order'] != 1){
+												if($hours_2 < 1){
+													if($row['s_rider_option'] == 2){
+														$rider_img = $site_url."/admin_panel/uploads/riders/".$r_image;?>
+													
+														<?php if($rider_img == ''){ $rider_img = 'https://dummyimage.com/100x100/ddd/000'; }?>
+													<img  src="<?php echo $rider_img;?>" alt="Image" height="100px" width="100px" class="mb-3 mb-sm-0  mr-sm-3">
+													<div class="media-body">
+														<p><strong>Rider Name : </strong> <?php echo $rider_name;?></p>
+														<p><strong>Contact Number :</strong> <?php echo $r_mobile_number;?> </p>
+														<p><strong>Vehicle Number : </strong> <?php echo $r_vehicle_number;?></p>
+														<p><strong>Tracking :  </strong> 
+														<?php if($row['rider_arrive_shop'] != '0000-00-00 00:00:00' || $row['rider_complete_order'] == 1){?>
+														<a href="<?php echo $r_live_location;?>" class="mr-2"><i class="fa fa-map-marker" aria-hidden="true"></i></a> Track Location
+														<?php }else{?>
+														<a href="#" class="mr-2"><i class="fa fa-map-marker" aria-hidden="true"></i></a>Attempting to connect rider's Location.... Try 10 minutes later. 
+														<?php }?>
+														</p>
+													</div>
+													
+												<?php }
+											 }
+										}?>
+							</div>		
+							<?php }?>
+						<!-- END Riderinfo -->
+							<?php
+                        	$n_status='';  
+							$s_cls = '';
+							$s_cls1 = '';
+							$s_cls2 = '';
+							$s_cls3 = '';
+                                if($row['status'] == 0)
+								{
+									$sta =$language['pending'];
+									$s_color="red";
+									$n_status=1;
+									$s_cls = 'active';
+								}
+                                else if($row['status'] == 1) 
+								{
+									
+									$sta =$language['done_in_delivery'];
+									$s_color="green";
+									$n_status=4;
+									$s_cls = 'active';
+								}
+								else if($row['status'] == 4 || $row['status']==5) 
+								{
+									$sta =$language['done_in_delivery'];
+									$s_color="green";
+									$s_cls = 'active';
+								}
+                                else 
+								{
+									$n_status=1;
+									$sta =$language['accepted'];
+									// $sta = "Accepted";
+									$s_color="";
+									$s_cls = 'active';
+								}
+								
+								if($row['rider_complete_order'] == 1){
+									$n_status='';
+									$sta ='completed';
+									// $sta = "Accepted";
+									$s_color="green";
+									$s_cls = 'active';
+								}	
+								if($row['cancel_order'] == 1){
+									$n_status='';
+									$sta ='Cancelled';
+									// $sta = "Accepted";
+									$s_color="red";
+									$b_color = "border-color:red";
+								}
+								
+								
+						?>
+						
+
+										<div class="n_order_track ">
+											<p class="n_ship_add">Delivery Status</p>
+											<?php if($row['cancel_order'] == 1){?>
+											<label class= "btn btn-primary status" data-id="<?php echo $row['order_id']; ?>" style="cursor:pointer;width:150px;background-color:<?php echo $s_color;?>;<?php echo $b_color;?>"> <?php echo $sta; ?></label>
+											<?php }else{?>
+											<div class="n_breadcrumb flat d-flex">
+												
+												<?php //echo $row['status'];?>
+											<?php if($row['rider_complete_order'] == 1){?>
+												<a href="#" class="active">Pending</a>
+												<a href="#" class="active">Accepted</a>
+												<a href="#" class="active">In delivery</a>
+												<a href="#" class="active">Completed</a>
+											<?php }else if($row['status'] == 1){?>
+												<a href="#" class="active">Pending</a>
+												<a href="#" class="active">Accepted</a>
+												<a href="#" class="">In delivery</a>
+												<a href="#" class="">Completed</a>
+											<?php }else if($row['status'] == 4){?>
+												<a href="#" class="active">Pending</a>
+												<a href="#" class="active">Accepted</a>
+												<a href="#" class="active">In delivery</a>
+												<a href="#" class="">Completed</a>
+											<?php }else if($row['status'] == 2){?>
+												<a href="#" class="active">Pending</a>
+												<a href="#" class="active">Accepted</a>
+												<a href="#" class="">In delivery</a>
+												<a href="#" class="">Completed</a>
+											<?php }else{?>
+												<a href="#" class="active">Pending</a>
+												<a href="#" class="">Accepted</a>
+												<a href="#" class="">In delivery</a>
+												<a href="#" class="">Completed</a>
+											<?php }?>
+											
+											</div>
+											<?php }?>
+											<a href="orderdetails.php?orderid=<?php echo $row['order_id']; ?>" class="btn-border d-block" title="View Details">
+												<i class="fa fa-cart-arrow-down mr-2"></i>View Detail</a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+			<!-- ENd Loop of order -->
+				<?php $i++;}?>
+			</div>
+		</div>
+	</div>	
+		
+			
+	<?php /*?>
             <table class="table table-striped">
                <thead>
                   <tr>
@@ -1858,7 +2219,10 @@ Payment Proof </a>
 
       </main>
       </div>
-      <!-- /.widget-body badge -->
+      
+	  <?php */?>
+	  
+	  <!-- /.widget-body badge -->
       </div>
       <!-- /.widget-bg -->
       <!-- /.content-wrapper -->
@@ -2525,7 +2889,7 @@ Payment Proof </a>
 							</div>
 						</div>
 <div class="modal fade" id="newuser_model" tabindex="-1" role="dialog" aria-labelledby="login_passwd_modal_title" aria-hidden="true">
-  <div class="modal-dialog" role="document" style="width:28%">
+  <div class="modal-dialog" role="document">
     <div class="form-group">
       <div class="modal-content">
 	    
@@ -2592,7 +2956,7 @@ Payment Proof </a>
 					?>
 			<div class="form-group">
 			    <p><b>Meanwhile,  Earn 4% rebate by sharing your experience by copying the following link and share to your friends
-				</br><a href="<?php echo $ref_link; ?>" target="_blank" style="font-size:13px"><?php echo $ref_link;?></a>.</b></br>
+				</br><a href="<?php echo $ref_link; ?>" target="_blank"><?php echo $ref_link;?></a>.</b></br>
 				<a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $ref_link; ?>" target="_blank">
 						  				<img src="https://cdn4.iconfinder.com/data/icons/social-messaging-ui-color-shapes-2-free/128/social-facebook-circle-512.png"  style="max-width:9%;" alt="" />
 				</a>
@@ -2984,10 +3348,9 @@ if ('serviceWorker' in navigator) {
   });
    $(".skiponline").click(function(){
      var s_token=generatetokenno(16);
-						var r_url="https://www.koofamilies.com/orderlist.php?vs="+s_token;
+						var r_url="https://www.koofamilies.com/orderlist1.php?vs="+s_token;
 						window.location.replace(r_url);
    });
-   // $('#newuser_model').modal();
    $(".finalskip").click(function(){
 	   // alert(3);
 	 $('#newuser_model').modal('hide');
@@ -3272,7 +3635,7 @@ if ('serviceWorker' in navigator) {
 						  if(data.status)
 						  {
 							  var s_token=generatetokenno(16);
-						var r_url="https://www.koofamilies.com/orderlist.php?vs="+s_token;
+						var r_url="https://www.koofamilies.com/orderlist1.php?vs="+s_token;
 						window.location.replace(r_url);
 							  
 						  }
@@ -3417,7 +3780,7 @@ if ('serviceWorker' in navigator) {
 						  if(response==1)
 						  {
 							  var s_token=generatetokenno(16);
-						var r_url="https://www.koofamilies.com/orderlist.php?vs="+s_token;
+						var r_url="https://www.koofamilies.com/orderlist1.php?vs="+s_token;
 						window.location.replace(r_url);
 							  $('#PasswordModel').modal('hide'); 
 						  }
@@ -3552,7 +3915,7 @@ $('.forgot_reset_password').click(function(){
 				  {
 					 
 					  var s_token=generatetokenno(16);
-						var r_url="https://www.koofamilies.com/orderlist.php?vs="+s_token;
+						var r_url="https://www.koofamilies.com/orderlist1.php?vs="+s_token;
 						window.location.replace(r_url);
 					  $('#newuser_model').modal('hide');   
 				  }
@@ -3584,7 +3947,7 @@ setInterval(function(){
        
 
            var s_token=generatetokenno(16);
-						var r_url="https://www.koofamilies.com/orderlist.php?vs="+s_token;
+						var r_url="https://www.koofamilies.com/orderlist1.php?vs="+s_token;
 						window.location.replace(r_url);
 
         

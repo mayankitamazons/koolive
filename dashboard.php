@@ -5,6 +5,15 @@ if(!isset($_SESSION['login']))
 {
 	header("location:login.php");
 }
+if(isset($_GET['did']))
+{
+	 $did=$_GET['did'];   
+	 
+	include_once('dlogin.php');
+	// print_R($_SESSION);
+	// die;
+	
+}
 	if(!empty($_GET['l'])){
 					 // extract($_GET);
 					 $merchant_id=$_GET['merchant_id'];

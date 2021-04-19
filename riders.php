@@ -77,9 +77,15 @@ $rider_links = "https://www.koofamilies.com/riders.php?rider=".$_GET['rider'];
 						<?php }else{?>
 
 							<?php 
-							$chk_rider_count = mysqli_query($conn,"select * from order_list where rider_info =".$riderid." and rider_accept_id = 0");
+							$chk_rider_count = mysqli_query($conn,"select * from order_list where rider_info =".$riderid." and rider_accept_id = 0 and cancel_order =0");
 							
 							$rider_count = mysqli_num_rows($chk_rider_count);
+							
+							$rider_pen_commission = '0.00';
+							$rider_pending_cash = mysqli_query($conn,"SELECT sum(rc_cash_price) as sum_cash,sum(rc_commission) as commisssion FROM `riders_cash_history` where rc_r_id = ".$riderid." and rc_handover_admin = 0");
+							$rider_cash_asscoc = mysqli_fetch_assoc($rider_pending_cash);
+							$rider_pending_cash_price = $rider_cash_asscoc['sum_cash'];
+							$rider_pen_commission = $rider_cash_asscoc['commisssion'];
 							?>
 							<div class="order_n_div slick-slide slick-cloned slick-active rider_details">
 								<div class="order_head_line">
@@ -88,6 +94,19 @@ $rider_links = "https://www.koofamilies.com/riders.php?rider=".$_GET['rider'];
 										<?php if($rider_count != 0){?>
 											<br/><a style="color:red;font-weight:bold" href="<?php echo $site_url."/riders.php?rider=".$_GET['rider']?>" class="new_order">New Order!!</a>
 										<?php }?>
+									</div>
+									
+									<div>
+										<span><b>Cash Boss:</b> 
+										<span style="color:red;font-weight:bold">RM <?php echo number_format($rider_pending_cash_price,2);?></span>
+										|
+										<b> Comm: </b>
+										<span style="color:red;font-weight:bold">RM <?php echo number_format($rider_pen_commission,2);?></span>
+										<a class="mr-2"  target="_blank" href="riderscash.php?r_id=<?php echo $riderid;?>" title="Cash History">
+											<i class="fa fa-eye" aria-hidden="true" style="color:black"></i>
+										</a>
+										</span>
+									
 									</div>
 
 									<span class="on_off">
@@ -120,7 +139,7 @@ $rider_links = "https://www.koofamilies.com/riders.php?rider=".$_GET['rider'];
 									$past_order = ' and rider_complete_order = 1';
 								}
 								
-								$query_od = "select ol.id as order_id,ol.update_merchnt_details,ol.rider_bank_amount,ol.rider_cash_amount,ol.rider_m_price_diff,ol.rider_reason_dif,ol.rider_m_receipt_img,ol.rider_m_food_img,ol.invoice_no,ol.rider_od_time_count,ol.rider_complete_order,ol.vendor_comission,ol.admin_bank_price,ol.admin_cash_price,ol.rider_arrive_shop,ol.rider_od_assign_time,ol.rider_od_accept_time,ol.rider_arrive_shop,ol.rider_complete_time,ol.rider_accept_id,rider_info,ol.product_code, cust.name as customer_name, merchnt.name as merchnt_name,ol.location as cust_address, cust.mobile_number as cust_contact_name, merchnt.google_map as merchnt_address,merchnt.mobile_number as merchnt_contact_name, merchnt.merchant_code as merchant_code,merchnt.sst_rate, merchnt.latitude as mer_latitude, merchnt.longitude as mer_longitude, ol.order_lat as cust_latitude, ol.order_lng as cust_longitude, ol.created_on, ol.location as shipping_address,ol.invoice_no,ol.wallet,ol.product_id,ol.quantity,ol.amount,ol.remark,ol.deliver_tax_amount,ol.speed_delivery_amount,ol.order_extra_charge,ol.special_delivery_amount,membership_discount,ol.coupon_discount,ol.wallet_paid_amount from order_list as ol Inner join users as cust ON cust.id = ol.user_id Inner join users as merchnt ON merchnt.id = ol.merchant_id WHERE rider_info =".$riderid."  ".$past_order."  order by ol.rider_od_assign_time desc";
+								$query_od = "select ol.id as order_id,ol.update_merchnt_details,ol.rider_admin_option,ol.rider_bank_amount,ol.rider_cash_amount,ol.inform_mecnt_status,ol.rider_m_price_diff,ol.rider_reason_dif,ol.rider_m_receipt_img,ol.rider_m_food_img,ol.invoice_no,ol.rider_od_time_count,ol.rider_complete_order,ol.vendor_comission,ol.admin_bank_price,ol.admin_commission_price,ol.admin_cash_price,ol.rider_arrive_shop,ol.rider_od_assign_time,ol.rider_od_accept_time,ol.rider_arrive_shop,ol.rider_complete_time,ol.rider_accept_id,rider_info,ol.product_code, cust.name as customer_name,cust.lat_lng, merchnt.name as merchnt_name,ol.location as cust_address, cust.mobile_number as cust_contact_name, merchnt.google_map as merchnt_address,merchnt.mobile_number as merchnt_contact_name, merchnt.merchant_code as merchant_code,merchnt.sst_rate, merchnt.latitude as mer_latitude, merchnt.longitude as mer_longitude, ol.order_lat as cust_latitude, ol.order_lng as cust_longitude, ol.created_on, ol.location as shipping_address,ol.invoice_no,ol.wallet,ol.product_id,ol.quantity,ol.amount,ol.remark,ol.deliver_tax_amount,ol.speed_delivery_amount,ol.order_extra_charge,ol.special_delivery_amount,membership_discount,ol.coupon_discount,ol.wallet_paid_amount from order_list as ol Inner join users as cust ON cust.id = ol.user_id Inner join users as merchnt ON merchnt.id = ol.merchant_id WHERE cancel_order =0 and  rider_info =".$riderid."  ".$past_order."  order by ol.rider_od_assign_time desc";
 
 								//and rider_complete_order != 1
 								#echo $query_od;
@@ -276,8 +295,40 @@ $rider_links = "https://www.koofamilies.com/riders.php?rider=".$_GET['rider'];
 						}
 
 
+						$style_c = '';
+						if($ordersData['inform_mecnt_status'] == 1){
+							//$labels = 'Inform already';
+							$labels = 'FP order sahaja';
+							$lab_cls = 'green';
+						}else if($ordersData['inform_mecnt_status'] == 2){
+							$labels = 'Sudah call guna 5670';//'Cannot reach  merchant, now inform customer rider is otw checking';
+							$lab_cls = 'red';
+						}else if($ordersData['inform_mecnt_status'] == 3){
+							$labels = 'FP & beli sendiri juga';//'Rider buy himself';
+							$lab_cls = 'green';
+						}else if($ordersData['inform_mecnt_status'] == 4){
+							$labels = 'FP & sudah Call guna 5670';//'Order Cancelled';
+							$lab_cls = 'red';
+						}else if($ordersData['inform_mecnt_status'] == 5){
+							$labels = 'Semua beli sendiri';//'Order Cancelled';
+							$lab_cls = 'red';
+						}else{
+							$labels = 'tanya kerani';
+							$style_c = 'style=color:red';
+						} 
 						
 						
+						if($ordersData['rider_admin_option'] == '1'){
+							$rider_admin_option = 'Lepas siap order atas, baru buat ini';
+						}else if($ordersData['rider_admin_option'] == '2'){
+							$rider_admin_option = 'Lepas siap semua orders, baru buat order ini';
+						}else if($ordersData['rider_admin_option'] == '3'){
+							$rider_admin_option = 'Sekali jalan';
+						}else if($ordersData['rider_admin_option'] == '4'){
+							$rider_admin_option = 'Speed';
+						}else{
+							$rider_admin_option = '';
+						}
 
 						/*			
 						$rider_od_assign_time = $ordersData['rider_od_assign_time'];
@@ -345,11 +396,20 @@ function setTime() {
 										<br/>
 										<span class="" style="float:left;color:black"><b><?php echo ucfirst($ordersData['merchnt_name']);?></b></span>
 										
+										<br/>
+									<span class="" style="float:left;color:red"><b>
+									<?php echo $rider_admin_option;?>
+									</b></span>
+										
 									</div>
+									
 									
 									<div class="n_order_total">
 										<div class="mr-3 mt-2">
-											<b>Order Total:</b> RM.<?php echo $Final_price;?> 
+											<!--<b>Order Total:</b> RM.<?php echo $Final_price;?> -->
+											<?php if($ordersData['admin_cash_price'] != ''){?>
+											<b>Cash Collect: </b> RM <?php echo number_format($ordersData['admin_cash_price'],2);?>
+											<?php }?>
 											<?php if($complete_time!= ''){?>
 										<br/>
 										<?php if($ordersData['rider_complete_time'] != '0000-00-00 00:00:00'){?>
@@ -396,6 +456,7 @@ function setTime() {
 
 							<?php 
 							$cls_show = '';
+							#echo $_GET['order_id']."===".$ordersData['order_id'];
 							if($_GET['order_id'] == $ordersData['order_id'] ){
 								$cls_show = 'show';
 							}?>
@@ -425,12 +486,28 @@ function setTime() {
 													<?php }?>
 												</div>
 												
-												<span class="expand_merchant expand_merchant<?php echo $ordersData['order_id']; ?>" orderid ='<?php echo $ordersData['order_id']; ?>' style="cursor:pointer">Expand</span>
+												
+												<?php 
+													$expand_label = "Expand";
+													$expand_div ="none;";
+												if($cls_show == 'show'){
+													if($ordersData['rider_arrive_shop'] != '0000-00-00 00:00:00'){
+														$expand_label = "Hide";
+														$expand_div ="block;";	
+													}
+												}else{
+													$expand_label = "Expand";
+													$expand_div ="none;";
+												}
+												
+												?>
+												
+												<span class="expand_merchant expand_merchant<?php echo $ordersData['order_id']; ?>" orderid ='<?php echo $ordersData['order_id']; ?>' style="cursor:pointer"><?php echo $expand_label;?></span>
 												</div>
 
 											</div>
-
-											<div class="n_order_body merchant_details_<?php echo $ordersData['order_id']; ?>" style="display:none">
+								
+											<div class="n_order_body merchant_details_<?php echo $ordersData['order_id']; ?>" style="display:<?php echo $expand_div;?>">
 												<a href="tel:+<?php echo $ordersData['merchnt_contact_name'];?>" style="color:black">
 													<b><i class="fa fa-phone" aria-hidden="true"></i></b> +<?php echo $ordersData['merchnt_contact_name'];?>
 												</a>
@@ -464,26 +541,30 @@ function setTime() {
 									<div class="n_order_mer ">
 										<div class="order_n_div slick-slide slick-cloned slick-active">
 											<div class="order_head_line expand" orderid ='<?php echo $ordersData['order_id']; ?>' style="cursor:pointer">
-												<span>Order Details</span>
+												<span <?php echo $style_c;?>><?php echo $labels;?></span>
 												<span class="expand expnd_<?php echo $ordersData['order_id']; ?>" orderid ='<?php echo $ordersData['order_id']; ?>' style="cursor:pointer">Expand</span>
 												
 											</div>
 											<div class="n_order_body submit_details_<?php echo $ordersData['order_id']; ?>" style="display:none">
-												<button class="order_details s_order_detail btn btn-primary px-2 py-1 mb-3 text-white"  total_bill="<?php echo number_format($merchnt_price,2); ?>" orderid ='<?php echo $ordersData['order_id']; ?>' id="orderdetails_<?php echo $ordersData['order_id']; ?>" >View Details</button>
-												<br/>
-												<span> <b>Total Product:</b> <?php echo count($product_qtys);?> </span>
-												<span> <b>Amount Paid:</b> RM.<?php echo $merchnt_price;?>  </span>
-
-												<?php //echo $ordersData['order_id']; ?>
-												<input type="hidden" name="final_order_amount" id="final_order_amount_<?php echo $ordersData['order_id']; ?>" value="<?php echo $merchnt_price;?>"/>
+												
 												<?php 
 
 									//if($ordersData['rider_m_wallet'] != ''){?>
 										<form method="post" id="image-form_<?php echo $ordersData['order_id']; ?>" class="image-form" orderid ='<?php echo $ordersData['order_id']; ?>' enctype="multipart/form-data" onSubmit="return false;">
+											<button type="button" class="order_details s_order_detail btn btn-primary px-3 py-2 mb-3 text-white"  total_bill="<?php echo number_format($merchnt_price,2); ?>" orderid ='<?php echo $ordersData['order_id']; ?>' id="orderdetails_<?php echo $ordersData['order_id']; ?>" >View Order Details (<?php echo count($product_qtys);?>)</button>
+											<button type="submit" class="btn btn-primary px-3 py-2 mb-3 text-uppercase text-white mprice_submit" style="background:red;border-color:red" orderid ='<?php echo $ordersData['order_id']; ?>'>Submit</button>
+											
+											<br/>
+												<!--<span> <b>Total Product:</b> <?php echo count($product_qtys);?> </span>-->
+												<!--<span> <b>Amount Paid:</b> RM.<?php echo $merchnt_price;?>  </span>-->
+
+												<?php //echo $ordersData['order_id']; ?>
+												<input type="hidden" name="final_order_amount" id="final_order_amount_<?php echo $ordersData['order_id']; ?>" value="<?php echo $merchnt_price;?>"/>
+											
 											<div class="d-flex flex-wrap">
 												
 
-												<div class="col-lg-4">
+												<div class="col-lg-6">
 										<!--<div class="form-group row">
 											<label for="inputEmail3" class="col-sm-2 col-form-label">Mode</label>
 												<div class="form-check form-check-inline">
@@ -496,21 +577,25 @@ function setTime() {
 												</div>
 											</div>-->
 
-											<div class="form-group row">
-												<label for="paid_amount" class="col-lg-4 col-form-label">Bank Amount</label>
-												<div class="col-lg-8">
-													<input type="text" class="form-control amunt_total Bank_amount" orderid ='<?php echo $ordersData['order_id']; ?>'  id="bank_amount_<?php echo $ordersData['order_id']; ?>" name="bank_amount" placeholder="Bank Amount" value="<?php echo $ordersData['rider_bank_amount'];?>">
-												</div>
-											</div>
-
-											<div class="form-group row">
+<div class="form-group row">
 												<label for="paid_amount" class="col-lg-4 col-form-label">Cash Amount</label>
 												<div class="col-lg-8">
 													<input type="text" class="form-control cash_amount amunt_total" orderid ='<?php echo $ordersData['order_id']; ?>'  id="cash_amount_<?php echo $ordersData['order_id']; ?>" name="cash_amount" placeholder="Cash Amount" value="<?php echo $ordersData['rider_cash_amount'];?>">
 												</div>
 											</div>
+											
+											
+</div><div class="col-lg-6">
+											
 
-
+<div class="form-group row">
+												<label for="paid_amount" class="col-lg-4 col-form-label">Bank Amount</label>
+												<div class="col-lg-8">
+													<input type="text" class="form-control amunt_total Bank_amount" orderid ='<?php echo $ordersData['order_id']; ?>'  id="bank_amount_<?php echo $ordersData['order_id']; ?>" name="bank_amount" placeholder="Bank Amount" value="<?php echo $ordersData['rider_bank_amount'];?>">
+												</div>
+												
+												
+											</div>
 											<div class="form-group row" style="display:none">
 												<label for="paid_amount" class="col-lg-3 col-form-label">Total AMount</label>
 												<div class="col-lg-9">
@@ -520,7 +605,7 @@ function setTime() {
 											
 											
 										</div>
-										<div class="col-lg-4">
+										<!--<div class="col-lg-4">
 											
 											<div class="form-group row">
 												<label for="receipt_photo" class="col-lg-4 col-form-label">Receipt
@@ -533,7 +618,6 @@ function setTime() {
 													
 												</div>
 											</div>
-											
 											<div class="form-group row">
 												<label for="food_photo" class="col-lg-4 col-form-label">Food Photo
 													<?php if($ordersData['rider_m_food_img']!= ''){?>
@@ -544,11 +628,11 @@ function setTime() {
 													<input type="file" class="form-control" name="food_photo" id="food_photo_<?php echo $ordersData['order_id']; ?>" >
 												</div>
 											</div>
-											
-											
-											
-										</div>
-										<div class="col-lg-4">
+										</div>-->
+										
+										<input type="hidden" class="form-control" name="price_diff" id="price_diff_<?php echo $ordersData['order_id']; ?>" placeholder="Price Difference" readonly value="<?php echo $ordersData['rider_m_price_diff'];?>">
+										
+										<!--<div class="col-lg-4">
 											<div class="form-group row">
 												<label for="price_diff" class="col-lg-6 col-form-label">Price Differnce</label>
 												<div class="col-lg-6">
@@ -570,15 +654,11 @@ function setTime() {
 													<input type="text" class="form-control" name="reason_diff" id="reason_diff_<?php echo $ordersData['order_id']; ?>" placeholder="Reason" value="<?php echo $ordersData['rider_reason_dif'];?>">
 												</div>
 											</div>
-										</div>
+										</div>-->
 
 
 									</div>
-									<div class="form-group row">
-										<div class="col-lg-12 text-center">
-											<button type="submit" class="btn btn-primary px-3 py-2 mb-3 text-uppercase text-white mprice_submit" orderid ='<?php echo $ordersData['order_id']; ?>'>Submit</button>
-										</div>
-									</div>
+									
 								</form>
 								<?php //}?>
 
@@ -608,6 +688,7 @@ function setTime() {
 								<p class="copy_cust" id="cust_<?php echo $ordersData['order_id'];?>" order_id="<?php echo $ordersData['order_id'];?>">
 									<b><i class="fa fa-map-marker" aria-hidden="true"></i></b> <?php echo $ordersData['cust_address'];?>
 								</p>
+								<p><?php echo $ordersData['lat_lng'];?></p>
 								<?php }?>
 								<div class="count-wrap text-left py-3">
 									<?php if($ordersData['rider_complete_order'] == 0){?>
@@ -636,18 +717,36 @@ function setTime() {
 								</a>
 								<br/>
 								<?php if($ordersData['cust_address'] != ''){?>
-									<p class="copy_cust" id="cust_<?php echo $ordersData['order_id'];?>" order_id="<?php echo $ordersData['order_id'];?>">
-										<b><i class="fa fa-map-marker" aria-hidden="true"></i></b> <?php echo $ordersData['cust_address'];?>
-										
+									<p>
+										<b><i class="fa fa-map-marker" aria-hidden="true"></i></b> 
+										<span style="margin-bottom:0!important" class="copy_cust" id="cust_<?php echo $ordersData['order_id'];?>" order_id="<?php echo $ordersData['order_id'];?>"><?php echo $ordersData['cust_address'];?>
+										</span>
+										<a class="copy-text cust_<?php echo $ordersData['order_id'];?>" onclick="copyToCustAdd('#cust_<?php echo $ordersData['order_id'];?>','cust_<?php echo $ordersData['order_id'];?>')"> Copy </a>
+									
 									</p>
+									
+									
+									<p>
+									<span style="margin-bottom:0!important" class="copy_latlng" id="latlng_<?php echo $ordersData['order_id'];?>" order_id="<?php echo $ordersData['order_id'];?>">
+									<?php echo $ordersData['lat_lng'];?>
+									</span>
+									<a class="copy-text latlng_<?php echo $ordersData['order_id'];?>" onclick="copyToCustLatlng('#latlng_<?php echo $ordersData['order_id'];?>','latlng_<?php echo $ordersData['order_id'];?>')"> Copy </a>
+									
+									</p>
+									
+									
 									<a href="<?php echo $msg_custlink;?>" target="_blank">
 									<span class="btn btn-sm btn-primary view-map" style="cursor:pointer">View Map</span>
 								</a>
-									<a class="copy-text cust_<?php echo $ordersData['order_id'];?>" onclick="copyToCustAdd('#cust_<?php echo $ordersData['order_id'];?>','cust_<?php echo $ordersData['order_id'];?>')"> Copy </a>
+									
 								<?php }?>
 								<br/>
-								<b>Price: </b><?php echo $Final_price;?> &nbsp; |&nbsp; <b>Mode:</b> <?php echo $ordersData['wallet'];?>
-								<br/>
+								<!--<b>Price: </b><?php echo $Final_price;?> &nbsp; |&nbsp; 
+								-->
+								<b>Mode:</b> <?php echo $ordersData['wallet'];?>
+								<?php if($ordersData['admin_commission_price'] != ''){?>
+								&nbsp;|&nbsp;<b>Commission: </b><span class="red" style="color:red"><?php echo "RM ".@number_format($ordersData['admin_commission_price'],2);?></span>
+								<?php }?><br/>
 								<?php 
 								$admin_bank_price = '0.00';
 								$admin_cash_price = '0.00';
@@ -656,11 +755,10 @@ function setTime() {
 								}if($ordersData['admin_cash_price'] != ''){
 									$admin_cash_price = $ordersData['admin_cash_price'];
 								}?>
-								<?php if($ordersData['admin_bank_price'] != ''){?>
+								<?php /*if($ordersData['admin_bank_price'] != ''){?>
 								<b>Bank Price: </b><span class="red" style="color:red"><?php echo "RM ".@number_format($admin_bank_price,2);?></span>
-								<?php }?>
+								<?php }*/?>
 								<?php if($ordersData['admin_cash_price'] != ''){?>
-								&nbsp;|&nbsp;
 								
 								<b>Cash Price: </b><span class="red" style="color:red"><?php echo "RM ".@number_format($admin_cash_price,2);?></span>
 								<?php }?>
@@ -892,16 +990,20 @@ $(".reach_shop").click(function(){
 	
 	var check_fst_step = $("#check_fst_step"+order_id).val();
 	var riderid = $("#hidden_rider_id").val();
+	
+	
+	var final_order_amount = $("#final_order_amount_"+order_id).val();
 	if(check_fst_step == 0){
 		alert('Please accept the order first');
 		return false;
 	}else{
+		//$(".expand_merchant").trigger('click');
 		//var cnfrmDelete = confirm("Are You reached the Merchant's shop?");
 		//if(cnfrmDelete==true){
 			$.ajax({
 				url:'riderajax.php',
 				method:'POST',
-				data:{data:'reach_shop',order_id:order_id,riderid:riderid},
+				data:{data:'reach_shop',order_id:order_id,riderid:riderid,final_order_amount:final_order_amount},
 				success:function(res){
 					//location.reload(true);
 					var red_url = '<?php echo $rider_links;?>'+'&order_id='+order_id;
@@ -1006,7 +1108,7 @@ $(document).ready(function(e) {
 			var price_diff =$("#price_diff_"+orderid).val();
 			var reason_diff = $("#reason_diff_"+orderid).val();
 			var final_order_amount = $("#final_order_amount_"+orderid).val();
-			
+			var riderid = $("#hidden_rider_id").val();
 			var check_snd_step = $("#check_snd_step"+orderid).val();
 	
 			if(check_snd_step == 0){
@@ -1024,6 +1126,7 @@ $(document).ready(function(e) {
 			formData.append('reason_diff', reason_diff);
 			formData.append('bank_amount', bank_amount);
 			formData.append('cash_amount', cash_amount);
+			formData.append('riderid', riderid);
 			
 			$(".mode").css('border','');
 			$("#bank_amount_"+orderid).css('border','');
@@ -1115,6 +1218,17 @@ function copyToCustAdd(element,clsn) {
 	$temp.remove();
 	$("."+clsn).html('copied');
 }
+
+function copyToCustLatlng(element,clsn) {
+	var $temp = $("<input>");
+	$("body").append($temp);
+	$temp.val($(element).text()).select();
+	document.execCommand("copy");
+	$temp.remove();
+	$("."+clsn).html('copied');
+}
+
+
 
 
 function copyToMerAdd(element,clsn) {

@@ -1290,6 +1290,25 @@ Payment Proof </a>
 		
 		
 		<!-- END Cancel order-->
+		
+		<?php if($row['rider_m_price_diff'] != ''){?>
+<?php 
+$class_diff = '';
+$diff_style = '';
+if($row['rider_m_price_diff'] >1){
+	if($row['rider_reason_dif'] == ''){
+		$class_diff="blink_info_button";
+		$diff_style = "style='padding:5px;color:white;'";
+	}
+}?>
+<br/>
+<b>Price Diff:</b> <label <?php echo $diff_style;?> class="<?php echo $class_diff;?>"><?php echo $row['rider_m_price_diff'];?></label>
+
+<br/>
+<b>Reason:</b><textarea class="form-control rider_reason_dif" name="rider_reason_dif" id="rider_reason_dif" order_id="<?php echo $row['id']; ?>" style="width:150px"/><?php echo $row['rider_reason_dif'];?></textarea>
+<?php }?>
+
+
 							</td>
 						<td style="min-width:167px;">
 <style>
@@ -1308,6 +1327,28 @@ Payment Proof </a>
 						<textarea  style="border:1px solid gray !important;" rows="2" cols="10" order_id="<?php echo $row['id']; ?>" class="form-control rider_info"><?php echo $row['rider_info']." ".$row['rider_name']; ?></textarea>-->
 						<?php if($row['cancel_order'] != 1){?>
 							<!-- Start select online Riders-->
+						
+						
+						
+						<?php 
+						$s_label1 = 'We are still desperately trying to contact the merchant,<br/> once the order is confirmed with merchant, we will inform you. Meanwhile, <br/>our rider is on his way to merchant shop checking.';
+						$s_label2 = 'Rider Listings';
+						$s_label3 = 'Shop closed, Cancel!';
+						$s_label4 = 'Merchant is preparing your foods. Please wait. Rider is waiting';
+						if($_SESSION["langfile"] == 'chinese'){
+							$s_label1 = '我们正在尽最大努力联系商家以确认你的订单。我们的司机已经出发到商家地点以确认商家是否营业！';
+							$s_label2 = '骑手列表';
+							$s_label3 = '商家休息，订单取消！';
+							$s_label4 = '商家正在准备食物，食物完成后，我们的司机就会把美食送上';
+						}
+						?>
+						<select name="s_rider_option" id="s_rider_option_<?php echo $row['id']; ?>" class="form-control s_rider_option"  order_id="<?php echo $row['id']; ?>">
+								<option value="0">Select Option</option>
+								<option <?php if($row['s_rider_option'] == '1'){ echo 'selected';}?> value="1"><?php echo $s_label1;?></option>
+								<option <?php if($row['s_rider_option'] == '2'){ echo 'selected';}?> value="2"><?php echo $s_label2;?></option>
+								<option <?php if($row['s_rider_option'] == '3'){ echo 'selected';}?> value="3"><?php echo $s_label3;?></option>
+								<option <?php if($row['s_rider_option'] == '4'){ echo 'selected';}?> value="4"><?php echo $s_label4;?></option>
+						</select><br/>
 						<?php 
 						$riders_query = "select * from tbl_riders where r_status = 1 and r_online = 1";
 						$ridersFetch = mysqli_query($conn,$riders_query);
@@ -1336,28 +1377,20 @@ Payment Proof </a>
 						<?php }?>
 						</select>
 						
-						<br/>
-						<?php 
-						$s_label1 = 'We are still desperately trying to contact the merchant,<br/> once the order is confirmed with merchant, we will inform you. Meanwhile, <br/>our rider is on his way to merchant shop checking.';
-						$s_label2 = 'Rider Listings';
-						$s_label3 = 'Shop closed, Cancel!';
-						$s_label4 = 'Merchant is preparing your foods. Please wait. Rider is waiting';
-						if($_SESSION["langfile"] == 'chinese'){
-							$s_label1 = '我们正在尽最大努力联系商家以确认你的订单。我们的司机已经出发到商家地点以确认商家是否营业！';
-							$s_label2 = '骑手列表';
-							$s_label3 = '商家休息，订单取消！';
-							$s_label4 = '商家正在准备食物，食物完成后，我们的司机就会把美食送上';
-						}
-						?>
-						<select name="s_rider_option" id="s_rider_option_<?php echo $row['id']; ?>" class="form-control s_rider_option"  order_id="<?php echo $row['id']; ?>">
-								<option value="0">Select Option</option>
-								<option <?php if($row['s_rider_option'] == '1'){ echo 'selected';}?> value="1"><?php echo $s_label1;?></option>
-								<option <?php if($row['s_rider_option'] == '2'){ echo 'selected';}?> value="2"><?php echo $s_label2;?></option>
-								<option <?php if($row['s_rider_option'] == '3'){ echo 'selected';}?> value="3"><?php echo $s_label3;?></option>
-								<option <?php if($row['s_rider_option'] == '4'){ echo 'selected';}?> value="4"><?php echo $s_label4;?></option>
-						</select>
 						
 						<br/>
+						<select name="rider_admin_option" id="rider_admin_option_<?php echo $row['id']; ?>" class="form-control rider_admin_option"  order_id="<?php echo $row['id']; ?>">
+							<option value="0">Select Instructions</option>
+							<!--<option  <?php if($row['rider_admin_option'] == '1'){ echo 'selected';}?> value="1">Lepas siap order atas, baru buat ini</option>
+							--><option <?php if($row['rider_admin_option'] == '2'){ echo 'selected';}?> value="2">Lepas siap semua orders, baru buat order ini</option>
+							<option  <?php if($row['rider_admin_option'] == '3'){ echo 'selected';}?> value="3">Sekali jalan</option>
+							<option  <?php if($row['rider_admin_option'] == '4'){ echo 'selected';}?> value="4">Lepas ambil semua makanan, Hantar ini dulu</option>
+							
+							<option  <?php if($row['rider_admin_option'] == '4'){ echo 'selected';}?> value="3">Speed</option>
+						</select>
+
+						<br/>
+						
 						<?php 
 						//echo "==".$row['rider_info'];
 						if($row['rider_info'] != '0'){?>
@@ -1564,10 +1597,17 @@ Payment Proof </a>
 								
                            
 							<td>
-							Bank price: <input type="text" class="admin_bank_price" name="admin_bank_price" id="admin_bank_price" value="<?php echo $row['admin_bank_price'];?>" order_id="<?php echo $row['id']; ?>"/>
+							<?php
+							 $price_readonly = '';
+							   if($row['rider_complete_order'] == 1){
+								   $price_readonly = 'readonly="readonly"';
+							   }
+							?>
+							Bank price: <input type="text" class="admin_bank_price" name="admin_bank_price" id="admin_bank_price" value="<?php echo $row['admin_bank_price'];?>" order_id="<?php echo $row['id']; ?>" <?php echo $price_readonly;?> />
 							<br/>
-							Cash price: <input type="text" class="admin_cash_price" name="admin_cash_price" id="admin_cash_price" value="<?php echo $row['admin_cash_price'];?>" order_id="<?php echo $row['id']; ?>"/>
-							
+							Cash price: <input type="text" class="admin_cash_price" name="admin_cash_price" id="admin_cash_price" value="<?php echo $row['admin_cash_price'];?>" order_id="<?php echo $row['id']; ?>" <?php echo $price_readonly;?> />
+							<br/>
+							Commission: <input type="number" class="admin_commission_price acp_<?php echo $row['id']; ?>" name="admin_commission_price" id="admin_commission_price" value="<?php echo $row['admin_commission_price'];?>" order_id="<?php echo $row['id']; ?>" <?php echo $price_readonly;?>/>
 							</td>
                             <td class="products_namess product_name_<?php echo $row['id'];?> test_productss" >
 							<?php echo $pro_str;   ?>
@@ -2950,6 +2990,14 @@ var qtyno = $("input[name='qtyno[]']")
 		var order_id= $(this).attr('order_id');
 		var s_rider_option = $("#s_rider_option_"+order_id).val();
 		
+		var admin_commission_price = $(".acp_"+order_id).val();
+		
+		if(admin_commission_price == ''){
+			$(".rider_info").val(0);
+			alert('Please enter commission price!!');
+			return false;
+		}
+		
 		var rider_text=this.value;
 		
 		if(rider_text!='' && order_id)
@@ -3021,6 +3069,30 @@ var qtyno = $("input[name='qtyno[]']")
 		}
 	});
 	
+	$(".rider_admin_option").change(function(){
+		var order_id= $(this).attr('order_id');
+		var rider_option_text=this.value;
+		if(rider_option_text!='')
+		{
+			$.ajax({
+				url :'functions.php',
+				type:"post",
+				data:{rider_option_text:rider_option_text,method:"rider_admin_option",order_id:order_id},     
+				dataType:'json',
+				success:function(result){  
+				var data = JSON.parse(JSON.stringify(result));   
+				if(data.status==true)
+				{
+				}
+				else
+				{alert('Failed to update');	}
+				
+				}
+			}); 
+						
+		}
+	});
+	  
 	
 	/* start :: save admin_bank_price & admin_cash_price*/
 	$(".admin_bank_price").focusout(function(e){
@@ -3069,6 +3141,49 @@ var qtyno = $("input[name='qtyno[]']")
 		} 
 	});
 	
+	$(".admin_commission_price").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var comm_text = this.value;
+		console.log(comm_text);
+		if(comm_text!='' && order_id)
+		{  
+		    $.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{comm_text:comm_text,method:"admin_commission_price",order_id:order_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{
+					}
+					else
+					{alert('Failed to update');	}
+					}
+			});      
+		} 
+	});
+
+
+$(".rider_reason_dif").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var reason_text = this.value;
+		  
+		    $.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{reason_text:reason_text,method:"rider_reason_dif",order_id:order_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{
+					}
+					else
+					{alert('Failed to update');	}
+					}
+			});      
+	});
 	/* END :: save admin_bank_price & admin_cash_price*/
 	
 	$('.logout_show').click(function() {
@@ -5178,6 +5293,8 @@ $(document).ready(function(){
 				});	
 		}
 	});
+	
+	
 });
 </script>
 <!-- end of avnish tomar code -->
