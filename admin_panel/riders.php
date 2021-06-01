@@ -179,7 +179,7 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
                                 <td><?php echo isset($row['r_name'])?$row['r_name']:'';?>
 								<?php if($row['r_online']=="1"){?>
 								<br/>
-								<span class="btn btn-sm btn-primary" style="cursor:auto"><?php echo "Online";?></span>
+								<span class="btn btn-sm btn-primary" style="cursor:auto;background-color:green;color:white;border:green"><?php echo "Online";?></span>
 								<?php }?>
 								</td>
 								<td><?php echo isset($row['r_vehicle_number'])?$row['r_vehicle_number']:'';?></td>

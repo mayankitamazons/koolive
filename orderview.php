@@ -235,7 +235,39 @@ while ($row=mysqli_fetch_assoc($total_rows1)){
 
 
 <head>
+<style>
+.blink_info_button {
+  -webkit-border-radius: 10px;
+  
+  -webkit-animation: glowing 1500ms infinite;
+  -moz-animation: glowing 1500ms infinite;
+  -o-animation: glowing 1500ms infinite;
+  animation: glowing 1500ms infinite;
+}
+@-webkit-keyframes glowing {
+  0% { background-color: #B20000; -webkit-box-shadow: 0 0 3px #B20000; }
+  50% { background-color: #FF0000; -webkit-box-shadow: 0 0 40px #FF0000; }
+  100% { background-color: #B20000; -webkit-box-shadow: 0 0 3px #B20000; }
+}
 
+@-moz-keyframes glowing {
+  0% { background-color: #B20000; -moz-box-shadow: 0 0 3px #B20000; }
+  50% { background-color: #FF0000; -moz-box-shadow: 0 0 40px #FF0000; }
+  100% { background-color: #B20000; -moz-box-shadow: 0 0 3px #B20000; }
+}
+
+@-o-keyframes glowing {
+  0% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+  50% { background-color: #FF0000; box-shadow: 0 0 40px #FF0000; }
+  100% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+}
+
+@keyframes glowing {
+  0% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+  50% { background-color: #FF0000; box-shadow: 0 0 40px #FF0000; }
+  100% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+}
+</style>
     <style>
 	  
         .no-close .ui-dialog-titlebar-close {
@@ -1048,6 +1080,12 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 									$s_color="";
 								}
 								
+								if($row['rider_complete_order'] == 1){
+									$n_status='';
+									$sta ='completed';
+									// $sta = "Accepted";
+									$s_color="green";
+								}	
                                 ?>
 								<input type="button" next_status="<?php echo $n_status; ?>" style="background-color:<?php echo $s_color;?>" class= "status btn btn-primary" value="<?php  echo $sta;?>" status="<?php echo $row['status'];?>" data-invoce='<?php echo $row['invoice_no'];?>' data-id="<?php echo $row['id']; ?>"/>
 
@@ -1226,6 +1264,27 @@ Payment Proof </a>
 							<?php }?>
 						<?php }?>
 						</select>
+						
+						<br/>
+						<?php 
+						$s_label1 = 'We are still desperately trying to contact the merchant,<br/> once the order is confirmed with merchant, we will inform you. Meanwhile, <br/>our rider is on his way to merchant shop checking.';
+						$s_label2 = 'Rider Listings';
+						$s_label3 = 'Shop closed, Cancel!';
+						$s_label4 = 'Merchant is preparing your foods. Please wait. Rider is waiting';
+						if($_SESSION["langfile"] == 'chinese'){
+							$s_label1 = '我们正在尽最大努力联系商家以确认你的订单。我们的司机已经出发到商家地点以确认商家是否营业！';
+							$s_label2 = '骑手列表';
+							$s_label3 = '商家休息，订单取消！';
+							$s_label4 = '商家正在准备食物，食物完成后，我们的司机就会把美食送上';
+						}
+						?>
+						<select name="s_rider_option" id="s_rider_option_<?php echo $row['id']; ?>" class="form-control s_rider_option"  order_id="<?php echo $row['id']; ?>">
+								<option value="0">Select Option</option>
+								<option <?php if($row['s_rider_option'] == '1'){ echo 'selected';}?> value="1"><?php echo $s_label1;?></option>
+								<option <?php if($row['s_rider_option'] == '2'){ echo 'selected';}?> value="2"><?php echo $s_label2;?></option>
+								<option <?php if($row['s_rider_option'] == '3'){ echo 'selected';}?> value="3"><?php echo $s_label3;?></option>
+								<option <?php if($row['s_rider_option'] == '4'){ echo 'selected';}?> value="4"><?php echo $s_label4;?></option>
+						</select>
 						<?php
 						//echo $row['rider_info'];
 						if($row['rider_info'] != '' && $row['rider_info'] != '0'){
@@ -1241,7 +1300,7 @@ Payment Proof </a>
 								if($row['rider_accept_id'] == 0){
 								?>
 								<br/>
-								<span class="btn btn-sm btn-primary">Not Accept Order Yet!!</span>
+								<span class="btn btn-sm btn-danger blink_info_button" >Rider not accept order yet!!</span>
 								<?php	
 								}
 							}
@@ -1258,10 +1317,10 @@ Payment Proof </a>
 							//echo $minutes_2;
 							if($minutes_2 > 20){
 								//echo $minutes."===".$row['rider_accept_id'];
-								if($row['rider_accept_id'] != 0){
+								if($row['rider_accept_id'] != 0 && $row['rider_arrive_shop'] == '0000-00-00 00:00:00'){
 								?>
 								<br/>
-								<span class="btn btn-sm btn-primary">Not reached at shop !!</span>
+								<span class="btn btn-sm btn-danger blink_info_button">Rider not reached shop yet!!</span>
 								<?php	
 								}
 							}
@@ -1395,6 +1454,8 @@ Payment Proof </a>
 							Bank price: <input type="text" class="admin_bank_price" name="admin_bank_price" id="admin_bank_price" value="<?php echo $row['admin_bank_price'];?>" order_id="<?php echo $row['id']; ?>"/>
 							<br/>
 							Cash price: <input type="text" class="admin_cash_price" name="admin_cash_price" id="admin_cash_price" value="<?php echo $row['admin_cash_price'];?>" order_id="<?php echo $row['id']; ?>"/>
+							<br/>
+							Commission: <input type="text" class="admin_commission_price" name="admin_commission_price" id="admin_commission_price" value="<?php echo $row['admin_commission_price'];?>" order_id="<?php echo $row['id']; ?>"/>
 							
 							</td>
                           
@@ -2744,6 +2805,8 @@ var qtyno = $("input[name='qtyno[]']")
 		$('#ShiftModel').modal('show');
  	$(".rider_info").change(function(e){
 		var order_id= $(this).attr('order_id');
+		var s_rider_option = $("#s_rider_option_"+order_id).val();
+		
 		var rider_text=this.value;
 		
 		if(rider_text!='' && order_id)
@@ -2760,6 +2823,14 @@ var qtyno = $("input[name='qtyno[]']")
 								var data = JSON.parse(JSON.stringify(result));   
 								if(data.status==true)
 								{
+									if(s_rider_option == 0){
+										$("#s_rider_option_"+order_id).val('2');
+										//console.log('here');
+										$(".s_rider_option").trigger('change');
+										
+										
+										
+									}
 								}
 								else
 								{alert('Failed to update');	}
@@ -2773,6 +2844,32 @@ var qtyno = $("input[name='qtyno[]']")
 		}
 		
 		
+	});
+	
+	
+	$(".s_rider_option").change(function(){
+		//console.log('trigger');
+		var order_id= $(this).attr('order_id');
+		var rider_option_text=this.value;
+		if(rider_option_text!='')
+		{
+			$.ajax({
+				url :'functions.php',
+				type:"post",
+				data:{rider_option_text:rider_option_text,method:"ridersoptionsave",order_id:order_id},     
+				dataType:'json',
+				success:function(result){  
+				var data = JSON.parse(JSON.stringify(result));   
+				if(data.status==true)
+				{
+				}
+				else
+				{alert('Failed to update');	}
+				
+				}
+			}); 
+						
+		}
 	});
 	
 	
@@ -2822,6 +2919,30 @@ var qtyno = $("input[name='qtyno[]']")
 			});      
 		} 
 	});
+	
+	$(".admin_commission_price").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var comm_text = this.value;
+		console.log(comm_text);
+		if(comm_text!='' && order_id)
+		{  
+		    $.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{comm_text:comm_text,method:"admin_commission_price",order_id:order_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{
+					}
+					else
+					{alert('Failed to update');	}
+					}
+			});      
+		} 
+	});
+	
 	
 	/* END :: save admin_bank_price & admin_cash_price*/
 	

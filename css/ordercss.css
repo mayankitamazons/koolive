@@ -1034,7 +1034,7 @@ body.noscroll{
 		font-size:12px;
 	}
 	.n_orderdetails .table td{
-		border-top: 1px solid #efefef!important;
+		border: 1px solid #efefef !important;
 	}
 
 	.order_details .n_order_type{
@@ -1437,12 +1437,12 @@ body.noscroll{
 		}
 		#main #faq .card .card-header .btn-header-link:after {
 			content: "\f106";
-			font-family: 'Font Awesome 5 Free';
-			font-weight: 900;
 			position: absolute;
 			right: 10px;
 			top: 50%;
 			transform: translateY(-50%);
+			font: normal normal normal 20px/1 FontAwesome;
+			font-weight: 600;
 		}
 
 		#main #faq .card .card-header .btn-header-link.collapsed {
@@ -1542,6 +1542,13 @@ body.noscroll{
 		.orderdetail-table  td ,.orderdetail-table th {
 			border: 1px solid #efefef;
 		}
+		.expand-wrapper{
+			display: flex;
+			justify-content: space-between;
+			max-width: 200px;
+			width: 100%;
+			align-items: center;
+		}
 
 		@media screen and (max-width: 1024px){
 			input.btn.btn-danger.btn_proof_upload.rounded-0 {
@@ -1553,7 +1560,7 @@ body.noscroll{
 
 		}
 		@media (min-width:768px) and (max-width: 1312px){
-			.n_breadcrumb a:after {			
+			/*.n_breadcrumb a:after {			
 				top: 14px;
 				right: 0;
 				transform: scale(0.707) rotate(135deg);
@@ -1568,70 +1575,166 @@ body.noscroll{
 				flex-direction: column;
 				justify-content: center;
 				text-align: center;
+				}*/
+				.n_breadcrumb.flat {
+					flex-wrap: wrap;
+				} 
+				.n_breadcrumb a{
+					width:47%;
+					text-align:center;
+				}
+
 			}
-		}
-		@media screen and (max-width: 991px) {
-			.orderdetail-table table {
-				border: 1px solid transparent;
-				box-shadow: none;
-				border-top: 0 !important;
+			@media screen and (max-width: 991px) {
+				/*.orderdetail-table table {
+					border: 1px solid transparent;
+					box-shadow: none;
+					border-top: 0 !important;
+				}
+				.orderdetail-table  table thead {
+					display: none;
+				}
+				.orderdetail-table   table tbody tr {
+					border-bottom: 2px ​solid #efefe;
+				}
+				.orderdetail-table   table tbody tr td:first-child {
+					padding-left: 10px;
+				}
+				.orderdetail-table  table tbody tr td:before {
+					content: attr(data-label);
+					float: left;
+					font-size: 14px;
+					text-transform: uppercase;
+					font-weight: bold;
+					padding-right: 10px;
+				}
+				.orderdetail-table  table tbody tr td {
+					display: block;
+					text-align: right;
+					font-size: 14px;
+					padding: 10px !important;
+				}
+				.mobile-hide {
+					display: none !important;
+				}
+				.orderdetail-table table tbody tr td {
+					padding: 10px !important;
+					border-bottom: 0 !important;
+				}
+				.orderdetail-table td, .orderdetail-table th {
+					border-right: 0px solid #efefef;
+					}*/
+					.form-row .order_details .n_order_no ,.form-row .order_details .n_order_type{
+						width: 100% !important;
+						padding: 0;
+					}
+					.orderlistdetail-wrapper{
+						padding: 0 10px !important;
+					}
+				}
+
+				@media screen and (max-width: 560px){
+		/*	.n_breadcrumb a:after {			
+				top: 14px;
+				right: 0;
+				transform: scale(0.707) rotate(135deg);
+				box-shadow: 2px -2px 0 2px rgb(255 255 255), 3px -3px 0 2px rgb(255 255 255);
+				left: 0;
+				margin: 0 auto;
 			}
-			.orderdetail-table  table thead {
+			.n_breadcrumb a {
+				margin-bottom: 18px;
+			}
+			.n_breadcrumb.flat {
+				flex-direction: column;
+				justify-content: center;
+				text-align: center;
+				}*/
+				.n_breadcrumb.flat {
+					flex-wrap: wrap;
+				} 
+				.n_breadcrumb a{
+					width:47%;
+					text-align:center;
+				}
+				.orderdetail-table.table-responsive.p-3 {
+					padding: 5px !important;
+				}
+			}
+			@media screen and (max-width:479px){
+				.secnd-head {
+					width: 170px !important; 
+					min-width: 170px !important;
+					max-width: 170px !important; 
+					text-transform: capitalize;
+					font-size: 13px;
+					word-break: break-all;
+				}
+				.third-head {
+					width: 70px !important;
+					min-width: 70px !important;
+					max-width: 70px !important;
+					text-transform: capitalize;
+					font-size: 13px;
+					word-break: break-all;
+				}
+
+				.first-head {
+					width: 40px !important;
+					min-width: 40px !important;
+					max-width: 40px !important;
+					text-transform: capitalize;
+					font-size: 13px;
+					word-break: break-all;
+				}
+
+				.table thead th {
+					vertical-align: middle;
+				}
+
+			}
+
+			.green_clr{
+				background-color:green !important;
+				border-color:green !important;
+				color:white !important;
+			}
+			.price_difff{
+				color: red !important;
+			}
+			.od_compl_time{
+				color:red !important;
+			}
+			.red_clr{
+				color:red !important;
+			}
+			.media.rider-media p {
+				margin-bottom: 0;
+				line-height: 25px;
+				font-size: 13px;
+			}
+
+			.od-row-wrapper .order_n_div {
+				height: 95%;
+			}
+			.moretext {
 				display: none;
 			}
-			.orderdetail-table   table tbody tr {
-				border-bottom: 2px ​solid #efefe;
+			a.moreless-button {
+				font-weight: 600;
+				text-decoration: underline;
 			}
-			.orderdetail-table   table tbody tr td:first-child {
-				padding-left: 10px;
+			@media screen and (max-width: 767px){
+				.orderdetail-table table tbody tr:nth-child(2n) {
+					background: #f5f4f4;
+				}
 			}
-			.orderdetail-table  table tbody tr td:before {
-				content: attr(data-label);
-				float: left;
-				font-size: 14px;
-				text-transform: uppercase;
-				font-weight: bold;
-				padding-right: 10px;
+			@media screen and (max-width: 575px){
+				.media.rider-media .media-body {
+					width: 100%;
+					text-align: center;
+				}
+				.expand-wrapper{
+					max-width: 100%;
+				}
 			}
-			.orderdetail-table  table tbody tr td {
-				display: block;
-				text-align: right;
-				font-size: 14px;
-				padding: 10px !important;
-			}
-			.mobile-hide {
-				display: none !important;
-			}
-			.orderdetail-table table tbody tr td {
-				padding: 10px !important;
-			}
-			.orderdetail-table td, .orderdetail-table th {
-				border-right: 0px solid #efefef;
-			}
-			.form-row .order_details .n_order_no ,.form-row .order_details .n_order_type{
-				width: 100% !important;
-				padding: 0;
-			}
-			.orderlistdetail-wrapper{
-				padding: 0 10px !important;
-			}
-		}
-
-		@media screen and (max-width: 560px){
-			.n_breadcrumb a:after {			
-				top: 14px;
-				right: 0;
-				transform: scale(0.707) rotate(135deg);
-				box-shadow: 2px -2px 0 2px rgb(255 255 255), 3px -3px 0 2px rgb(255 255 255);
-				left: 0;
-				margin: 0 auto;
-			}
-			.n_breadcrumb a {
-				margin-bottom: 18px;
-			}
-			.n_breadcrumb.flat {
-				flex-direction: column;
-				justify-content: center;
-				text-align: center;
-			}
-		}

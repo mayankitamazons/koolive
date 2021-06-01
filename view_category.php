@@ -4,6 +4,7 @@ $merchant_tab="y";
 $category_tab="y";
 $me="edit_category_button";
 	$total_rows = mysqli_query($conn, "SELECT * FROM category WHERE user_id ='".$_SESSION['login']."' and status=0 ORDER BY created_date DESC");
+	
  
 ?>
 

@@ -320,9 +320,12 @@ $bank_data = isset($_SESSION['login']) ? mysqli_fetch_assoc(mysqli_query($conn, 
 $check_number = $bank_data['mobile_number'];
 if($bank_data)
 {
-	 $cq="select * from coupon_specific_allot where user_mobile_no='$check_number'";
+	 $cq="select coupon.* from coupon_specific_allot inner join coupon on coupon_specific_allot.coupon_id=coupon.id where coupon_specific_allot.user_mobile_no='$check_number'";
 	$special_coupon=mysqli_query($conn,$cq);
 	$special_coupon_count = mysqli_num_rows($special_coupon);
+	$special_coupon_list = mysqli_fetch_assoc($special_coupon);
+	
+	
 	
 }
 $total_work = "n";
@@ -1743,9 +1746,11 @@ $(document).ready(function(){
 					<?php 
 					//unset($_SESSION['AjaxCartResponse']);
 					//$_SESSION['AjaxCartResponse']['merchant_id']
+					$product_pre_exit=0;
 					if(count($_SESSION['AjaxCartResponse'][$cart_merchant_id]) >0){
 						foreach($_SESSION['AjaxCartResponse'][$cart_merchant_id] as $cart_key => $cart_val){
 							echo "<tr class='producttr'>  <td><button remove_productid=".$cart_val['id']." type='button' class='removebutton'>X</button> </td><td class='pro1_name'>".$cart_val['name']."</td><td><input type='hidden' name='rebate_amount[]' class='rebate_amount' value=".$cart_val['rebate_amount']." id='".$cart_val['id']."rebate_amount'><input type='hidden' name='rebate_per[]' value=".$cart_val['rebate_per']." id='".$cart_val['id']."rebate_per'><input style='width:50px;'  onchange='UpdateTotal(".$cart_val['id'].",".$cart_val['product_price'].")'  type=number name='qty[]' min='1' maxlength='3' class='product_qty quatity'  value=".$cart_val['quantity']." id='".$cart_val['id']."_test_athy'><input type= hidden name='p_id[]' value= ".$cart_val['s_id']."><input type= hidden name='p_code[]' value= ".$cart_val['code']."><input type='hidden' name='ingredients' value='".$cart_val['single_remarks']."'/></td><td>".$cart_val['code']."</td><td><a href='#remarks_area' data-rid='".$cart_val['id']."' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal'>" .(($cart_val['single_remarks'] == '') ? $cart_val['remark_lable'] : $cart_val['single_remarks']). "</a><input type='hidden' id='".$cart_val['extra_child_id']."' name='extra' value='".$cart_val['extra_price']. "'></td><td><input style='width:70px;text-align:right;' type='text' name='p_extra' id='".$cart_val['extra_child_id']."' value='".number_format($cart_val['extra_price'], 2, '.', ',')."' readonly></td><td><input style='width:70px;' type='text' name='p_price[]' value='".$cart_val['product_price']."' readonly></td><td><input type='text' style='width:70px;' class='p_total' name='p_total[]' value= ".$cart_val['p_total']." readonly  id='".$cart_val['id']."_cat_total'><input type='hidden' name='varient_type[]' value=".$cart_val['varient_type']."></td></tr>";
+						$product_pre_exit++;
 						}
 					}
 					?>
@@ -2252,8 +2257,11 @@ $(document).ready(function(){
                                         <input type="text" autocomplete="tel" maxlength='100' id="coupon_code" style="min-width:220px;" class="coupon_code form-control" placeholder="Enter Promo Code" name="coupon_code" />
 
                                         <a class="btn btn-info" id="apply_coupon">Apply</a>
-
+										<?php if($special_coupon_count>1){ ?>
+									<span  class="btn btn-primary coupon_list" onclick="couponlist();"><?php echo $language['coupon_list']; ?></span>
+									<?php } ?>
                                     </div>
+									
 
                                 </div>
 
@@ -3059,6 +3067,23 @@ Internet Banking ( FPX )
 		
 		   
                 <div class="col-md-12" id="past_address_div" style="padding-bottom:2%;">
+                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="coupon_list_section" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Special coupons </h4>
+            </div>
+            <div class="modal-body" style="padding-bottom:0px;padding: 0px;">
+		
+		   
+                <div class="col-md-12" id="coupon_list_div" style="padding-bottom:2%;">
                  </div>
             </div>
         </div>
@@ -4988,6 +5013,37 @@ else
 var t_lat;
 var t_long;
 // var location_permission ="denied";
+function couponlist()
+{
+	 var already_login = '<?php echo $login_user_id; ?>';
+	 var mobile_number=$('#mobile_number').val();
+	  if (mobile_number[0] == 0) {
+                            mobile_number = mobile_number.slice(1);
+                        }
+	   var data = {
+                    method: "pastaddress",
+					mobile_number:mobile_number,
+                    user_id: already_login
+                };
+	if(already_login || mobile_number)
+	{
+				$.ajax({
+
+						url: "s_coupon_list.php",
+
+						type: "post",
+
+						data: data,
+
+						success: function(data) {
+							 $('#coupon_list_section').modal('show');
+
+						   $('#coupon_list_div').html(data);
+						}
+
+					});
+	}
+} 
 function pastaddress()
 {
 	 var already_login = '<?php echo $login_user_id; ?>';
@@ -5306,7 +5362,33 @@ function updateMarkerAddress(str) {
 
         $(".element-item.selected-item").removeClass("selected-item");
 
-    });
+    });   
+	$('body').on('click','.coupon_redeem',function(){
+
+			 // alert(3);
+			   var sum = 0;
+			 var inps = document.getElementsByName('p_total[]');
+            for (var i = 0; i < inps.length; i++) {
+                var inp = inps[i];
+                sum += parseFloat(inp.value);
+            }
+			
+			coupon_code= $(this).attr('coupon_code');
+			min_amount= $(this).attr('min_amount');
+			max_amount= $(this).attr('max_amount');
+			// alert(min_amount);
+			if(sum>=min_amount)
+			{
+				 $('#coupon_code').val(coupon_code);
+					$("#apply_coupon").click();
+				 $('#coupon_list_section').modal('hide');
+			}
+			else
+			{
+				// swal("", "To Redeem this coupon have to increase cart value!", "error");
+				alert('To Redeem this coupon have to increase cart value to min RM '+min_amount);
+			}
+		   });
 	$('body').on('click','.address_select',function(){
 		 var selected_location = $(this).attr('location');
 		 var order_lat = $(this).attr('order_lat');
@@ -5933,7 +6015,7 @@ function updateMarkerAddress(str) {
 
         }
 
-        // console.log(subproduct_selected);
+         console.log(subproducts_global);
 
         var exists_in_subproducts = false;
 
@@ -5948,7 +6030,7 @@ function updateMarkerAddress(str) {
             }
 
         }
-
+		console.log(subproduct_selected.length);
         if (exists_in_subproducts) {
 
             var content = '';
@@ -7508,11 +7590,17 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
     $(window).on('load', function() {
 
         // alert(4);
-        
+         
         var special_coupon_count="<?php echo $special_coupon_count; ?>";
+        var product_pre_exit="<?php echo $product_pre_exit; ?>";
+        var coupon_code="<?php echo $special_coupon_list['coupon_code']; ?>";
 		// alert(special_coupon_count);
-		if(special_coupon_count>0)
+		// alert(coupon_code);    
+		// console.log('Specific Promo code'+special_coupon_count);
+		if(special_coupon_count>0 && product_pre_exit>0) 
 		{
+			$('#coupon_code').val(coupon_code);
+			
 			$("#apply_coupon").click();
 		}
         $('.lazy').lazy({
@@ -9311,13 +9399,13 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
                 // alert('Deliver charge '+delivery_charges);
 
-                if (delivery_charges > 0)
+                //if (delivery_charges > 0)
 
                     var order_min_charge = "<?php echo $merchant_detail['order_min_charge']; ?>";
 
-                else
+                //else
 
-                    var order_min_charge = 0;
+                  //  var order_min_charge = 0;
 
 
 
@@ -9937,13 +10025,13 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
                 // alert('Deliver charge '+delivery_charges);
 
-                if (delivery_charges > 0)
+                //if (delivery_charges > 0)
 
                     var order_min_charge = "<?php echo $merchant_detail['order_min_charge']; ?>";
 
-                else
+                //else
 
-                    var order_min_charge = 0;
+                    //var order_min_charge = 0;
 
                 if (order_min_charge > 0)
 
@@ -10265,6 +10353,8 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                     var order_min_charge = "<?php echo $merchant_detail['order_min_charge']; ?>";
                 else
                     var order_min_charge = 0;
+				
+				var order_min_charge = "<?php echo $merchant_detail['order_min_charge']; ?>";
                 if (order_min_charge > 0) {
                     if (parseFloat(total_amount) < parseFloat(order_min_charge)) {
                         var msg = "Minimum order is Rm " + order_min_charge;
@@ -12842,6 +12932,7 @@ console.log("tax_6");
                         $('#coupon_type').val(result.type);
                         totalcart();
                     } else {
+                        $('#coupon_code').val('');
                         $('#apply_coupon').show();
                     }
                     $('#coupon_message').html(result.data);
@@ -12923,10 +13014,10 @@ $(document).ready(function(){
                 });
 
                 var delivery_charges = $('#delivery_charges').val();
-                if (delivery_charges > 0)
+                //if (delivery_charges > 0)
                     var order_min_charge = "<?php echo $merchant_detail['order_min_charge']; ?>";
-                else
-                    var order_min_charge = 0;
+                //else
+                  //  var order_min_charge = 0;
 
                 if (order_min_charge > 0)
                 {
@@ -13091,3 +13182,20 @@ $(document).ready(function(){
 <?php }?>
 <script src="js/recorder.js" defer></script>
 <script src="js/sketch_new.js" defer></script>
+<script>
+<!-- Facebook Pixel Code -->
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '229277018358702');
+  fbq('track', 'PageView');
+</script>
+
+<!-- End Facebook Pixel Code -->
+</script>    

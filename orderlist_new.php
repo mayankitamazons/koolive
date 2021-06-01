@@ -134,6 +134,18 @@
 		  												kulai johor</p>
 		  												<p class="tn_add"><b>Tel. No:</b> 60197223933</p>
 		  											</div>
+		  											<hr class="mt-3 mb-4 mx-0" />
+
+		  											<div class="media rider-media align-items-center flex-column flex-sm-row">
+		  												<img  src="https://dummyimage.com/100x100/ddd/000" alt="Image" class="mb-3 mb-sm-0  mr-sm-3">
+		  												<div class="media-body">
+		  													<p><strong>Rider Name : </strong> Lorem Ipsum</p>
+		  													<p><strong>Contact Number :</strong> 14141 14141 </p>
+		  													<p><strong>Vehicle Number : </strong> 123123</p>
+		  													<p><strong>Tracking :  </strong> <a href="#" class="mr-2"><i class="fa fa-map-marker" aria-hidden="true"></i></a>Attempting to connect rider's Location.... Try 10 minutes later. </p>
+		  													
+		  												</div>
+		  											</div>
 
 		  											<div class="n_order_track ">
 		  												<p class="n_ship_add">Delivery Status</p>
@@ -210,6 +222,17 @@
 		  															kulai johor</p>
 		  															<p class="tn_add"><b>Tel. No:</b> 60197223933</p>
 		  														</div>
+		  														<hr class="mt-3 mb-4 mx-0" />
+		  														<div class="media rider-media align-items-center flex-column flex-sm-row">
+		  															<img  src="https://dummyimage.com/100x100/ddd/000" alt="Image" class="mb-3 mb-sm-0  mr-sm-3">
+		  															<div class="media-body">
+		  																<p><strong>Rider Name : </strong> Lorem Ipsum</p>
+		  																<p><strong>Contact Number :</strong> 14141 14141 </p>
+		  																<p><strong>Vehicle Number : </strong> 123123</p>
+		  																<p><strong>Tracking :  </strong><a href="#" class=" mr-2"><i class="fa fa-map-marker" aria-hidden="true"></i></a>Attempting to connect rider's Location.... Try 10 minutes later. </p>
+		  															</div>
+		  														</div>
+
 
 		  														<div class="n_order_track ">
 		  															<p class="n_ship_add">Delivery Status</p>
@@ -326,7 +349,7 @@
 					</div>
 					<!-- NEW DESIGN END ----->
 
-<?php */?>
+					<?php */?>
 
 					<!-- /.widget-body badge -->
 				</div>

@@ -10,10 +10,10 @@ headers = {'Accept-Language': 'zh'}
 restaurant_full_name=[]
 restaurant_full_name_zh=[]    #
 dish_category_title=[]
-dish_category_title_zh=[]     # 
+dish_category_title_zh=[]     #
 dish_name=[]
 dish_name_zh=[]               #
-dish_description=[] 
+dish_description=[]
 dish_description_zh=[]        #      
 original_price=[]
 discounted_price=[]
@@ -68,11 +68,11 @@ for data in data_all:
         res_img="N/A"
 
     try:
-        rat=data.find('span',class_='rating').text.strip() 
+        rat=data.find('span',class_='rating').text.strip()
     except:
         rat="N/A"
     try:
-        count=data.find('span',class_='count').text.strip() 
+        count=data.find('span',class_='count').text.strip()
     except:
         count="N/A"
 
@@ -86,8 +86,8 @@ for data in data_all:
 
     for each_t in all_tag_list[3:]:
         tgs=tgs+"|"+each_t
-    
-    
+   
+   
 
 
 
@@ -99,30 +99,30 @@ for data in data_all:
 
     hours=data.find('ul',class_='vendor-delivery-times')
     hours=(hours.text.replace(' ','').strip())
-    
+   
 
-    
+   
     loc=data.find('p',class_='vendor-location')
     loc=loc.text.strip()
-    
+   
 
 
 
-script=soup.find_all('script')[1]
+script=soup.find_all('script')[0]
 script=str(script)
 
 try:
     longitude_index=script.find('longitude')
     long=script[longitude_index+12:]
     long=(long.split())[0]
-    
+   
 
 
     latitude_index=script.find('latitude')
     lat=script[latitude_index+10:]
     lat=(lat.split())[0]
     lat=lat[:-1]
-    
+   
 except:
     long=""
     lat=""
@@ -141,7 +141,7 @@ try:
     postal_index=script.find('postalCode')
     postal=script[postal_index+14:]
     postal=(((postal.split())[0]).split('"'))[0]
-    
+   
 except:
     postal=''
 
@@ -150,7 +150,7 @@ try:
     re_url=script[re_url_index+7:]
     re_url=(re_url.split('"'))[0]
 
-    
+   
 
 except:
     re_url=''
@@ -161,13 +161,14 @@ except:
 item=soup.find_all('div',class_='dish-category-section__inner-wrapper')
 
 
-h1=soup.find('h1',class_='fn')    #to get restaurant name 
+h1=soup.find('h1',class_='fn')    #to get restaurant name
 restaurant_name=h1.text
 
 try:
     dictionary=soup.find('section',class_='vendor-section')['data-vendor']
     dct=json.loads(dictionary)
     toppings_layer_structure=dct['toppings']
+    varient_layer_structure=toppings_layer_structure
     # pprint(toppings_layer_structure)
 except:
     toppings_layer_structure=''
@@ -185,7 +186,7 @@ for data in item:
         budget_symbol.append(symbol)           ###### other info lists appended here  ##############
         rest_image_url.append(res_img)
         tags.append(tgs)
-        rating.append(rat) 
+        rating.append(rat)
         rating_count.append(count)  #no. of people votes taken for the rating
         opening_time.append(op_time)
         delivery_hours.append(hours)
@@ -195,10 +196,10 @@ for data in item:
         longitude.append(long)
         postalcode.append(postal)
         restaurant_url.append(re_url)
-            
+           
 
     title_descs=data.find_all('div',class_='dish-info')
-    for title_desc in title_descs:       
+    for title_desc in title_descs:      
         try:
            desc=title_desc.find('p',class_='dish-description e-description').text.strip()
         except:
@@ -232,7 +233,7 @@ for data in item:
     pic=data.find_all('li',class_='dish-card h-product menu__item')
     for img in pic:
         image=img.find('div',class_='photo u-photo b-lazy')
-        
+       
         if image is None:
             image_url.append('N/A')
 
@@ -256,19 +257,19 @@ try:
     for opt in list_item:
         # titles=opt.find('h3',class_='dish-name fn p-name')
         # name_item=titles.find('span').text.strip()
-        # print('name=',name_item) 
+        # print('name=',name_item)
         topping_string=''
         dic=opt['data-object']
         dct=json.loads(dic)
         toppings=dct['product_variations']
         for each_dic in toppings:
-            
+           
             list_of_name_topping=each_dic['name']
             if list_of_name_topping is None:
                 pass
             else:
                 topping_string=topping_string+'\n\n'+list_of_name_topping
-            
+           
 
             list_of_price=each_dic['price']
             topping_string=topping_string+' ,Price:  '+str(list_of_price)
@@ -277,12 +278,12 @@ try:
 
             if  list_of_name_topping==None and len(list_of_toppings)==0 and len(list_of_topping_ids)==0:
                 topping_string=topping_string+"     no sub category    "
-                
+               
             elif len(list_of_topping_ids)!=0:
                 for idno in list_of_topping_ids:
                     topping_string=topping_string+'\n'+toppings_layer_structure[str(idno)]['name']
                     topping_string=topping_string+':                (quantity_maximum: '+str(toppings_layer_structure[str(idno)]['quantity_maximum'])
-                    topping_string=topping_string+', quantity_minimum: '+str(toppings_layer_structure[str(idno)]['quantity_minimum'])+')'           
+                    topping_string=topping_string+', quantity_minimum: '+str(toppings_layer_structure[str(idno)]['quantity_minimum'])+')'          
                     topping_options= toppings_layer_structure[str(idno)]['options']
                     for each_dic_option in topping_options:
                         topping_string=topping_string+'\n'+'Name: '+ each_dic_option['name']
@@ -324,12 +325,12 @@ for data in data_all_zh:
 
     hours=data.find('ul',class_='vendor-delivery-times')
     hours=(hours.text.replace(' ','').strip())
-    
+   
 
-    
+   
     loc=data.find('p',class_='vendor-location')
     loc=loc.text.strip()
-    
+   
 
 ###################################chinese menu code continue#################################
 
@@ -338,13 +339,14 @@ for data in data_all_zh:
 itemzh=soupzh.find_all('div',class_='dish-category-section__inner-wrapper')
 
 
-h1=soupzh.find('h1',class_='fn')    #to get restaurant name 
+h1=soupzh.find('h1',class_='fn')    #to get restaurant name
 restaurant_name=h1.text
 
 try:
     dictionary=soupzh.find('section',class_='vendor-section')['data-vendor']
     dct=json.loads(dictionary)
     toppings_layer_structure=dct['toppings']
+    varient_layer_structure_zh=toppings_layer_structure
     # pprint(toppings_layer_structure)
 except:
     toppings_layer_structure=''
@@ -362,10 +364,10 @@ for data in itemzh:
         delivery_hours_zh.append(hours)
         address_zh.append(loc)
 
-        
+       
 
     title_descs=data.find_all('div',class_='dish-info')
-    for title_desc in title_descs:       
+    for title_desc in title_descs:      
         try:
            desc=title_desc.find('p',class_='dish-description e-description').text.strip()
         except:
@@ -381,19 +383,19 @@ try:
     for opt in list_itemzh:
         # titles=opt.find('h3',class_='dish-name fn p-name')
         # name_item=titles.find('span').text.strip()
-        # print('name=',name_item) 
+        # print('name=',name_item)
         topping_string=''
         dic=opt['data-object']
         dct=json.loads(dic)
         toppings=dct['product_variations']
         for each_dic in toppings:
-            
+           
             list_of_name_topping=each_dic['name']
             if list_of_name_topping is None:
                 pass
             else:
                 topping_string=topping_string+'\n\n'+list_of_name_topping
-            
+           
 
             list_of_price=each_dic['price']
             topping_string=topping_string+' ,Price:  '+str(list_of_price)
@@ -402,12 +404,12 @@ try:
 
             if  list_of_name_topping==None and len(list_of_toppings)==0 and len(list_of_topping_ids)==0:
                 topping_string=topping_string+"     no sub category    "
-                
+               
             elif len(list_of_topping_ids)!=0:
                 for idno in list_of_topping_ids:
                     topping_string=topping_string+'\n'+toppings_layer_structure[str(idno)]['name']
                     topping_string=topping_string+':                (quantity_maximum: '+str(toppings_layer_structure[str(idno)]['quantity_maximum'])
-                    topping_string=topping_string+', quantity_minimum: '+str(toppings_layer_structure[str(idno)]['quantity_minimum'])+')'           
+                    topping_string=topping_string+', quantity_minimum: '+str(toppings_layer_structure[str(idno)]['quantity_minimum'])+')'          
                     topping_options= toppings_layer_structure[str(idno)]['options']
                     for each_dic_option in topping_options:
                         topping_string=topping_string+'\n'+'Name: '+ each_dic_option['name']
@@ -425,35 +427,37 @@ except:
 
 
 
-final_dct={'restaurant_full_name': restaurant_full_name,
-'restaurant_full_name_zh': restaurant_full_name_zh,
-'restaurant_url': restaurant_url,
-'address':address,
-'address_zh':address_zh,
-'budget_symbol': budget_symbol,
-'opening_time':opening_time,
-'opening_time_zh':opening_time_zh,
-'delivery_hours':delivery_hours,
-'delivery_hours_zh':delivery_hours_zh,
-'rating':rating,
-'rating_count':rating_count,
-'rest_image_url':rest_image_url,
-'longitude':longitude,
-'latitude':latitude,
-'tags': tags,
-'telephone': telephone,
-'postalcode': postalcode,
-'dish_category_title':dish_category_title,
-'dish_category_title_zh':dish_category_title_zh,
-'dish_name':dish_name,
-'dish_name_zh':dish_name_zh,
-'dish_description':dish_description,
-'dish_description_zh':dish_description_zh,
-'original_price':original_price,
-'discounted_price':discounted_price,
-'image_url':image_url,
-'prod_variations': prod_variations,
-'prod_variations_zh': prod_variations_zh}
+final_dct={'Restaurant Name': restaurant_full_name,
+'Restaurant Name in Chinese': restaurant_full_name_zh,
+'Restaurant URL': restaurant_url,
+'Address':address,
+'Address Chinese':address_zh,
+'Budget Symbol': budget_symbol,
+'Opening Time':opening_time,
+'Opening Time Chinese':opening_time_zh,
+'Delivery Hours':delivery_hours,
+'Delivery Hours Chinese':delivery_hours_zh,
+'Rating':rating,
+'Rating Count':rating_count,
+'Restaurant Image URL':rest_image_url,
+'Longitude':longitude,
+'Latitude':latitude,
+'Tags': tags,
+'Tel No.': telephone,
+'Postal Code': postalcode,
+'Dish Category Title':dish_category_title,
+'Dish Category Title Chinese':dish_category_title_zh,
+'Dish Name':dish_name,
+'Dish Name Chinese':dish_name_zh,
+'Dish Description':dish_description,
+'Dish Description Chinese':dish_description_zh,
+'Original Price':original_price,
+'Discounted Price':discounted_price,
+'Dish Image URL':image_url,
+'Product Variations': prod_variations,
+'Product Variations Chinese': prod_variations_zh,
+'Varient Layer Structure': varient_layer_structure,
+'Varient Layer Structure Chinese': varient_layer_structure_zh}
 
 
 # for k,v in final_dct.items():
@@ -466,8 +470,8 @@ print(json_out)
 
 #####To output json as file############
 # filename=(restaurant_name.replace(' ','_')).replace(':','_')+'.json'
-# with open(filename, "w") as outfile: 
-#     outfile.write(json_out) 
+# with open(filename, "w") as outfile:
+#     outfile.write(json_out)
 # print('Exported to json')
 # print('Check '+filename)
 
@@ -479,7 +483,3 @@ print(json_out)
 # df.to_csv(filename)
 # print('Exported to csv')
 # print('Check '+filename)
-
-
-
-

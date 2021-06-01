@@ -9,13 +9,13 @@ $a_m="riders";
 
 if($_POST['type'] == 'view_more'){
 	
-	$query_times = "SELECT * FROM `rider_onoff` where rd_id =".$_POST['rd_id']." and rd_online_date = '".$_POST['unique_date']."'";
+	$query_times = "SELECT * FROM `rider_onoff` where rd_r_id =".$_POST['r_id']." and rd_online_date = '".$_POST['unique_date']."'";
 	$riders_22 = mysqli_query($conn,$query_times);
 	$td_rows = '';
 	$s = 1;
-	while($rowData = mysql_fetch_array($riders_22)){
-		//$td_rows .='<tr><td>'.$s.'</td><td>'.$rowData['rd_online_date'].'</td><td>'.$rowData['rd_online_time'].'</td><td>'.$rowData['rd_offline_time'].'</td></tr>';
-		$td_rows .='next';
+	echo $query_times;
+	while($rowData = mysqli_fetch_assoc($riders_22)){
+		$td_rows .='<tr><td>'.$s.'</td><td>'.$rowData['rd_online_date'].'</td><td>'.$rowData['rd_online_time'].'</td><td>'.$rowData['rd_offline_time'].'</td></tr>';
 		$s++;
 	}
 	echo $td_rows; exit;
@@ -56,7 +56,7 @@ while($riders_array = mysqli_fetch_array($riders)){
 		$total_seconds = ($interval->h * 3600) + ($interval->i * 60) + $interval->s;
 												
 		$ridersArray[$riders_array['rd_online_date']]['time'][] = $total_seconds; 
-		$ridersArray[$riders_array['rd_online_date']]['rd_id'] = $riders_array['rd_id']; 
+		$ridersArray[$riders_array['rd_online_date']]['rd_r_id'] = $riders_array['rd_r_id']; 
 	}
 }
 
@@ -175,7 +175,7 @@ while($riders_array = mysqli_fetch_array($riders)){
                                 <td><?php echo $i;?></td>
                                 <td><?php echo $key1;?></td>
 								<td><?php echo gmdate("H:i:s", $totalhrs);;?></td>
-								<td><a class="view_details" unique_date="<?php echo $key1;?>" rd_id = "<?php echo $value1['rd_id']; ?>" href="javascript:void(0)"><i class="fa fa-eye"></i></a></td>
+								<td><a class="view_details" unique_date="<?php echo $key1;?>" rd_r_id = "<?php echo $value1['rd_r_id']; ?>" href="javascript:void(0)"><i class="fa fa-eye"></i></a></td>
                                 
                               </tr>
                     	<?php
@@ -241,10 +241,10 @@ while($riders_array = mysqli_fetch_array($riders)){
     $(document).ready(function(){
 		$(".view_details").click(function(){
 			var unique_date = $(this).attr('unique_date');
-			var rd_id = $(this).attr('rd_id');
+			var r_id = $(this).attr('rd_r_id');
 			var cartData = {};
 			cartData['unique_date'] = unique_date;
-			cartData['rd_id'] = rd_id;
+			cartData['r_id'] = r_id;
 			cartData['type'] = 'view_more';
 			jQuery.post('/admin_panel/workingrider.php', cartData, function (result) {
 			//var response = jQuery.parseJSON(result);

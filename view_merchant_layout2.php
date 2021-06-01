@@ -160,6 +160,8 @@ function isActive($date){
 }
 //$categories = mysqli_query($conn, "SELECT DISTINCT(products.category),created_date FROM products WHERE user_id ='".$id."' and status=0 ORDER BY created_date ASC");
 $categories_q = mysqli_query($conn, "SELECT   * FROM cat_mater WHERE UserID ='".$id."' and IsEnable=1 ");
+
+#echo "SELECT   * FROM cat_mater WHERE UserID ='".$id."' and IsEnable=1";
 if($product['pro_ct'] > 0) { ?>
     <div class="col-md-12 merchant-layout-2">
         <div class="filter-button-group parent-category-menu">
@@ -204,6 +206,8 @@ if($product['pro_ct'] > 0) { ?>
 						else
 						{
 							$sub_categories_q = mysqli_query($conn, "SELECT * FROM category WHERE user_id ='".$id."' and catparent='".$index."' and status=0 ");
+							
+							#echo "SELECT * FROM category WHERE user_id ='".$id."' and catparent='".$index."' and status=0 ";
 						}
                         while ($row = mysqli_fetch_assoc($sub_categories_q))
                         {
@@ -257,7 +261,7 @@ if($product['pro_ct'] > 0) { ?>
 							where prd.user_id='$id' AND prd.status=0 group by prd.id";
 						
 					}
-					
+					//echo $q;
 					$total_rows = mysqli_query($conn,$q);  
                      $subproducts_global = array();
             
@@ -286,6 +290,7 @@ if($product['pro_ct'] > 0) { ?>
 							$sub_price_arr=explode('^',$row['subprice']);
 							$k=0;
 							 // print_R($sub_product_arr[$k]);
+							// echo "===".$row['subproduct_id']."<br/>";
 							foreach ($sub_product_ids as $key => $sub_id) {
 								if($hike_per>0)
 								{
@@ -298,7 +303,11 @@ if($product['pro_ct'] > 0) { ?>
 								} 
 								$new_sub_price=number_format($new_sub_price, 2);
 								 
-								  $item = array( "id" => $sub_id, "name" =>$sub_product_arr[$k], "product_id" => $row['id'],'product_price' => $new_sub_price);
+									if($sub_product_arr[$k] != ''){
+										 $item = array( "id" => $sub_id, "name" =>$sub_product_arr[$k], "product_id" => $row['id'],'product_price' => $new_sub_price);
+									}
+								 
+								 // echo '<prE>';print_r($item);
 									array_push($result, $item);
 								$k++;	
 							 }

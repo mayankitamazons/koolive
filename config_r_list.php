@@ -106,12 +106,17 @@ $sql = "SELECT   users.name, (SELECT count(*) FROM `timings` WHERE day = '".date
 	}else{
 		$lang_shop = "";
 	}
-	
+	/*
 	$sql = "(SELECT users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop." and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time $LOCSQL group by users.id order by users.name asc)
 UNION ALL
 (SELECT users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop." and day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN start_time and end_time $LOCSQL group by users.id order by users.name asc
 )";  
-			
+		*/	
+		
+		$sql = "(SELECT users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop." and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time $LOCSQL group by users.id order by users.name asc)
+UNION ALL
+(SELECT users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id and day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN start_time and end_time WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop."  $LOCSQL group by users.id order by users.name asc
+)";
 	
 
 	$sql_count = "SELECT   COUNT(users.name) as count
@@ -123,6 +128,8 @@ UNION ALL
 			group by users.id 
 			order by users.name asc";    
 }
+
+//echo $sql;
 $sql_count = $sql;
  $sql .= " LIMIT $offset,$per_page";  
 

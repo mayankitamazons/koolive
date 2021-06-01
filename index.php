@@ -172,7 +172,7 @@ if(isset($_POST['merchant_select_form']))
 					while($data = mysqli_fetch_array($sql))
 					{
 					?>
-					<p><a href="javascript:void(0);" link="https://www.koofamilies.com/index.php?locationsort=<?php echo $data['CityName'] ?>" class="locationbutton btn btn-primary"><?php echo $data['CityName'] ?></a></p>
+					<p><a href="javascript:void(0);" link="http://188.166.187.218/index.php?locationsort=<?php echo $data['CityName'] ?>" class="locationbutton btn btn-primary"><?php echo $data['CityName'] ?></a></p>
 					
 					
 					<?php	
@@ -1316,7 +1316,7 @@ if ('serviceWorker' in navigator) {
 		  if(selected_merchant_id!='-1')
 		  {
 			  var s_token=generatetokenno(6);
-			var m_url="https://www.koofamilies.com/view_merchant.php?sid="+selected_merchant_id+"&ms="+s_token;
+			var m_url="http://188.166.187.218/view_merchant.php?sid="+selected_merchant_id+"&ms="+s_token;
 			// alert(m_url);
 			if(window.location.href.includes('orderview.php')) return false;
 			$('.page_loader').removeAttr('style');

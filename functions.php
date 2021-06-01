@@ -59,6 +59,17 @@ if(isset($_POST['method']) && ($_POST['method'] == "onesingalidsave")){
 	echo json_encode($res);
 	die;
 }  
+/*
+if(isset($_POST['method']) && ($_POST['method'] == "riderdetailsave")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set rider_info='$rider_info' where id='$order_id'");
+	 if($up)
+		$res = array('msg'=>"Rider detail updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}*/
 if(isset($_POST['method']) && ($_POST['method'] == "riderdetailsave")){ 
 	 extract($_POST);
 	 $up=mysqli_query($conn,"update order_list set rider_info='$rider_info', rider_od_assign_time= '".date('Y-m-d H:i:s')."' where id='$order_id'");
@@ -69,11 +80,122 @@ if(isset($_POST['method']) && ($_POST['method'] == "riderdetailsave")){
 	echo json_encode($res);
 	die;
 }
+if(isset($_POST['method']) && ($_POST['method'] == "cancelorder")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set cancel_order=1,cancel_reason = '".$_POST['cancel_reason']."',inform_mecnt_status=6 where id='$orderid'");
+	 die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "cancelperson")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set cancel_person = '".$_POST['cancel_person']."' where id='$orderid'");
+	 die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "reverse_cancel")){ 
+	 extract($_POST);
+	 $up = mysqli_query($conn,"update order_list set cancel_order=0,cancel_person = '',cancel_reason = '',inform_mecnt_status=0 where id='$orderid'");
+	 die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "google_sheet_check")){ 
+	 extract($_POST);
+	 $up = mysqli_query($conn,"update google_check set google_sheet_check=1, google_sheet_check_time='".date('Y-m-d H:i:s')."' where g_id =1");
+	 die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "ridersoptionsave")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set s_rider_option='$rider_option_text' where id='$order_id'");
+	 if($up)
+		$res = array('msg'=>"Rider detail updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "rider_admin_option")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set rider_admin_option='$rider_option_text' where id='$order_id'");
+	 if($up)
+		$res = array('msg'=>"Rider detail updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+
+if(isset($_POST['data']) && ($_POST['data'] == "infomerchantstepone")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set inform_shop_open='1',inform_shop_time= '".date('Y-m-d H:i:s')."' where id=".$_POST['ordeid']);
+	 if($up)
+		$res = array('msg'=>"Data updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+
+if(isset($_POST['data']) && ($_POST['data'] == "infomerchantsteptwo")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set inform_rider_arrive_minute='1' ,inform_rider_time= '".date('Y-m-d H:i:s')."' where id=".$_POST['ordeid']);
+	 //echo "update order_list set inform_rider_arrive_minute='1' where id=".$_POST['ordeid'];exit;
+	 if($up)
+		$res = array('msg'=>"Data updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "rider_cash_amount")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set rider_cash_amount='".$_POST['bank_text']."' where id='$order_id'");
+	 
+	/* Update riders_cash_history */
+		$query_order = mysqli_query($conn, "select * from order_list where id = ".$order_id."");
+		$od_q = mysqli_fetch_assoc($query_order);
+		$riderid = $od_q['rider_info'];
+		$admin_cash_price = $od_q['admin_cash_price'];
+		$admin_commission_price = $od_q['admin_commission_price'];
+		$rider_cash_amount = $od_q['rider_cash_amount'];
+		$rc_cash_price = $admin_cash_price - $rider_cash_amount;
+		$select_q = mysqli_query($conn, "select * from riders_cash_history where rc_od_id = ".$order_id." ");
+		$assoc_q = mysqli_fetch_assoc($select_q);
+		$rc_id = $assoc_q['rc_id'];
+		$complete_date = date('Y-m-d H:i:s');
+		if($rc_id != ''){
+			//update
+			$query_rc = "UPDATE `riders_cash_history` SET rc_cash_price = '".$rc_cash_price."',rc_commission = '".$admin_commission_price."' , rc_updateddate = '".$complete_date."'   WHERE `rc_id` = ".$rc_id;
+			mysqli_query($conn, $query_rc);
+		}else{
+			//insert
+			//$qu_in = "INSERT INTO `riders_cash_history` (`rc_r_id`, `rc_od_id`, `rc_cash_price`,`rc_commission`, `rc_handover_admin`, `rc_createddate`) VALUES ( '".$riderid."', '".$order_id."', '".$rc_cash_price."','".$admin_commission_price."', '0', '".$complete_date."');";
+			//mysqli_query($conn, $qu_in);
+		}
+	/* End riders_cash_history */ 
+	
+	
+	 if($up)
+		$res = array('msg'=>"Bank price updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "rider_bank_amount")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set rider_bank_amount='".$_POST['bank_text']."' where id='$order_id'");
+	 
+	 if($up)
+		$res = array('msg'=>"Bank price updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+
 /* start :: save admin_bank_price & admin_cash_price*/
 if(isset($_POST['method']) && ($_POST['method'] == "admin_bank_price")){ 
 	 extract($_POST);
 	 $up=mysqli_query($conn,"update order_list set admin_bank_price='".$_POST['bank_text']."' where id='$order_id'");
-	 if($up)
+	 
+    if($up)
 		$res = array('msg'=>"Bank price updated",'status'=>true);	
 	else
 	$res = array('msg'=>"Failed to update",'status'=>false);
@@ -83,6 +205,30 @@ if(isset($_POST['method']) && ($_POST['method'] == "admin_bank_price")){
 if(isset($_POST['method']) && ($_POST['method'] == "admin_cash_price")){ 
 	 extract($_POST);
 	 $up=mysqli_query($conn,"update order_list set admin_cash_price='".$_POST['bank_text']."' where id='$order_id'");
+	 
+	 /* Update riders_cash_history */
+		$query_order = mysqli_query($conn, "select * from order_list where id = ".$order_id."");
+		$od_q = mysqli_fetch_assoc($query_order);
+		$riderid = $od_q['rider_info'];
+		$admin_cash_price = $od_q['admin_cash_price'];
+		$admin_commission_price = $od_q['admin_commission_price'];
+		$rider_cash_amount = $od_q['rider_cash_amount'];
+		$rc_cash_price = $admin_cash_price - $rider_cash_amount;
+		$select_q = mysqli_query($conn, "select * from riders_cash_history where rc_od_id = ".$order_id." ");
+		$assoc_q = mysqli_fetch_assoc($select_q);
+		$rc_id = $assoc_q['rc_id'];
+		$complete_date = date('Y-m-d H:i:s');
+		if($rc_id != ''){
+			//update
+			$query_rc = "UPDATE `riders_cash_history` SET rc_cash_price = '".$rc_cash_price."',rc_commission = '".$admin_commission_price."' , rc_updateddate = '".$complete_date."'   WHERE `rc_id` = ".$rc_id;
+			mysqli_query($conn, $query_rc);
+		}else{
+			//insert
+			//$qu_in = "INSERT INTO `riders_cash_history` (`rc_r_id`, `rc_od_id`, `rc_cash_price`,`rc_commission`, `rc_handover_admin`, `rc_createddate`) VALUES ( '".$riderid."', '".$order_id."', '".$rc_cash_price."','".$admin_commission_price."', '0', '".$complete_date."');";
+			//mysqli_query($conn, $qu_in);
+		}
+	/* End riders_cash_history */ 
+	
 	 if($up)
 		$res = array('msg'=>"Cash price updated",'status'=>true);	
 	else
@@ -90,20 +236,97 @@ if(isset($_POST['method']) && ($_POST['method'] == "admin_cash_price")){
 	echo json_encode($res);
 	die;
 }
+if(isset($_POST['method']) && ($_POST['method'] == "admin_commission_price")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set admin_commission_price='".$_POST['comm_text']."' where id='$order_id'");
+	// echo "update order_list set admin_commission_price='".$_POST['comm_text']."' where id='$order_id'";exit;
+	
+	$select_q = mysqli_query($conn, "select * from riders_cash_history where rc_od_id = ".$order_id." ");
+	$assoc_q = mysqli_fetch_assoc($select_q);
+	$rc_id = $assoc_q['rc_id'];
+	$complete_date = date('Y-m-d H:i:s');
+	if($rc_id != ''){
+		$query_rc = "UPDATE `riders_cash_history` SET rc_commission = '".$_POST['comm_text']."' , rc_updateddate = '".$complete_date."'   WHERE `rc_id` = ".$rc_id;
+		mysqli_query($conn, $query_rc);
+	}
+			
+	if($up)
+		$res = array('msg'=>"Commission price updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "rider_reason_dif")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set rider_reason_dif='".$_POST['reason_text']."' where id='$order_id'");
+	 if($up)
+		$res = array('msg'=>"Data updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+
+if(isset($_POST['method']) && ($_POST['method'] == "admin_code")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set admin_code='".$_POST['admin_code']."' where id='$order_id'");
+	 if($up)
+		$res = array('msg'=>"Data updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+
+if(isset($_POST['method']) && ($_POST['method'] == "admin_confirmed_by")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set admin_confirmed_by='".$_POST['confirm_by']."' where id='$order_id'");
+	 if($up)
+		$res = array('msg'=>"Data updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}
+
 /* END :: save admin_bank_price & admin_cash_price*/
+
 /*Start : info merchnt*/
 /* info merchnt update*/
 if(isset($_POST['data']) && ($_POST['data'] == "infomerchnt")){ 
-	$admin_code = $_POST['admin_code'];
+	//$admin_code = $_POST['admin_code'];
 	$ordeid = $_POST['ordeid'];
 	$inform_mecnt_status = $_POST['inform_mecnt_status'];
 	$info_merchant_admin_datetime = date('Y-m-d H:i:s');
-	$query_info = "update order_list SET info_merchant_admin='".$admin_code."', info_merchant_admin_datetime='".$info_merchant_admin_datetime."', inform_mecnt_status='".$inform_mecnt_status."' where id =".$ordeid;
+	$query_info = "update order_list SET  info_merchant_admin_datetime='".$info_merchant_admin_datetime."', inform_mecnt_status='".$inform_mecnt_status."' where id =".$ordeid;
 	//echo $query_info;
 	mysqli_query($conn,$query_info);
 	die;
 }
+
+
+if(isset($_POST['method']) && ($_POST['method'] == "inform_mecnt_status")){ 
+	$orderid = $_POST['orderid'];
+	$code_admin_code = $_POST['code_admin_code'];
+	$info_merchant_admin_datetime = date('Y-m-d H:i:s');
+	$query_info = "update order_list SET info_merchant_admin='".$code_admin_code."' where id =".$orderid;
+	mysqli_query($conn,$query_info);
+	die;
+}
+
+
 /* END*/
+
+if(isset($_POST['method']) && ($_POST['method'] == "food_receipt_seen")){ 
+	$orderid = $_POST['orderid'];
+	$food_receipt_seen = $_POST['food_receipt_seen'];
+	$query_info = "update order_list SET food_receipt_seen='".$food_receipt_seen."' where id =".$orderid;
+	mysqli_query($conn,$query_info);
+	die;
+}
+
+
 if(isset($_POST['method']) && ($_POST['method'] == "adminfeedbacksave")){
 	 extract($_POST);
 	 $user_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM feedback WHERE  feedback_id='".$selected_id."'"));
@@ -135,6 +358,22 @@ if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){
 		{
 			$name=$user_data['name'];
 		}
+		if($merchant_remark!='')
+		{
+		
+		}
+		else
+		{
+			$merchant_remark=$user_data['merchant_remark'];
+		}
+		if($lat_lng!='')
+		{
+		
+		}
+		else
+		{
+			$lat_lng=$user_data['lat_lng'];
+		}
 		// update balance inr 
 		if($balance_inr!='')
 		{
@@ -153,6 +392,14 @@ if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){
 		else
 		{
 			$foodpanda_link=$user_data['foodpanda_link'];
+		}
+		if($whatsapp_link)
+		{
+			
+		}
+		else
+		{
+			$whatsapp_link=$user_data['whatsapp_link'];
 		}
 		if($google_map!='')
 		{
@@ -216,7 +463,7 @@ if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){
 		$popular_restro=$user_data['popular_restro'];
 		if($show_merchant=='')
 		$show_merchant=$user_data['show_merchant'];
-        $s=mysqli_query($conn,"update users set balance_inr='$balance_inr',foodpanda_link='$foodpanda_link',google_map='$google_map',latitude='$mapLat',longitude='$mapLong',name='$name',order_extra_charge='$order_extra_charge',sst_rate='$sst_rate',custom_msg_time='$custom_msg_time',price_hike='$price_hike',popular_restro='$popular_restro',show_merchant='$show_merchant',special_price_value='$special_price_value',vendor_comission='$vendor_comission',delivery_rate='$delivery_rate',delivery_take_up='$delivery_take_up',delivery_dive_in='$delivery_dive_in' where id='$selected_user_id'");
+        $s=mysqli_query($conn,"update users set lat_lng='$lat_lng',merchant_remark='$merchant_remark',whatsapp_link='$whatsapp_link',balance_inr='$balance_inr',foodpanda_link='$foodpanda_link',google_map='$google_map',latitude='$mapLat',longitude='$mapLong',name='$name',order_extra_charge='$order_extra_charge',sst_rate='$sst_rate',custom_msg_time='$custom_msg_time',price_hike='$price_hike',popular_restro='$popular_restro',show_merchant='$show_merchant',special_price_value='$special_price_value',vendor_comission='$vendor_comission',delivery_rate='$delivery_rate',delivery_take_up='$delivery_take_up',delivery_dive_in='$delivery_dive_in' where id='$selected_user_id'");
 		
 		if($s)
 		{
@@ -236,7 +483,7 @@ if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){
 			}
 		}		
 		else
-		{
+		{   
 			$res = array('msg'=>"Failed to update",'status'=>false);
 		}		
 	}

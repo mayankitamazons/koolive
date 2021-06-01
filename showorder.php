@@ -1,9 +1,5 @@
 <?php 
 include('config.php');
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
-
 if(!isset($_SESSION['s_admin']))
 {
 	header("location:rl.php");
@@ -44,11 +40,34 @@ exit();
 }
 if (empty($_SESSION["langfile"])) { $_SESSION["langfile"] = "english"; }
     require_once ("languages/".$_SESSION["langfile"].".php");
- $query="select  order_list.*,u.shop_open,u.working_text,u.working_text_chiness,u.not_working_text_chiness,u.not_working_text,u.name as merchant_name,u.mobile_number as merchant_mobile_number,u.whatsapp_link,u.foodpanda_link,u.vendor_comission as vc_user, u.price_hike as price_hike_user from order_list inner join 
-users as u on u.id=order_list.merchant_id  order by order_list.id desc limit 0,100";
+// $query="select  order_list.*,u.shop_open,u.working_text,u.working_text_chiness,u.not_working_text_chiness,u.not_working_text,u.name as merchant_name,u.latitude,u.longitude,u.mobile_number as merchant_mobile_number,u.whatsapp_link,u.foodpanda_link,u.vendor_comission as vc_user, u.price_hike as price_hike_user from order_list inner join users as u on u.id=order_list.merchant_id  order by order_list.id desc limit 0,100";
+$rider_where  = '';
+$infrm_where = '';
+$accept_where = '';
+if($_GET['order'] == 'pendings'){
+	$rider_where = " where  rider_info = 0 and cancel_order!=1 and created_on >'2021-04-07 12:00:00'";
+}
 
 
-#echo $query;
+if($_GET['order'] == 'accepted'){
+	$accept_where = " where  rider_info != 0 and rider_accept_id = 0 and cancel_order!=1 and created_on >'2021-04-07 12:00:00'";
+}
+
+
+
+if($_GET['order'] == 'infrms'){
+	$infrm_where = " where  inform_rider_arrive_minute	= 0 and cancel_order!=1 and created_on >'2021-04-21 12:00:00'";
+}
+
+
+$query="select order_list.user_id as od_user_id,  order_list.*,user.mobile_number as user_mobile_number,u.google_map,user.id as l_user_id,user.lat_lng,u.shop_open,u.working_text,u.sst_rate,u.working_text_chiness,u.not_working_text_chiness,u.not_working_text,u.name as merchant_name,user.latitude,user.longitude,u.mobile_number as merchant_mobile_number,u.whatsapp_link,u.foodpanda_link,u.vendor_comission as vc_user, u.price_hike as price_hike_user from order_list 
+inner join users as u on u.id=order_list.merchant_id  
+inner join users as user on user.id=order_list.user_id
+".$rider_where." ".$infrm_where." ".$accept_where."
+order by order_list.id desc limit 0,100";
+
+//echo $query;
+
 $current_time = date('Y-m-d H:i:s');
 function ceiling($number, $significance = 1)
 {
@@ -82,35 +101,145 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 </head>
 <body>
 
-<div class="container">
-  <h2>Latest Order</h2>
+<?php 
+$order_pedning_count = 0;
+$pending_orders =  mysqli_query($conn,'select count(*) as order_cnt from order_list inner join users as u on u.id=order_list.merchant_id inner join users as user on user.id=order_list.user_id where rider_info = 0 and cancel_order!=1 and created_on >"2021-04-07 12:00:00"');
+$pending_order_count = mysqli_fetch_assoc($pending_orders);
+
+$order_pedning_count = $pending_order_count['order_cnt'];
+
+
+$rider_wait_accept = 0;
+$rider_wait_orders = mysqli_query($conn,'select count(*) as rider_wait_cnt from order_list inner join users as u on u.id=order_list.merchant_id inner join users as user on user.id=order_list.user_id where rider_info != 0 and rider_accept_id = 0 and cancel_order!=1 and created_on >"2021-04-07 12:00:00"');
+$rider_wait_results = mysqli_fetch_assoc($rider_wait_orders);
+$rider_wait_accept = $rider_wait_results['rider_wait_cnt'];
+
+
+$order_inf_count = 0;
+$pending_infrms =  mysqli_query($conn,'select count(*) as order_cnt from order_list inner join users as u on u.id=order_list.merchant_id inner join users as user on user.id=order_list.user_id where inform_rider_arrive_minute = 0 and cancel_order!=1 and created_on >"2021-04-21 12:00:00"');
+$order_inf_counts = mysqli_fetch_assoc($pending_infrms);
+
+$order_inf_count = $order_inf_counts['order_cnt'];
+
+
+
+$riders_processjob = mysqli_query($conn,"select r.r_id,count(od.id)as ordercount from tbl_riders as r LEFT JOIN order_list as od ON od.rider_info = r.r_id and rider_complete_order = 0  and cancel_order!=1  where r_status = 1 group by r.r_id");
+/*and r_online = 1 */
+$riderJobArray = array();
+while($rjob_result = mysqli_fetch_assoc($riders_processjob)){
+	$riderJobArray[$rjob_result['r_id']] = $rjob_result['ordercount'];
+}	
+
+$riders_query_2 = "select * from tbl_riders where r_status = 1 and r_online = 1";
+//$riders_query = "select (select count(*) as dd from order_list as od where od.rider_info = r.r_id and rider_complete_order = 0 ) as rider_process_count,r.* from tbl_riders as r where r_status = 1 and r_online = 1";
+$ridersFetch2 = mysqli_query($conn,$riders_query_2);
+
+
+//FPX count
+
+$fpxCount = 0;
+$fpx_count_order =  mysqli_fetch_assoc(mysqli_query($conn,"SELECT count(t_id)as count_fpx FROM `tbl_temp_saveorder` as ts Inner JOIN users as cust ON cust.id = ts.t_user_id Inner JOIN users as mer ON mer.id = ts.t_m_id where t_transid = '' and t_payment_status = '' and t_createddate >= '2021-04-22 20:51:06' and t_showstatus = 0 ORDER BY `ts`.`t_id` DESC"));
+$fpxCount = $fpx_count_order['count_fpx'];
+
+
+$fpx_last_order =  mysqli_fetch_assoc(mysqli_query($conn,"SELECT t_createddate FROM `tbl_temp_saveorder` as ts Inner JOIN users as cust ON cust.id = ts.t_user_id Inner JOIN users as mer ON mer.id = ts.t_m_id where t_transid = '' and t_payment_status = '' and t_createddate >= '2021-04-22 20:51:06' and t_showstatus = 0 ORDER BY `ts`.`t_id` DESC limit 1"));
+
+$fpx_last_date = $fpx_last_order['t_createddate'];
+$fpx_date = new DateTime($fpx_last_date);
+$now_zone = new DateTime(Date('Y-m-d H:i:s'));
+$interval_fpx = $fpx_date->diff($now_zone);
+$minutes_fpx = $interval_fpx->i;
+
+
+$gp_check =  mysqli_fetch_assoc(mysqli_query($conn,"SELECT * FROM `google_check`"));
+$gp_check_time = new DateTime($gp_check['google_sheet_check_time']);
+$interval_gp = $gp_check_time->diff($now_zone);
+$minutes_gp = $interval_gp->i;
+
+?>
+
+<div class="container" style="margin-left:3px !important;">
+  <h2>Latest Order <?php if(count($fpx_last_order) != 0){?>
+  <a href="fpx_orders.php" target="_blank" class="btn-sm btn-yellow <?php if($minutes_fpx >=5){?>blink_info_button<?php }?>" style="cursor:pointer;color: white;padding: 10px;font-weight: bold;background-color:red;margin:3px;">FPX Order</a>
+  <?php }?>
+  
+  <?php 
+  //echo $minutes_gp;
+  $cls_gl = '';
+  if($minutes_gp >=5 ){
+	  $cls_gl = 'blink_info_button';
+  }?>
+  <a href="javascript:void(0)" class="btn-sm btn-yellow google_sheet_check <?php echo $cls_gl;?> " style="cursor:pointer;color: white;padding: 10px;font-weight: bold;background-color:#977cd8 !important;border-color:#977cd8 !important;margin:3px;">Google Sheet</a>
+  
+  </h2>
+  
+  
+  
+  
+  <?php 
+	$green_riders = array();
+	$red_riders = array();
+	
+	while($r_value1 = mysqli_fetch_assoc($ridersFetch2)){
+		if($riderJobArray[$r_value1['r_id']] == 0){
+			$r_css = "green";
+			$green_riders[] = $r_value1;
+		}else if($riderJobArray[$r_value1['r_id']] != 0){
+			$r_css = "red";
+			$red_riders[] = $r_value1;
+		}else{
+			$r_css = "black";
+		}
+		//echo "Jobs:".$riderJobArray[$r_value1['r_id']]." ".$r_value1['r_name']."(".$r_value1['r_mobile_number'].")"; 
+}
+
+?>
+<div>
+<?php foreach($green_riders as $gkey => $gvalue){?>
+<a style="background-color:green;border-color:green;cursor:pointer;margin:3px;" target="_blank" href="<?php echo $gvalue['r_link'];?>" class="status btn btn-primary"><?php echo $gvalue['r_name']." (".$riderJobArray[$gvalue['r_id']].")";?></a>
+<?php }?>
+
+<?php foreach($red_riders as $rkey => $rvalue){?>
+<a style="background-color:red;border-color:red;cursor:pointer;margin:3px;" target="_blank" href="<?php echo $rvalue['r_link'];?>" class="status btn btn-primary"><?php echo $rvalue['r_name']." (".$riderJobArray[$rvalue['r_id']].")";?></a>
+<?php }?>
+</div>
+
+<?php 
+?>
           
   <table class="table">
     <thead>
       <tr>
         <th>S.No</th>
-        <th>Invoice Number</th>
+        
         <th>DATE OF ORDER</th>
 		 <th>Order Status</th>
-        <th>Detail</th>
-		<th>Rider Info</th>
-        <th>Write up</th>
-      
+		   <th>Action</th>
+		   <th>Write up</th>
+        <th>Detail <a href='showorder.php?sid=<?php echo $sid;?>&ms=<?php echo md5(rand());?>&order=infrms'>
+		<span style="color:red;font-size:22px">(<?php echo $order_inf_count;?>)</span></a>
+		</th>
+		<th>Rider Info 
+		<a href='showorder.php?sid=<?php echo $sid;?>&ms=<?php echo md5(rand());?>&order=pendings' title="Rider Assign Pending">
+		<span style="color:red;font-size:22px">(<?php echo $order_pedning_count?>)</span></a>
+		
+		<a href="showorder.php?sid=<?php echo $sid;?>&ms=<?php echo md5(rand());?>&order=accepted" title="Waiting of Rider Accept">
+		<span style="color:red;font-size:22px">(<?php echo $rider_wait_accept;?>)</span></a>
+		</th>
+        <th>Selling Price</th>
+		<th>Purchase Price</th>
         <th>User Detail</th>
         <th>Merchant Name</th>
+        <th>Merchant Address</th>
         <th>Food Panda Link</th>
         <th>Whatsapp  Link</th>
         <th>Merchant Mobile Number</th>
-       
-
-        <th>Action</th>
-
       </tr>
     </thead>
     <tbody>
 	<?php 
      $qu=mysqli_query($conn,$query);
-	 $i=1;
+	 $c=1;
 	 while($r=mysqli_fetch_array($qu))
 	 {
 		   $created =$row['created_on'];
@@ -141,6 +270,20 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 									// $sta = "Accepted";
 									$s_color="";
 								}
+								if($row['rider_complete_order'] == 1){
+									$n_status='';
+									$sta ='completed';
+									// $sta = "Accepted";
+									$s_color="green";
+								}	
+								if($row['cancel_order'] == 1){
+									$n_status='';
+									$sta ='Cancelled';
+									// $sta = "Accepted";
+									$s_color="#eca7a7";
+									$b_color = "border-color:#eca7a7";
+								}
+								
 		 $dteDiff  = date_diff($date, date_create($current_time));
                               $diff_day = $dteDiff->d;
                               if($diff_day != '0') $diff_day .= ' days ';
@@ -152,19 +295,95 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
                               $diff_second = $dteDiff->s;
                               if($diff_second < 10) $diff_second = '0'.$diff_second;
                               $diff_time = $diff_day.'<br>'.$diff_hour.$diff_minute.$diff_second;	
+							  $created_on = $row['created_on'];
+								$old_date = new DateTime($created_on);
+								$now = new DateTime(Date('Y-m-d H:i:s'));
+								//echo date('Y-m-d H:i:s');
+								//echo '<br/>';
+								$interval = $old_date->diff($now);
+		
+							$row_cls = '';
+							if($r['cancel_order'] != 1 ){
+								if($row['rider_complete_order'] != 1)
+								{
+									if($interval->h >= 1){
+										$row_cls = 'blink_info_button';
+									}
+								}
+							}
+		
+		
 	?>
-      <tr>
-        <td><?php echo $i; ?></td>
-		<td><?php echo $row['id']; ?></td/>  
-		                            <td><?php echo date_format($date,"m/d/Y h:i A");  ?>   
+      <tr class="<?php echo $row_cls;?>" style="background-color:white !important;">
+        <td>
+		<?php //echo "====>>>".$interval->h;?>
+		<?php echo $c;  $c++;?></td>
+		
+		                            <td><?php //echo date_format($date,"m/d/Y h:i A");  ?>   
+									
+									<?php echo date('m/d/Y h:i A',strtotime($row['created_on']))	;  ?>
 								
                                 <?php echo '<br>'; echo $new_time[1] ?>
                                 <?php 
                                   if($row['status'] == 0){?>
                                     <p style="color: red;"><?php echo $diff_time; ?></p> <?php 
                                   }?>
+								  
+								  <!-- payment proof -->
+							<br/>
+					  <?php if($row['payment_proof'] != '' ){?>
+						  <label class="btn-sm btn-yellow" style="background-color:#6ea6d6;margin-top:10px;width:150px">
+						  <a class="fancybox" rel="" href="<?php echo $site_url.'/upload/'.$row['payment_proof'];?>" style="color:white" >
+Payment Proof </a>
+						  </label>
+					  <?php }else{?>
+					  <label class="btn-sm btn-yellow" style="background-color:#fb9678;border-color:#fb9678;margin-top:10px;width:150px;color:white">
+					  No payment proof !!
+						  </label>
+						 
+					  <?php }?>
+					   <a target="_blank" href="merchant_order.php?orderid=<?php echo $row['id']; ?>" class="btn-sm btn-yellow" style="background-color:lightgreen;border-color:lightgreen;margin-top:10px;width:150px;color:white">
+					  Merchant Order
+						  </a>
+							<!-- End Payment Proof-->
+							
+							<?php 
+							$cls_del = 'blink_info_button';
+							if($row['rider_info'] != 0){
+								$cls_del = '';
+							}?>
+							
+							<?php /*?>
+							<?php
+							$speed_man = '';
+							$chinese_man = '';
+							if($row['special_delivery_amount']!= '0'){
+								$chinese_man = 'Chiness Delivery';
+							?>
+							<label class="btn-sm btn-yellow <?php echo $cls_del;?>" style="background-color:red;border-color:red;margin-top:10px;width:150px;color:white">
+								<?php echo $chinese_man;?>
+							</label>
+							<?php }?>
+							<?php if($row['speed_delivery_amount']!= '0'){
+								$speed_man = 'Speed Delivery';
+							?>
+							<label class="btn-sm btn-yellow <?php echo $cls_del;?>" style="background-color:red;border-color:red;margin-top:10px;width:150px;color:white">
+								<?php echo $speed_man;?>
+							</label>
+							<?php }?>
+							<?php */?>
+							
+							
+							
+							
+							<!-- Speed Delivery--->
+							<!-- Chinese Man Delivery--->
+							
+							
+							
+							
                             </td>
-		   <td><input type="button" next_status="<?php echo $n_status; ?>" style="background-color:<?php echo $s_color;?>" class= "status btn btn-primary" value="<?php  echo $sta;?>" status="<?php echo $row['status'];?>" data-invoce='<?php echo $row['invoice_no'];?>' data-id="<?php echo $row['id']; ?>"/>
+		   <td><input type="button" next_status="<?php echo $n_status; ?>" style="background-color:<?php echo $s_color;?>;<?php echo $b_color;?>" class= "status btn btn-primary" value="<?php  echo $sta;?>" status="<?php echo $row['status'];?>" data-invoce='<?php echo $row['invoice_no'];?>' data-id="<?php echo $row['id']; ?>"/>
 
 
 
@@ -254,6 +473,9 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
         $i++;
         $p++;
     }
+	
+	//echo $Final_price;
+	
     $allproduct_price = array_sum($product_price_array);
     $allproduct_price_digit = bcadd(sprintf('%F', $allproduct_price) , '0', 1);
     $cash_term_payment_digit = bcadd(sprintf('%F', $cash_term_payment) , '0', 1);
@@ -262,7 +484,7 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 	echo '<br/>';
 	echo "totalproduct = ".$allproduct_price_digit;
 	echo '<br/>';
-	echo "Diff = ".$price_diff; // 28
+	echo "Diff = ".$price_diffprice_diff; // 28
 
 	echo '<br/>';
 	echo "VC = ".$vendor_comission_user;
@@ -284,7 +506,76 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
     } */?>		<!-- Show error in order if total not match 24/01/2021--->																								
 
 
+
 </td>
+<td><a target="_blank
+" href="orderview.php?did=<?php echo $row['merchant_id'];?>&vs=<?php  echo md5(rand());?>">Check order</a>
+
+
+
+
+<?php 
+$rider_arrive_shop_time = $row['rider_arrive_shop'];
+$arriv_time = new DateTime($rider_arrive_shop_time);
+$now_arriv = new DateTime(Date('Y-m-d H:i:s'));
+$interval_arriv = $arriv_time->diff($now_arriv);
+$hours_arriv = $interval_arriv->h;
+$minutes_arriv = $interval_arriv->i;
+//echo $minutes_arriv;
+//if($minutes_arriv >= 3){
+	if($row['rider_arrive_shop'] != '0000-00-00 00:00:00'){
+		//if($row['update_merchnt_details'] == '0000-00-00 00:00:00'){
+			if($row['order_cancel'] != 1 && $row['rider_accept_id'] != 0){
+				//if($row['rider_complete_order'] != 1){
+					//echo '<span style="color:red">Riders not updated cash or Bank price!!</span>';
+					$rider_cash_bank_price = $row['rider_bank_amount'] + $row['rider_cash_amount'];
+					$price_diff_a = $cash_term_payment_digit - $rider_cash_bank_price;
+					$show_price_diff = number_format($price_diff_a,2);
+					//echo $show_price_diff;
+					$chk_p_cond = str_replace("-","",$show_price_diff);
+					//if($row['rider_m_price_diff'] != ''){
+					if($show_price_diff != ''){
+						$class_diff = '';
+						$diff_style = '';
+						//if($row['rider_m_price_diff'] >1){
+							
+						//if($price_diff_a > 1 ){	
+						if($chk_p_cond > 1 ){	
+							if($row['rider_reason_dif'] == ''){
+							//if($price_diff_a != ''){	
+								$class_diff="blink_info_button";
+								$diff_style = "style='padding:5px;color:white;'";
+							}
+	
+?>
+<br/>
+
+<b>Price Diff:</b> <label <?php echo $diff_style;?> class="<?php echo $class_diff;?>"><?php echo $show_price_diff;//$row['rider_m_price_diff'];?></label>
+<br/>
+<b>Reason:</b><textarea class="form-control rider_reason_dif" name="rider_reason_dif" id="rider_reason_dif" order_id="<?php echo $row['id']; ?>" style="width:150px"/><?php echo $row['rider_reason_dif'];?></textarea>
+<?php 					}
+					}
+				//}
+			}
+	}
+//}
+
+?>
+
+<br/>
+		<?php if($row['remark_extra'] != ''){?>
+		<p style="color:red;font-size:20px"><b>Remark: </b><?php echo $row['remark_extra'];?></p>
+		<?php }?>
+		
+</td>
+<td >
+			
+			<a style="display:none" class="btn btn-primary copy-text cust_<?php echo $row['id'];?>" onclick="copyToCustAdd('#writeup_set_<?php  echo $row['id'];?>','cust_<?php echo $row['id'];?>','<?php echo $row['id'];?>')"> Copy </a>
+			
+			<a style="display:none" class="btn btn-primary  copy-text orderdeatils_<?php echo $row['id'];?>" onclick="copyToOrderDetails('#od_copy_details_<?php  echo $row['id'];?>','orderdeatils_<?php echo $row['id'];?>')"> Copy Order Details </a>
+			<br/>
+			<span class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i><span></td>
+		
 							
 		<td  style="font-size:18px;" >
 		
@@ -293,12 +584,7 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 		<!--- info Merchant Button-->
 		<br/>
 		<?php 
-		$created_on = $row['created_on'];
-		$old_date = new DateTime($created_on);
-		$now = new DateTime(Date('Y-m-d H:i:s'));
-		//echo date('Y-m-d H:i:s');
-		//echo '<br/>';
-		$interval = $old_date->diff($now);
+		
 		$years = $interval->y;
 		$months = $interval->m;
 		$days = $interval->d;
@@ -306,7 +592,7 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 		$minutes = $interval->i;
 		$alert_show = 'no';
 		if($years == 0 && $months == 0 && $days== 0 && $hours == 0 ){
-			if($minutes <= 7){
+			if($minutes <= 6){
 			}else{
 				//echo 'ALERT';
 				$alert_show = 'yes';
@@ -315,13 +601,74 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 			//echo 'ALERT2';
 			$alert_show = 'yes';
 		}
-		/*echo $interval->d.' days<br>';
-		echo $interval->y.' years<br>';
-		echo $interval->m.' months<br>';
-		echo $interval->h.' hours<br>';
-		echo $interval->i.' minutes<br>';
-		echo $interval->s.' seconds<br>';
-		*/?>
+		
+		
+		//inform_step1 blink
+		$alert_show_ss = 'no';
+		if($row['inform_shop_open'] ==1){
+			$inform_shop_time = $row['inform_shop_time'];
+			$inform_shop_time1 = new DateTime($inform_shop_time);
+			$now_ss = new DateTime(Date('Y-m-d H:i:s'));
+			$interval_ss = $inform_shop_time1->diff($now_ss);
+			/*$years = $interval_ss->y;
+			$months = $interval_ss->m;
+			$days = $interval_ss->d;
+			$hours = $interval_ss->h;
+			*/$minutes_ss = $interval_ss->i;
+			$alert_show_ss = 'no';
+			//echo $minutes_ss;echo '<br/>';
+			if($minutes <= 20){
+			}else{
+				//echo 'ALERT';
+				$alert_show_ss = 'yes';
+			}
+		}
+		
+		//echo $alert_show_ss;
+		// echo $interval->d.' days<br>';
+		// echo $interval->y.' years<br>';
+		// echo $interval->m.' months<br>';
+		if($r['status']!=4)
+		{
+		// echo $interval->h.' hours<br>';
+		// echo $interval->i.' minutes<br>';
+		// echo $interval->s.' seconds<br>';
+		
+			$order_place_date = new DateTime($created_on);
+			
+			if($r['rider_complete_order'] == 1){
+				$order_complete_time = $r['rider_complete_time'];
+				$order_now = new DateTime($order_complete_time);
+			}else{
+				$order_now = new DateTime(Date('Y-m-d H:i:s'));
+			}
+			//echo date('Y-m-d H:i:s');
+			//echo '<br/>';
+			$interval_complete = $order_place_date->diff($order_now);
+								
+			if($interval_complete->d){
+				$order_main_complete_time =  $interval_complete->d."Day,".$interval_complete->h." Hour:".$interval_complete->i." min :"."</br>";
+				//$order_main_complete_time =   $interval->d."Day,".$interval->h." Hour: ".$interval->i." Min :"."</br>";
+			}else{
+				$order_main_complete_time =  $interval_complete->h." Hour :".$interval_complete->i." Min"."</br>";
+				//$order_main_complete_time =   $interval->h." Hour : ".$interval->i." Min"."</br>";
+			}
+			//echo $interval->h;
+			if($interval_complete->h >= 1){
+				$t_style = "background-color:red;border-color:red;color:black;";
+			}else{
+				$t_style = "background-color:#f3db07;border-color:#f3db07;color:black;";
+			}
+
+		?>
+<?php if($row['cancel_order'] == 0){?>
+		<span class="btn btn-sm btn-danger" style="<?php echo $t_style;?>font-weight: bold;cursor:auto;text-transform: uppercase;margin-bottom:10px;font-size:16px;"><?php echo $order_main_complete_time;?></span>
+		<br/>
+<?php }?>
+		<?php
+	
+		}
+		?>
 
 <style>
 .blink_info_button {
@@ -358,60 +705,408 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 .edit_info_merchant{
 	padding: 10px;
 	cursor:pointer;
-}
-.green{
+}.green{
 	color:green;
 }
 .red{
 	color:red;
 }
 </style>
-		<?php if($row['inform_mecnt_status'] != '0'){
+		<?php if($row['inform_mecnt_status'] != '0' ){
 			
 			if($row['inform_mecnt_status'] == 1){
-				$labels = 'Inform already';
+				//$labels = 'Inform already';
+				$labels = 'Fp Order nama Koo Family';
 				$lab_cls = 'green';
 			}else if($row['inform_mecnt_status'] == 2){
-				$labels = 'Cannot reach  merchant, now inform customer rider is otw checking';
+				$labels = 'Sudah call guna 5670';//'Cannot reach  merchant, now inform customer rider is otw checking';
 				$lab_cls = 'red';
 			}else if($row['inform_mecnt_status'] == 3){
-				$labels = 'Rider buy himself';
+				$labels = 'FP & beli sendiri juga';//'Rider buy himself';
 				$lab_cls = 'green';
+			}else if($row['inform_mecnt_status'] == 4){
+				$labels = 'FP & sudah Call guna 5670';//'Order Cancelled';
+				$lab_cls = 'red';
+			}else if($row['inform_mecnt_status'] == 5){
+				$labels = 'Semua beli sendiri';//'Order Cancelled';
+				$lab_cls = 'red';
+			}else if($row['inform_mecnt_status'] == 6){
+				$labels = 'Order Cancelled';
+				$lab_cls = 'red';
+			}else if($row['inform_mecnt_status'] == 7){
+				$labels = 'Sudah group order, guna Koo Family';
+				$lab_cls = 'red';
+			}else{
+				$labels = '';
+				$lab_cls = '';
 			} 
 			?>
 		
 			<span class="<?php echo $lab_cls;?>" order_id='<?php echo $row['id']; ?>' >
-			<?php echo $labels;?>
+			<label style="font-size:12px;font-weight:normal"><?php echo $labels;?></label>
 			<br/>
 			<?php if($row['info_merchant_admin'] != ''){?>
-			Admin: <?php echo $row['info_merchant_admin'];?>
+			Admin: <span class="red"><?php echo $row['info_merchant_admin'];?></span>
 			<?php }?>
 			</span>
 			
 			
 			<span class="edit_info_merchant info_merchant" invoice_no='<?php echo $row['invoice_no']; ?>'   order_id='<?php echo $row['id']; ?>' title="Edit" inform_mecnt_status="<?php echo $row['inform_mecnt_status'];?>" admin_name="<?php echo $row['info_merchant_admin'];?>" ><i class="fa fa-pencil"></i></span>
 			<br/>
-			<b>Invoice No:</b> # <?php echo $row['invoice_no']; ?>
 			
 		<?php }else{
 					$class_alert = '';
+					$class_alert_ss = '';
 				if($alert_show == 'yes'){
 					$class_alert = 'blink_info_button';
 				}
+				if($alert_show_ss == 'yes'){
+					$class_alert_ss = 'blink_info_button';
+				}
 			?>
-						
-			<span class="btn btn-danger info_merchant <?php echo $class_alert;?>" invoice_no='<?php echo $row['invoice_no']; ?>' order_id='<?php echo $row['id']; ?>' >Admin 名字成功通知商家</span>
+			<!--			
+			<span class="btn btn-danger info_merchant <?php echo $class_alert;?>" invoice_no='<?php echo $row['invoice_no']; ?>' order_id='<?php echo $row['id']; ?>'>Admin 名字成功通知商家</span>
+			-->
+			
+			<?php if($row['inform_shop_open'] == 0 && $row['inform_rider_arrive_minute']== 0){?>
+				<span class="btn btn-danger info_merchant_shop <?php echo $class_alert;?>" invoice_no='<?php echo $row['invoice_no']; ?>' order_id='<?php echo $row['id']; ?>'>马上下单商家,通知领取时间 <!--Is the shop open and food available?--></span>
+			<?php }else if($row['inform_shop_open'] == 1 && $row['inform_rider_arrive_minute']== 1){ ?>
+				<span class="btn btn-danger info_merchant <?php echo $class_alert_ss;?>" invoice_no='<?php echo $row['invoice_no']; ?>' order_id='<?php echo $row['id']; ?>' style="background-color:#b13e3b !important;border-color:#b13e3b !important;">Admin 名字成功通知商家</span>
+			<?php }else if($row['inform_shop_open'] == 1){?>
+				<span class="btn btn-danger info_merchant_food <?php echo $class_alert_ss;?>" invoice_no='<?php echo $row['invoice_no']; ?>' order_id='<?php echo $row['id']; ?>' style="background-color:lightpink !important;color:black;border-color:lightpink !important;">估计司机抵达前30分钟，再提醒商家 <!--Are you sure that rider can arrive within 30minutes?--></span>
+			<?php }?>
 			<br/>
-			<b>Invoice No:</b> # <?php echo $row['invoice_no']; ?>
+
 		<?php }?>
+		
+			
 		<!-- END---->
+		
+		<!-- Start Cancel Order --->
+		<?php //if($row['cancel_order'] == 1){?>
+		<?php //}else{?>
+		<br/>
+		<!--<a style="background-color:#eca7a7;border-color:#eca7a7;" class="btn btn-danger cancel_order cancel_order_<?php echo $row['id']; ?>" order_id='<?php echo $row['id']; ?>' href="javascript:void(0);">Cancel Order</a>
+		-->
+		<?php //echo $row['cancel_reason'];?>
+		
+		<!--
+		<select name="inform_mecnt_status" id="inform_mecnt_status<?php echo $row['id']; ?>" class="form-control inform_mecnt_status" style="margin-bottom:10px;"  order_id='<?php echo $row['id']; ?>'>
+			<option <?php if($row['inform_mecnt_status'] == 0){echo 'selected';}?> value="0">Select Status</option>
+			<option <?php if($row['inform_mecnt_status'] == 1){echo 'selected';}?> value="1">Fp Order nama Koo Family</option>
+			<option <?php if($row['inform_mecnt_status'] == 2){echo 'selected';}?> value="2">Sudah call guna 5670</option>
+			<option <?php if($row['inform_mecnt_status'] == 7){echo 'selected';}?> value="7">Sudah group order, guna Koo Family</option>
+			<option <?php if($row['inform_mecnt_status'] == 3){echo 'selected';}?> value="3">FP & beli sendiri juga</option>
+			<option <?php if($row['inform_mecnt_status'] == 4){echo 'selected';}?> value="4">FP & sudah Call guna 5670</option>
+			<option <?php if($row['inform_mecnt_status'] == 5){echo 'selected';}?> value="5">Semua beli sendiri</option>
+			<option <?php if($row['inform_mecnt_status'] == 6){echo 'selected';}?> value="6">Order Cancelled</option>
+		</select>-->
+		
+		
+		<input type="text" class="form-control code_admin_code <?php if($interval_complete->i >= 6 && $row['info_merchant_admin'] == '' ){  if($row['cancel_order'] == 0){ echo 'blink_info_button';} }?> " name="code_admin_code" id="code_admin_code<?php echo $row['id']; ?>" order_id='<?php echo $row['id']; ?>' placeholder="订单状况和 Admin name" style="float:right;height:10%;;background-color:white!important;margin-top:10px;margin-bottom:10px" value="<?php echo $row['info_merchant_admin'];?>">
+						
+						
+						
+		<select name="cancel_reason" id="cancel_reason" class="cancel_order form-control"  order_id='<?php echo $row['id']; ?>'>
+			<option value="0">Select Cancel Reason</option>
+			<option <?php if($row['cancel_reason'] == 1){echo 'selected';}?> value="1">Non-working hours</option>
+			<option <?php if($row['cancel_reason'] == 2){echo 'selected';}?> value="2">Shop inactive</option>
+			<option <?php if($row['cancel_reason'] == 3){echo 'selected';}?> value="3">Foods not available</option>
+			<option <?php if($row['cancel_reason'] == 4){echo 'selected';}?> value="4">customer cancel</option>
+			<option <?php if($row['cancel_reason'] == 6){echo 'selected';}?> value="6">Duplicate Order</option>
+			<option <?php if($row['cancel_reason'] == 7){echo 'selected';}?> value="7">Testing Order</option>
+			<option <?php if($row['cancel_reason'] == 5){echo 'selected';}?> value="5">Other reason</option>
+		</select>
+		
+		<input type="text" class="form-control cancel_admin cancel_person_<?php echo $row['id']; ?>" name="cancel_person" id="cancel_person" value="<?php echo $row['cancel_person'];?>" order_id="<?php echo $row['id']; ?>" style="float:right;height:10%;;background-color:white!important;margin-top:10px;margin-bottom:10px" placeholder="Name">
+		
+		<?php //}?>
+		<?php if($row['cancel_order'] == 1){?>
+		<br/>
+		<a style="background-color:#c13535;border-color:#c13535;" class="btn btn-danger reverse_cancel reverse_cancel_<?php echo $row['id']; ?>" order_id='<?php echo $row['id']; ?>' href="javascript:void(0);">Reverse Cancel</a>
+		<?php }?>
+		<!-- END Cancel order-->
+		
 		</td>
 		
-	
+		<!--
 		<td style="min-width:190px;"><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="rider_info" placeholder="%" class="form-control rider_info" value="<?php echo $row['rider_info'];?>"></td>
-        	<td class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i></td>
+		-->
+		<td style="min-width:190px;">
+		<!--
+		<input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="rider_info" placeholder="%" class="form-control rider_info" value="<?php echo $row['rider_info'];?>">
+		-->
+		<?php //if($row['cancel_order'] != 1){?>
+		<!-- Start select online Riders-->
+		
+		<style>
+		select#rider_info option {
+			background: white;
+		}
+		select.rider_info_select{
+			background:red;
+			color:black;
+			font-weight:bold;
+			border-color:red;
+			
+		}
+</style>
+
+					<?php 
+						$s_label1 = 'We are still desperately trying to contact the merchant,<br/> once the order is confirmed with merchant, we will inform you. Meanwhile, <br/>our rider is on his way to merchant shop checking.';
+						$s_label2 = 'Rider Listings';
+						$s_label3 = 'Shop closed, Cancel!';
+						$s_label4 = 'Merchant is preparing your foods. Please wait. Rider is waiting';
+						if($_SESSION["langfile"] == 'chinese'){
+							$s_label1 = '我们正在尽最大努力联系商家以确认你的订单。我们的司机已经出发到商家地点以确认商家是否营业！';
+							$s_label2 = '骑手列表';
+							$s_label3 = '商家休息，订单取消！';
+							$s_label4 = '商家正在准备食物，食物完成后，我们的司机就会把美食送上';
+						}
+						?>
+						<select name="s_rider_option" id="s_rider_option_<?php echo $row['id']; ?>" class="form-control s_rider_option"  order_id="<?php echo $row['id']; ?>">
+								<option value="0">Select Option</option>
+								<option <?php if($row['s_rider_option'] == '1'){ echo 'selected';}?> value="1"><?php echo $s_label1;?></option>
+								<option <?php if($row['s_rider_option'] == '2'){ echo 'selected';}?> value="2"><?php echo $s_label2;?></option>
+								<option <?php if($row['s_rider_option'] == '3'){ echo 'selected';}?> value="3"><?php echo $s_label3;?></option>
+								<option <?php if($row['s_rider_option'] == '4'){ echo 'selected';}?> value="4"><?php echo $s_label4;?></option>
+						</select>
+						<br/>
+						
+						<?php 
+						
+						$created_ons = $row['created_on'];
+						$created_ons1 = new DateTime($created_ons);
+						$nows21 = new DateTime(Date('Y-m-d H:i:s'));
+						$intervals_21 = $created_ons1->diff($nows21);
+						$minutess_21 = $intervals_21->i;
+				
+				
+						$cls_rider_blink = "";
+						$select_rider = "Select Riders";
+						//echo "===".$minutess_21;
+						if($minutess_21 >=15){
+							if($row['rider_info'] == 0){
+								//echo 'in';
+								$cls_rider_blink = "blink_info_button";
+								$select_rider = "Call Boss Now!!!";
+							}
+						}	
+						?>
+						<select name="rider_info" id="rider_info" class="form-control rider_info  <?php if($row['rider_info'] == 0){?>rider_info_select <?php echo $cls_rider_blink;?> <?php }?>" order_id="<?php echo $row['id']; ?>">
+						<option value="0" style="color:black"  ><?php echo $select_rider;?></option>
+						<?php 
+						$riders_query = "select * from tbl_riders where r_status = 1 ";
+						/*and r_online = 1*/
+						$ridersFetch = mysqli_query($conn,$riders_query);
+						$riderNew_array = array();
+						while($r_value = mysqli_fetch_assoc($ridersFetch)){
+							$riderNew_array[$r_value['r_id']]['link'] = $r_value['r_link'];
+							$riderNew_array[$r_value['r_id']]['r_live_location'] = $r_value['r_live_location'];
+							if($riderJobArray[$r_value['r_id']] == 0){
+								$r_css = "green";
+							}else if($riderJobArray[$r_value['r_id']] != 0){
+								$r_css = "red";
+							}else{
+								$r_css = "black";
+							}
+							?>
+							<?php if($row['rider_info'] == $r_value['r_id']){?>
+							<option selected  value="<?php echo $r_value['r_id']; ?>" style="color:<?php echo $r_css;?>" ><?php echo "Jobs:".$riderJobArray[$r_value['r_id']]." ".$r_value['r_name']."(".$r_value['r_mobile_number'].")"; ?></option>
+							<?php }else{
+								if($r_value['r_online'] == 1){?>
+							<option   value="<?php echo $r_value['r_id']; ?>" style="color:<?php echo $r_css;?>"><?php echo "Jobs:".$riderJobArray[$r_value['r_id']]." ".$r_value['r_name']."(".$r_value['r_mobile_number'].")"; ?></option>
+								<?php }}?>
+						<?php }?>
+						</select>
+						
+						<br/>
+						<select name="rider_admin_option" id="rider_admin_option_<?php echo $row['id']; ?>" class="form-control rider_admin_option"  order_id="<?php echo $row['id']; ?>">
+							<option value="0">Select Instructions</option>
+							<!--<option  <?php if($row['rider_admin_option'] == '1'){ echo 'selected';}?> value="1">Lepas siap order atas, baru buat ini</option>
+							--><option <?php if($row['rider_admin_option'] == '2'){ echo 'selected';}?> value="2">Lepas siap semua orders, baru buat order ini</option>
+							<option  <?php if($row['rider_admin_option'] == '3'){ echo 'selected';}?> value="3">Sekali jalan</option>
+							<option  <?php if($row['rider_admin_option'] == '4'){ echo 'selected';}?> value="4">Lepas ambil semua makanan, Hantar ini dulu</option>
+							
+							<option  <?php if($row['rider_admin_option'] == '4'){ echo 'selected';}?> value="3">Speed</option>
+						</select>
+
+						<br/>
+						<?php 
+						//echo "==".$row['rider_info'];
+						if($row['rider_info'] != '0'){?>
+						<a href="<?php echo $riderNew_array[$row['rider_info']]['link'];?>" target="_blank" class="btn btn-sm btn-primary " >Rider Link</a>
+						<?php if($row['rider_complete_order'] != 1){?>
+						<a href="<?php echo $riderNew_array[$row['rider_info']]['r_live_location'];?>" target="_blank" class="btn btn-sm btn-primary " >Live Location</a>
+						<?php }?>
+						<br/>
+						<?php }?>
+						<?php
+						//echo $row['rider_info'];
+						if($row['rider_info'] != '' && $row['rider_info'] != '0'){
+							$rider_od_assign_time = $row['rider_od_assign_time'];
+							$assign_date = new DateTime($rider_od_assign_time);
+							$now = new DateTime(Date('Y-m-d H:i:s'));
+							$interval = $assign_date->diff($now);
+							$hours = $interval->h;
+							$minutes = $interval->i;
+							
+							if($minutes > 3){
+								//echo $minutes."===".$row['rider_accept_id'];
+								if($row['rider_accept_id'] == 0){
+								?>
+								<?php if($row['cancel_order'] != 1){?>
+								<br/>
+								<span class="btn btn-sm btn-danger <?php if($row['cancel_order'] == 0){?> blink_info_button <?php }?>">Rider not accept order yet!!</span>
+								<?php }?>
+								<?php	
+								}
+							}
+						} 
+						
+						if($row['rider_info'] != '' && $row['rider_info'] != '0'){
+							$rider_od_accept_time = $row['rider_od_accept_time'];
+							$accept_time = new DateTime($rider_od_accept_time);
+							$now2 = new DateTime(Date('Y-m-d H:i:s'));
+							$interval_2 = $accept_time->diff($now2);
+							$hours_2 = $interval_2->h;
+							$minutes_2 = $interval_2->i;
+							
+							//echo $minutes_2;
+							if($minutes_2 > 20){
+								//echo $minutes."===".$row['rider_accept_id'];
+								if($row['rider_accept_id'] != 0 && $row['rider_arrive_shop'] == '0000-00-00 00:00:00'){
+								?>
+								<?php if($row['cancel_order'] != 1){?>
+								<br/>
+								<span class="btn btn-sm btn-danger <?php if($row['cancel_order'] == 0){?> blink_info_button <?php }?>">Rider not reached shop yet!!</span>
+								<?php }?>
+								<?php	
+								}
+							}
+						} 
+						//echo $row['rider_complete_order']."-----".$row['rider_arrive_shop'];
+						?>
+						
+						<!-- END select online Riders-->
+						<p style="font-size:20px"><b>Invoice No:</b> # <?php echo $row['invoice_no']; ?>
+						<br/>
+						<b><?php echo $r['merchant_name']; ?></b>
+						</p>
+						<?php
+							$speed_man = '';
+							$chinese_man = '';
+							if($row['special_delivery_amount']!= '0'){
+								$chinese_man = 'Chiness Delivery';
+							?>
+							<label class="btn-sm btn-yellow <?php echo $cls_del;?>" style="background-color:red;border-color:red;margin-top:10px;width:150px;color:white">
+								<?php echo $chinese_man;?>
+							</label>
+							<?php }?>
+							<?php if($row['speed_delivery_amount']!= '0'){
+								$speed_man = 'Speed Delivery';
+							?>
+							<label class="btn-sm btn-yellow <?php echo $cls_del;?>" style="background-color:red;border-color:red;margin-top:10px;width:150px;color:white">
+								<?php echo $speed_man;?>
+							</label>
+							<?php }?>
+							
+	 <?php //}?>
+		</td>
+       <td>
+	   <?php 
+	   
+		$sstper=$row['sst_rate'];
+		if($sstper>0){
+			$incsst = ($sstper / 100) * $total;
+			$incsst=@number_format($incsst, 2);
+			$incsst=@number_format($incsst, 2);
+			$incsst=ceiling($incsst,0.05);
+			$g_total=@number_format($total+$incsst, 2);
+		} else { 
+			$g_total=$total;
+		}
+		$collect_price =@number_format(($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount'])-($row['wallet_paid_amount']+$row['membership_discount']+$row['coupon_discount']), 2);
+	
+		$admin_cash_price = '';
+	    if($row['admin_cash_price'] == ''){
+			if($row['wallet'] == 'cash'){
+				$admin_cash_price = $collect_price;
+				$run_cash = mysqli_query($conn,"update order_list Set admin_cash_price = '".$collect_price."' where id = ".$row['id']);
+			}
+		}else{
+			$admin_cash_price = $row['admin_cash_price'];
+		}
+	   //echo $row['admin_cash_price'];
+	   $price_readonly = '';
+	   if($row['rider_complete_order'] == 1){
+		   $price_readonly = 'readonly="readonly"';
+	   }
+	   if($_GET['role'] && $_GET['role'] == 'admin'){
+		   $price_readonly = '';
+	   }
+	   ?>
+	   <p style="padding-bottom:10px;">
+		Bank price: <input type="text" class="form-control admin_bank_price" name="admin_bank_price" id="admin_bank_price" value="<?php echo $row['admin_bank_price'];?>" order_id="<?php echo $row['id']; ?>" <?php echo $price_readonly;?> style="width:71px;float:right;height:10%;;background-color:white!important;" />
+		</p>
+		<p style="padding-bottom:10px;">
+		Cash price: <input type="text" class="form-control admin_cash_price" name="admin_cash_price" id="admin_cash_price" value="<?php echo $admin_cash_price;?>" order_id="<?php echo $row['id']; ?>" <?php echo $price_readonly;?>  style="width:71px;float:right;height:10%;;background-color:white!important;"/>
+		</p>
+		
+		<?php 
+		//echo "==".$row['order_cancel'];
+		if($row['cancel_order'] == 1){
+		}else{
+			if($row['rider_complete_order'] != 1){
+						if($row['rider_arrive_shop'] != '0000-00-00 00:00:00'){
+						?><br/>
+							<span class="btn btn-sm btn-danger" style="background-color:green;border-color:green">司机到店，可以准备下张单</span>
+						<?php }
+		}
+		}?>
+		<br/>
+		<p style="font-size:16px;padding-top:10px"><b><span class="btn btn-sm btn-danger" style="background-color:lightgreen;border-color:lightgreen;font-weight: bold;
+    text-transform: uppercase;color:black"><?php echo $row['wallet'];?></span></b></p>
+	
+	<p>
+		
+		 <input type="text" class="form-control food_receipt_seen <?php if(($interval_complete->h >= 1 || $interval_complete->i >= 45) && $row['food_receipt_seen'] == '' ){  if($row['cancel_order'] == 0 ){ echo 'blink_info_button';} }?> " name="food_receipt_seen" id="food_receipt_seen<?php echo $row['id']; ?>" order_id='<?php echo $row['id']; ?>' placeholder="Admin 名字看到餐厅收据" style="float:right;height:10%;;background-color:white!important;margin-top:10px;margin-bottom:10px;" value="<?php echo $row['food_receipt_seen'];?>">
+		
+	</p>
+		
+	   </td>
+	   
+	    <td>
+	   Bank price: <input type="text" class="form-control rider_bank_amount" name="rider_bank_amount" id="rider_bank_amount" value="<?php echo $row['rider_bank_amount'];?>" order_id="<?php echo $row['id']; ?>" <?php echo $price_readonly;?>  style="width:71px;float:right;height:10%;;background-color:white!important;" />
+		<br/>
+		Cash price: <input type="text" class="form-control rider_cash_amount" name="rider_cash_amount" id="rider_cash_amount" value="<?php echo $row['rider_cash_amount'];?>" order_id="<?php echo $row['id']; ?>" <?php echo $price_readonly;?> style="width:71px;float:right;height:10%;;background-color:white!important;"/>
+		
+		
+		
+	   </td>
+	   
+	   
+        	<!--<td class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i></td>-->
+		
+		
 		<td>
-		<?php if($r['user_name']){  echo $r['user_name']."- ".$r['user_mobile']; } else { echo $r['user_mobile'];} ?>
+		<div style="width:200px !important;">
+		
+		<?php 
+		if($r['user_name']){  echo $r['user_name']."- ".$r['user_mobile']; } else { echo $r['user_mobile'];} ?>
+		
+		<a href="https://api.whatsapp.com/send?phone=<?php  echo $r['user_mobile_number']?>" target="_blank">
+							
+							<img src="images/whatapp.png" style="max-width:40px;"/></a>
+							
+							<a target="_blank" href="../dashboard.php?did=<?php echo $r['od_user_id'];?>">
+							<!--<a target="_blank" href="../dashboard.php?did=<?php echo $r['l_user_id'];?>">-->
+							<i style="font-size:30px;" class="fa fa-info"></i></a>
+							<br/>
+		<!--
+		<b>Latitude:</b> <?php echo $r['latitude'];?><br/>
+		<b>Longtitude:</b> <?php echo $r['longitude'];?><br/!-->
+		<!--<input type="text" class="form-control lat_lng" name="lat_lng" selected_user_id="<?php echo $r['l_user_id']; ?>" value="<?php echo $r['lat_lng']; ?>" placeholder="latitude & longitude"/>-->
 		
 		<?php if($row['ipay_p_id'] != 0){?>
 							<?php if($row['ipay_payment_status'] == 0){?>
@@ -425,9 +1120,48 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 								 <label class= "btn btn-primary status"  style="background-color:green"> Success<?php //echo $row['ipay_message']; ?></label>
 								 <br/>Transaction Id: 
 								 <?php echo $row['pay_transid']; ?>
+								 </br>
 							<?php }?>
 						<?php }?>
+						
+				<a class="" target="_blank" href="http://maps.google.com/maps?q=<?php echo  $row['location']; ?>">  <?php echo $row['location']; ?></a>
+				<?php 
+				$created_on = $row['created_on'];
+				$created_on1 = new DateTime($created_on);
+				$now21 = new DateTime(Date('Y-m-d H:i:s'));
+				$interval_21 = $created_on1->diff($now21);
+				$hours_21 = $interval_21->h;
+				$minutes_21 = $interval_21->i;
+				$cls_txt = '';
+				$cls_cnfrm =  '';
+				
+				if($minutes_21 >=5){
+					if($row['cancel_order'] != 1){
+						if($row['admin_code'] == ''){
+							$cls_txt = "blink_info_button";
+						}
+						if($row['admin_confirmed_by'] == ''){
+							$cls_cnfrm = "blink_info_button";
+						}
+					}
+					
+				}
+
+				
+				?>
+		<p style="padding-bottom:10px">
+			 Code: <input type="text" class="<?php echo $cls_txt;?> form-control admin_code" name="admin_code" id="admin_code" value="<?php echo $row['admin_code'];?>" order_id="<?php echo $row['id']; ?>" style="width:50%;float:right;height:10%;background-color:white!important;"/>
+			 </p>
+			 <p style="padding-bottom:10px">
+		Commission: <input type="number" class="form-control admin_commission_price acp_<?php echo $row['id']; ?>" name="admin_commission_price" id="admin_commission_price" value="<?php echo $row['admin_commission_price'];?>" order_id="<?php echo $row['id']; ?>" <?php echo $price_readonly;?> style="width:50%;float:right;height:10%;;background-color:white!important;" />	
+				
+				</p>
+		<p>
+		Confirm By: <input type="text" class="<?php echo $cls_cnfrm;?> form-control admin_confirmed_by" name="admin_confirmed_by" id="admin_confirmed_by" value="<?php echo $row['admin_confirmed_by'];?>" order_id="<?php echo $row['id']; ?>" style="width:50%;float:right;height:10%;;background-color:white!important;" />
+		</p>
+			</div>
 		</td>
+		
 		<td><?php echo $r['merchant_name']; ?>
 		
 		<br/>
@@ -483,20 +1217,38 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 			//echo "==".$working;					
 		?>
 		<?php if($working == 'n'){?>
-		<p style="color:red">请改正如果错误，</p>
-		<p style="color:red">外送时间是: <?php echo $english_word." ".$r['not_working_text'];?></p>
+		<p style="color:red;">请改正如果错误，</p>
+		<p style="color:red;background:white !important;padding:5px" class="blink_info_button">外送时间是: <?php echo $english_word." ".$r['not_working_text'];?></p>
 		<?php }else{?>
 		<p >请改正如果错误，</p>
 		<p >外送时间是: <?php echo $english_word." ".$r['not_working_text'];?></p>
 		
 		<?php }?>
 		</td>
-		<td><a href="<?php echo $r['foodpanda_link']; ?>" target="_blank"><?php echo $r['foodpanda_link']; ?></a></td>   
-		<td><a href="<?php echo $r['whatsapp_link']; ?>" target="_blank"><?php echo $r['whatsapp_link']; ?></a></td>   
+		<td>
+		<textarea style="min-width: 120px;"  selected_user_id="<?php echo $row['merchant_id']; ?>" class="form-control google_map" rows="5" name="google_map"><?php if(isset($r['google_map'])){ echo $r['google_map']; }?></textarea>
+		  						</td> 
+		<td>
+		<textarea  style="min-width: 190px;width:190px;height:63px;" selected_user_id="<?php echo $row['merchant_id']; ?>" class="form-control foodpanda_link" rows="5" name="foodpanda_link"><?php if(isset($r['foodpanda_link'])){ echo $r['foodpanda_link']; }?></textarea>
+		<br/>
+	<?php if($r['foodpanda_link'] != ''){?>
+		<a href="<?php echo $r['foodpanda_link']; ?>" class="btn-sm btn-yellow" target="_blank" style="background-color:green;border-color:green;margin-top:10px;width:150px;color:white">
+			FP Link
+		</a>
+	<?php }?>
+	
+		</td>   
+		<td>
+		<?php if($r['whatsapp_link'] != ''){?>
+		<a href="<?php echo $r['whatsapp_link']; ?>" target="_blank">
+				<img src="images/Whats.png" >
+				</a>
+		<?php }?>
+		</td>   
         <td><?php echo $r['merchant_mobile_number']; ?></td>
      
 
-<td><a target="_blank" href="orderview.php?did=<?php echo $row['merchant_id'];?>&vs=<?php  echo md5(rand());?>">Check order</a></td>
+
 
       </tr>
 	 <?php $i++;} ?>
@@ -507,7 +1259,7 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 <div class="modal fade" id="orderdetailmodel" role="dialog" style="margin-top:12%;"> 
 							<div class="modal-dialog">
 							<!-- Modal content-->		
-							<div class="modal-content" style="min-height:350px;">	
+							<div class="modal-content" style="min-height:550px;">	
 							<div class="modal-header">	
 							<button type="button" class="close" data-dismiss="modal">&times;</button>						
 							<h4 class="modal-title">Order Detail</h4>	
@@ -540,20 +1292,34 @@ $parent_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE
 				<p> order No: #<span class="order_no"></span></p>
 				<br/>
 				<form name="infomerchnt_form" id="infomerchnt_form" class="form-inline" >
-					
-					<div class="form-group mx-sm-3 mb-2">
-						<select name="inform_mecnt_status" id="inform_mecnt_status" class="form-control">
-							<option value="">Select Status</option>
+					<div class="form-group mx-sm-3 mb-2" style="margin-bottom:10px">
+						<select name="inform_mecnt_status" id="inform_mecnt_status" class="form-control" style="width:70%">
+							<!--<option value="0">Select Status</option>
 							<option value="1">Inform already</option>
 							<option value="2">Cannot reach  merchant, now inform customer rider is otw checking</option>
 							<option value="3">Rider buy himself</option>
+							<option value="4">Order Cancelled</option>-->
+							
+							
+							<option value="0">Select Status</option>
+							<option value="1">Fp Order nama Koo Family</option>
+							<option value="2">Sudah call guna 5670</option>
+							<option value="7">Sudah group order, guna Koo Family</option>
+							<option value="3">FP & beli sendiri juga</option>
+							<option value="4">FP & sudah Call guna 5670</option>
+							<option value="5">Semua beli sendiri</option>
+							<option value="6">Order Cancelled</option>
+							
+							
+							
+							
+
 						</select>
 					</div>
 					
-					
-					
+					<br/>
 					<div class="form-group mx-sm-3 mb-2">
-						<input type="text" class="form-control" name="code_admin_code" id="code_admin_code" placeholder="Admin 名字成功通知商家">
+						<!--<input type="text" class="form-control" name="code_admin_code" id="code_admin_code" placeholder="订单状况和 Admin name" style="width:70%">-->
 						<input type="hidden" class="" name="admin_order_id" id="admin_order_id" value=""/>
 					</div>
 					<button type="button" class="btn btn-primary mb-2 submit_admin_popup">Submit</button>
@@ -594,6 +1360,8 @@ $(document).ready(function(){
 							// alert(data);
 							// $(this).text(data);
 							document.getElementById(input_id).innerHTML =data;
+							$(".orderdeatils_"+s_id).show();
+							$(".cust_"+s_id).show();
 							// $('#write_up_input').val(data);
 							 // var copyText = document.getElementById("write_up_input");
 							  // copyText.select();
@@ -623,7 +1391,85 @@ $(document).ready(function(){
                 });
 		  $("#orderdetailmodel").modal("show"); 
 	  });
-	   $(".rider_info").focusout(function(e){
+	   $(".lat_lng").focusout(function(e){
+		var selected_user_id= $(this).attr('selected_user_id');
+		// var selected_user_id= $(this).attr('selected_user_id');
+		var lat_lng=this.value; 
+		// alert(name);
+		if(selected_user_id)
+		{  
+		  $.ajax({
+						url :'functions.php',
+						 type:"post",
+						 data:{lat_lng:lat_lng,method:"adminprofilesave",selected_user_id:selected_user_id},     
+						 dataType:'json',
+						 success:function(result){  
+							var data = JSON.parse(JSON.stringify(result));   
+							if(data.status==true)
+							{  
+							   // location.reload(true);
+								
+							}
+							else
+							{alert('Failed to update');	}
+							
+							}
+				});      
+		}
+		});
+		$(".foodpanda_link").focusout(function(e){
+		var selected_user_id= $(this).attr('selected_user_id');
+		// var selected_user_id= $(this).attr('selected_user_id');
+		var foodpanda_link=this.value; 
+		// alert(name);
+		if(selected_user_id)
+		{  
+		  $.ajax({
+						url :'../functions.php',
+						 type:"post",
+						 data:{foodpanda_link:foodpanda_link,method:"adminprofilesave",selected_user_id:selected_user_id},     
+						 dataType:'json',
+						 success:function(result){  
+							var data = JSON.parse(JSON.stringify(result));   
+							if(data.status==true)
+							{  
+							   // location.reload(true);
+								
+							}
+							else
+							{alert('Failed to update');	}
+							
+							}
+				});      
+		}
+		});  
+		$(".google_map").focusout(function(e){
+		var selected_user_id= $(this).attr('selected_user_id');
+		// var selected_user_id= $(this).attr('selected_user_id');
+		var google_map=this.value; 
+		// alert(name);
+		if(selected_user_id)
+		{  
+		  $.ajax({
+						url :'../functions.php',
+						 type:"post",
+						 data:{google_map:google_map,method:"adminprofilesave",selected_user_id:selected_user_id},     
+						 dataType:'json',
+						 success:function(result){  
+							var data = JSON.parse(JSON.stringify(result));   
+							if(data.status==true)
+							{  
+							   // location.reload(true);
+								
+							}
+							else
+							{alert('Failed to update');	}
+							
+							}
+				});      
+		}
+		});
+	  /* $(".rider_info").focusout(function(e){
 		var selected_user_id= $(this).attr('selected_user_id');
 		var rider_info=this.value;
 		if(rider_info!='' && selected_user_id)
@@ -648,19 +1494,206 @@ $(document).ready(function(){
 		} 
 	});
 	  
-	  	    setInterval(function(){ 
+	  */	
+
+
+/*rider javacript*/
+	 	$(".rider_info").change(function(e){
+		var order_id= $(this).attr('order_id');
+		var s_rider_option = $("#s_rider_option_"+order_id).val();
+		
+		var rider_text=this.value;
+		
+		var admin_commission_price = $(".acp_"+order_id).val();
+		
+		if(admin_commission_price == ''){
+			$(".rider_info").val(0);
+			alert('请确认商家有食物后，确认商家和顾客地址 code, 佣金 commission后，才派单给司机!!');
+			return false;
+		}
+		
+		if(rider_text!='' && order_id)
+		{
+			if(rider_text == 0){
+				var cnfrmDelete = confirm("Are You Sure Withdraw Current Riders ?");
+			}else{
+				var cnfrmDelete = confirm("Are You Sure Assign This Riders ?");
 				
-					var s_token=generatetokenno(16);
-						var r_url="https://www.koofamilies.com/showorder.php?ms="+s_token;
-					 window.location.replace(r_url);
-			}, 
-				60000);      
-	   
-});
+			}
+			if(cnfrmDelete==true){
+				  
+				  $.ajax({
+							url :'functions.php',
+							 type:"post",
+							 data:{rider_info:rider_text,method:"riderdetailsave",order_id:order_id},     
+							 dataType:'json',
+							 success:function(result){  
+								var data = JSON.parse(JSON.stringify(result));   
+								if(data.status==true)
+								{
+									if(s_rider_option == 0){
+										$("#s_rider_option_"+order_id).val('2');
+										//console.log('here');
+										$(".s_rider_option").trigger('change');
+										
+										
+										
+									}
+									location.reload(); 
+								}
+								else
+								{alert('Failed to update');	}
+								
+								}
+						});      
+				} else{
+					//$(this).val('');
+					location.reload(); 
+				}
+		}
+		
+		
+	});
+	
+
+	$(".s_rider_option").change(function(){
+		var order_id= $(this).attr('order_id');
+		var rider_option_text=this.value;
+		if(rider_option_text!='')
+		{
+			$.ajax({
+				url :'functions.php',
+				type:"post",
+				data:{rider_option_text:rider_option_text,method:"ridersoptionsave",order_id:order_id},     
+				dataType:'json',
+				success:function(result){  
+				var data = JSON.parse(JSON.stringify(result));   
+				if(data.status==true)
+				{
+				}
+				else
+				{alert('Failed to update');	}
+				
+				}
+			}); 
+						
+		}
+	});
+	
+	
+	  
+	$(".rider_admin_option").change(function(){
+		var order_id= $(this).attr('order_id');
+		var rider_option_text=this.value;
+		if(rider_option_text!='')
+		{
+			$.ajax({
+				url :'functions.php',
+				type:"post",
+				data:{rider_option_text:rider_option_text,method:"rider_admin_option",order_id:order_id},     
+				dataType:'json',
+				success:function(result){  
+				var data = JSON.parse(JSON.stringify(result));   
+				if(data.status==true)
+				{
+				}
+				else
+				{alert('Failed to update');	}
+				
+				}
+			}); 
+						
+		}
+	});
+	  
+	  
+/*End riders*/
+	setInterval(function(){ 
+		var s_token=generatetokenno(16);
+		var r_url="https://www.koofamilies.com/showorder.php?ms="+s_token;
+		window.location.replace(r_url);
+		}, 
+			90000);      
+	});
 
 
 /* Info Merchnt*/
 $(document).ready(function(){
+	$(".info_merchant_shop").click(function(){
+		var ordeid = $(this).attr('order_id');
+		var admin_name = $(this).attr('admin_name');
+		var invoice_no = $(this).attr('invoice_no');
+		var inform_mecnt_status = $(this).attr('inform_mecnt_status');
+		$(".invoice_no").html(invoice_no);
+		$(".order_no").html(ordeid);
+		
+		console.log("+++"+inform_mecnt_status);
+		$("#code_admin_code").val(admin_name);
+		$("#admin_order_id").val(ordeid);
+		$("#inform_mecnt_status").val(inform_mecnt_status);
+		//$("#myModal_infomerchnt").modal('show');
+		var cnfrmDelete = confirm("商家确认开店和有食物?");
+		
+		
+		
+		if(cnfrmDelete==true){
+			$.ajax({
+			url:'functions.php',
+			method:'POST',
+			data:{data:'infomerchantstepone',ordeid:ordeid},
+			success:function(res){
+				//console.log(res);
+				location.reload(true);
+				//var red_url = window.location.href+"&order_id="+order_id;
+				//window.location.href = red_url;
+				//show$(location).attr('href', 'http://stackoverflow.com')
+
+				/*$(".accept_order").addClass('disabled');
+				$(".accept_order").html('Accepted');
+				$(".disabled").removeClass('accept_order');*/
+				
+			}
+		});	
+		}
+	});
+	
+	$(".info_merchant_food").click(function(){
+		var ordeid = $(this).attr('order_id');
+		var admin_name = $(this).attr('admin_name');
+		var invoice_no = $(this).attr('invoice_no');
+		var inform_mecnt_status = $(this).attr('inform_mecnt_status');
+		$(".invoice_no").html(invoice_no);
+		$(".order_no").html(ordeid);
+		
+		console.log("+++"+inform_mecnt_status);
+		$("#code_admin_code").val(admin_name);
+		$("#admin_order_id").val(ordeid);
+		$("#inform_mecnt_status").val(inform_mecnt_status);
+		//$("#myModal_infomerchnt").modal('show');
+		var cnfrmDelete = confirm("司机30分钟内到达商店？");
+		if(cnfrmDelete==true){
+			$.ajax({
+			url:'functions.php',
+			method:'POST',
+			data:{data:'infomerchantsteptwo',ordeid:ordeid},
+			success:function(res){
+				//console.log(res);
+				$("#myModal_infomerchnt").modal('show');
+		
+				//location.reload(true);
+				//var red_url = window.location.href+"&order_id="+order_id;
+				//window.location.href = red_url;
+				//show$(location).attr('href', 'http://stackoverflow.com')
+
+				/*$(".accept_order").addClass('disabled');
+				$(".accept_order").html('Accepted');
+				$(".disabled").removeClass('accept_order');*/
+				
+			}
+		});	
+		}
+	});
+	
 	$(".info_merchant").click(function(){
 		var ordeid = $(this).attr('order_id');
 		var admin_name = $(this).attr('admin_name');
@@ -673,22 +1706,41 @@ $(document).ready(function(){
 		$("#code_admin_code").val(admin_name);
 		$("#admin_order_id").val(ordeid);
 		$("#inform_mecnt_status").val(inform_mecnt_status);
-
+		$("#myModal_infomerchnt").modal('show');
+		
+	});
+	
+	
+	
+	/*$(".info_merchant").click(function(){
+		var ordeid = $(this).attr('order_id');
+		var admin_name = $(this).attr('admin_name');
+		var invoice_no = $(this).attr('invoice_no');
+		var inform_mecnt_status = $(this).attr('inform_mecnt_status');
+		$(".invoice_no").html(invoice_no);
+		$(".order_no").html(ordeid);
+		
+		console.log("+++"+inform_mecnt_status);
+		$("#code_admin_code").val(admin_name);
+		$("#admin_order_id").val(ordeid);
+		$("#inform_mecnt_status").val(inform_mecnt_status);
 		$("#myModal_infomerchnt").modal('show');
 	});
 	
+	*/
 	$(".submit_admin_popup").click(function(){
 		var ordeid = $("#admin_order_id").val();
-		var admin_code = $("#code_admin_code").val();
+		var admin_code = '';//$("#code_admin_code").val();
+		
 		var inform_mecnt_status = $("#inform_mecnt_status").val();
 		//console.log("+++"+admin_code);
 		$("#inform_mecnt_status").css('border','');
 		
-		if(inform_mecnt_status == ''){
+		/*if(inform_mecnt_status == '0'){
 			$("#inform_mecnt_status").focus();
 			$("#inform_mecnt_status").css('border','1px solid red');
 			return false;
-		}else{
+		}else{*/
 			
 			var cnfrm = confirm("Are You Sure Inform the Merchant?");
 			if(cnfrm==true){
@@ -709,13 +1761,380 @@ $(document).ready(function(){
 				});	
 			}
 			
-		}
+		//}
 	});
 });
 /*END*/
 
 
 </script>
+<link rel="stylesheet" href="css/fancybox.css" type="text/css" media="screen" />
+<script type="text/javascript" src="js/fancybox.js"></script>
+
+<script>
+$(document).ready(function() {
+	$(".fancybox").fancybox({
+		openEffect	: 'none',
+		closeEffect	: 'none'
+	});
+}); 
+
+
+/*Copy writeup*/
+function copyToCustAdd(element,clsn,orderid) {
+	  var $temp = $("<textarea>");
+	  $("body").append($temp);
+	  $("#od_copy_details_"+orderid).removeAttr('id');
+	  var html = $(element).html();
+	  $(element).find('p').attr('id',"od_copy_details_"+orderid);
+	  html = html.replace(/<br>/g, "\n"); // or \r\n
+	  html = html.replace(/<b>/g, ""); // or \r\n
+	  html = html.replace(/<\/b>/g, ""); // or \r\n
+	  html = html.replace(/<u>/g, ""); // or \r\n
+	  html = html.replace(/<\/u>/g, ""); // or \r\n
+	  html = html.replace(/<\/p>/g, ""); // or \r\n
+	  html = html.replace(/<p>/g, ""); // or \r\n
+	  html = html.replace(/&nbsp;/g, ""); // or \r\n
+	  
+	  
+	  $temp.val(html).select();
+	  document.execCommand("copy");
+	  $temp.remove();
+	  $("."+clsn).html('copied'); 	
+}
+//copy orderdetails
+function copyToOrderDetails(element,clsn) {
+	  var $temp = $("<textarea>");
+	  $("body").append($temp);
+	  var html = $(element).html();
+	  html = html.replace(/<br>/g, "\n"); // or \r\n
+	  html = html.replace(/<b>/g, ""); // or \r\n
+	  html = html.replace(/<\/b>/g, ""); // or \r\n
+	  html = html.replace(/<u>/g, ""); // or \r\n
+	  html = html.replace(/<\/u>/g, ""); // or \r\n
+	   html = html.replace(/&nbsp;/g, ""); // or \r\n
+	  $temp.val(html).select();
+	  document.execCommand("copy");
+	  $temp.remove();
+	  $("."+clsn).html('Copied Orderdetails'); 	
+}
+
+$(document).ready(function(){
+	
+	$(".google_sheet_check").click(function(){
+		var orderid = $(this).attr('order_id');
+		var cnfrmDelete = confirm("Have you checked the google sheet for waiting list?");
+		if(cnfrmDelete==true){
+			$.ajax({
+					url:'functions.php',
+					method:'POST',
+					data:{method:'google_sheet_check',orderid:orderid},
+					success:function(res){
+						//console.log(res);
+						//location.reload(true);
+						var g_link = "https://docs.google.com/spreadsheets/d/1N98xuAa9crJTEMSUnFCo7IbIRaT7ReJhChnGfUc18Wo/edit?usp=sharing";
+						window.open(g_link, '_blank');
+						
+						
+						
+					}
+			});	
+		}
+	});
+	
+	
+
+	$(".reverse_cancel").click(function(){
+		var orderid = $(this).attr('order_id');
+		var cnfrmDelete = confirm("Are You sure to reverse the cancel order?");
+		if(cnfrmDelete==true){
+			$.ajax({
+					url:'functions.php',
+					method:'POST',
+					data:{method:'reverse_cancel',orderid:orderid},
+					success:function(res){
+						//console.log(res);
+						location.reload(true);
+					}
+				});	
+		}
+	});
+	
+	
+	$(".cancel_order").change(function(){
+		var orderid = $(this).attr('order_id');
+		var cancel_reason = $(this).val();
+		var cancel_person = $(".cancel_person_"+orderid).val();
+		$(".cancel_person_"+orderid).css('border','');
+		if(cancel_person == ''){
+			//$(".cancel_person_"+orderid).focus();
+			$(".cancel_person_"+orderid).css('border','1px solid red');
+			alert('Please enter name first.');
+			return false;
+		}else{
+			var cnfrmDelete = confirm("重要！ 通知顾客取消订单先！！");
+			if(cnfrmDelete==true){
+				$.ajax({
+					url:'functions.php',
+					method:'POST',
+					data:{method:'cancelorder',orderid:orderid,cancel_reason:cancel_reason},
+					success:function(res){
+						//console.log(res);
+						location.reload(true);
+					}
+				});	
+			}
+		}
+		//var cnfrmDelete = confirm("Are You sure to cancel order?");
+		//if(cnfrmDelete==true){
+			
+		//}
+	});
+	
+	
+	
+	$(".code_admin_code").focusout(function(){
+		var orderid = $(this).attr('order_id');
+		var code_admin_code = $(this).val();
+			$.ajax({
+				url:'functions.php',
+				method:'POST',
+				data:{method:'inform_mecnt_status',orderid:orderid,code_admin_code:code_admin_code},
+				success:function(res){
+					//console.log(res);
+					location.reload(true);
+				}
+			});	
+		
+	});
+	
+	
+	$(".food_receipt_seen").focusout(function(){
+		var orderid = $(this).attr('order_id');
+		var food_receipt_seen = $(this).val();
+			$.ajax({
+				url:'functions.php',
+				method:'POST',
+				data:{method:'food_receipt_seen',orderid:orderid,food_receipt_seen:food_receipt_seen},
+				success:function(res){
+					//console.log(res);
+					//location.reload(true);
+				}
+			});	
+		
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	$(".cancel_admin").focusout(function(){
+		var orderid = $(this).attr('order_id');
+		var cancel_person = $(this).val();
+		console.log(".click_event")
+		$.ajax({
+				url:'functions.php',
+				method:'POST',
+				data:{method:'cancelperson',orderid:orderid,cancel_person:cancel_person},
+				success:function(res){
+					//console.log(res);
+					location.reload(true);
+				}
+			});	
+	});
+	
+	
+});
+
+$(".rider_bank_amount").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var bank_text = this.value;
+		console.log(bank_text);
+		if(bank_text!='' && order_id)
+		{  
+		    $.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{bank_text:bank_text,method:"rider_bank_amount",order_id:order_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{
+					}
+					else
+					{alert('Failed to update');	}
+					}
+			});      
+		} 
+	});
+	
+	$(".rider_cash_amount").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var bank_text = this.value;
+		console.log(bank_text);
+		if(bank_text!='' && order_id)
+		{  
+		    $.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{bank_text:bank_text,method:"rider_cash_amount",order_id:order_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{
+					}
+					else
+					{alert('Failed to update');	}
+					}
+			});      
+		} 
+	});
+	
+ 
+/* start :: save admin_bank_price & admin_cash_price*/
+	$(".admin_bank_price").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var bank_text = this.value;
+		console.log(bank_text);
+		if(bank_text!='' && order_id)
+		{  
+		    $.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{bank_text:bank_text,method:"admin_bank_price",order_id:order_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{
+					}
+					else
+					{alert('Failed to update');	}
+					}
+			});      
+		} 
+	});
+	
+	$(".admin_cash_price").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var bank_text = this.value;
+		console.log(bank_text);
+		if(bank_text!='' && order_id)
+		{  
+		    $.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{bank_text:bank_text,method:"admin_cash_price",order_id:order_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{
+					}
+					else
+					{alert('Failed to update');	}
+					}
+			});      
+		} 
+	});
+	
+		$(".admin_commission_price").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var comm_text = this.value;
+		console.log(comm_text);
+		if(comm_text!='' && order_id)
+		{  
+		    $.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{comm_text:comm_text,method:"admin_commission_price",order_id:order_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{
+					}
+					else
+					{alert('Failed to update');	}
+					}
+			});      
+		} 
+	});
+
+	
+	
+	$(".rider_reason_dif").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var reason_text = this.value;
+		  
+		    $.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{reason_text:reason_text,method:"rider_reason_dif",order_id:order_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{
+					}
+					else
+					{alert('Failed to update');	}
+					}
+			});      
+	});
+	
+	
+	$(".admin_code").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var admin_code = this.value;
+		  
+		    $.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{admin_code:admin_code,method:"admin_code",order_id:order_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{
+					}
+					else
+					{alert('Failed to update');	}
+					}
+			});      
+	});
+	
+	$(".admin_confirmed_by").focusout(function(e){
+		var order_id= $(this).attr('order_id');
+		var confirm_by = this.value;
+		  
+		    $.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{confirm_by:confirm_by,method:"admin_confirmed_by",order_id:order_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{
+					}
+					else
+					{alert('Failed to update');	}
+					}
+			});      
+	});
+	/* END :: save admin_bank_price & admin_cash_price*/
+	 
+</script>
+
+
+
 </body>
 
 </html>

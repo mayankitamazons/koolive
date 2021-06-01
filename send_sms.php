@@ -21,6 +21,13 @@ function gw_send_sms($user,$pass,$sms_from,$sms_to,$sms_msg){
 	      
     return $ok;  
 } 
+
+//$sms_to = "60123115670";
+	//$sms_msg = "test browser";
+	//$smsend = gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to, $sms_msg); 
+	
+	
+	
 // date_default_timezone_set("Asia/Kuala_Lumpur");
 //echo $sql= "SELECT order_list.status,order_list.merchant_id, order_list.created_on,users.id,users.handphone_number,users.pending_time FROM order_list inner join users on order_list.merchant_id = users.id WHERE users.pending_time!=0 AND status =0 AND DATE(`created_on`) = CURDATE() order by order_list.id DESC";
 // echo "SELECT order_list.status,order_list.merchant_id, order_list.created_on,users.id,users.name,users.handphone_number,users.pending_time FROM order_list inner join users on order_list.merchant_id = users.id WHERE users.pending_time!=0 AND status =0 AND DATE(`created_on`) = CURDATE() order by order_list.id DESC";
@@ -32,6 +39,7 @@ function gw_send_sms($user,$pass,$sms_from,$sms_to,$sms_msg){
 	order_list.merchant_id = users.id WHERE order_list.merchant_id not in('5401') and users.pending_time!=0 and users.write_up_link_share='1'
 	AND status =0 AND DATE(`created_on`) ='$cur_date' and order_alert_done='n'  order by order_list.created_on  DESC ";
 // die;  
+echo  $query;
 $admindata = mysqli_query($conn, "SELECT * FROM admins");
 $smsdata=mysqli_fetch_array($admindata);
 $no_list='';
@@ -46,8 +54,8 @@ if($smsdata['order_mobile_no_4'])
 
 $total_rows = mysqli_query($conn,$query);
 while ($row=mysqli_fetch_assoc($total_rows)){
-	// print_R($row);
-	// die;  
+	 print_R($row);
+	  
     $m_id = $row['merchant_id'];
     $write_up_link_share = $row['write_up_link_share'];
     $status = $row['status'];
@@ -59,13 +67,16 @@ while ($row=mysqli_fetch_assoc($total_rows)){
      echo $min = $diffrence/60;
      echo "</br>";
     $pending_time = $row['pending_time'];
-
-     $pending_time1 = $pending_time+6;  
+//echo "</br>";
+    $pending_time1 = $pending_time+6;  
 	// die;
+	
+	 
+	 
 	
     if($min > $pending_time && $min < $pending_time1){
     // if($pending_time){
-		
+		echo "</br>----------";
 		$invoice_no=$row['invoice_no'];
 		$length = 4;    
 		echo  $query2="UPDATE `order_list` SET `order_alert_done` = 'y' WHERE `order_list`.`id` ='$order_id'";
@@ -190,7 +201,7 @@ while ($row=mysqli_fetch_assoc($total_rows)){
      echo "<br/>Rider Time ".$min = $diffrence/60;
 	  $order_id=$row['order_id'];
 	 if($min >20){
-		if($row['rider_alert']=="n" && $row['rider_info']=='')
+		if($row['rider_alert']=="n" && $row['rider_info']=='0')
 		{
 			
 			
@@ -201,7 +212,9 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 			 $rand= substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),1,4);
 			$url="https://www.koofamilies.com/orderview.php?did=".$m_id."&vs=".$rand."&oid=".$order_id;    
 		  	       
-			$message= $_POST['message'] = $url." ".$client.",KooFamilies alert.Rider has not been assigned for Invoice no: (".$invoice_no.").";
+			$message= $_POST['message'] = "Rider has not been assigned for Invoice no: (".$invoice_no."). ".$url." ".$client.",KooFamilies alert.";
+			
+	
 			$sms_to = '+60123115670,'.$row['handphone_number'];
 				$sms_to = '+60127088661'.',+60123115670,'.$row['handphone_number'];
 			

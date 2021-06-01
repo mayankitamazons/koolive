@@ -43,7 +43,7 @@
                 <th>Price</th>
               
                 <th class="text-center">Status</th>
-                <th>Actions</th>
+                <th>Actions <?php echo count($items);?></th>
             </tr>
         </thead>
         <tbody id="orderview-body">

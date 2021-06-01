@@ -24,10 +24,10 @@ if(isset($_GET['id']) && $_GET['id'] != ''){
 	//echo $query;
 	$total_rows = mysqli_query($conn,$query);
 	
-	/*echo '<pre>';
-	print_R($ordersData);
-	print_R($row);
-	exit;*/
+	//echo '<pre>';
+	//print_R($ordersData);
+	//print_R($row);
+	//exit;
 
 }else{
 header("Location:https://www.koofamilies.com/"); 
@@ -147,13 +147,20 @@ body {
 								<?php 
 									$i = 1;
 									$j = 0;
-									while ($row = mysqli_fetch_assoc($total_rows)){
+									
+									
+									$od_products_array = explode(",",$ordersData['product_id']);
+									foreach ($od_products_array as $key ){
+										$product_1 = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM products WHERE id ='".$key."'"));
+                                
+								
+									//while ($row = mysqli_fetch_assoc($total_rows)){
 										
 								?>
 								<tr>
                                     <td > <?php echo $i;?> </td>
 									<td> 
-											<span class="font-weight-bold" style="font-size:15px"><?php echo $row['product_name'];?></span>
+											<span class="font-weight-bold" style="font-size:15px"><?php echo $product_1['product_name'];?></span>
 											<div class="product-qty"> 
 												<span>Code: <?php echo $product_code[$j];?></span> 
 												<span class="d-block">Quantity: <?php echo $product_qtys[$j];?></span> 
