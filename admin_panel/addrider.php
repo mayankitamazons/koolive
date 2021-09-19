@@ -1,10 +1,17 @@
 <?php 
 include("config.php");
 //ini_set('display_errors', 1); ini_set('display_startup_errors', 1); error_reporting(E_ALL); 
-if(!isset($_SESSION['admin']))
+/*if(!isset($_SESSION['admin']))
 {
 	header("location:login.php");
+}*/
+
+if(!isset($_SESSION['madmin']))
+{
+	header("location:login2.php");
 }
+
+
 $loop_count = 10;
 $terrArray = array();
 
@@ -40,7 +47,8 @@ if(isset($_POST['add_riders'])){
 			
 		}	
 	}
-	$q="INSERT INTO `tbl_riders` (`r_name`, `r_mobile_number`, `r_info`, `r_image`,`r_vehicle_number`,`r_live_location`, `r_createddate`, `r_updateddate`, `r_status`)VALUES ( '$r_name', '$r_mobile_number', '$r_info','".$image_file."','".$r_vehicle_number."','".$r_live_location."', '$r_createddate', '$r_updateddate',1)";
+	$q="INSERT INTO `tbl_riders` (`r_name`, `r_mobile_number`, `r_info`, `r_image`,`r_vehicle_number`,`r_live_location`, `r_createddate`, `r_updateddate`, `r_status`,`one_signal_id`)VALUES 
+	( '$r_name', '$r_mobile_number', '$r_info','".$image_file."','".$r_vehicle_number."','".$r_live_location."', '$r_createddate', '$r_updateddate',1,'$one_signal_id')";
 	$insert=mysqli_query($conn,$q);
 	$last_id = mysqli_insert_id($conn);
 	
@@ -78,12 +86,12 @@ if(isset($_POST['update_riders'])){
 	}
 	
 	if($image_file != ''){
-		$update_qry="UPDATE `tbl_riders` SET `r_name`='$r_name',`r_mobile_number`='$r_mobile_number',`r_info`='$r_info',`r_image` = '".$image_file."',`r_vehicle_number` = '".$r_vehicle_number."', `r_live_location` = '".$r_live_location."',	`r_updateddate`='$r_updateddate' WHERE `r_id` = '".$_GET['r_id']."'";    
+		$update_qry="UPDATE `tbl_riders` SET `r_name`='$r_name',`r_mobile_number`='$r_mobile_number',`r_info`='$r_info',`r_image` = '".$image_file."',`r_vehicle_number` = '".$r_vehicle_number."', `r_live_location` = '".$r_live_location."',	`r_updateddate`='$r_updateddate',`one_signal_id`='$one_signal_id' WHERE `r_id` = '".$_GET['r_id']."'";    
 	
 	}else{
-		$update_qry="UPDATE `tbl_riders` SET `r_name`='$r_name',`r_mobile_number`='$r_mobile_number',`r_info`='$r_info',`r_vehicle_number` = '".$r_vehicle_number."', `r_live_location` = '".$r_live_location."',	`r_updateddate`='$r_updateddate' WHERE `r_id` = '".$_GET['r_id']."'";    
+		$update_qry="UPDATE `tbl_riders` SET `r_name`='$r_name',`r_mobile_number`='$r_mobile_number',`r_info`='$r_info',`r_vehicle_number` = '".$r_vehicle_number."', `r_live_location` = '".$r_live_location."',	`r_updateddate`='$r_updateddate',`one_signal_id`='$one_signal_id' WHERE `r_id` = '".$_GET['r_id']."'";    
 	
-	}
+	}  
 	
 	//echo $update_qry;
 	$insert=mysqli_query($conn,$update_qry);
@@ -201,11 +209,17 @@ $a_m="riders";
 									<span id="matchNameResponse"></span>
 								</div>
 								
-								<div class="col-md-12">
+								<div class="col-md-6">
 									<label><?php echo "Live Location"; ?>&nbsp;<span style="color:red;">*</span></label>
 									<input type="text" id="r_live_location" required name="r_live_location" value="<?php if(isset($_GET['r_id'])){ echo $c_data['r_live_location'];} ?>" class="form-control" placeholder="<?php echo "Live Location"; ?>">
 									<span id="matchNameResponse"></span>
 								</div>
+								<div class="col-md-6">
+									<label><?php echo "Push notification id"; ?>&nbsp;<span style="color:red;">*</span></label>
+									<input type="text" id="one_signal_id" required name="one_signal_id" value="<?php if(isset($_GET['r_id'])){ echo $c_data['one_signal_id'];} ?>" class="form-control" placeholder="<?php echo "Push notification"; ?>">
+									<small>to add new device  <a href="" target="_blank">click here</a></small>
+								</div>
+								
 								
 								
 								

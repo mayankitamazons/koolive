@@ -1,5 +1,22 @@
 <?php 
 include('config.php');
+/*
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+*/
+session_start();
+
+
+if(isset($_GET['cid']))
+{
+	$did=$_GET['cid'];   
+	include_once('dlogin.php');
+
+}
+
+
+
 /* language - 18/01/2021 */
 if($_SESSION['langfile'] == 'english'){
 	$open_language_modal = 1; //1=>open popup 0=>not open
@@ -43,16 +60,38 @@ if(isset($_SESSION["langfile"]) && $_SESSION["langfile"] !=''){
 
 if(isset($_REQUEST['locationsort'])){
 	$_SESSION["locationsort"] = @$_GET['locationsort'];
+	//echo 'here'.$_GET['locationsort'];
 }
 $LocaSt=$_SESSION['locationsort'];
 if($_SESSION['locationsort'] && $LocaSt)
 {
 	$LOCSQL = "and users.city='$LocaSt'" ;
+	$l_state = "and u.city='$LocaSt'" ;
 }
 else
 {
 	$LOCSQL='';
+	$l_state = '';
 }
+
+/*State Location*/
+if(isset($_REQUEST['statesort'])){
+	$_SESSION["statesort"] = @$_GET['statesort'];
+}
+if(isset($_REQUEST['onlystate']) && $_REQUEST['onlystate'] == 1 ){
+	unset($_SESSION["locationsort"]);
+}
+$LocaState=$_SESSION['statesort'];
+if($_SESSION['statesort'] && $LocaState)
+{
+	$LOCSTATESQL = " and u.m_state='$LocaState'" ;
+}
+else
+{
+	$LOCSTATESQL = '';
+}
+
+/* End state Location*/
 
 
 
@@ -64,13 +103,13 @@ if($_SESSION['langfile']){
 	//$join_lang = "&language=".$_SESSION['langfile']
 }
 					
-if(empty($_GET['vs']))
-{
-	$url="index.php?vs=".md5(rand()).$join_lang;
+// if(empty($_GET['vs']))
+// {
+	// $url="index.php?vs=".md5(rand()).$join_lang;
 
-header("Location:$url");
-exit();
-}
+// header("Location:$url");
+// exit();
+// }
  
 if(isset($_POST['merchant_select_form']))
 {
@@ -83,18 +122,40 @@ if(isset($_POST['merchant_select_form']))
 		exit();
 }
 }	
-
+?>
+<?php
+if($_GET['force_refresh'] == 'yes'){
+	header('Clear-Site-Data: "cache", "cookies", "storage", "executionContexts"');
+	//$url="https://www.koofamilies.com/";
+	//header("Location:$url");
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+	<title>KooFamilies - Food & Grocery Delivery Service Near Me in Malaysia - Order Now Online</title>
+	
     <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="KooFamilies - Discover & Book the best restaurants at the best price">
+    <meta name="keywords" content="food delivery malaysia, food delivery near me, food delivery kuala lumpur, malaysia food delivery">
+	<meta name="description" content="KooFamilies is an online food and grocery delivery service near me in Malaysia. Discover & book the best restaurants at the best price">
+   
     <meta name="author" content="Ansonika">
-    <title>KooFamilies - One stop centre for your everything</title>
+   
+	<meta name="google-site-verification" content="Z6bJ5nn73VFsUqndnr_-_5PamtATM-aN9iVSKGZmo0E" />
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-R5Q7NVYRCL"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'G-R5Q7NVYRCL');
+	</script>
+
 
     <!-- Favicons-->
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
@@ -108,6 +169,8 @@ if(isset($_POST['merchant_select_form']))
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- BASE CSS -->
+	<link rel="stylesheet" href="./css/font-awesome.min.css">
+
     <link href="extra/css/bootstrap_customized.min.css" rel="stylesheet">
     <link href="extra/css/style.css" rel="stylesheet">
 
@@ -122,7 +185,7 @@ if(isset($_POST['merchant_select_form']))
     <meta name="theme-color" content="#317EFB"/>
 <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
 <script>
-  var OneSignal = window.OneSignal || [];
+  /*var OneSignal = window.OneSignal || [];
   OneSignal.push(function() {
     OneSignal.init({
       appId: "57f21ad6-a531-4cb6-9ecd-08fe4dd3b4f5",
@@ -133,7 +196,7 @@ if(isset($_POST['merchant_select_form']))
     // alert("OneSignal User ID:", userId);   
     // (Output) OneSignal User ID: 270a35cd-4dda-4b3f-b04e-41d7463a2316    
   });
-  });
+  });*/
   
 	document.onreadystatechange = function() {
 	var state = document.readyState;
@@ -151,17 +214,23 @@ if(isset($_POST['merchant_select_form']))
 	
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<script src="jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </head>
-<?php if(empty(@$_SESSION["locationsort"])) { ?>
+
+
+
+
+
+<?php /* START: INDEX OLD CODE -28-08-2021*/?>
+<?php /*if(empty(@$_SESSION["locationsort"])) { ?>
 <script>
     $(document).ready(function(){
         $("#myModal").modal('show');
     });
 </script>
 <?php } ?>
-<div id="myModal" class="modal fade" style="">
+<div id="myModal" class="modal fade" style="top:100px">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -198,9 +267,9 @@ if(isset($_POST['merchant_select_form']))
         </div>
     </div>
 </div>
+<?php */?>
 
-
-<?php /* Language Model - 18/01/2021 */?>
+<?php /* Language Model - 18/01/2021 ?>
 <?php if($open_language_modal == 1 && $_SESSION["locationsort"] != ''){?>
 <script>
     $(document).ready(function(){
@@ -213,7 +282,7 @@ if(isset($_POST['merchant_select_form']))
 		
     });
 </script>
-<div id="myModal_language" class="modal fade" style="">
+<div id="myModal_language" class="modal fade" style="top:100px">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -223,9 +292,9 @@ if(isset($_POST['merchant_select_form']))
             <div class="modal-body">
 				<form name="language_form" id="language_form">
 				
-					<a href="index.php?vs=<?php echo md5(rand()); ?>&language=english" class="btn btn-primary btn_language" >English</a>
-					<a href="index.php?vs=<?php echo md5(rand()); ?>&language=chinese" class="btn btn-success btn_language" >华语</a>
-					<a href="index.php?vs=<?php echo md5(rand()); ?>&language=malaysian" class="btn btn-info btn_language" >Malay</a>
+					<a href="index.php?vs=<?php echo md5(rand()); ?>&language=english&locationsort=<?php echo $_SESSION["locationsort"] ;?>" class="btn btn-primary btn_language" >English</a>
+					<a href="index.php?vs=<?php echo md5(rand()); ?>&language=chinese&locationsort=<?php echo $_SESSION["locationsort"] ;?>" class="btn btn-success btn_language" >华语</a>
+					<a href="index.php?vs=<?php echo md5(rand()); ?>&language=malaysian&locationsort=<?php echo $_SESSION["locationsort"] ;?>" class="btn btn-info btn_language" >Malay</a>
 					<br/>
 					<img src="ajax-loader.gif" class="ajx_lang_resp" style="display:none;padding-top:10px"/>
 					&nbsp;
@@ -241,9 +310,248 @@ if(isset($_POST['merchant_select_form']))
     </div>
 </div>
 <?php }?>
+<?php  Language Model - 18/01/2021 */?>
+
+<?php /* END: INDEX OLD CODE -28-08-2021*/?>
+<?php /*NEW INDEX CODE*/?>
+<?php if(empty(@$_SESSION["locationsort"]) && empty(@$_SESSION["statesort"])) { ?>
+	<script>
+		$(document).ready(function(){
+			$("#myModal").modal('show');
+		});
+	</script>
+<?php } ?>
+<div id="myModal" class="modal fade" style="">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<?php 
+				$h_name = $_SESSION["statesort"];
+				if($_SESSION["locationsort"] != ''){
+					$h_name = $_SESSION["statesort"].",".$_SESSION["locationsort"];
+				}?>
+				<h5 class="modal-title">Select Ordering location <?php echo $h_name; ?></h5>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<div class="modal-body">
+
+				<style>
+
+				.tabs {
+					margin: 2px 5px 0px 5px;
+					padding-bottom: 10px;
+					cursor: pointer
+				}
+
+				.tabs:hover,
+				.tabs a.active {
+					border-bottom: 1px solid #2196F3
+				}
+				.tab-pannel-box a.tabs {
+					margin: 0 4px 0px 0;
+					background: #dee2e6;
+					color: #000;
+					padding: 6px 20px;
+					border: 0 !important;
+					text-decoration: none !important;
+				}
+
+				.tab-pannel-box  a.tabs.active ,.tab-pannel-box  a.tabs:hover {background: #e75480;color: #fff;}
+				.tab-pannel-box  .nav-tabs {
+					border-bottom: 1px solid #dee2e6;
+					height: 29px;
+				}
+				.modal-content {
+					z-index: 9;
+				}
+				.tab-content h6 {
+					margin-top: 10px;
+					color: red;
+				}
+				@media screen and (max-width: 991px){
+					.tab-pannel-box a.tabs {
+						padding: 6px 9px;
+					}
+				}
+			</style>
+
+
+			<div role="tabpanel" class="tab-pannel-box">
+				<!-- Nav tabs -->
+				<ul class="nav nav-tabs" role="tablist">
+					
+					<li role="presentation" ><a href="#browseTab" class="tabs active" aria-controls="browseTab" role="tab" data-toggle="tab">Search By City</a>
+
+					</li>
+					<li role="presentation" class="active "><a href="#uploadTab" class="tabs " aria-controls="uploadTab" role="tab" data-toggle="tab">Search By State</a>
+
+					</li>
+				</ul>
+				<!-- Tab panes -->
+				<div class="tab-content">
+						<div role="tabpanel" class="tab-pane active" id="browseTab">
+						<!--<h6><strong>Note :</strong> lorem</h6>-->
+						<form>
+							
+							<select class='m_state_drop form-control ' name="m_state" style="height: auto;width: 100%;    margin: 20px 0;" data-id="<?php echo $row['id']; ?>">
+								<option value="1">Select State</option>
+								<?php
+								$sql11 = mysqli_query($conn, "SELECT StateName FROM city GROUP BY StateName order by StateName asc");
+								while($data11 = mysqli_fetch_array($sql11))
+								{
+									if($_SESSION["statesort"] == $data11['StateName']){
+										echo'<option value="'.strtolower($data11['StateName']).'" selected>'.$data11['StateName'].'</option>';
+									}else{
+										echo'<option value="'.strtolower($data11['StateName']).'" selected>'.$data11['StateName'].'</option>';
+									}
+
+								}
+								?>
+							</select>
+
+
+							<?php 
+							$sql = mysqli_query($conn, "SELECT StateName,CityName  FROM city WHERE 0=0 GROUP BY CityName");
+							$selected = '';
+							while($data = mysqli_fetch_array($sql))
+							{
+								$ss_style = "display:block;";
+								if(strtolower($_SESSION["statesort"]) == strtolower($data['StateName'])){
+									$ss_style = "display:block;";
+								}
+								?>
+								<p class="<?php echo strtolower($data['StateName']);?> aa_city" style="<?php echo $ss_style;?>"><a href="javascript:void(0);" link="https://www.koofamilies.com/index.php?locationsort=<?php echo $data['CityName'];?>&statesort=<?php echo $data['StateName']; ?>&language=<?php echo $_SESSION["langfile"];?>" class="locationbutton btn btn-primary"><?php echo $data['CityName'] ?></a></p>
+								<?php	
+							}	
+							?>
+						</form>
+						<img src="ajax-loader.gif" class="ajx_location_resp" style="display:none;"/>
+						&nbsp;
+						<span class="please_wait_text1" style="display:none;color:red">Please wait ....</span>
+
+					</div>
+			
+			
+					<div role="tabpanel" class="tab-pane " id="uploadTab">
+						<!--<h6><strong>Note :</strong> lorem</h6>-->
+						<h6><?php echo $language['the_state_notes'];?></h6>
+						<form>
+							<?php 
+							$sql1 = mysqli_query($conn, "SELECT StateName FROM city GROUP BY StateName order by StateName asc");
+							$selected1 = '';
+							while($data1 = mysqli_fetch_array($sql1))
+							{
+								?>
+								<p><a href="javascript:void(0);" link="https://www.koofamilies.com/index.php?statesort=<?php echo $data1['StateName']; ?>&onlystate=1&language=<?php echo $_SESSION["langfile"];?>" class="locationbutton btn btn-primary"><?php echo $data1['StateName'] ?></a></p>
+								
+								
+								<?php	
+							}	  
+							?>
+						</form>
+						<img src="ajax-loader.gif" class="ajx_location_resp" style="display:none;"/>
+						&nbsp;
+						<span class="please_wait_text1" style="display:none;color:red">Please wait ....</span>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+</div>
+</div>
+
+
+<?php /* Language Model - 18/01/2021 */?>
+<?php if($open_language_modal == 1 && ($_SESSION["locationsort"] != '' || $_SESSION["statesort"] != '')){?>
+	<script>
+		$(document).ready(function(){
+			$("#myModal_language").modal({
+				show: false,
+				backdrop: 'static'
+			});
+
+			$("#myModal_language").modal('show');
+
+		});
+	</script>
+	<div id="myModal_language" class="modal fade" style="">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Select your Language </h5>
+					<!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
+				</div>
+				<div class="modal-body">
+					<form name="language_form" id="language_form">
+						<a href="index.php?vs=<?php echo md5(rand()); ?>&language=english&locationsort=<?php echo $_SESSION["locationsort"];?>&statesort=<?php echo $_SESSION["statesort"];?>" class="btn btn-primary btn_language" >English</a>
+						<a href="index.php?vs=<?php echo md5(rand()); ?>&language=chinese&locationsort=<?php echo $_SESSION["locationsort"];?>&statesort=<?php echo $_SESSION["statesort"];?>" class="btn btn-success btn_language" >华语</a>
+						<a href="index.php?vs=<?php echo md5(rand()); ?>&language=malaysian&locationsort=<?php echo $_SESSION["locationsort"];?>&statesort=<?php echo $_SESSION["statesort"];?>" class="btn btn-info btn_language" >Malay</a>
+						<br/>
+						<img src="ajax-loader.gif" class="ajx_lang_resp" style="display:none;padding-top:10px"/>
+						&nbsp;
+						<span class="please_wait_text" style="display:none;color:red">Please wait ....</span>
+
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+<?php }?>
 <?php /* Language Model - 18/01/2021 */?>
 
 
+<?php /*END INDEX CODE*/?>
+
+<!--- Force Refresh -->
+<?php //if($_GET['mode'] =='dev'){?>
+<script>
+    $(document).ready(function(){
+		$(".myrefresh").click(function(){
+			$("#myModal_forcerefresh").modal({
+			show: false,
+			backdrop: 'static'
+			});
+			$("#myModal_forcerefresh").modal('show');
+			$("#myModal_language").modal('hide'); 
+			$("#myModal").modal('hide');
+			return false;
+		});
+		
+    });
+</script>
+<?php //}?>
+<div id="myModal_forcerefresh" class="modal fade" style="top:100px">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cache/Cookies </h5>
+                <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
+            </div>
+            <div class="modal-body">
+				
+				<h3>
+				<?php if($_SESSION["langfile"] == 'chinese'){?>
+				由于系统升级，我们这里将协助你把旧记录清楚。如果页面没有更新, <a href="https://koofamilies.com" target="_blank" class="" style="color:red;text-decoration:underline">请按这里</a>.
+<?php }else{ ?>
+			Due to upgrade of system, we need you to clear page history to avoid order error. if this page has no respond, please click <a href="https://koofamilies.com" target="_blank" class="" style="color:red;text-decoration:underline">HERE</a>
+
+			<!--	This can clear cache/cookies that you kept with this website. It may take up to 2 minutes to complete. To proceed, please click 'Yes". If no respond, please click <a href="https://koofamilies.com" target="_blank" class="" style="color:red;text-decoration:underline">HERE</a>-->
+				<?php }?>
+				</h3>
+			 </div>
+			<div class="modal-footer">
+				<a href="#" class=" force_no btn btn-primary btn_language" data-dismiss="modal" >NO</a>
+				<a href="index.php?vs=<?php echo md5(rand()); ?>&force_refresh=yes" class="force_yes btn btn-success btn_language" >YES</a>
+           
+			</div>
+        </div>
+    </div>
+</div>
+
+<!-- END --->
 
 
 
@@ -322,6 +630,13 @@ if(isset($_POST['merchant_select_form']))
 		background: "transparent" !important;
 		z-index: "-1" !important;
 	}
+	@media (max-width: 991px){
+#logo {
+    float: none;
+    width: 76%; !important;
+    text-align: center;
+}
+}
 </style>
 	
 	<?php
@@ -417,7 +732,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
     ?>				
 	<header class="header clearfix element_to_stick">
 		<div class="container">
-		<div id="logo">
+		<div id="logo" >
 			<a href="index.php?vs=<?php echo md5(rand()); ?>">
                 <!-- koofamilies logo -->
 				 <img src="svgLog_second.svg" width="140" height="35" alt="" class="logo_normal">
@@ -427,10 +742,22 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 			</a>
 		</div>
 		 <ul id="top_menu">
+			<li style="color: white;font-size: 40px;border-radius: 14px;">
+				<!--<a href="index.php?vs=<?php echo md5(rand()); ?>&force_refresh=yes"  title="Refresh" class="myrefresh"><i class="fa fa-refresh" style="padding-right:8px"></i></a>-->
+				<a href="javascript:void(0)"  title="Refresh" class="myrefresh"><i class="fa fa-refresh" style="padding-right:8px"></i></a>
+			</li>
 			
-			<?php if(isset($_SESSION['login'])){	?>
-			<li><a href="favorite.php" class="wishlist_bt_top" title="Your favorite">Your wishlist</a></li>
-			<?php } ?>
+			<?php if(isset($_SESSION['login'])){	
+			 $coin_query="SELECT * FROM `special_coin_wallet` WHERE `user_id` = ".$_SESSION['login']." AND `merchant_id` = 6419 and coin_balance > 0";
+			 #echo $coin_query;
+			 $coindata = mysqli_fetch_assoc(mysqli_query($conn,$coin_query));
+			 $coincount = mysqli_num_rows(mysqli_query($conn,$coin_query));
+			if($coincount > 0){
+			?>
+			<li style="color: white;font-size: 18px;background: #589442;padding: 7px;border-radius: 14px;margin-top:14px;"><i class="fa fa-money" style="padding-right:8px"></i><?php echo "RM".number_format($coindata['coin_balance'],2); ?></li>
+			
+			
+			<?php }} ?>
 		</ul>
 		<!-- /top_menu -->   
 		<a href="#0" class="open_close">
@@ -468,7 +795,13 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 						
 						
 					</ul>
-				</li>   
+				</li>  
+
+				<li class="submenu">
+					<button onclick="window.location='https://www.koofamilies.com/become_merchant.php';" /  class="btn mb-2 mb-md-0 btn-primary btn-block" style="background: #ec8f6a;border: #ec8f6a;font-weight: bold;color: black;padding:8px"><?php echo $language['become_merchant_free']; ?></button>
+				</li>
+
+	
 			</ul>
 		</nav>
 	</div>
@@ -485,7 +818,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 					
 						
 					
-					
+					<?php #echo "SELECT SQL_NO_CACHE  u.id  as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 $where_shoponusers  and u.user_roles=2 $l_state $LOCSTATESQL and (day = '".date(l)."' OR '".date('H:i')."' NOT BETWEEN start_time and end_time) group by u.id order by order_count desc";;?>
 					
 						<div class="col-xl-9 col-lg-10 col-md-8">
 							<form method="post" id="merchant_submit_form" action="#">
@@ -505,23 +838,75 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 												<select class="merchant_select form-control" name="merchant_select">
 												   <option value="-1"><?php echo $language['search_by_company']; ?></option>
 													<?php
-														
+													//echo "(SELECT SQL_NO_CACHE  u.id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'on' as tstatus FROM users as u Inner JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.default_lang !='2' and u.user_roles=2 $l_state and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time group by od.merchant_id order by order_count desc) UNION ALL (SELECT SQL_NO_CACHE  u.id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u Inner JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.default_lang !='2' and u.user_roles=2 $l_state and day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN start_time and end_time group by od.merchant_id order by order_count desc)" ;
 														if($_SESSION['langfile'] == 'malaysian'){
 															//don't show the chinese merchnt shop
-															$q_shop = "SELECT SQL_NO_CACHE  name,user_language,id,mobile_number FROM users WHERE name LIKE isLocked='0' and show_merchant=1 and default_lang !='2' and user_roles=2 $LOCSQL";
+															$q_shop = "SELECT SQL_NO_CACHE  name,user_language,id,mobile_number FROM users WHERE name LIKE isLocked='0' and show_merchant=1 and default_lang !='2' and user_roles=2 $LOCSQL $LOCSTATESQL";
+															//$q_shop = "(SELECT SQL_NO_CACHE  u.id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'on' as tstatus FROM users as u Inner JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.default_lang !='2' and u.user_roles=2 $l_state and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time group by od.merchant_id order by order_count desc) UNION ALL (SELECT SQL_NO_CACHE  u.id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u Inner JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.default_lang !='2' and u.user_roles=2 $l_state and day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN start_time and end_time group by od.merchant_id order by order_count desc)";
+															$q_shop_on = "SELECT SQL_NO_CACHE  u.id as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'on' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.default_lang !='2' and u.user_roles=2 $l_state $LOCSTATESQL and ((day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time)  OR (day = '' )) group by u.id order by order_count desc";
+															
 														}else{
-															$q_shop = "SELECT SQL_NO_CACHE  name,user_language,id,mobile_number FROM users WHERE name LIKE isLocked='0' and show_merchant=1  and user_roles=2 $LOCSQL";
+															$q_shop = "SELECT SQL_NO_CACHE  name,user_language,id,mobile_number FROM users WHERE name LIKE isLocked='0' and show_merchant=1  and user_roles=2 $LOCSQL $LOCSTATESQL";
+															//$q_shop = "(SELECT SQL_NO_CACHE  u.id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'on' as tstatus FROM users as u Inner JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.user_roles=2 $l_state and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time group by od.merchant_id order by order_count desc) UNION ALL (SELECT SQL_NO_CACHE  u.id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u Inner JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.user_roles=2 $l_state and day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN start_time and end_time group by od.merchant_id order by order_count desc)";
+															
+															$q_shop_on = "SELECT SQL_NO_CACHE  u.id  as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'on' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1  and u.user_roles=2 $l_state $LOCSTATESQL and ((day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time)  OR (day = '' ))  group by u.id order by order_count desc";
+															
+															
+															#echo $q_shop_off;
+															
+														}
+														#echo $q_shop_on;
+														//$select =mysqli_query($conn,"SELECT SQL_NO_CACHE  name,user_language,id,mobile_number FROM users WHERE name LIKE isLocked='0' and show_merchant=1  and user_roles=2 $LOCSQL");
+														//$select =mysqli_query($conn,$q_shop);
+														
+														$select_on =mysqli_query($conn,$q_shop_on);
+													
+														
+														
+														
+														
+														/*while ($row=mysqli_fetch_assoc($select)) 
+														{
+															$statusonoff ='';
+															if($row['tstatus'] == 'off'){
+																	$statusonoff = $language['shop_index_status'];
+															}
+														 ?>
+														 <option value="<?php echo $row['mobile_number']; ?>" ><?php echo $row['name'];?> </option>
+														<?php }  */ 
+														$shop_openArray = array();
+														while ($row_on=mysqli_fetch_assoc($select_on)) 
+														{
+															$shop_openArray[$row_on['user_id']] = $row_on['user_id'];
+														 ?>
+														 <option value="<?php echo $row_on['mobile_number']; ?>" ><?php echo $row_on['name'];?> <?php //echo $row_on['order_count'];?> </option>
+														<?php } ?>
+														
+														
+														<?php 
+														$where_shoponusers = '';
+														if(count($shop_openArray) > 0){
+															$alreay_exits_shop = implode(",",$shop_openArray);
+															$where_shoponusers = "and u.id NOT IN ($alreay_exits_shop)";
+														}
+														if($_SESSION['langfile'] == 'malaysian'){
+															$q_shop_off = "SELECT SQL_NO_CACHE  u.id as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.default_lang !='2' $where_shoponusers  and u.user_roles=2 $l_state $LOCSTATESQL and (day = '".date(l)."' OR '".date('H:i')."' NOT BETWEEN start_time and end_time ) group by u.id order by order_count desc";
+														}else{
+															$q_shop_off = "SELECT SQL_NO_CACHE  u.id  as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 $where_shoponusers  and u.user_roles=2 $l_state $LOCSTATESQL and (day = '".date(l)."' OR '".date('H:i')."' NOT BETWEEN start_time and end_time) group by u.id order by order_count desc";
 														}
 														
-														//$select =mysqli_query($conn,"SELECT SQL_NO_CACHE  name,user_language,id,mobile_number FROM users WHERE name LIKE isLocked='0' and show_merchant=1  and user_roles=2 $LOCSQL");
-														$select =mysqli_query($conn,$q_shop);
-														
-														
-														while ($row=mysqli_fetch_assoc($select)) 
+														#echo $q_shop_off;
+															$select_off =mysqli_query($conn,$q_shop_off);
+														?>
+														<?php 
+														while ($row_off=mysqli_fetch_assoc($select_off)) 
 														{
+															
 														 ?>
-														 <option value="<?php echo $row['mobile_number']; ?>"><?php echo $row['name'];?></option>
-														<?php }   
+														 <option value="<?php echo $row_off['mobile_number']; ?>"  style="color:red"><?php echo $row_off['name'];?>  <?php //echo  $row_on['order_count'];?>  <span ><?php //echo $language['shop_index_status'];?></span> </option>
+														<?php }
+														
+														
 													?>
 												</select>
 											 <!--input type="text" id="one_player_id"/!-->
@@ -541,26 +926,36 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 					<div style="margin-top:2px;">
 					
 				    <span id="please_wait_location" style="color:red;display:none;">Please wait.....</span>
-					<button type="button"  id="search_location" style="margin-top:2%;background-color:#589442;color;black;padding: 13px;width: 100%;color: black;border-radius: 4px;" class="btn btn-primary"><?php echo $language['search_by_location']; ?></button>
+					<button type="button"  id="search_location" style="margin-top:2%;background-color:#589442;color;black;padding: 7px;width: 250px;color: black;border-radius: 4px;" class="btn btn-primary"><?php echo $language['search_by_location']; ?></button>
 					<!--span id="search_location" style="margin-top: 2%;background-color: #589442;padding: 13px;" class="btn btn-primary">Search by location</span!--> 
 					</div>
 					
 					<div class="col-xl-12 col-lg-12 col-md-12">
-					<button type="button" data-toggle="modal" data-target="#myModal" style="margin-top:2%;background-color:pink;padding: 13px;width: 100%;color: black;border-radius: 4px;color;black" >
-					<?php 
+					<button type="button" data-toggle="modal" data-target="#myModal" style="margin-top:2%;background-color:pink;padding: 7px;width: 250px;color: black;border-radius: 4px;color;black" >
+					<?php
 					//echo $_SESSION['locationsort']."==".$open_language_modal;
-								if($_SESSION['locationsort'] == 'Kulai'){
+								/*if($_SESSION['locationsort'] == 'Kulai'){
 									echo $language['reselect_location_kulai'];
 								}
 								if($_SESSION['locationsort'] == 'Skudai/Tmn Rini'){
 									echo $language['reselect_location_skudai'];
-								}
+								}*/
+								 echo $language['reselect_location']; ?>
+
+						<?php 
+						$h2_name = $_SESSION["statesort"];
+						if($_SESSION["locationsort"] != ''){
+							$h2_name = $_SESSION["statesort"].",".$_SESSION["locationsort"];
+						}?>
+						<b><?php echo "(".$h2_name.")";?></b>
+						
 								
 
 					
-					
-					?>
 					</button>
+					</div>
+					<div class="col-xl-12 col-lg-12 col-md-12" style="margin-top:2%">
+					<a onclick="window.location='https://www.koofamilies.com/become_merchant.php';"   class="" style="font-weight: bold;color: white;padding:13px;font-size:20px;text-decoration:underline"><?php echo $language['become_merchant_free']; ?></a></li>
 					</div>
 				</div>
 			</div>
@@ -689,8 +1084,10 @@ display:none;
 						while ($row_class=mysqli_fetch_assoc($select_query)) 
 						{
 							$cls_more_cat = '';
+							$manystatus = '';
 								if($s > 6){
 									$cls_more_cat = 'more_category_box';
+									$manystatus = 'many';
 								}
 								if($_SESSION['langfile'] == "chinese" ){
 									$cates_name = $row_class['classification_name_chiness'];
@@ -735,11 +1132,11 @@ if($row_class['image'] != ''){
                         <div class="service_m_item">
                             <div class="service_img_inner">
                                 <div class="service_img">
-                                    <img class="rounded-circle shop_cat_round" category="<?php echo $row_class['id'];?>" src="images/<?php echo $imgs;?>" alt="">
+                                    <img class="rounded-circle shop_cat_round" morestatus="<?php echo $manystatus;?>" category="<?php echo $row_class['id'];?>" src="images/<?php echo $imgs;?>" alt="">
                                 </div>
                             </div>
                             <div class="service_text">
-                                <a href="javascript:void(0)" class="shop_cat_round" category="<?php echo $row_class['id'];?>"><h4 class="h4_shop_cat_round"><?php echo $cates_name;?></h4></a>
+                                <a href="javascript:void(0)" morestatus="<?php echo $manystatus;?>" class="shop_cat_round" category="<?php echo $row_class['id'];?>"><h4 class="h4_shop_cat_round"><?php echo $cates_name;?></h4></a>
                             </div>
                         </div>
                     </div>
@@ -901,7 +1298,7 @@ if($row_class['image'] != ''){
 		            <div class="box_1">
 		                <h3>Are you a Restaurant Owner?</h3>
 		                <p>Join Us to increase your online visibility. You'll have access to even more customers who are looking to enjoy your tasty dishes at home.</p>
-		                <a href="login.php" class="btn_1">JOIN NOW</a>
+		                <a href="https://www.koofamilies.com/become_merchant.php" class="btn_1">JOIN NOW</a>
 		            </div>
 		        </div>
     		</div>
@@ -1122,7 +1519,7 @@ if($row_class['image'] != ''){
         </div>
 
  </div>
- <link href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
+ <link href="jquery-ui.css" rel="Stylesheet"></link>
 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script type="text/javascript" src="js/sweetalert.min.js" defer></script>
@@ -1334,6 +1731,9 @@ if ('serviceWorker' in navigator) {
 				console.log("Browser doesn't support geolocation!");
 			}  
     $('.merchant_select').select2();
+	
+
+
 	   $('.merchant_select').on('change', function(){
 		   $('#please_wait').show();
 		  // alert(this.value);
@@ -1360,9 +1760,14 @@ if ('serviceWorker' in navigator) {
             if($(".merchant_select").val() == "-1"){
                 e.preventDefault();
                 
-                if($("#product_search").val() !== '')
-                    // window.location.href = `./product_search.php?p=${encodeURIComponent($("#product_search").val()).toLowerCase()}&lat=${coordinates.lat}&lng=${coordinates.lng}`;
-                    window.location.href = `./product_search.php?p=${encodeURIComponent($("#product_search").val()).toLowerCase()}`;
+                if($("#product_search").val() !== ''){
+                    var languge_set = '<?php echo $_SESSION["langfile"];?>';
+					var locationsort = '<?php echo $_SESSION["locationsort"];?>';
+					var p_name = encodeURIComponent($("#product_search").val()).toLowerCase();
+					// window.location.href = `./product_search.php?p=${encodeURIComponent($("#product_search").val()).toLowerCase()}&lat=${coordinates.lat}&lng=${coordinates.lng}`;
+					window.location.href = './product_search.php?p='+p_name+'&language='+languge_set+'&locationsort='+locationsort;
+                    //window.location.href = `./product_search.php?p=${encodeURIComponent($("#product_search").val()).toLowerCase()}`;
+				}
 
             }
 		   $('#please_wait').show();
@@ -1508,8 +1913,16 @@ if ('serviceWorker' in navigator) {
 			 
 		});  
 		
+		$(".m_state_drop").change(function(){
+			var m_state = $(this).val();
+			$(".aa_city").hide();
+			if(m_state == 1){
+				$(".aa_city").hide();
+			}else{
+				$("."+m_state).show();
+			}
+		});
 		
-	
 	
 		$( "#search_location").click(function() {
 			 var sort_by="sort_distance";
@@ -1746,8 +2159,10 @@ if ('serviceWorker' in navigator) {
 				$(".ajax_shop_response").html('<img src="images/loading-icon.gif" class="loading-icon" style="display:none"/>');
 				$(".loading-icon").show();
 				var category = $(this).attr('category');
+				var morestatus = $(this).attr('morestatus');
 				var cartData = {};
 				cartData['category'] = category;
+				cartData['morestatus'] = morestatus;
 				cartData['type'] = category;
 				jQuery.post('/shopcategoryresponse.php', cartData, function (result) {
 				//var response = jQuery.parseJSON(result);
@@ -1799,6 +2214,87 @@ if ('serviceWorker' in navigator) {
 			});
 		});
 	</script>
+	
+<?php 
+/* START: stores link*/
+if(isset($_GET['stores']) && $_GET['stores'] != ''){ 
+	$stores = $_GET['stores'];
+	$ss_style = $_GET['many']
+?>
+	<?php if($ss_style == 'many'){?>
+		<script>
+		var session_lang = "<?php echo $_SESSION['langfile'];?>";
+		var more_cat = 'More categories';
+		var hide_cat = 'Hide categories';
+			
+		if(session_lang == "chinese" ){
+			var more_cat = '更多种类';
+			var hide_cat = '隐藏类型';
+		}
+
+		var txt = $(".more_category_box").is(':visible') ? more_cat : hide_cat;
+		$(".more_cat_text").text(txt);
+		$(".more_category_box").slideToggle();
+		</script>
+	<?php }?>
+<script>
+	$('html, body').animate({
+		scrollTop: $(".scroll_top_ajax").offset().top
+	}, 2000);
+				
+	$(".ajax_shop_response").html('<img src="images/loading-icon.gif" class="loading-icon" style="display:none"/>');
+	$(".loading-icon").show();
+	var category = '<?php echo $stores;?>';
+	var cartData = {};
+	cartData['category'] = category;
+	cartData['type'] = category;
+	jQuery.post('/shopcategoryresponse.php', cartData, function (result) {
+		$(".loading-icon").hide();
+		$(".ajax_shop_response").html(result);
+		$('.carousel_4').owlCarousel({
+			items: 4,
+			loop: false,
+			margin: 20,
+			dots:false,
+            lazyLoad:true,
+			navText: ["<i class='arrow_carrot-left'></i>","<i class='arrow_carrot-right'></i>"],
+			nav:true,
+			responsive: {
+			0: {
+				items: 1,
+				nav: false,
+				dots:true
+			},
+			560: {
+				items: 2,
+				nav: false,
+				dots:true
+			},
+			768: {
+				items: 2,
+				nav: false,
+				dots:true
+			},
+			991: {
+				items: 3,
+				nav: true,
+				dots:false
+			},
+			1230: {
+				items: 4,
+				nav: true,
+				dots:false
+			}
+		}
+		});
+
+	});
+
+	
+	
+</script>
+<?php }
+/* END: stores link*/?>	
 <script>
 			$(document).ready(function(){
 				$(".more_category").on("click", function () {
@@ -1821,7 +2317,7 @@ if ('serviceWorker' in navigator) {
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4BfDrt-mCQCC1pzrGUAjW_2PRrGNKh_U&libraries=places" async defer></script> 
 <script src="https://scripts.sirv.com/sirv.js" defer></script> 
 		 <script type="text/javascript" src="extra/js/jquery.lazy.min_74facba505554b93155d59a4d2d7e78b.js" defer></script>
- <a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
+ <a href="https://chat.whatsapp.com/FdbA1lt6YQVBNDeXuY7uWd" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
 
 </body>
 </html>
@@ -1839,9 +2335,5 @@ if ('serviceWorker' in navigator) {
   fbq('init', '229277018358702');
   fbq('track', 'PageView');
 </script>
-<noscript>
-  <img height="1" width="1" style="display:none" 
-       src="https://www.facebook.com/tr?id={your-pixel-id-goes-here}&ev=PageView&noscript=1"/>
-</noscript>
 <!-- End Facebook Pixel Code -->
 </script>

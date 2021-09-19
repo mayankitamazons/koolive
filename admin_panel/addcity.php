@@ -16,8 +16,8 @@ if(isset($_POST['addcity'])){
     $post_date = strtotime(Date("Y-m-d"));
     $expire_date = strtotime($exDate);
     
-     $q="INSERT INTO `city`(`CityName`, `CountryName` , `status`) 
-	VALUES ('$city_name','$country_name' , 1)";
+      $q="INSERT INTO `city`(`CityName`, `StateName` , `status`) 
+	VALUES ('$city_name','$state_name' , 1)";
     $query = mysqli_query($conn,$q);
     
     if($query){
@@ -59,13 +59,13 @@ if(isset($_POST['addcity'])){
             <h3 class="mb-3">Add City</h3>
             <form action="addcity.php" method="POST">
                 <div class="form-group">
-                    <label for="title">City Name<span style="color:red;">*</span></label>
-                    <input type="text" name="city_name" class="form-control" required  placeholder="City Name">
+                    <label for="title">State Name<span style="color:red;">*</span></label>
+                    <input type="text" required name="state_name" class="form-control"  placeholder="State Name">
                 </div>
                 
                 <div class="form-group">
-                    <label for="title">Country Name<span style="color:red;">*</span></label>
-                    <input type="text" required name="country_name" class="form-control"  placeholder="Country Name">
+                    <label for="title">City Name<span style="color:red;">*</span></label>
+                    <input type="text" name="city_name" class="form-control" required  placeholder="City Name">
                 </div>
 		
                 <input type="submit" name="addcity" class="btn btn-lg btn-outline-primary" id="submitForm" value="Add">

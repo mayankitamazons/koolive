@@ -293,6 +293,7 @@ if(isset($order_data))
 		 $section_type =$order_data['section_type'];
 		$p_code = implode(',', $order_data['p_code']);
 		$pro_id = implode(',', $order_data['p_id']);
+		$no_foods_options = implode(',', $order_data['no_food_hidden_options']);
 		$qty_list = implode(',', $order_data['qty']);
 		$prices = $order_data['p_price'];
 		$p_extra = explode('|', $order_data['price_extra']);
@@ -697,14 +698,38 @@ if(isset($order_data))
 				
 								$territory_price = $territory_hidden_id."|".$postcode_delivery_charge_hidden_price;
 
-			 	     
-			 	     $sqlFinalIns = "INSERT INTO order_list SET free_delivery_prompt='$free_delivery_status',territory_price='$territory_price', speed_delivery_amount = '$speed_delivery_amount',r_code='$r_code',ipay_p_id='$ipay_p_id',ipay_payment_status	='$ipay_payment_status',pay_transid = '$pay_transid',ipay_message='$ipay_message',order_refer_id='$order_refer_id',total_refferal_amount='$total_refferal_amount',order_time_shop_on='$order_time_shop_on',order_lat='$latitude',order_lng='$longitude',status='$status',special_delivery_amount='$special_delivery_amount',price_hike='$price_hike',pickup_type='$show_pick_up',vendor_comission=$vendor_total,plastic_box='$plastic_box',deliver_tax_amount='$deliver_tax_amount',rebate_applicable='$rebate_applicable',membership_discount_input='$membership_discount_input',membership_applicable='$membership_applicable',order_extra_charge='$order_extra_charge',remark_extra='$remark_extra',rebate_amount='$rebate_amount',prepaid='$prepaid',membership_discount='".$discount."',coupon_id='$coupon_id',coupon_discount='".$coupon_discount."',coupon_code='".$coupon_code."',membership_plan_id='$membership_plan_id',total_cart_amount='$total_cart_amount',total_rebate_amount='$total_rebate_amount',wallet_paid_amount='$wallet_paid_amount',online_pay='$online_pay',payment_alert='$payment_alert',user_name='$user_name',user_mobile='$user_mobile',wallet='fpx',varient_type='$v_str',product_id='$pro_id',  user_id='$user_id', merchant_id='$m_id', quantity='$qty_list', amount='$p_price',product_code='$p_code', remark='$option', location='".$location."', table_type='".$table_type."',section_type='$section_type',created_on='$date', invoice_no='$invoice_no',newuser='$newuser',show_alert='$show_alert',section_saved='$section_saved',agent_code='$agent_code'";
+						$location = str_replace("'","",$location);
+					
+			 	     $sqlFinalIns = "INSERT INTO order_list SET no_foods_options='$no_foods_options', offer2_applied ='$offer_delivery_discount_hidden',donation_amount='".$donation_amount_value."',free_delivery_prompt='$free_delivery_status',territory_price='$territory_price', speed_delivery_amount = '$speed_delivery_amount',r_code='$r_code',ipay_p_id='$ipay_p_id',ipay_payment_status	='$ipay_payment_status',pay_transid = '$pay_transid',ipay_message='$ipay_message',order_refer_id='$order_refer_id',total_refferal_amount='$total_refferal_amount',order_time_shop_on='$order_time_shop_on',order_lat='$latitude',order_lng='$longitude',status='$status',special_delivery_amount='$special_delivery_amount',price_hike='$price_hike',pickup_type='$show_pick_up',vendor_comission=$vendor_total,plastic_box='$plastic_box',deliver_tax_amount='$deliver_tax_amount',rebate_applicable='$rebate_applicable',membership_discount_input='$membership_discount_input',membership_applicable='$membership_applicable',order_extra_charge='$order_extra_charge',remark_extra='$remark_extra',rebate_amount='$rebate_amount',prepaid='$prepaid',membership_discount='".$discount."',coupon_id='$coupon_id',coupon_discount='".$coupon_discount."',coupon_code='".$coupon_code."',membership_plan_id='$membership_plan_id',total_cart_amount='$total_cart_amount',total_rebate_amount='$total_rebate_amount',wallet_paid_amount='$wallet_paid_amount',online_pay='$online_pay',payment_alert='$payment_alert',user_name='$user_name',user_mobile='$user_mobile',wallet='fpx',wallet_pending_mode='$actual_payment_mode',varient_type='$v_str',product_id='$pro_id',  user_id='$user_id', merchant_id='$m_id', quantity='$qty_list', amount='$p_price',product_code='$p_code', remark='$option', location='".$location."', table_type='".$table_type."',section_type='$section_type',created_on='$date', invoice_no='$invoice_no',newuser='$newuser',show_alert='$show_alert',section_saved='$section_saved',agent_code='$agent_code'";
 
 				//echo $sqlFinalIns;exit;
 				$test_method = mysqli_query($conn, $sqlFinalIns);
 				$order_id = mysqli_insert_id($conn); 
 				#echo 'teste'.$order_id.$test_method ;				
 				#die;  
+				
+				/* Donation Table entry*/
+				if($donation_amount_value == '5.00'){
+					$main_donation = mysqli_query($conn,"select * from tbl_donation where dn_date ='".date('Y-m-d')."'");
+					$fetch_donation =  mysqli_fetch_assoc($main_donation);
+					$num_donation = mysqli_num_rows ($main_donation);
+					if($num_donation > 0){
+						$userids_comm = $fetch_donation['dn_userid'].",".$user_id;
+						$ordersids_comm = $fetch_donation['dn_orderid'].",".$order_id;
+						$donation_total = $fetch_donation['dn_total'] + 5;
+						
+						$do_query = mysqli_query($conn,"update tbl_donation SET `dn_userid` = '".$userids_comm."',`dn_orderid` = '".$ordersids_comm."' , `dn_total` = '".$donation_total."' , `dn_updateddate` = '".date('Y-m-d H:i:s')."' where dn_id = '".$fetch_donation['dn_id']."'  ");
+					}else{
+						$userids_comm = $user_id;
+						$ordersids_comm = $order_id;
+						$donation_total = 5;
+						$do_query = mysqli_query($conn,"INSERT INTO `tbl_donation` ( `dn_date`, `dn_userid`, `dn_orderid`, `dn_total`, `dn_createddate`, `dn_status`) VALUES ( '".date('Y-m-d')."', '".$userids_comm."', '".$ordersids_comm."', '".$donation_total."',  '".date('Y-m-d H:i:s')."', '1');");
+					}
+				}
+				/* End donation Table */
+				
+				
+				
 				// if order saved then go ahead 
 				if($test_method)
 				{

@@ -1848,8 +1848,9 @@ header.sticky a.open_close, .header_in a.open_close {
 @media (max-width: 991px) {
   #logo {
     float: none;
-    width: 100%;
+    width: 76%;
     text-align: center;
+	
   }
   #logo img {
     width: auto;

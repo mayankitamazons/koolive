@@ -12,6 +12,7 @@ if(isset($_POST['login']))
 	if($error == "")
 	{
 		$id = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id FROM s_admin WHERE username='$email' AND password1='$password'"))['id'];
+		
 		if($id)
 		{
 			$_SESSION['s_admin'] = $id;

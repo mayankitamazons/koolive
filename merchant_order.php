@@ -164,6 +164,7 @@ function ceiling($number, $significance = 1)
 																
 																<p class="moretext" id="moretext_<?php echo $key;?>" style="display:block;margin-bottom:0px!important;">
 																	<span><strong>Unit Price : </strong> <?php echo "RM ".$amount_val[$j];?><br/>
+																	<span><strong>Category:</strong> <?php echo $product['category'];?><br/>
 																	<span><strong>Qty : </strong> <?php echo $quantity_ids[$j];?></span>
 																	<?php if($remark_ids[$j] != ''){?>
 																	<br/>

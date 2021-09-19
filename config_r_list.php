@@ -39,6 +39,13 @@ $LocaSt = $_SESSION['locationsort'];
 if($LocaSt){
 $LOCSQL = "and users.city='$LocaSt'" ;
 }
+
+$LOCSTATESQL = '';
+$LocaState = $_SESSION['statesort'];
+if($LocaState){
+	$LOCSTATESQL = " and users.m_state='$LocaState'" ;
+}
+
 	
 if(isset($sort_by) && $sort_by=="sort_distance" && $type=="all"){
 	$sql = "SELECT   users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open,
@@ -107,9 +114,9 @@ $sql = "SELECT   users.name, (SELECT count(*) FROM `timings` WHERE day = '".date
 		$lang_shop = "";
 	}
 	
-	$sql = "(SELECT users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop." and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time $LOCSQL group by users.id order by users.name asc)
+	$sql = "(SELECT users.order_min_charge,users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.free_delivery_check,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop." and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time $LOCSQL $LOCSTATESQL  group by users.id order by users.name asc)
 UNION ALL
-(SELECT users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop." and day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN start_time and end_time $LOCSQL group by users.id order by users.name asc
+(SELECT users.order_min_charge,users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.free_delivery_check,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop." and day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN start_time and end_time $LOCSQL $LOCSTATESQL  group by users.id order by users.name asc
 )";  
 			
 	
@@ -119,7 +126,7 @@ UNION ALL
 			left JOIN service on users.service_id = service.id 
 			LEFT JOIN about on users.id=about.userid 
 			LEFT JOIN timings on users.id=timings.merchant_id   
-			WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' $LOCSQL
+			WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' $LOCSQL $LOCSTATESQL 
 			group by users.id 
 			order by users.name asc";    
 }
@@ -289,14 +296,55 @@ if($count > 0){
 									}  
 								}
 	                        ?>  
+							
+							<?php if($rd['free_delivery_check'] ==1 || $rd['order_min_charge'] > 0){?>
+								<style>
+									figure {
+										position: relative;
+									}
+									.tooo {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    right: auto;
+    transform: none;
+    background-color: #e06b80;
+    margin: 0 auto;
+    height: 34px;
+    width: 183px;
+}
+									.tooo p{
+									  color : white;
+									  font-weight:bold;
+									  font-size : 16px;
+									  padding : 5px
+									}
+									</style>
+								<?php }?>
 	                        <li class="showLoader6">
 								<a href="view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $rd['mobile_number'];?>">
 									<figure class="<?php //if($working=="n"){echo "shop_close";} ?>">
-										<?php 
+										<?php if($rd['free_delivery_check'] ==1){?>
+										<div class="tooo" style="width:191px;">
+										  <p>Free Delivery > RM 40</p>
+										</div>
+										<?php }?>
+										<?php if($rd['order_min_charge'] > 0){?>
+											
+										<div class="tooo" <?php if($rd['free_delivery_check'] == 1){?>style="width:191px;background:red;top:34px;"<?php }else{?>style="width:191px;background:red"<?php }?>>
+										  <p>Minimum Order RM <?php echo $rd['order_min_charge'];?></p>
+										</div>
+										<?php }?>
+										<?php //echo $rd['image'];
 											if($rd['image']==""){ 
+												if($rd['banner_image']!= ''){
 												?>   
+												<img  src="<?php echo $image_cdn; ?>about_images/<?php echo $rd['banner_image']?>?w=200" alt="" class="lazy lazy2">
+												<?php }else{?>
 													<img src="images/logo_new.jpg" data-src="images/logo_new.jpg" alt="" class="lazy">
 												<?php
+												}
 											} 
 											else{  
 												?>

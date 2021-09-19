@@ -11,9 +11,30 @@ $query2 = "SELECT * FROM `city`";
 
 if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 	$id = $_GET['id'];
-	$query = mysqli_query($conn,"UPDATE `city` SET `status`=0 WHERE CityID='$id'");
+	//$query = mysqli_query($conn,"UPDATE `city` SET `status`=0 WHERE CityID='$id'");
+	$query = mysqli_query($conn,"DELETE FROM `city` WHERE CityID='$id'");
+	
 	if($query){echo true;}else{die();}
 }
+
+
+if(isset($_GET['data'])&&$_GET['data']=='offer_one'){
+	$id = $_GET['id'];
+	$offer_one = $_GET['offer_one'];
+	$query1 = mysqli_query($conn,"UPDATE `city` SET `offer_one`= $offer_one WHERE CityID='$id'");
+	
+	if($query1){echo true;}else{die();}
+}
+
+if(isset($_GET['data'])&&$_GET['data']=='offer_two'){
+	$id = $_GET['id'];
+	$offer_two = $_GET['offer_two'];
+	$query2 = mysqli_query($conn,"UPDATE `city` SET `offer_two`= $offer_two WHERE CityID='$id'");
+	
+	if($query2){echo true;}else{die();}
+}
+
+
 
 if(!isset($_SESSION['admin']))
 {
@@ -110,10 +131,12 @@ if(!isset($_SESSION['admin']))
 				
 					<table class="table table-striped kType_table" id="kType_table">
 					    <thead>
-					        <tr>
+					       <tr>
                                 <th>SR</th>
+								<th>State Name</th>
                                 <th>City Name</th>
-                                <th>Country Name</th>
+                                <th>15-Minute Offer</th>
+                                <th>48-Hour Offer</th>
                                 <th>status</th>
 							    <th>Action</th>
 						  </tr>
@@ -127,10 +150,25 @@ if(!isset($_SESSION['admin']))
 							 ?>
                         	  <tr>
                                 <td><?php echo $i;?></td>
-                                <td><?php echo isset($row['CityName'])?$row['CityName']:'';?></td>
+                                <td><?php echo isset($row['StateName'])?$row['StateName']:'';?></td>
 
-                                <td><?php echo isset($row['CountryName'])?$row['CountryName']:'';?></td>
+                                <td><?php echo isset($row['CityName'])?$row['CityName']:'';?></td>
+								<td>
+									<select name="offer_one" style="width:100px" class="form-control offer_one" jId="<?php echo $row['CityID']?>">
+										<option value="0">Select</option>
+										<option <?php if($row['offer_one'] == 1){ echo 'selected';}?> value="1">YES</option>
+										<option <?php if($row['offer_one'] == 2){ echo 'selected';}?> value="2">NO</option>
+									</select>
+								</td>
+								<td>
+									<select name="offer_two" style="width:100px"  class="form-control offer_two" jId="<?php echo $row['CityID']?>">
+										<option value="0">Select</option>
+										<option <?php if($row['offer_two'] == 1){ echo 'selected';}?> value="1">YES</option>
+										<option <?php if($row['offer_two'] == 2){ echo 'selected';}?> value="2">NO</option>
+									</select>
+								</td>
 								<td><span class="btn btn-primary"><?php if($row['status']){echo "Active";} else { echo "Inactive";} ?></span></td>
+								
                         		 <td>
                                      <a href="javascript:void(0)" class="deleteRecord" jId="<?php echo $row['CityID']?>">Delete</a>
                                  </td>
@@ -241,6 +279,34 @@ if(!isset($_SESSION['admin']))
 	}
   });
 	
+	
+	$(".offer_one").click(function(){
+
+		var id = $(this).attr('jId');
+		var offer_one = $(this).val();
+		$.ajax({
+			url:'city.php',
+			method:'GET',
+			data:{data:'offer_one',offer_one:offer_one,id:id},
+			success:function(res){}
+		});	
+	});
+	
+	$(".offer_two").click(function(){
+
+		var id = $(this).attr('jId');
+		var offer_two = $(this).val();
+		$.ajax({
+			url:'city.php',
+			method:'GET',
+			data:{data:'offer_two',offer_two:offer_two,id:id},
+			success:function(res){}
+		});	
+	});
+	
+	
+  
+  
 	
 				
 				

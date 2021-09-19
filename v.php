@@ -1,13 +1,14 @@
 <?php 
 include("config.php");
-if(isset($_POST['login']))
+$_SESSION['pwd_show'] = 0;
+if(isset($_POST['mobile_number']))
 {
 	// print_R($_POST);
 	// die;
 	
 	$back_url_link = $_POST['back_url_link']; // last visited link set in hidden field
 	$redirect_last_url = '';
-	if($_POST['back_url_link']!= ''){
+	if($_POST['back_url_link']!= '') {
 		$redirect_last_url = "?redirect=".urlencode($_POST['back_url_link']); //add redirect param;	
 	}	
 	
@@ -19,12 +20,21 @@ if(isset($_POST['login']))
 	// {
 		// $mobile_number="60".$mobile_number;
 	// }     
-	
+	extract($_POST);
+	$login_via = addslashes($_POST['login_via']);
+	$otp = addslashes($_POST['str_otp']);
 	$password = addslashes($_POST['password']);
 	$countrycode = addslashes($_POST['countrycode']);
 	$countrycode="60";
 	$user_role = addslashes($_POST['user_role']);
-	$cm =	$countrycode.''.$mobile_number;
+	$mobile_number_first = substr(trim($mobile_number), 0, 1);
+	if($mobile_number_first == 0){
+		$cm =	'6'.$mobile_number;
+	}else{
+		$cm =	$countrycode.''.$mobile_number;
+	}
+	
+	
     // print_R($_POST);
 	// die;
  	function updateStatus($session_id,$setup_session,$id){
@@ -65,14 +75,29 @@ if(isset($_POST['login']))
 		header("location:login.php".$redirect_last_url); 
 		die;
 	}   
-	$user_row2 = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE mobile_number='$cm'AND password='$password'")); 
-	if($user_row2 == 0)
-		{
-				$error .= "You have entered wrong password, please try again.<br>";
-				$_SESSION['e']=$error;
-		header("location:login.php".$redirect_last_url); 
-		die;
-		}  
+	if($login_via!="otp")
+	{  
+		$user_row2 = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE mobile_number='$cm' AND password='$password'")); 
+	}
+	else
+	{
+		$user_row2 = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE mobile_number='$cm' AND login_token='$otp'")); 
+		
+	}
+		if($user_row2 == 0)
+			{
+					if($login_via=="otp") {
+						$error .= "You have entered wrong code, please try again.<br>";
+					}
+					else {
+						$_SESSION['pwd_show'] = 1;
+						$error .= "You have entered wrong password, please try again.<br>";
+					}
+					$_SESSION['e']=$error;
+			header("location:login.php".$redirect_last_url); 
+			die;
+			}  
+	
 
 	//~ if(!($user_role === $user_row2['user_roles'])){
 		
@@ -106,21 +131,40 @@ if(isset($_POST['login']))
 	//~ {
 		//~ $error .= "Account does not exists in our Database.<br>";
 	//~ } 
-	if(strlen($password) >= 25 || strlen($password) <= 5)
+	if($login_via!="otp")
 	{
-		$error .= "Password must be between 6 and 25.<br>";
-		$_SESSION['e']=$error;
-		header("location:login.php".$redirect_last_url); 
+		if(strlen($password) >= 25 || strlen($password) <= 5)
+		{
+			$_SESSION['pwd_show'] = 1;
+			$error .= "Password must be between 6 and 25.<br>";
+			$_SESSION['e']=$error;
+			header("location:login.php".$redirect_last_url); 
+		}
 	}
+	
+	
 	// echo $error;
 	// die;
 	if(empty($error))
 	{
 		$time=time();	
-		// echo $q="SELECT user_roles,id,isLocked,referral_id,name, mobile_number,setup_shop FROM users WHERE mobile_number='$cm' AND password='$password' AND user_roles = '$user_role'";
-		
-		$user_row = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE onesignal_player_id,user_roles,id,isLocked,referral_id,name, mobile_number,setup_shop FROM users WHERE mobile_number='$cm' AND password='$password' AND user_roles = '$user_role'"));
-		
+		// echo $q="SELECT user_roles,id,isLocked,referral_id,name, mobile_number,setup_shop FROM users WHERE mobile_number='$cm' AND password='$password' AND user_roles = '$user_role'";  
+		print_R($_POST);
+		if($login_via=="otp")
+		{
+			$q1="SELECT SQL_NO_CACHE onesignal_player_id,user_roles,id,isLocked,referral_id,name, mobile_number,setup_shop FROM users WHERE mobile_number='$cm' AND login_token='$otp' AND user_roles = '$user_role'";
+			$user_row = mysqli_fetch_assoc(mysqli_query($conn,$q1));
+			
+			//update as a verified
+			$q_o ="UPDATE `users` SET `otp_verified` = 'y' WHERE `mobile_number` ='$cm'";
+			mysqli_query($conn,$q_o);
+			
+		}
+		else
+		{	
+			$q1="SELECT SQL_NO_CACHE onesignal_player_id,user_roles,id,isLocked,referral_id,name, mobile_number,setup_shop FROM users WHERE mobile_number='$cm' AND password='$password' AND user_roles = '$user_role'";
+			$user_row = mysqli_fetch_assoc(mysqli_query($conn,$q1));
+		}
 		 $id = $user_row['id'];
 		 $user_roles = $user_row['user_roles'];
 		
@@ -135,7 +179,7 @@ if(isset($_POST['login']))
 			if($user_row){
 				if($id)
 				{
-					
+					$_SESSION['pwd_show'] = 0;
 					if($user_row['isLocked'] == "0")
 					{
 						
@@ -151,6 +195,7 @@ if(isset($_POST['login']))
 					}
 					else
 					{
+						$_SESSION['pwd_show'] = 1;
 						$error .= "Sorry, the user account is blocked, please contact support.<br>";
 						$_SESSION['e']=$error;
 						header("location:login.php".$redirect_last_url);
@@ -158,6 +203,7 @@ if(isset($_POST['login']))
 				}
 				else
 				{
+					$_SESSION['pwd_show'] = 1;
 					$error .= "Authentication failed. You entered an incorrect username or password.<br>";
 					$_SESSION['e']=$error;
 					header("location:login.php".$redirect_last_url);
@@ -166,7 +212,7 @@ if(isset($_POST['login']))
 				if($setup_session=="y")
 				$sql = "UPDATE users SET shop_open='1' WHERE mobile_number = '$cm' AND password = '$password'";
 				else
-				$sql = "UPDATE users SET WHERE mobile_number = '$cm' AND password = '$password'";	
+				$sql = "UPDATE users SET WHERE mobile_number = '$cm' AND password = '$password'";
 				
 				$insert="insert into stafflogin set staff_id='$id',logintime='$time',session_id='$session_id'";
 				mysqli_query($conn,$sql);

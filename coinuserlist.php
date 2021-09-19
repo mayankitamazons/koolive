@@ -25,6 +25,7 @@ $filter="";
 // die;
 $loginset=$_SESSION['login'];
  $query="select scoin.*,users.user_roles,users.name,users.mobile_number from special_coin_wallet as scoin inner join users on users.id=scoin.user_id where scoin.coin_balance>0 and scoin.merchant_id='".$_SESSION['login']."'";
+ 
 $qdata=mysqli_query($conn,$query);
 ?>
 <!DOCTYPE html>
@@ -143,6 +144,12 @@ $qdata=mysqli_query($conn,$query);
 					
 							while($row = mysqli_fetch_assoc($qdata))
 							{
+								/*if($row['user_id'] == '6347'){
+								echo '<pre>';
+								print_R($row);
+								exit;
+								}*/
+								
 								$l_user_id=$row['user_id'];
 								$user_roles=$row['user_roles'];
 								if($user_roles==2)
@@ -168,7 +175,13 @@ $qdata=mysqli_query($conn,$query);
 									<td><?php echo $row['mobile_number']; ?></td>
 									<td><?php echo $user_t; ?></td>
 								
-									<td><?php echo number_format($row['coin_balance'],2); ?></td>
+									<td><?php echo number_format($row['coin_balance'],2); ?>
+									<br/>
+									<p>
+									<button class="btn btn-primary user_koo_sms" style="background:green;border-color:green;color:white" user_id="<?php echo $l_user_id;?>" mobile_number ="<?php echo $row['mobile_number'];?>" sms_update="<?php echo $row['sms_update'];?>" coin_balance = "<?php echo $row['coin_balance'];?>" coin_id = "<?php echo $row['id'];?>" >Sent SMS</button>
+									</p>
+									
+									</td>
 									<td><?php if($last){echo $last_tras;}else { echo $last;} ?></td>
 									<td><?php echo number_format($total_amount,2);?></td>
 									<td>
@@ -231,7 +244,43 @@ $qdata=mysqli_query($conn,$query);
 				]
 				});
 				
+				
+				
+			$(".user_koo_sms").click(function(){
+				
+				var mobile_number = $(this).attr('mobile_number');
+				var coin_balance = $(this).attr('coin_balance');
+				var user_id = $(this).attr('user_id');
+				var coin_id = $(this).attr('coin_id');
+				var sms_update = $(this).attr('sms_update');
+				if(sms_update == 1){
+					var cnfrmDelete = confirm("Already Sent!! Do you want to sent again??");
+				}else{
+					var cnfrmDelete = confirm("Are you sure to sent SMS??");
+				}
+				if(cnfrmDelete==true){
+					$.ajax({
+							url: 'functions.php',
+							type: 'POST',
+							dataType: 'json',
+							data: {	mobile_number: mobile_number,
+									coin_balance: coin_balance,
+									user_id:user_id,
+									coin_id:coin_id,
+									method: "coinbalancesms"},
+							success: function(res) {
+								alert('successfully Sent!!');
+							}
+						 });
+				 
+				}
+				
+				
+			});	
+				
 	});
+	
+	
 	  
 	  
 	</script>

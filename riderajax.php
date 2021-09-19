@@ -15,8 +15,9 @@ if(isset($_POST['type']) && $_POST['type'] == 'onlinefunction'){
 		mysqli_query($conn, $query_up);
 		$insert_id = mysqli_insert_id($conn);
 		
+		
 		//insert online entry in rider_onoff
-		$on_query = "INSERT INTO `rider_onoff` (`rd_id`, `rd_r_id`, `rd_online`, `rd_online_time`, `rd_offline_time`, `rd_createddate`, `rd_updateddate`) VALUES (NULL, '".$riderid."', '".$r_online."', '".$r_updateddate."', '', '".$r_updateddate."', '".$r_updateddate."')";
+		$on_query = "INSERT INTO `rider_onoff` (`rd_id`, `rd_r_id`, `rd_online`, `rd_online_date`, `rd_online_time`, `rd_offline_time`, `rd_createddate`, `rd_updateddate`) VALUES (NULL, '".$riderid."', '".$r_online."','".date('Y-m-d')."', '".$r_updateddate."', '', '".$r_updateddate."', '".$r_updateddate."')";
 		//echo $on_query;
 		mysqli_query($conn, $on_query);
 		
@@ -35,7 +36,7 @@ if(isset($_POST['type']) && $_POST['type'] == 'onlinefunction'){
 		$on_rows = mysqli_fetch_assoc(mysqli_query($conn, $on_select));
 		$on_rider_id =  $on_rows['rd_id'];
 		
-		$query_2 = "UPDATE `rider_onoff` SET `rd_online` = $r_online, `rd_offline_time` = '".$r_offline_time."' , `rd_updateddate` = '".$r_updateddate."' WHERE `rd_id` = ".$on_rider_id;
+		$query_2 = "UPDATE `rider_onoff` SET `rd_online` = $r_online,`rd_online_date` = '".date('Y-m-d')."', `rd_offline_time` = '".$r_offline_time."' , `rd_updateddate` = '".$r_updateddate."' WHERE `rd_id` = ".$on_rider_id;
 		//echo $query_2;
 		mysqli_query($conn, $query_2);
 	}
@@ -155,6 +156,62 @@ if(isset($_POST['data']) && $_POST['data']=='complete_order'){
 	$admin_commission_price = $od_q['admin_commission_price'];
 	$rider_cash_amount = $od_q['rider_cash_amount'];
 	$rc_cash_price = $admin_cash_price - $rider_cash_amount;
+	$user_id = $od_q['user_id'];
+	
+	/* START: Get 2% rebate of every order*/
+	//if($user_id == 6347){
+		$territory_price_array = explode("|",$od_q['territory_price']);
+		$terr_id = $territory_price_array[0];
+		$territory_price = $territory_price_array[1];
+		
+		$total_cart_amount = $od_q['total_cart_amount'];
+		$deliver_tax_amount = $od_q['deliver_tax_amount'];
+		$special_delivery_amount = $od_q['special_delivery_amount'];
+		$speed_delivery_amount = $od_q['speed_delivery_amount'];
+		$donation_amount_value = $od_q['donation_amount']; 
+		$discount = $od_q['membership_discount'];
+		$coupon_discount = $od_q['coupon_discount'];
+		$merchant_id  = $od_q['merchant_id'];
+		$invoice_no  = $od_q['invoice_no'];
+		
+		$orderFinalTOTAL = @number_format(($total_cart_amount + $territory_price + $deliver_tax_amount + $special_delivery_amount +$speed_delivery_amount + $donation_amount_value) - ($discount + $coupon_discount));
+
+		$two_Perc_rebeat =   @number_format(($orderFinalTOTAL * (2 / 100)),2);
+		$merchant_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE id='".$merchant_id."'"));
+
+		if($merchant_data['special_coin_name'] != ""){
+			$merchantCoinName = $merchant_data['special_coin_name']; //get the coinname
+		}else{
+			//if coin name not added, then take 1st 3 letter 
+			$merchantCoinName = substr($merchant_data['name'],0,3)." - cashback";
+			$coinname_query = mysqli_query($conn,"update users SET `special_coin_name` = '".$merchantCoinName."' where id = '".$merchant_data['id']."'  ");
+		}
+		
+		$fetchWalletdetails = mysqli_fetch_assoc(mysqli_query($conn, "select * from special_coin_wallet where user_id = '$user_id' and merchant_id ='$merchant_id'")); //fetch data
+		
+		if($fetchWalletdetails['id']){
+			//if data availble then update coin value
+			$userCoinBal = @number_format(($fetchWalletdetails['coin_balance'] + $two_Perc_rebeat),2);
+			$update_user_coin=  mysqli_query($conn,"update special_coin_wallet set coin_balance='$userCoinBal', coin_last_rebt_date = '".date('Y-m-d H:i:s')."' where user_id='$user_id' and merchant_id='$merchant_id'");
+		}else{
+			//if data not availble then insert coin value
+			$userCoinBal = @number_format($two_Perc_rebeat,2);
+			$insert_user_coin=  mysqli_query($conn,"INSERT INTO special_coin_wallet SET user_id='$user_id',merchant_id='$merchant_id',coin_balance='$userCoinBal', created = '".date('Y-m-d H:i:s')."',coin_last_rebt_date = '".date('Y-m-d H:i:s')."'");
+		}
+		$update_order_coin=  mysqli_query($conn,"update order_list set coin_rebate_value='$two_Perc_rebeat' where id='$order_id'");
+		
+		$insert_history=  mysqli_query($conn,"INSERT INTO tranfer SET sender_id='$merchant_id',invoice_no='$invoice_no',
+		amount='$two_Perc_rebeat', receiver_id = '".$user_id."',
+		coin_merchant_id = '".$merchant_id."',
+		wallet='MYR',
+		created_on='".strtotime(date('Y-m-d H:i:s'))."',
+		status='0',
+		details='2% rebate',type_method='2% rebate',remark='2% rebate',created_date='".date('Y-m-d H:i:s')."'");
+		
+	//}
+	 /*END: Get 2% rebate of every order*/
+	 
+	
 	
 	$select_q = mysqli_query($conn, "select * from riders_cash_history where rc_od_id = ".$order_id." and rc_r_id = ".$riderid."");
 	$assoc_q = mysqli_fetch_assoc($select_q);

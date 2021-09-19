@@ -23,9 +23,13 @@ if($_FILES['file']['name']!=""){
 			//echo "Sorry, there was an error uploading your file.";
 		  }
 		//if($insert){ echo 1; } else { echo 0; }
-		echo $path.$image_file;exit;
+		//echo $path.$image_file;exit;
+		$res = array('image'=>$image_file,'status'=>true);
 	}else{
-		echo 2;
+		//echo 2;
+		$res = array('image'=>$image_file,'status'=>false);
 	}
+	echo json_encode($res);
+	die;
 }
 ?>

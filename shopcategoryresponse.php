@@ -63,10 +63,12 @@ if(isset($_POST['type'])){
 include('config.php');
 $view_btn = '';
 $LOCSQL = 'and users.city="'.$_SESSION['locationsort'].'"';
+$LOCSTATESQL =  ' and users.m_state="'.$_SESSION['statesort'].'"';
+$LOCSTATESQL = '';
 if($_POST['type'] == 'popular'){
 	$main_title = 'Popular Restaurants';
 	$view_btn = '<div style="margin:5px 0 0 0;float: left;" class="col-md-2"><a href="merchant_find.php">View All</a></div>';
-	$sql="select set_working_hr.*,users.mobile_number,users.banner_image,users.name,users.address,users.login_status,users.id,about.image,users.shop_open,cs.shift_pos from classification_arrange_system as cs inner join users on users.id=cs.merchant_id LEFT JOIN about on  users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where cs.classfication_id='3' and users.user_roles = 2  and users.shop_open=1 $LOCSQL group by users.id ORDER BY cs.shift_pos  ASC  limit 20";
+	$sql="select set_working_hr.*,users.order_min_charge,users.mobile_number,users.free_delivery_check,users.banner_image,users.name,users.address,users.login_status,users.id,about.image,users.shop_open,cs.shift_pos from classification_arrange_system as cs inner join users on users.id=cs.merchant_id LEFT JOIN about on  users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where cs.classfication_id='3' and users.user_roles = 2  and users.shop_open=1 $LOCSQL $LOCSTATESQL group by users.id ORDER BY cs.shift_pos  ASC  limit 20";
 	//echo $sql;
 }else{
 	if($_POST['type'] == 'seafood'){
@@ -96,16 +98,49 @@ if($_POST['type'] == 'popular'){
 	$select_query = mysqli_fetch_assoc(mysqli_query($conn,$class_query));
 	$main_title = $select_query['classification_name'];
 
-	$sql="select users.banner_image,users.name, users.address,service.short_name,about.image,users.mobile_number,set_working_hr.*,
+	$sql="select users.banner_image,users.order_min_charge,users.free_delivery_check,users.name, users.address,service.short_name,about.image,users.mobile_number,set_working_hr.*,
 	users.order_extra_charge,users.delivery_plan,users.not_working_text,users.not_working_text_chiness 
-	from classification_arrange_system as cs   inner join users on users.id=cs.merchant_id left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where cs.classfication_id='$c_id' and users.user_roles = 2 and users.shop_open=1 $LOCSQL group by users.id ORDER BY cs.shift_pos ASC limit 20";
+	from classification_arrange_system as cs   inner join users on users.id=cs.merchant_id left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where cs.classfication_id='$c_id' and users.user_roles = 2 and users.shop_open=1 $LOCSQL $LOCSTATESQL group by users.id ORDER BY cs.shift_pos ASC limit 20";
 }
 $result = mysqli_query($conn,$sql);                  
 $totalpo=mysqli_num_rows($result);
 //echo $totalpo;
 $response ='';
+?>
+<?php if($rd['free_delivery_check'] ==1 || $rd['order_min_charge'] > 0){?>
+<style>
+	figure {
+		position: relative;
+	}
+	.tooo {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    right: auto;
+    transform: none;
+    background-color: #e06b80;
+    margin: 0 auto;
+    height: 34px;
+    width: 183px;
+}
+	.tooo p{
+	  color : white;
+	  font-weight:bold;
+	  font-size : 16px;
+	  padding : 5px
+	}
+	</style>
+<?php }
+
+?>
+<?php
 if($totalpo>0){ 
-$response .= '<h2 style="text-align: center;color: black;" class="ss_title">'.$main_title.'</h2><br/><div class="main_title" style="margin:0px;"><span><em></em></span><div class="row"><div class="col-md-8"></div>'.$view_btn.'</div></div><div class="owl-carousel owl-theme carousel_4">'; 
+$re_link = "https://www.koofamilies.com/index.php?vs=".md5(rand())."&language=".$_SESSION["langfile"]."&locationsort=".$_SESSION["locationsort"]."&statesort=".$_SESSION["statesort"]."&stores=".$_POST['category']."&many=".$_POST['morestatus']."";
+
+$response .= '<h2 style="text-align: center;color: black;" class="ss_title">'.$main_title.'</h2>
+<a target="" href="'.$re_link.'" style="display:block">View Link</a>
+<br/><div class="main_title" style="margin:0px;"><span><em></em></span><div class="row"><div class="col-md-8"></div>'.$view_btn.'</div></div><div class="owl-carousel owl-theme carousel_4">'; 
 //echo "==".mysqli_num_rows($result);
 	if(mysqli_num_rows($result)>0){
         while($rd=mysqli_fetch_assoc($result)){
@@ -117,9 +152,23 @@ $response .= '<h2 style="text-align: center;color: black;" class="ss_title">'.$m
 				 $time_detail['endttime']=$rd['end_time'];
 				 $working=checktimestatus($time_detail);
 			}   
+			//$response .="=====".$rd['order_min_charge'];
 			if($working=="y")
 			{
 				$response .= '<div class="item"><div class="strip showLoader6"><figure>';
+				if($rd['free_delivery_check'] ==1){
+					$response .='<div class="tooo" style="width:191px;"><p>Free Delivery > RM 40</p></div>';
+				}
+				if($rd['order_min_charge'] > 0){
+					if($rd['free_delivery_check'] ==1){
+						$response .='<div class="tooo" style="width:191px;top:34px;background:red"><p>Minimum Order  RM '.$rd['order_min_charge'].'</p></div>';
+					}else{
+						$response .='<div class="tooo" style="width:191px;background:red"><p>Minimum Order  RM '.$rd['order_min_charge'].'</p></div>';
+					}
+					
+				}
+				
+										
                 if($rd['banner_image']){  
 					$response .='<img ref="banner_image" data-src="'.$image_cdn.'banner_image/'.$rd['banner_image'].'?w=400" class="owl-lazy lazy2 Sirv" alt="">';
 				} else {

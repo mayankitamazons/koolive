@@ -1738,3 +1738,6 @@ body.noscroll{
 					max-width: 100%;
 				}
 			}
+@media screen and (max-width:767px){
+.navbar-nav>li>a{padding:0 0.33333em !important; } 
+}

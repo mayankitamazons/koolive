@@ -141,7 +141,7 @@ $rider_links = "https://www.koofamilies.com/riders.php?rider=".base64_encode($_G
 									</div>
 									
 								<?php
-								$rider_casharray = mysqli_query($conn,"SELECT od.invoice_no,od.created_on,mer.name,rc.* FROM `riders_cash_history` as rc Inner join order_list as od ON od.id = rc.rc_od_id Inner Join users as mer ON mer.id = od.merchant_id where rc.rc_r_id ='".$riderid."' and rc.rc_cash_price != ''");
+								$rider_casharray = mysqli_query($conn,"SELECT od.invoice_no,od.created_on,mer.name,rc.* FROM `riders_cash_history` as rc Inner join order_list as od ON od.id = rc.rc_od_id Inner Join users as mer ON mer.id = od.merchant_id where rc.rc_r_id ='".$riderid."' and rc.rc_cash_price != '' order by rc_id desc");
 								
 							?>
 								<?php /*if($ordersCount == 0){?>

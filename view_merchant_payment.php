@@ -3347,6 +3347,14 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
 						<?php
         } ?>
 
+							<div class="row" style="min-height: 41px;margin:2%;padding-bottom: 1%;">
+                                <div class="donation_button" style="max-width:60%;box-shadow: rgba(0, 0, 0, 0.16) 0px 2px 5px 0px, rgba(0, 0, 0, 0.12) 0px 2px 10px 0px; font-weight: bold; border-right: 1px solid black; padding-top: 2%; padding-bottom: 1%; background:rgb(81, 210, 183) none repeat scroll 0% 0%; color: rgb(85,85,85);">
+                                &nbsp;<input type="checkbox" id="donation_amount">&nbsp;&nbsp;<?php echo $language['donation_button_text']; ?></div>
+								
+								<a href="koo_donation.php" target="_blank" style="margin-top: 25px;color: black;padding: 10px;padding-left: 22px;text-decoration: underline;"><?php echo $language['past_donation_record']; ?></a>
+                            </div>
+					   
+					   
 
 
                         <div style="float:left;width:100%;top:0;display:none;" id="sec_table_show">
@@ -3718,6 +3726,14 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                                         </div>
                                     </div>
 									
+									<div class="" style="display:none;" id="donation_label">
+                                        <div style="grid-template-columns:.2fr 2fr;grid-column-gap: 10px;vertical-align: middle;align-content:center;font-weight: bold;font-size: 15px;margin-top:1%;">
+                                            Donation: Rm <span id="donation_label_text"></span>
+                                        </div>
+                                    </div>
+									
+									
+									
 									
                                     <div class="" style="display:none;" id="delivery_label">
                                         <div style="grid-template-columns:.2fr 2fr;grid-column-gap: 10px;vertical-align: middle;align-content:center;font-weight: bold;font-size: 15px;margin-top:1%;">
@@ -3727,6 +3743,7 @@ border: 1px solid #fa7953;background:red;color:black !important;margin-top: 3%;p
                                         <input type="hidden" name="order_extra_charge" id="order_extra_charge" value="<?php echo $merchant_detail['order_extra_charge']; ?>" />
                                         <input type="hidden" name="special_delivery_amount" id="special_delivery_amount" value="0" />
                                         <input type="hidden" name="speed_delivery_amount" id="speed_delivery_amount" value="0" />   
+										 <input type="hidden" name="donation_amount_value" id="donation_amount_value" value="0" />   
                                         <input type="hidden" name="pickup_type" id="pickup_type" value="takein" />
                                     </div>
                                 
@@ -9372,6 +9389,28 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             }
             totalcart();
         });
+		
+		  $("#donation_amount").click(function(e) { 
+		  // alert(3);  
+            var s_amount = "5.00";
+			
+            if ($('#donation_amount').prop('checked')) {
+                // alert('Checkeed');
+                $('#donation_amount_value').val(s_amount);
+                $('.donation_button').css("background-color", "red");
+                $('.donation_button').css("color", "white");
+            } else {
+                $('.donation_button').css("background-color", "#51D2B7");
+                $('.donation_button').css("color", "#555");
+                // alert('no Checkeed');
+                $('#donation_amount_value').val(0);
+            }
+            totalcart();
+        });
+		
+		
+		
+		
         $(".divert").click(function(e) {
             // alert(3);
 			var koo_cashback_accept_dive_in="<?php echo $merchant_detail['koo_cashback_accept_dive_in'] ?>";
@@ -12481,7 +12520,8 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
                 var total_amount = (parseFloat(total_amount) + parseFloat(special_delivery_amount));
 				// speed delivery
 				var speed_delivery_amount = $('#speed_delivery_amount').val();
-                var total_amount = (parseFloat(total_amount) + parseFloat(speed_delivery_amount));
+				var donation_amount_value =  $('#donation_amount_value').val();
+                var total_amount = (parseFloat(total_amount) + parseFloat(speed_delivery_amount) + parseFloat(donation_amount_value));
                 // alert(total_amount);
                 var part_payment = "<?php echo $merchant_detail['part_payment'] ?>";
 				// alert(part_payment);   
@@ -12869,6 +12909,12 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
             if (parseFloat(speed_delivery_amount) > 0) {
                 var total_amount = (parseFloat(total_amount) + parseFloat(speed_delivery_amount));
             }
+			
+			var donation_amount_value = $('#donation_amount_value').val();
+            if (parseFloat(donation_amount_value) > 0) {
+                var total_amount = (parseFloat(total_amount) + parseFloat(donation_amount_value));
+            }
+			
             // alert(deliver_tax_amount);
 
             $('#deliver_tax_amount').val(deliver_tax_amount);
@@ -13744,6 +13790,17 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
         } else {
             $("#speed_delivery_label").hide();
         }
+		
+		//donation_amount
+		var donation_amount_value = $('#donation_amount_value').val();
+		if (donation_amount_value > 0) {
+            $("#donation_label").show();
+            $('#donation_label_text').html(donation_amount_value);
+        } else {
+            $("#donation_label").hide();
+        }
+		//End amount
+		
         if (delivery_charges > 0) {
             var dine_in = "<?php echo $dine_in; ?>";
             if (dine_in == "n")
@@ -13828,7 +13885,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
         // alert(totalsale);
         var coupon_discount = 0;
 
-        var final_charge = parseFloat(totalsale) + parseFloat(delivery_charges) + parseFloat(special_delivery_amount)+ parseFloat(speed_delivery_amount);
+        var final_charge = parseFloat(totalsale) + parseFloat(delivery_charges) + parseFloat(special_delivery_amount)+ parseFloat(speed_delivery_amount)+ parseFloat(donation_amount_value);
 
         // alert(final_charge); 
 
@@ -13874,7 +13931,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
                             var coupon_discount = totalsale;
 
-                        var final_charge = parseFloat(totalsale) + parseFloat(delivery_charges) + parseFloat(special_delivery_amount)+ parseFloat(speed_delivery_amount) - parseFloat(coupon_discount);
+                        var final_charge = parseFloat(totalsale) + parseFloat(delivery_charges) + parseFloat(special_delivery_amount)+ parseFloat(speed_delivery_amount)+ parseFloat(donation_amount_value) - parseFloat(coupon_discount);
 
 
 
@@ -14001,7 +14058,7 @@ $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
                 $('.final_amount_label').show();
 
-                var final_charge = (parseFloat(totalsale) + parseFloat(delivery_charges)) + parseFloat(special_delivery_amount)+ parseFloat(speed_delivery_amount) - parseFloat(membership_discount) - parseFloat(coupon_discount);
+                var final_charge = (parseFloat(totalsale) + parseFloat(delivery_charges)) + parseFloat(special_delivery_amount)+ parseFloat(speed_delivery_amount)+ parseFloat(donation_amount_value) - parseFloat(membership_discount) - parseFloat(coupon_discount);
 				
 				//postcode price
 				var terr_amount = $("#postcode_delivery_charge_price").html();

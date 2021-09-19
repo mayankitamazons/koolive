@@ -7,6 +7,15 @@ function ceiling($number, $significance = 1)
 	return ( is_numeric($number) && is_numeric($significance) ) ? (ceil(round($number/$significance))*$significance) : false;
 }
 ?>
+<?php 
+if($_GET['search_bar'] != ''){
+	
+	include("config.php");
+	$id = $_GET['id'];
+	$product['pro_ct'] = $_GET['prduct_qty'];
+}
+
+?>
 <style type="text/css">
     .parent-category-menu {
         background-color: #fff;
@@ -161,7 +170,7 @@ function isActive($date){
 //$categories = mysqli_query($conn, "SELECT DISTINCT(products.category),created_date FROM products WHERE user_id ='".$id."' and status=0 ORDER BY created_date ASC");
 $categories_q = mysqli_query($conn, "SELECT   * FROM cat_mater WHERE UserID ='".$id."' and IsEnable=1 ");
 if($product['pro_ct'] > 0) { ?>
-    <div class="col-md-12 merchant-layout-2">
+    <div class="col-md-12 merchant-layout-2" style="padding-left:1px;padding-right:1px;">
         <div class="filter-button-group parent-category-menu">
             <?php
             $index = 1;
@@ -188,7 +197,7 @@ if($product['pro_ct'] > 0) { ?>
             ?>
         </div>
         <div class="row no-gutters">
-            <div class="col-4 col-sm-3">
+            <div class="col-4 col-sm-3 subcategory_maindiv">
                 <div class="sub_category_grid">
                     <?php
 					$s=0;
@@ -235,18 +244,24 @@ if($product['pro_ct'] > 0) { ?>
                     ?>
                 </div>
             </div>
-            <div class="col-8 col-sm-9 pl-2">
+			
+            <div class="col-8 col-sm-9 pl-2 productsDiv">
                 <div class="grid">
                     <?php
 					$products_id_global = [];
                     $subproducts_global = [];
-					
+					$search_bar_query = '';
+					if($_GET['search_bar'] != ''){
+						$searchProduct = addslashes($_GET['search_bar']);
+						$search_bar_query = " prd.product_name LIKE '%$searchProduct%' and ";
+						
+					}
 					if($pcount>0)
 					{
 					    
 						$q="select GROUP_CONCAT(sub.id SEPARATOR '^') as subproduct_id,GROUP_CONCAT(sub.name SEPARATOR '^') as subproduct,GROUP_CONCAT(sub.product_price SEPARATOR '^') as subprice, prd.*,arrange_system.shift_pos from products as prd left join sub_products as sub ON 
 							sub.product_id = prd.id inner join arrange_system on prd.id=arrange_system.entity_id and arrange_system.user_id = '".$id."' 
-							where prd.user_id='".$id."' AND prd.status=0  and arrange_system.page_type='p' group by arrange_system.entity_id order by arrange_system.shift_pos asc";
+							where $search_bar_query prd.user_id='".$id."' AND prd.status=0  and arrange_system.page_type='p' group by arrange_system.entity_id order by arrange_system.shift_pos asc";
 						
 					
 					}
@@ -254,13 +269,32 @@ if($product['pro_ct'] > 0) { ?>
 					{
 						$q="select GROUP_CONCAT(sub.id SEPARATOR '^') as subproduct_id,GROUP_CONCAT(sub.name SEPARATOR '^') as subproduct,GROUP_CONCAT(sub.product_price SEPARATOR '^') as subprice, prd.* from products as prd left join sub_products as sub ON 
 							sub.product_id = prd.id 
-							where prd.user_id='$id' AND prd.status=0 group by prd.id";
+							where $search_bar_query prd.user_id='$id'  AND prd.status=0 group by prd.id";
 						
 					}
 					
+					//echo $q;
 					$total_rows = mysqli_query($conn,$q);  
-                     $subproducts_global = array();
-            
+					
+					$rowcountProducts = mysqli_num_rows($total_rows);
+
+                    $subproducts_global = array();
+					?>
+					
+					<?php if($_GET['search_bar'] != ''){
+					#	echo $q;
+						?>
+					<div class="col-12 col-sm-12 pl-2">
+						<div class="mb-2" >
+						Showing <b><?php echo $rowcountProducts;?></b> results for "<b><?php echo $searchProduct;?></b>"
+						
+						<a href="<?php echo urldecode($_GET['redirect']);?>" style="text-decoration:underline;margin-left:10px;">Show Menu</a>
+						</div>
+						
+					</div>
+					<?php }?>
+			
+					<?php
                     while ($row=mysqli_fetch_assoc($total_rows)){
 						$total_sale = 0;
 						// $saleQuery = "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(t.product_id, ',', n.n), ',', -1) as valu,SUBSTRING_INDEX(SUBSTRING_INDEX(t.quantity, ',', n.n), ',', -1) as qty FROM order_list t CROSS JOIN ( SELECT a.N + b.N * 10 + 1 n FROM (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) a ,(SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) b ORDER BY n ) n WHERE n.n <= 1 + (LENGTH(t.product_id) - LENGTH(REPLACE(t.product_id, ',', ''))) and n.n <= 1 + (LENGTH(t.quantity) - LENGTH(REPLACE(t.quantity, ',', ''))) ORDER BY valu";
@@ -286,6 +320,7 @@ if($product['pro_ct'] > 0) { ?>
 							$sub_price_arr=explode('^',$row['subprice']);
 							$k=0;
 							 // print_R($sub_product_arr[$k]);
+							// echo "===".$row['subproduct_id']."<br/>";
 							foreach ($sub_product_ids as $key => $sub_id) {
 								if($hike_per>0)
 								{
@@ -298,7 +333,11 @@ if($product['pro_ct'] > 0) { ?>
 								} 
 								$new_sub_price=number_format($new_sub_price, 2);
 								 
-								  $item = array( "id" => $sub_id, "name" =>$sub_product_arr[$k], "product_id" => $row['id'],'product_price' => $new_sub_price);
+									if($sub_product_arr[$k] != ''){
+										 $item = array( "id" => $sub_id, "name" =>$sub_product_arr[$k], "product_id" => $row['id'],'product_price' => $new_sub_price);
+									}
+								 
+								 // echo '<prE>';print_r($item);
 									array_push($result, $item);
 								$k++;	
 							 }
@@ -358,11 +397,11 @@ if($product['pro_ct'] > 0) { ?>
                                                             </div>
                                                         </div>">
                                                     <!--img data-src="path/to/image.jpg" src="<?php echo $site_url;?>/images/product_images/<?php echo $row['image']; ?>" class="lazy" /!-->
-                                                    <img data-src="https://koofamilies.sirv.com/product/<?php echo $row['image']; ?>?w=350" class="lazy" />
+                                                    <img src="https://koofamilies.sirv.com/product/<?php echo $row['image']; ?>?w=350" data-src="https://koofamilies.sirv.com/product/<?php echo $row['image']; ?>?w=350"  class="img-fluid lazy" />
                                                 </a>
 											<?php } else { ?>
 											    <!--img  src="<?php echo $site_url; ?>/images/product_images/<?php echo $row['image']; ?>" class="img-fluid lazy" !-->
-											    <img  data-src="https://koofamilies.sirv.com/product/<?php echo $row['image']; ?>?w=350" class="img-fluid lazy" >
+											    <img  data-src="https://koofamilies.sirv.com/product/<?php echo $row['image']; ?>?w=350" src="https://koofamilies.sirv.com/product/<?php echo $row['image']; ?>?w=350" class="img-fluid lazy" >
 											<?php } ?>
                                                 </div>
                                         </div>
@@ -373,7 +412,7 @@ if($product['pro_ct'] > 0) { ?>
                                             <input type="hidden" id="id" name="m_id" value="<?php echo $id;?>">
                                             <input type="hidden" id="id" name="p_id" value="<?php echo $row['id'];?>">
                                             <?php if(isActive($row['active_time']) && $row['on_stock']){ ?>     
-                                            <button  style="display:none;" role="button" data-rid="<?php echo $row['id']; ?>"  class="pro_status introduce-remarks btn btn-large btn-primary" data-toggle="modal" data-target="#remarks_area" disabled="disabled">Remarks</button>
+                                            <a  style="display:none;" role="button" data-rid="<?php echo $row['id']; ?>"  class="pro_status introduce-remarks introduce-remarks_l2 " data-toggle="modal" data-target="#remarks_area" disabled="disabled"></a>
                                           
 										   <input type="hidden" name="single_ingredients" value=""/>
                                             <input type="hidden" name="extra" value=""/>   

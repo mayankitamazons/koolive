@@ -20,11 +20,25 @@ $error= "The merchant you are trying to find was already introduced by another m
 if($type == 1)
 $error= "The merchant's phone number is incorrect.";
 }
+
+
+if($_POST['method'] == 'c_city'){
+	$c_state = $_POST['c_state'];
+	$city_query = mysqli_query($conn, "SELECT CityName FROM `city` where StateName = '".$c_state."' GROUP by CityName order by CityName asc");
+	$res_city ='<option value="">Select City</option>';
+	while($country_result = mysqli_fetch_assoc($city_query)){
+		$res_city .='<option value="'.$country_result['CityName'].'">'.$country_result['CityName'].'</option>';
+	}
+	
+	echo json_encode($res_city);
+	exit;
+}
    ?>
 <!DOCTYPE html>
 <html lang="en" style="" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths">
    <head>
-      <?php include("includes1/v_header.php"); ?>
+      <script type="text/javascript" src="jquery-3.5.1.min.js"></script>
+<?php include("includes1/v_header.php"); ?>
 	      <meta name="theme-color" content="#317EFB"/>
 
       <style>
@@ -222,21 +236,57 @@ $error= "The merchant's phone number is incorrect.";
                  <!-- third part-->
                                    <!-- qr scanning code new--->
 								   <!-- merchant name-->
-                  <div class="well col-md-8 mer_nam st_merchnt" id="mer_name_2">
+                  <div class="well col-md-9 mer_nam st_merchnt" id="mer_name_2">
                      <h4><?php echo $language['merchant_name']; ?></h4>
-                     <form action="structure_merchant.php" method="post">
-                        <?php 
+					  <div class="col-md-12 row ">
+					    <form action="structure_merchant.php" method="post" class="col-md-12 row ">
+                    
+					  <div class="col-md-4 ">
+					   <?php
+						$country_query = mysqli_query($conn, "SELECT StateName FROM `city` GROUP by StateName order by StateName asc");
+						
+						?>
+							<select name="c_state" id="c_state" class="form-control">
+								<option value="">Select State</option>
+								<?php while($country_result = mysqli_fetch_assoc($country_query)){ ?>
+								<option value="<?php echo $country_result['StateName'];?>"><?php echo $country_result['StateName'];?></option>
+								<?php }?>
+							</select>
+					  </div>
+					  
+					  <div class="col-md-4 ">
+					  <select name="c_city" id="c_city" class="form-control">
+								<option value="">Select City</option>
+							</select>
+					  </div>
+					 
+					  <div class="col-md-4 ">
+					    <?php 
                            // $product = mysqli_fetch_assoc(mysqli_query($conn, "SELECT count(id) as pro_ct FROM products WHERE user_id ='".$id."' and status=0" ));
                            ?>
                         <div>
+						
+						
                            <input type="text"  id="txtname2" autocomplete="off" name="merchant_id" class="form-control" placeholder=" Search By company name"> 
                            <br> 
+						   <div id="suggesstion-box" style="display:none;background: white;padding: 10px;margin-top: -23px;width: 94%;overflow-y: scroll;height:300px"></div>
                            <ul class="dropdown-menu txtname" role="menu" aria-labelledby="dropdownMenu"  id="Dropdown_name2">
                            </ul>
                         </div>
                         <!---new----->
-                        <button class="btn btn-block btn-primary merchant_view2"> <?php echo $language['view']; ?> </button>
+                        
+					  </div>
+					  
+					  <button class="btn btn-block btn-primary merchant_view2"> <?php echo $language['view']; ?> </button>
                      </form>
+					  </div>
+					
+							
+							
+							
+							
+							
+                     
                   </div>
                   <!-- end merchant name -->		   
                    <div class="well col-md-12 testing_method">
@@ -650,11 +700,140 @@ border:3 px solid #fa7953;font-size:18px;background:red;color:black !important;m
     $( "#txtname" ).autocomplete({
     source: 'auto_complete.php'
     });
-	  $( "#txtname2" ).autocomplete({
+	/*  $( "#txtname2" ).autocomplete({
     source: 'auto_complete.php'
+   });*/
+   
+  
+	
+	
+    //
+	
+	
+	
+	//new code
+	  /*$( "#txtname2" ).keyup(function () {
+      
+	$.ajax({
+               type: "GET",
+               url: "auto_complete_merchant.php",
+               data: {
+                   term: $("#txtname2").val()
+               },
+               dataType: "json",
+               success: function (data) {
+				  
+				   	var res = JSON.parse(JSON.stringify(data));  
+					 console.log(res.length);
+                   if (res.length > 0) {
+                       $('#Dropdown_name2').empty();
+                       $('#txtname2').attr("data-toggle", "dropdown");
+                       $('#Dropdown_name2').dropdown('toggle');
+                   }
+                   else if (res.length == 0) {
+                       $('#txtname2').attr("data-toggle", "");
+                   }
+                   $.each(res, function (key,value) {
+   
+                       if (res.length >= 0)
+                           $('#Dropdown_name2').append('<li role="presentation" ><a class="dropdownlivalue">' + value + '</a></li>');
+                   });
+               }
+           });
+		   
+	  
+	  source: function( request, response ) {
+        $.ajax({
+          url: "auto_complete_merchant.php",
+          dataType: "jsonp",
+          data: {
+            term: request.term
+          },
+          success: function( data ) {
+			  var res = JSON.parse(JSON.stringify(data));  
+					 console.log(res.length);
+            response( res );
+          }
+        });
+      },
+      select: function( event, ui ) {
+        log( ui.item ?
+          "Selected: " + ui.item.label :
+          "Nothing selected, input was " + this.value);
+      },
+      open: function() {
+        $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+      },
+      close: function() {
+        $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+      }
     });
-    
+	
+	*/
+	//end new code
+	
+	
    });
+   
+    
+   /*$( "#txtname2" ).autocomplete({
+      source: function( request, response ) {
+        $.ajax({
+          url: "auto_complete.php",
+          dataType: "jsonp",
+          data: {
+            term: request.term
+          },
+          success: function( data ) {
+            response( data );
+          }
+        });
+      }
+    });*/
+	$(document).ready(function(){
+		$("#txtname2").keyup(function(){
+			var city_name = $("#c_city").val();
+			var c_state = $("#c_state").val();
+			var term = $(this).val();
+			$("#c_city").css('border','');
+			$("#c_country").css('border','');
+			
+			if(c_state == ''){
+				if(city_name == ''){
+					$("#c_city").css('border','1px solid red');
+				}
+				$("#c_state").css('border','1px solid red');
+				return false;
+				
+			}else{
+				$.ajax({
+				type: "GET",
+				url: "auto_complete_merchant.php",
+				data:{city_name:city_name,c_state:c_state,term:term},
+				beforeSend: function(){
+					$("#search-box").css("background","#FFF url(LoaderIcon.gif) no-repeat 165px");
+				},
+				success: function(data){
+					
+					 
+					$("#suggesstion-box").show();
+					$("#suggesstion-box").html(data);
+					$("#txtname2").css("background","#FFF");
+				}
+				});
+			}
+			
+		});
+	});
+	//To select country name
+	function selectCountry(val) {
+		$("#txtname2").val(val);
+		$("#suggesstion-box").hide();
+	}
+
+  
+  
+  
    
    //~ var TitleAttr = $("#stl_scan").attr('title');
    //~ alert(TitleAttr);
@@ -1447,3 +1626,21 @@ table.table {
    };
 </script>
 
+<script>
+$(document).ready(function(){
+	$("#c_state").change(function(){
+		var c_state = $(this).val();
+		$.ajax({
+			url :'merchant_find.php',
+			type:"post",
+			data:{method:"c_city",c_state:c_state},     
+			dataType:'json',
+			success:function(result){  
+				var res = JSON.parse(JSON.stringify(result));   
+				console.log(res);
+				$("#c_city").html(result);
+			}
+		});
+	});
+});
+</script>

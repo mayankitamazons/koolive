@@ -121,6 +121,8 @@ if($login_user_id)
 						      $sq="select special_coin_wallet.*,m.special_coin_name from special_coin_wallet  
 						      inner join users as m on m.id=special_coin_wallet.merchant_id 
 						      where user_id='$login_user_id' and special_coin_wallet.coin_balance>0 and special_coin_wallet.coin_active='y'".$condition;
+							  
+							  #echo $sq;
 
 								$totalwallet=0;
 

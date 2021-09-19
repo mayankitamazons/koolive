@@ -7,6 +7,9 @@ include_once("./config.php");
 if (isset($_GET['language'])) {
     $_SESSION["langfile"] = $_GET['language'];
 }
+if (isset($_GET['locationsort'])) {
+    $_SESSION["locationsort"] = $_GET['locationsort'];
+}
 if (empty($_SESSION["langfile"])) {
     $_SESSION["langfile"] = "english";
 }
@@ -78,15 +81,36 @@ if ($issetProduct) {
 
     // $sql = "SELECT user_id AS u_id, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id ORDER BY {$orderby} {$orderbyDirection} limit 12 offset $offset";
 
-    $sql = "SELECT user_id AS u_id,users.working_text,users.not_working_text, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id $LOCSQL GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 $LOCSQL INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id ORDER BY {$orderby} {$orderbyDirection} limit 12 offset $offset";
+    $sql = "SELECT user_id AS u_id,users.order_min_charge,users.free_delivery_check,users.working_text,users.not_working_text, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id $LOCSQL GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 $LOCSQL INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id ORDER BY {$orderby} {$orderbyDirection} limit 12 offset $offset";
+	
+	
+	$sql_open_close = "Select * from ((SELECT 'on' as on_off_status, user_id AS u_id,users.order_min_charge,users.free_delivery_check,users.working_text,users.not_working_text, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE  '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id $LOCSQL GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 $LOCSQL INNER JOIN about ON products.user_id = about.userid LEFT JOIN timings on users.id=timings.merchant_id where timings.day = '".date(l)."' AND '".date('H:i')."' BETWEEN timings.start_time and timings.end_time GROUP BY products.user_id ORDER BY {$orderby} {$orderbyDirection} )
+
+Union ALL
+
+(SELECT 'off' as on_off_status, user_id AS u_id,users.order_min_charge,users.free_delivery_check,users.working_text,users.not_working_text, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE  '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id $LOCSQL GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 $LOCSQL INNER JOIN about ON products.user_id = about.userid LEFT JOIN timings on users.id=timings.merchant_id where timings.day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN timings.start_time and timings.end_time GROUP BY products.user_id ORDER BY {$orderby} {$orderbyDirection})) as tmp limit 12 offset $offset";
+	
 
     // This SQL is used to have the number of restaurants
-    $sql2 = "SELECT user_id AS u_id, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id $LOCSQL GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 $LOCSQL INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id";
+    $sql2 = "SELECT user_id AS u_id,users.order_min_charge,users.free_delivery_check, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id $LOCSQL GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 $LOCSQL INNER JOIN about ON products.user_id = about.userid GROUP BY products.user_id";
+	
+	
+	$sql2_shopcount = "Select * from ((SELECT user_id AS u_id,users.order_min_charge,users.free_delivery_check,users.working_text,users.not_working_text, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE  '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id $LOCSQL GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 $LOCSQL INNER JOIN about ON products.user_id = about.userid LEFT JOIN timings on users.id=timings.merchant_id where timings.day = '".date(l)."' AND '".date('H:i')."' BETWEEN timings.start_time and timings.end_time GROUP BY products.user_id )
 
-    $q = mysqli_query($conn, $sql);
-    $q2 = mysqli_query($conn, $sql2);
+Union ALL
+
+(SELECT user_id AS u_id,users.order_min_charge,users.free_delivery_check,users.working_text,users.not_working_text, products.id AS product_id, product_name, product_type, products.on_stock, about.image, users.name, users.mobile_number AS merchant_number, products.image AS p_image, products.status, user_feedback.avg_rating, user_feedback.ratings, IF( users.price_hike > 0, MIN( product_price *((users.price_hike / 100) + 1) ), MIN(product_price) ) AS product_price_hike $addDistance FROM products INNER JOIN( SELECT products.id, products.user_id AS u_id FROM products INNER JOIN users ON users.id = user_id INNER JOIN arrange_system ON products.id = arrange_system.entity_id WHERE product_name LIKE  '%$searchProduct%' AND products.category_id IS NOT NULL AND products.status = 0 AND products.on_stock = 1 AND arrange_system.page_type = 'p' AND products.add_to_cart_button = 1 GROUP BY u_id ) AS products2 ON products.id = products2.id AND products.user_id = products2.u_id LEFT JOIN( SELECT AVG(q1) AS avg_rating, order_list.merchant_id, COUNT(feedback_id) AS ratings FROM `feedback` INNER JOIN order_list ON feedback.order_id = order_list.id INNER JOIN users ON order_list.merchant_id = users.id $LOCSQL GROUP BY users.id ) AS user_feedback ON user_feedback.merchant_id = products.user_id INNER JOIN users ON products.user_id = users.id AND users.show_merchant = 1 $LOCSQL INNER JOIN about ON products.user_id = about.userid LEFT JOIN timings on users.id=timings.merchant_id where timings.day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN timings.start_time and timings.end_time GROUP BY products.user_id )) as tmp ";
+
+
+	#echo $sql_open_close;
+    //$q = mysqli_query($conn, $sql);
+	$q = mysqli_query($conn, $sql_open_close);
+	
+   // $q2 = mysqli_query($conn, $sql2);
+	$q2 = mysqli_query($conn, $sql2_shopcount);
     
     $totalResults = mysqli_num_rows($q2);
+	
 
     $productResult = [
         'results' => $q->num_rows,
@@ -319,8 +343,46 @@ function ceiling($number, $significance = 1)
 						?>
                         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
                             <div class="card strip showLoader6">
-                                <figure class="showLoader6" style="border-radius: 5px 5px 0 0">
-                                    <?php
+                                
+								<?php if($product['free_delivery_check'] ==1 || $product['order_min_charge'] > 0){?>
+								<style>
+									figure {
+										position: relative;
+									}
+	.tooo {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    right: auto;
+    transform: none;
+    background-color: #e06b80;
+    margin: 0 auto;
+    height: 34px;
+    width: 183px;
+}
+									.tooo p{
+									  color : white;
+									  font-weight:bold;
+									  font-size : 16px;
+									  padding : 5px
+									}
+									</style>
+								<?php }?>
+								
+								<figure class="showLoader6" style="border-radius: 5px 5px 0 0">
+                                    <?php if($product['free_delivery_check'] ==1){?>
+										<div class="tooo" style="width:191px;">
+										  <p>Free Delivery > RM 40</p>
+										</div>
+										<?php }?>
+<?php if($product['order_min_charge'] > 0){?>
+											
+										<div class="tooo" <?php if($product['free_delivery_check'] == 1){?>style="width:191px;background:red;top:34px;"<?php }else{?>style="width:191px;background:red"<?php }?>>
+										  <p>Minimum Order RM <?php echo $product['order_min_charge'];?></p>
+										</div>
+										<?php }?>
+										<?php
                                     if ($product['p_image']) {
                                     ?>
                                         <img src="<?= "{$image_cdn}product/{$product['p_image']}" ?>" data-src="<?= "{$image_cdn}about_images/{$product['image']}" ?>" class="img-fluid lazy loaded" alt="" data-was-processed="true">
@@ -361,13 +423,15 @@ function ceiling($number, $significance = 1)
                                                     </span>
                                                 </div>
                                                 <?= $product['name'] ?>
+												
                                             </div>
                                         <?php } ?>
                                         <div class="col-md-12 p-0">
                                             <hr class="mt-2 mb-2">
                                         </div>
                                         <?php
-                                         if(!$inWorkingHours){
+                                         //if(!$inWorkingHours){
+											 if($product['on_off_status'] == 'off'){
 											 //$work_str="Working Time :".$rd['start_day']." ".$rd['start_time']." to "." ".$rd['end_day']." ".$rd['end_time'];
 											 
                                         ?>

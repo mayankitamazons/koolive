@@ -17,7 +17,14 @@ if($_GET['c_id'])
 else
 {
 	$update=0;
-}   
+}
+if (empty($_GET['ms']))
+{
+	$c_id=$_GET['c_id'];
+	$url = "addcoupon.php?c_id=" . $c_id . "&ms=" . md5(rand());
+	 header("Location:$url");
+    exit();
+}	
 
 if(isset($_POST['add_coupon_code'])){
  extract($_POST);
@@ -25,9 +32,9 @@ if(isset($_POST['add_coupon_code'])){
  // die;
  if($coupon_code)
  {
-	$q="INSERT INTO `coupon`(`user_id`, `title`, `coupon_code`, `discount`, `total_min_price`, `total_max_price`, `valid_from`, `valid_to`, `type`, `valid_user`, `remain_user`, `description`, `status`, `created`,`per_user_count`,`coupon_type`,`coupon_allot`,`specific_user_ids`)
+	 $q="INSERT INTO `coupon`(`user_id`, `title`, `coupon_code`, `discount`, `total_min_price`, `total_max_price`, `valid_from`, `valid_to`, `type`, `valid_user`, `remain_user`, `description`, `status`, `created`,`per_user_count`,`coupon_type`,`coupon_allot`,`specific_user_ids`)
 	VALUES ('$user_id', '$title', '$coupon_code', '$discount', '$total_min_price', '$total_max_price', '$valid_from', '$valid_to', '$type', '$valid_user', '$valid_user', '$description', '1', '$created','$per_user_count','uni','$coupon_allot','$specific_user_ids')";
-   
+  
 	 $insert=mysqli_query($conn,$q);
 	if($insert)
 	{
@@ -64,11 +71,31 @@ if(isset($_POST['update_coupon'])){
  if($coupon_code)
  {
 
-	$i="UPDATE `coupon` SET `title`='$title',`coupon_code`='$coupon_code',`discount`='$discount',`total_min_price`='$total_min_price',`total_max_price`='$total_max_price',`valid_from`='$valid_from',`valid_to`='$valid_to',`type`='$type',`valid_user`='$valid_user',`description`='$description',`status`='$status',`per_user_count`='$per_user_count' WHERE `id` = '".$c_id."'";    
+	  $i="UPDATE `coupon` SET `specific_user_ids`='$specific_user_ids',`title`='$title',`coupon_code`='$coupon_code',`discount`='$discount',`total_min_price`='$total_min_price',`total_max_price`='$total_max_price',`valid_from`='$valid_from',`valid_to`='$valid_to',`type`='$type',`valid_user`='$valid_user',`description`='$description',`status`='$status',`per_user_count`='$per_user_count' WHERE `id` = '".$c_id."'";    
 	
 	 $insert=mysqli_query($conn,$i);
 	if($insert)
 	{
+		
+		
+		if($coupon_allot==2)
+		{
+			if($specific_user_ids)
+			{
+				$spe_array=explode(',',$specific_user_ids);
+			
+				foreach($spe_array as $s)
+				{
+					$check_user_exit=mysqli_query($conn,"DELETE FROM `coupon_specific_allot` WHERE `coupon_specific_allot`.`coupon_id` ='$coupon_id'");
+					
+					
+						$s_ids="INSERT INTO `coupon_specific_allot` (`user_mobile_no`, `coupon_id`) VALUES ('$s','$coupon_id')";
+						$insert2=mysqli_query($conn,$s_ids);
+				
+				}
+				
+			}
+		}
 		$_SESSION['show_msg']="Record Updated Successfully";
 		header('Location:coupon.php');
 	}		   
@@ -116,6 +143,7 @@ $a_m="coupon";
 										<div class="col-md-8">
 											<label><?php echo "Coupon Title"; ?></label>
 											<input type="text" id="plan_name" required maxlength="200" name="title" value="<?php echo $title; ?>" class="form-control" placeholder="<?php echo "Coupon Title"; ?>">
+											<input type="hidden" value="<?php echo $id ?>" name="coupon_id"/>
 											<span id="matchNameResponse"></span>
 										</div>
 									    
@@ -200,13 +228,13 @@ $a_m="coupon";
 									<div class="form-group">
 										<div class="row">
 											<div class="col-md-4">
-												<label><?php echo $language['valid_from']; ?></label>
-												<input type="date"  name="valid_from" class="form-control" value="<?php echo $valid_from; ?>" placeholder="<?php echo $language['valid_from']; ?>">
+												<label><?php echo "Valid From"; ?> </label>
+												<input type="date" name="valid_from" class="form-control" id="valid_from" value="<?php echo $valid_from; ?>" placeholder="<?php echo $language['valid_from']; ?>">
 											</div>
 											<div class="col-md-4">
-												<label><?php echo $language['valid_to']; ?></label>
-												<input type="date" name="valid_to" class="form-control" value="<?php echo $valid_to; ?>" placeholder="<?php echo $language['valid_to']; ?>">
-											</div>
+												<label><?php echo "Valid To"; ?> </label>
+												<input type="date" name="valid_to" class="form-control" id="valid_to" value="<?php echo $valid_to; ?>" placeholder="<?php echo $language['valid_to']; ?>">
+											</div>  
 											<!--div class="col-md-4">
 												<label>Plan Status</label>
 												<div class="form-group">
@@ -246,7 +274,21 @@ $a_m="coupon";
 	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-
+	<script>
+    $(document).ready(function () {
+		var c_id="<?php $_GET['c_id']; ?>";
+		if(c_id)
+		{
+			var valid_from='<?php echo  date("Y-m-d", strtotime($valid_from)); ?>';
+			var valid_to='<?php echo  date("Y-m-d", strtotime($valid_to)); ?>';
+			
+			if(valid_from!="0000-00-00 00:00:00" && valid_from)
+			$('#valid_from').val(valid_from);
+			if(valid_to!="0000-00-00 00:00:00" && valid_to)
+			$('#valid_to').val(valid_to);  
+		}
+    });
+</script>
 
 
 </body>

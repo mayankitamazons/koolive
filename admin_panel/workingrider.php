@@ -24,7 +24,7 @@ if($_POST['type'] == 'view_more'){
 if($_GET['r_id']){
 	$r_id =$_GET['r_id'];
 }         
-$query="SELECT * FROM `rider_onoff` where rd_r_id =".$r_id;
+$query="SELECT * FROM `rider_onoff` where rd_r_id =".$r_id." ORDER BY `rd_id` desc ";
 $riders = mysqli_query($conn,$query);
 
 

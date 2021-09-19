@@ -1,7 +1,16 @@
 <?php
 include("config.php");
 
+if($_GET['rpage'] && $_GET['rpage'] == 'riders' ){
+	
+	$_SESSION['rr_page'] = $_GET['rpage'];
+}
 
+if($_GET['mdadmin'] && $_GET['mdadmin'] == '1' ){
+	
+	unset($_SESSION['rr_page']);
+	$_SESSION['mdadmin_page'] = $_GET['mdadmin'];
+}
 
 if(isset($_POST['login']))
 {
@@ -13,12 +22,29 @@ if(isset($_POST['login']))
 	{
 		
 		
-		$id = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id FROM s_admin WHERE username='$email' AND password2='$password'"))['id'];
+		if($_SESSION['mdadmin_page'] == '1'){
+			$id = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id FROM s_admin WHERE username='$email' AND password3='$password'"))['id'];
+		}else{
+			$id = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id FROM s_admin WHERE username='$email' AND password2='$password'"))['id'];
+		}
+		
+		
+		   
 		if($id)
 		{
 			
-			$_SESSION['madmin'] = $id;
-			header("location:user.php");   
+			
+			if($_SESSION['rr_page'] == 'riders'){
+				$_SESSION['madmin'] = $id;
+				header("location:riders.php");
+			}else if($_SESSION['mdadmin_page'] == '1'){
+				$_SESSION['mdadmin']  = $id;
+				header("location:delete_merchant.php");
+			}else{
+				$_SESSION['madmin'] = $id;
+				header("location:user.php");   
+			}
+			
 		}
 		else
 		{

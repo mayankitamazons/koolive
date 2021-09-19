@@ -14,13 +14,15 @@ $bank_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM 
  if(isset($_POST['not_working']))
 {
     $not_working_text=$_POST['not_working_text'];
-    $not_working_text_chiness=$_POST['not_working_text_chiness'];
+    $not_working_text_chiness = $_POST['not_working_text_chiness'];
+	$not_working_text_malay = $_POST['not_working_text_malay'];
   
   
-   if($not_working_text || $not_working_text_chiness)
+   if($not_working_text || $not_working_text_chiness || $not_working_text_malay)
    {
 	   // echo "updated users set not_working_text='$not_working_text' where id='$current_id'";
-	   $update=mysqli_query($conn,"update users set not_working_text='$not_working_text',not_working_text_chiness='$not_working_text_chiness' where id='$current_id'");
+	   $update=mysqli_query($conn,"update users set not_working_text='$not_working_text',not_working_text_chiness='$not_working_text_chiness',not_working_text_malay='$not_working_text_malay' where id='$current_id'");
+	   
 	  // die; 
    }
    $send_url=$site_url."/set_workinghours.php"."?vs=".md5(rand());
@@ -231,16 +233,20 @@ if(isset($_POST['submit']))
 								<div class="panel price panel-red">
 									<h2>Not  Working Time</h2>
 									<div  class="row col-md-12">
-									<div  class="col-md-5">
+									<div  class="col-md-6">
 									
 										<input type="text" class="form-control" value="<?php echo $bank_data['not_working_text']; ?>" name="not_working_text" placeholder="Updated text for Not Working Hours"/>
 									</div>
-									<div  class="col-md-5">
-									
+									<div  class="col-md-6">
 										<input type="text" class="form-control" value="<?php echo $bank_data['not_working_text_chiness']; ?>" name="not_working_text_chiness" placeholder="Updated text for Not Working Hours in Chiness"/>
 									</div>
+									
+									<div class="col-md-6" style="margin-top:10px">
+										<input type="text" class="form-control" value="<?php echo $bank_data['not_working_text_malay']; ?>" name="not_working_text_malay" placeholder="Updated text for Not Working Hours in Malay"/>
+									</div>
+									
 
-									<div class="col-md-2">
+									<div class="col-md-6" style="margin-top:10px">
 										<input type="submit" class="btn btn-block btn-primary" name="not_working" value="Update">
 									</div>
 

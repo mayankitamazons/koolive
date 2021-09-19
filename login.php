@@ -147,12 +147,24 @@ if($_POST['usermobile'] && $_POST['login_password'])
 {
 	 $usermobile=$_POST['usermobile'];
 	 $login_password=$_POST['login_password'];
-
-	$loginmatch = mysqli_query($conn, "SELECT * FROM users WHERE password='$login_password' and mobile_number ='".$usermobile."'");	
+	  $login_otp = $_POST['str_otp'];
+	 $login_via=$_POST['login_via'];
+if($login_via=="otp")
+	{ 
+		$loginmatch = mysqli_query($conn, "SELECT * FROM users WHERE login_token='".$login_otp."' and mobile_number ='".$usermobile."'");	
+	}
+	else{
+	$loginmatch = mysqli_query($conn, "SELECT * FROM users WHERE password='".$login_password."' and mobile_number ='".$usermobile."'");	    
+	}
 	$logincount=mysqli_num_rows($loginmatch);  
 	if($logincount>0)
 	{
-		
+		if($login_via=="otp")
+		{
+			//update as a verified
+			$q_o ="UPDATE `users` SET `otp_verified` = 'y' WHERE `mobile_number` ='$usermobile'";
+			mysqli_query($conn,$q_o);
+		}			
 		// check membership plan of user 
 		extract($_POST);
 		$user_row = mysqli_fetch_assoc($loginmatch); 
@@ -744,13 +756,45 @@ if(isset($_POST['forget_fund']))
 	<link rel="stylesheet" href="intlTelInput/css/intlTelInput.css">
     <!--//web-fonts-->
 
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	
+
         <!-- jquery validation plugin //-->
         
-<link rel="stylesheet" href="css/smooth.css">
-
+	<link rel="stylesheet" href="css/smooth.css">
+	
 
         
         <style type="text/css">
+		/* Modal Popup OTP's input style */
+    	#part_otpInputMP {
+		  padding-left: 15px;
+		  letter-spacing: 42px;
+		  border: 0;
+		  background-image: linear-gradient(to left, black 70%, rgba(255, 255, 255, 0) 0%);
+		  background-position: bottom;
+		  background-size: 50px 1px;
+		  background-repeat: repeat-x;
+		  background-position-x: 35px;
+		  outline: 0;
+		  width: 250px;
+		  min-width: 220px;
+		}
+
+		#divInnerMP {
+		  left: 0;
+		  position: sticky;
+		}
+
+		#divOuterMP {
+		  width: 190px; 
+		  overflow: hidden;
+		}
+	/* Modal Popup OTP's input style */
         #resend_link
 		{
 			padding: 14px;
@@ -889,7 +933,7 @@ box-shadow: inset 0px 100px 0px 0px rgba(255, 255, 255, 0.5);
                         <ul class="resp-tabs-list">
                             <li class="resp-tab-item" aria-controls="tab_item-0" role="tab"><span><?php echo $language["login"];?></span></li>
                             <li class="resp-tab-item" aria-controls="tab_item-1" role="tab"><label>/</label><span><?php echo $language["signup"];?></span></li>
-							<li class="resp-tab-item sign_up" aria-controls="tab_item-2" role="tab"><label>/</label><span><?php echo $language["forget_password"];?></span></li>
+							<li class="resp-tab-item sign_up" aria-controls="tab_item-2" role="tab"><label>/</label><span class="frgt_pwd"><?php echo $language["forget_password"];?></span></li>
                             <div class="clear"> </div>
                         </ul>
                         <div class="resp-tabs-container">
@@ -914,13 +958,51 @@ box-shadow: inset 0px 100px 0px 0px rgba(255, 255, 255, 0.5);
 									}}
 								?>
 								<br>
+								<style>
 								
-                                 <form method="post" action="v.php">
+								@media only screen and (max-width:500px) and (min-width:360px)
+								{
+									.login-form {
+										width: 95% !important;
+										margin: 2em auto;
+										margin-left: 10px !important;;
+									}
+									.resp-tabs-list{
+										padding-left:0px !important;
+									}
+									.resp-tab-item label{
+										margin-right: 3px !important;
+									}
+									.resp-tab-item{
+										margin: 1px !important;
+									}
+									.resp-tab-item{
+										font-size: 16px !important;
+									}
+									.m_but_mbl{
+										margin-bottom: 10px  !important;
+										/*margin-left: -32px  !important;*/
+										margin-left: -40px !important;
+										width: 62%;
+									}
+									.m_but_mblhr{
+										width: 42% !important;
+									}
+									.m_but_mblok{
+										width: 10% !important;
+										float:left;
+									}
+								}
+								
+								</style>
+                                 <form method="post" action="v.php" id="myForm">
                                 <div class="login-top">	
 										
                                         <input type="text" id="phone"  style="width:250px !important;" class="mobile_number intlTelInput" placeholder="<?php echo $language["telephone_number"];?>" name="mobile_number" required />
                                         <div class="select_optionss">
                                         <input type="radio" name="user_rolehwe" value="1" checked> <?php echo $language["member"];?>
+										<input type="hidden" id="login_via" name="login_via" value="normal"> 
+
 										<input type="radio" name="user_rolehwe" value="2"> <?php echo $language["merchant"];?>
 										
 							
@@ -934,17 +1016,67 @@ box-shadow: inset 0px 100px 0px 0px rgba(255, 255, 255, 0.5);
 									<input type="radio" name="user_roleget" value="5"> <?php echo "Staff";?>
 							</div>
 									</div>
-									
+									<div class="col-md-12 login_main_div" style="<?php if($_SESSION['pwd_show'] == 1){ echo 'display:block';}else{echo 'display:none';}?>">
                                         <input type="password" name="password" id='login_pass' class="password" placeholder="<?php echo $language["password"];?>" required />
                                       <div class="input-group-addon">
 										   <i  onclick="myFunction()" id="eye_slash" class="fa fa-eye-slash" aria-hidden="true"></i>
 										  <span onclick="myFunction()" id="eye_pass"> Show Password </span>
 									  </div>
+									  </div>
 									
                                  <br>
                                  <br>
-								   <div class="row" style="margin-top:14%;margin-right: 10%;">
-									  <input type="submit" value="<?php echo $language["login"];?>" name="login" class="submint_login showLoader6" style="padding:14px;margin-top: -40px;background: #51d2b7;color:black;border: #51d2b7;" />
+								   <div class="row" style="margin-left:15px !important;">
+									  <div class="col-md-6 m_but_mbl" style=""><input type="submit" value="<?php echo $language["login_password"];?>" name="login" id="sub_login"  class="submint_login showLoader6" style="font-size:12px !important;padding:12px;background: #51d2b7;color:black;border: #51d2b7;width: 153px;padding-left: 10px;padding-right: 10px;" />
+									  </div>
+									  
+									  <!-- New code-->
+									  
+									  <div class="col-md-6 m_but_mbl" style="">
+											<input type="submit" id="myBtnLogWithOTP" data-target="#myModal" data-backdrop="false" value="<?php echo $language['login_with_otp'];?>" name="login_with_otp" class="login_with_otp" style="font-size:12px !important;padding:12px;;background: #FFB87A;color:black;border: #51d2b7;" />
+											<p style="display:none;color:red" class="lg_otp_error"></p>
+										
+										<!-- Modal Popup for OTP -->
+										<div class="modal fade" id="myModal">
+										<div class="modal-dialog modal-dialog-centered">
+											<div class="modal-content">
+
+												<div class="modal-header">
+													<h3 class="text-primary">Verify OTP</h3>
+													<button class="close" type="button" data-dismiss="modal">&times;</button>
+												</div>
+
+												<div class="modal-body">
+													<div class="form-group">
+														<span style="display:none;color:#51d2b7;" id="otp_label"><?php echo $language['enter_ur_phone']; ?></span>
+													    <span style="float: right;color: #848DD7;text-decoration: underline;display:block;" class="resend_label">Resend otp</span>
+														<div id="divOuterMP">
+															<div id="divInnerMP">
+																<input id="part_otpInputMP" name="str_otp" type="text" minlength="4" maxlength="4" required />
+															</div>
+														</div>
+														<span style="float:left;color:red;display:none;margin-top:10px;" id="otpNotSent_label"></span>
+													</div>
+														
+												</div>
+
+												<div class="modal-footer">
+													<!--<div class="verfiy_otp_form" style="width: 50%;display:block;">
+														<input type="button" value="<?php echo $language["verify_otp"];?>" name="verfiy_otp_button" class="verfiy_otp_button" style="font-size:12px !important;padding:12px;float: right;background: #FFB87A;color:black;border: #51d2b7;" />
+													</div>-->
+														 <button id="" class="" style="color: black; font-size: 20px;width: 100px;background: lightgreen;padding: 2px;border-color: lightgreen;font-weight: bold;" type="button" data-dismiss="modal"><?php echo $language['skip']; ?> </button>
+					 
+												</div>
+
+											</div>
+										</div>
+									</div>
+										
+										<input type="hidden" id="login_otp"/>
+
+									   </div>
+									  
+									  <!-- End new code-->
 									</div>
                                 </div>
                                 </form>
@@ -1062,6 +1194,7 @@ Telephone number: + 60123945670
                                         <input type="text" id="forgot_mobile_number" class="mobile_number intlTelInput" style="width:250px !important;" placeholder="<?php $language["telephone_number"];?>" name="mobile_number" required />
 										<input type="hidden"  value='0' id="otp_count"/>
 										<input type="hidden" id="system_otp"/>
+										<p style="display:none;color:red" class="forgot_time_error"></p>
                                     <div class="forgot-bottom" style="margin:0px;">
                                         <div class="submit res_submit" style="margin-top:27px;">
                                                 <input type="submit" value="<?php echo $language["submit"];?>" class="forgot_reset" style="padding:14px;" />
@@ -1153,9 +1286,16 @@ Telephone number: + 60123945670
     margin-top: 12px;
 }
 </style>
-<script src="js/jquery.min.js"></script>
+<!--<script src="js/jquery.min.js"></script>-->
 <script src="intlTelInput/js/intlTelInput.js"></script>
 
+<?php
+$cDate = date('Y-m-d H:i:s');
+
+//echo $chkt_query = "SELECT od.sent_message_customer ,u.id as userid, m.city,c.offer_two, od.id, u.mobile_number,od.created_on, time_to_sec(timediff('".$cDate."', od.created_on)) / 3600 as totalhrs FROM `order_list` as od INNER JOIN users as u ON u.id = od.user_id INNER JOIN users as m on m.id = od.merchant_id INNER JOIN city as c on c.CityName = m.city where od.sent_message_customer = 0 and c.offer_two = 1  and  created_on >'2021-06-05 12:00:00' and time_to_sec(timediff('".$cDate."', od.created_on)) / 3600  >=45 and time_to_sec(timediff('".$cDate."', od.created_on)) / 3600  < 48 ORDER BY `od`.`id` DESC";
+
+
+?>
 <script src="js/jquery-ui.js"></script>
         <script type="text/javascript" src="js/jquery.validate.js"></script>
     <script src="js/easyResponsiveTabs.js" type="text/javascript"></script>
@@ -1267,7 +1407,39 @@ function myFunction3() {
     $(document).ready(function()
 	{
 		$('.page_loader').hide();
+		
 		jQuery(document).on("click", '.showLoader6', function() {
+			console.log('click');
+			if(window.location.href.includes('orderview.php')) return false;
+			if($(".login_main_div").is(":visible")){
+				console.log('visi');
+				/*$('.page_loader').removeAttr('style');
+				$("#load").removeAttr('style');;
+				$('.page_loader').show();
+				$("#load").show();
+				setTimeout(function () {
+					$('.page_loader').hide();
+					$("#load").hide();
+				}, 8000);
+			*/
+				$('form#myForm').submit();
+			} else{
+				console.log('novisi');
+				$(".login_main_div").show();
+				$(".login_with_otp").css('background','#fff');
+				$(".login_with_otp").css('border','1px solid black');
+				$(".frgt_pwd").css('color','red');
+				$("#sub_login").attr('type','submit');
+				return false;
+			}
+			//return false;
+			
+			
+			
+			
+		});
+		
+		/*jQuery(document).on("click", '.showLoader6', function() {
 			if(window.location.href.includes('orderview.php')) return false;
 			$('.page_loader').removeAttr('style');
 			$("#load").removeAttr('style');;
@@ -1278,9 +1450,196 @@ function myFunction3() {
 				$("#load").hide();
 			}, 8000);
 		});
+		*/
+		/*$("#sub_login").click(function() {
+			$('#login_via').val('normal');
+			
+			
+			
+			if($(".login_main_div").is(":visible")){
+				
+				$('form#myForm').submit();
+				$('.page_loader').removeAttr('style');
+				$("#load").removeAttr('style');;
+				$('.page_loader').show();
+				$("#load").show();
+				setTimeout(function () {
+					$('.page_loader').hide();
+					$("#load").hide();
+				}, 8000);
+				
+				return true;
+				
+			} else{
+				$("#sub_login").attr('type','submit');
+				$(".login_main_div").show();
+				return false;
+			}
+			//return false;
+			
+			
+			
+		});
+		*/
+		
+		$(".resend_label").click(function(){
+			$(".login_with_otp").click();
+			setTimeout(function() {
+				if($('#otp_label').html() == 'Otp sent on mobile number') {
+					$('#otp_label').html('Otp re-sent on mobile number');
+				}/* else {
+					$('#otp_label').html('Otp not sent!');
+				}*/
+			}, 2000);
+		});
+		$(".login_with_otp").click(function(){
+			$(".login_main_div").hide();
+			$(".login_with_otp").css('background','#FFB87A');
+			$(".login_with_otp").css('border','#51d2b7');
+			var mobile_number=$('.mobile_number').val();
+			// alert(mobile_number);
+			if(mobile_number=='')
+			{
+				var m2="<?php echo $language['key_in_phone'] ?>";
+				// alert(m2);
+				$('#enter_ur_phone_label').show();
+				 $('#enter_ur_phone_label').html(m2);  
+					document.getElementById("enter_ur_phone_label").style.color = 'red';
+					 $('html, body').animate({
+							scrollTop: $("#mobile_no_label").offset().top
+						}, 2000);
+					$(function(){
+					   $('#mobile_number').focus();
+					});
+	
+				
+			}
+			 else
+			 {
+				 $('#enter_ur_phone_label').hide();
+				 if(mobile_number[0]==0)
+					 {
+						 mobile_number=mobile_number.slice(1);
+					 }
+					var number="60"+mobile_number;
+				 if (number.length >= 9 && number.length <= 12 && (number[0] == 1 || number[0] == 6 || number[0] == 0)) {
+					 // alert('inside');
+					   $.ajax({
+								url: 'functions.php',
+								type: 'POST',
+								dataType: 'json',
+								data: {
+                                    mobile_number: number,
+                                    method: "loginotp"
+                                   
+                                },
+								success: function(res) {
+									var data = JSON.parse(JSON.stringify(res));
+									
+									console.log(data.status);
+									if (data.status)
+									{
+										console.log('1');
+										$('#otp_label').show();
+										$('#login_otp').val(data.otp);
+										$('#otp_label').html('Otp sent on mobile number');
+										$("#myModal").modal('show');
+										$('.lg_otp_error').hide();
+										//$('#login_via').val('otp');
+										//$('#login_via').val('otp');
+										/*
+										$('#otp_label').show();
+										$('#otp_label').html('Otp sent on mobile number');
+										$('#login_pass').hide();
+										$('#eye_pass').hide();
+										$('#eye_slash').hide();
+										$('.resend_label').show();
+										$('.verfiy_otp_form').show();
+										*/
+                                    }else if(data.pop_ot == 1){
+										$("#myModal").modal('show');
+										$('#login_otp').val(data.otp);
+										$('#otp_label').show();
+										$('#otp_label').html(data.message);
+										$('.resend_label').show();
+										//$('#login_via').val('otp');
+										
+									}else{
+										$('#login_via').val('');
+										$('.lg_otp_error').show();
+										$('.lg_otp_error').html(data.message);
+										$('#otp_label').html(data.message);
+										//alert('Something went wrong try again later');
+									}
+								}
+
+                            });
+				 }
+				 else
+				 {
+					$('#enter_ur_phone_label').show();
+					 $('#enter_ur_phone_label').html("Enter Valid Mobile number");  
+						document.getElementById("enter_ur_phone_label").style.color = 'red';
+						 $('html, body').animate({
+								scrollTop: $("#mobile_no_label").offset().top
+							}, 2000);
+						$(function(){
+						   $('#mobile_number').focus();
+						}); 
+				 }
+			 }
+		});
+		//$(".verfiy_otp_button").click(function() {
+		
+		$('#part_otpInputMP').on('keyup', function(){ 	
+			var user_input=$('#part_otpInputMP').val();
+			var page_otp = $("#login_otp").val();
+			var mobile_number=$('.mobile_number').val();
+
+			// var xlogPass = document.getElementById("myDIV");
+			// xlogPass.style.display = "none";
+
+			if(mobile_number[0]==0)
+			{
+				mobile_number=mobile_number.slice(1);
+			}
+			var usermobile="60"+mobile_number;
+			if(user_input=='') {
+				// $('#enter_ur_phone_label').show();
+				// 	 $('#enter_ur_phone_label').html("Enter Password");  
+				// 		document.getElementById("enter_ur_phone_label").style.color = 'red';
+				// 		 $('html, body').animate({
+				// 				scrollTop: $("#login_pass").offset().top
+				// 			}, 2000);
+				// 		$(function(){
+				// 		   $('#login_pass').focus();
+				// 		});
+				
+				$("#otpNotSent_label").show();
+				$("#otpNotSent_label").html("Please enter OTP to continue!");
+			} else {
+				 
+				 
+				 if(user_input == page_otp) {
+					 if(user_input.length % 4 == 0){
+						// console.log("11");
+						$("#otpNotSent_label").hide();
+						$('#login_via').val('otp');
+						$('form#myForm').submit();
+					 }
+					
+				 } else {
+			 		$("#otpNotSent_label").show();
+					$("#otpNotSent_label").html("OTP is wrong! Please enter correct OTP to continue.");
+				 }
+				
+			}
+		});
+		
+		
 		$(".forgot_reset").click(function(){
 			 
-              $(this).hide();
+         /*     $(this).hide();
 		    $(this).removeClass(" btn-primary").addClass("btn-default");
 
 		 setTimeout(function() {
@@ -1289,7 +1648,7 @@ function myFunction3() {
 
          $(this).removeClass("btn-default").addClass("btn-primary");
 
-			}.bind(this), 5000);
+			}.bind(this), 5000);*/
 
 		   // var usermobile=$("#mobile_number").val();
           var mobile=$("#forgot_mobile_number").val();
@@ -1343,8 +1702,9 @@ function myFunction3() {
 				  else
 
 				  {
-					  $(this).show();
-					 
+					  //$(this).show();
+					 $(".forgot_time_error").show();
+					 $(".forgot_time_error").html(data.msg);
 				  }
 
 				  
@@ -1763,9 +2123,69 @@ $("input[name='user_rolehwe']").change(function(){
 });
 
 </script>
- <a href="https://api.whatsapp.com/send?phone=60123945670" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
+ <a href="https://chat.whatsapp.com/FdbA1lt6YQVBNDeXuY7uWd" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
+
+<div class="modal fade" id="OtpModel" role="dialog" style="z-index:999999;margin-top:15%;">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content" id="modalcontent">
+
+            <div class="modal-header">
+
+
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+
+                    <span aria-hidden="true">&times;</span>
+
+                </button>
+
+            </div>
+
+
+
+
+
+            <div class="modal-body">
+
+                <!--p style="font-size:18px;">Insufficient balance to pay. Please select other wallet or <a href="https://api.whatsapp.com/send?phone=<?php echo $merchant_detail['mobile_number'] ?>" target="_blank">contact us at whatapp
+
+                        <img src="images/whatapp.png" style="max-width:32px;" /></a> to top up </p!-->
+			
+				<p style="font-size: 14px;">
+						Otp Form text
+				</p>  
+
+               
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+</div>
+
 
 </html>
+<script>
+$(document).ready(function() {
+    $("#myBtnLogWithOTP").click(function() {
+      	var t = document.getElementById("phone").value;
+      	if(t != '' && t.length == 10) {
+        	$("#myModal").modal({backdrop: 'static', keyboard: false});
+      	}
+    });
+
+    document.getElementById("part_otpInputMP").addEventListener( "invalid", function( event ) {
+        event.preventDefault();
+    }, true );
+});
+</script>
+
 
 <!-- newly added by tamil--->
 <style>

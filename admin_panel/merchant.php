@@ -339,7 +339,7 @@ exit();
 							
 							<th>Normal Image</th>
 							<th>Banner Image <small> (800*400)</small></th>
-							<th>City</th>
+							<th>State/City</th>
 							<th>Territory</th>
 
 							<th>Defalut Lanaguage</th>
@@ -379,10 +379,32 @@ exit();
 							 ?>
                         	  <tr>
                         		 <td> <?php echo $i; ?> </td>
-								 <td><?php  echo $row['id'];?></td>
+								 <td><?php  echo $row['id'];?>
+								 <br/>
+								 <p style="width:150px">
+								 <b>Free Delivery:</b> <input type="Checkbox" selected_user_id="<?php echo $row['id']; ?>" value="1" class="free_delivery_check" name="free_delivery_check" id="free_delivery_check" <?php if($row['free_delivery_check'] == 1){ echo 'checked';}?> />
+								 </p>
+								 
+								 <p style="width:150px">
+								 <b>Cash Delivery:</b> <input type="Checkbox" selected_user_id="<?php echo $row['id']; ?>" value="1" class="cash_on_delivery" name="cash_on_delivery" id="cash_on_delivery" <?php if($row['cash_on_delivery'] == 1){ echo 'checked';}?> />
+								 </p>
+								 
+								 
+								 <p style="width:150px">
+								 <b>No Product options:</b> <input type="Checkbox" selected_user_id="<?php echo $row['id']; ?>" value="1" class="no_product_options" name="no_product_options" id="no_product_options" <?php if($row['no_product_options'] == 1){ echo 'checked';}?> />
+								 </p>
+								 
+								 
+								 </td>
                         
 								<td style="min-width:200px;">
-								<textarea  style="min-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control real_name" rows="5" name="name"><?php if(isset($row['name'])){ echo $row['name']; }?></textarea></td>
+								<textarea  style="min-width: 200px;max-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control real_name" rows="5" name="name"><?php if(isset($row['name'])){ echo $row['name']; }?></textarea>
+								
+								<p>
+								<b>COIN Name:</b>
+								<textarea  style="max-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control special_coin_name" rows="1" name="special_coin_name"><?php if(isset($row['special_coin_name'])){ echo $row['special_coin_name']; }?></textarea>
+								</p>
+								</td>
 								<td style="min-width:200px;">
 								<textarea  style="min-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control merchant_remark" rows="5" name="merchant_remark"><?php if(isset($row['merchant_remark'])){ echo $row['merchant_remark']; }?></textarea></td>
 								<td><a target="_blank" href="../orderview.php?did=<?php echo $row['id'];?>"><i style="font-size: 60px;" class="fa fa-info"></i></a>
@@ -423,11 +445,31 @@ exit();
 								  
 								</form></td>
 								
-								<td>
-									<select class='city' name="city" style="" data-id="<?php echo $row['id']; ?>">
+									<td>
+									<b>State</b>
+									<select class='m_state form-control ' name="m_state" style="height: auto;width: 125px;" data-id="<?php echo $row['id']; ?>">
+									<option>Select State</option>
+									<?php
+									$sql1 = mysqli_query($conn, "SELECT StateName,CityName FROM city GROUP BY StateName order by StateName asc");
+									$selected1 = '';
+									while($data1 = mysqli_fetch_array($sql1))
+									{
+									if($row['m_state'] == $data1['StateName']){
+									$selected1= 'selected';
+									}else{
+									$selected1 = '';
+									}
+									echo'<option data-id="'.$row['id'].'" city_name="'.$data1['CityName'].'" value="'.$data1['StateName'].'" '.$selected1.'>'.$data1['StateName'].'</option>';
+									}
+									?>
+									</select>
+									
+									<br/>
+									<b>CITY</b>
+									<select class='city form-control' name="city" style="height: auto;width: 125px;" data-id="<?php echo $row['id']; ?>">
 									<option>Select city</option>
 									<?php
-									$sql = mysqli_query($conn, "SELECT CityName  FROM city WHERE 0=0 GROUP BY CityName");
+									$sql = mysqli_query($conn, "SELECT CityName  FROM city WHERE 0=0 and StateName = '".$row['m_state']."' GROUP BY CityName");
 									$selected = '';
 									while($data = mysqli_fetch_array($sql))
 									{
@@ -438,7 +480,6 @@ exit();
 									}
 									echo'<option data-id="'.$row['id'].'" value="'.$data['CityName'].'" '.$selected.'>'.$data['CityName'].'</option>';
 									}
-
 									?>
 									</select>
 								</td>
@@ -631,7 +672,7 @@ exit();
 		});
 		
 	});
-	$(".city").change(function(){
+	/*$(".city").change(function(){
 		var cityval = $(this).val();
 		//alert(cityval);
 		var id = $(this).data("id");
@@ -646,6 +687,39 @@ exit();
 		});
 		
 	});
+	*/
+	
+		$(".city").change(function(){
+		var cityval = $(this).val();
+		//alert(cityval);
+		var id = $(this).data("id");
+		//alert(id);
+		$.ajax({
+			url : 'updatecity.php',
+			type: 'POST',
+			data :{updatedid:id,cityval:cityval},
+			success:function(data){
+		     location.reload();
+			}  
+		});
+	});
+	
+	$(".m_state").change(function(){
+		var m_state = $(this).val();
+		//alert(cityval);
+		var id = $(this).data("id");
+		var city_name = $(this).attr('city_name');
+		//alert(id);
+		$.ajax({
+			url : 'updatecity.php',
+			type: 'POST',
+			data :{updatedid:id,m_state:m_state,city_name:city_name},
+			success:function(data){
+		     location.reload();
+			}  
+		});
+	});
+	
 	$(".default_lang").change(function(){
 		var langval = $(this).val();
 		//alert(cityval);
@@ -723,6 +797,34 @@ exit();
 		});
 		
 	});
+	
+	
+	 $(".special_coin_name").focusout(function(e){
+		var selected_user_id= $(this).attr('selected_user_id');
+		var special_coin_name=this.value; 
+		if(selected_user_id)
+		{  
+			$.ajax({
+				url :'../functions.php',
+				 type:"post",
+				 data:{special_coin_name:special_coin_name,method:"merchantspecialcoin",selected_user_id:selected_user_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{  
+					   // location.reload(true);
+					}
+					else
+					{alert('Failed to update');	}
+					
+				}
+			});      
+		}
+		});
+		
+		
+		
 	 $(".real_name").focusout(function(e){
 		var selected_user_id= $(this).attr('selected_user_id');
 		// var selected_user_id= $(this).attr('selected_user_id');
@@ -749,6 +851,104 @@ exit();
 				});      
 		}
 		});
+		
+		
+		$(".free_delivery_check").click(function(e){
+			var selected_user_id= $(this).attr('selected_user_id');
+			var free_delivery_check = this.value; 
+			if (this.checked) {
+				var free_delivery_check = 1;
+			}else{
+				var free_delivery_check = 0;
+			}
+			
+			if(selected_user_id)
+			{  
+			  $.ajax({
+							url :'../functions.php',
+							 type:"post",
+							 data:{free_delivery_check:free_delivery_check,method:"free_delivery_check",selected_user_id:selected_user_id},     
+							 dataType:'json',
+							 success:function(result){  
+								var data = JSON.parse(JSON.stringify(result));   
+								if(data.status==true)
+								{  
+								   // location.reload(true);
+									
+								}
+								else
+								{alert('Failed to update');	}
+								
+								}
+					});      
+			}
+		});
+		
+		
+		
+		$(".no_product_options").click(function(e){
+			var selected_user_id= $(this).attr('selected_user_id');
+			var no_product_options = this.value; 
+			if (this.checked) {
+				var no_product_options = 1;
+			}else{
+				var no_product_options = 0;
+			}
+			if( selected_user_id)
+			{  
+			  $.ajax({
+					url :'../functions.php',
+					type:"post",
+					data:{no_product_options:no_product_options,method:"no_product_options",selected_user_id:selected_user_id},     
+					dataType:'json',
+					success:function(result){  
+						var data = JSON.parse(JSON.stringify(result));   
+						if(data.status==true){}
+						else{alert('Failed to update');	}
+						}
+					});      
+			}
+		});
+		
+		
+		
+		
+		$(".cash_on_delivery").click(function(e){
+			var selected_user_id= $(this).attr('selected_user_id');
+			var cash_on_delivery = this.value; 
+			if (this.checked) {
+				var cash_on_delivery = 1;
+			}else{
+				var cash_on_delivery = 0;
+			}
+			if( selected_user_id)
+			{  
+			  $.ajax({
+							url :'../functions.php',
+							 type:"post",
+							 data:{cash_on_delivery:cash_on_delivery,method:"cash_on_delivery",selected_user_id:selected_user_id},     
+							 dataType:'json',
+							 success:function(result){  
+								var data = JSON.parse(JSON.stringify(result));   
+								if(data.status==true)
+								{  
+								   // location.reload(true);
+									
+								}
+								else
+								{alert('Failed to update');	}
+								
+								}
+					});      
+			}
+		});
+		
+		
+		
+		
+		
+		
+		
 		 $(".merchant_remark").focusout(function(e){
 		var selected_user_id= $(this).attr('selected_user_id');
 		// var selected_user_id= $(this).attr('selected_user_id');

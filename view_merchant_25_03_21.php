@@ -5090,10 +5090,14 @@ function updateMarkerAddress(str) {
                 extras.push(val_extra);
 
             }
+			console.log("22#");
+			cosnole.log(selected);
+			$("input[name='options']").val(selected);
 
         });
-
-        // console.log(extras);
+		cosnole.log(selected);
+		console.log("##");
+         console.log(extras);
 
         if ($("#remark_input").val() != '') {
 

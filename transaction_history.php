@@ -48,6 +48,8 @@ $total_page_num = ceil($total_rows / $limit);
 $start = ($page - 1) * $limit;
 $end = $page * $limit;
      $query="(SELECT tranfer.remark,tranfer.details,tranfer.type_method,tranfer.invoice_no,tranfer.id,users.name,users.mobile_number,tranfer.amount,tranfer.wallet,tranfer.created_on,'Send' AS tx_type FROM tranfer,users WHERE tranfer.sender_id=".$_SESSION['login']." AND users.id=tranfer.receiver_id  $filter) UNION (SELECT tranfer.remark,tranfer.details,tranfer.type_method,tranfer.invoice_no,tranfer.id,users.name,users.mobile_number,tranfer.amount,tranfer.wallet,tranfer.created_on,'Receives' AS tx_type FROM tranfer,users WHERE tranfer.receiver_id=".$_SESSION['login']." AND users.id=tranfer.sender_id  $filter) ORDER BY id DESC LIMIT $start,$end";
+	 
+	 #echo $query;
 
 
 $userq = mysqli_query($conn,"select sender_id,receiver_id from tranfer where sender_id='$m_login_id' or receiver_id='$m_login_id'");

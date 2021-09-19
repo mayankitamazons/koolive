@@ -178,7 +178,7 @@ $language["chat"] = "Chat";
 $language["print"] = "Print";
 $language["order_direct"] = "Product name/code search";
 $language["my_community"] = "My Community";
-$language['confirm_order'] = "Confirm (Cash)";
+$language['confirm_order'] = "CASH on Delivery";
 $language['confirm_payment'] = "Cash/e-wallet/card";
 $language['favorite_list'] = "Favorite List";
 $language['click_here_to_search_nearby_shops'] = "Click here to search nearby shops";
@@ -198,6 +198,7 @@ $language["add_more_order"] ='Back to top';
 //$language["enter_ur_phone"] ='Please key in your membership phone number';
 $language["confirm_wallet"] ='Confirm (E-Barter)';
 $language["confirm_wallet"] ='Pay by Cashback (Member only)';
+$language['confirm_wallet_login_only_member'] = "(Member only)";
 $language["confirm_wallet_with_login"] ='Confirm';
 $language["unit_price"] ='Unit Price';
 $language["extras"] ='Extras';
@@ -314,7 +315,7 @@ $language['search_merchant'] ="Search Merchant";
 $language['total_cart_amount'] ="Total Cart Amount";      
 $language['service_fee'] ="Service fee";  
 $language['payable_amount'] ="Payable Amount";  
-$language['internet_banking'] ="Internet banking(Free)";  
+$language['internet_banking'] = "BANK IN on Delivery"; //"Internet banking(Free)";  
 $language['w1'] ="Our delivery hours is from ";  
 $language['w2'] =" to ";  
 $language['w3'] =" You can still place order during non-working hours";  
@@ -326,7 +327,8 @@ $language['yes'] ="Yes";
 $language['no'] ="No";  
 $language['delivery'] ="Delivery";  
 $language['dinein_pickup'] ="Dine in/Pick up";  
-$language['service_time_person'] ="Serving time";  
+$language['remark_label'] = 'Order Remark';
+$language['service_time_person'] ="Serving Time";  
 $language['delivery_service_tax'] ="Delivery Service Tax";  
 $language['search'] ="Search";  
 $language['popular_restaurants'] ="Popular Restaurants";  
@@ -339,7 +341,7 @@ $language['delivery_hotline'] ="Delivery/payment hotline";
 $language['merchant_hotline'] ="Merchant hotline";  
 $language['pickup_type'] ="Pickup Type";  
 $language['last_order_merchant'] ="Last shop";  
-$language['skip'] ="Skip";
+$language['skip'] ="SKIP";
 $language['full_address'] ="Full Address";
 $language['chinese_delivery'] ="Chinese man delivery";
 $language['chinese_delivery_text'] ="If you spend more than RM100, we will automactically allocate chinese man delivery for you free of charge.";
@@ -411,9 +413,54 @@ $language['label_enquiry'] = 'Enquiry';
 
 $language['customer_urged'] = '*Customer is urged not to pay more than the payable amount before consulting with our admin. If you have any doubt, please do not pay to rider. You can still pay through internet banking after you finish eating your meal.';
 $language['outstation_charge'] = 'Outstation charges:';
-$language['full_delivery_charges'] = 'For Outstation customer only';
-$language['full_postcode_outstation'] = 'Outstation charges ( >15km, RM 1/km)';
+$language['full_delivery_charges'] = 'RM2.99 for 13km and below, Rm1 per/km after 13km'; //'For Outstation customer only';
+$language['full_postcode_outstation'] = 'Outstation charges ( >13km, RM 1/km)';
 $language['more_categories'] = 'More categories';
 $language['reselect_location_kulai']="Reselect Location (now Kulai)";
-$language['reselect_location_skudai']="Reselect Location (now Skudai)";
+$language['reselect_location_skudai']="Your searched location is Skudai";
+$language['rider_contact_text']="Please share your location through whatapp to facilitate our rider in locating your address";
+$language['coupon_list']="Coupon List";
+$language['donation_button_text']="Donate a meal(RM5) to Covid's Victim";
+$language['past_donation_record']="Past Donation Records";
+
+
+
+$language['donation_label']="Donation Details";
+$language['donation_date']="Date";
+$language['donation_amount']="Amount";
+$language['donation_payto']="Pay to";
+$language['donation_list_of_donor']="List of donors";
+
+$language["login_with_otp"] = "LOGIN WITH SMS";
+$language["verify_otp"] = "VERIFY SMS";
+$language["login_password"] = "LOGIN WITH PASSWORD";
+
+$language["shop_index_status"] = "(Close now)";
+
+
+
+$language["m_become_merchant"] = "Become a Merchant (Free)";
+$language["become_merchant_free"] = "Become a Merchant (Free)";
+
+$language["m_shop_name"] = "Shop Name";
+$language["m_contact_number"] = "Contact Number";
+$language["m_email"] = "Email";
+$language["m_address"] = "Address";
+$language["m_intoducer"] = "Introducer number";
+$language["m_intoducer_text"] = "Introducer phone number: Introducer can earn Rm 3 for every new merchant";
+$language['message_48offer'] = "Congratution, you are eligible to Rm1 discount on your next meal (expired on ";
+$language['payment_prrof_text'] = 'Or you may show bank in slip to our rider as proof of payment.';
+$language['covid_error'] = 'Due to Covid-19, Cash on Delivery is temporary unavailable. You can still use internet banking (Free) to pay when foods arrives.';
+$language['the_cart_empty'] = 'The cart is empty';
+$language['footer_important_notes'] = 'Important Notes:';
+$language['the_product_popup_price'] = 'Price:';
+$language['the_state_notes'] = "Showing all Johor's Merchants here";
+$language['login_rebat_msg'] = " Please login to earn 2% cashback or use it to pay ";
+$language['fullmenu_option'] ="Full Menu";
+
+$language['food_not_availble_label'] ="If this product is not available";
+$language['food_not_availble_option1'] ="Remove it from my order";
+$language['food_not_availble_option2'] ="Cancel the entire order";
+$language['food_not_availble_option3'] ="Call me";
+$language['food_not_availble_option4'] ="Buy from other best rating merchant";
 ?>

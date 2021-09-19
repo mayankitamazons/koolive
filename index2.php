@@ -64,6 +64,11 @@ $results_per_page = 5000;
 $page_first_result = ($page-1) * $results_per_page;  	
 ?>
 
+<?php 
+if($_GET['force_refresh'] == 'yes'){
+	header('Clear-Site-Data: "cache", "cookies", "storage", "executionContexts"');
+}
+?>
 <!DOCTYPE html>
 
 <html lang="en">
@@ -292,10 +297,46 @@ header("Pragma: no-cache");
         </div>
     </div>
 </div>
+
+
+<!--- Force Refresh -->
+<script>
+    $(document).ready(function(){
+		$("#myModal_forcerefresh").modal({
+			show: false,
+			backdrop: 'static'
+		});
+	
+		$("#myModal_forcerefresh").modal('show');
+		
+    });
+</script>
+<div id="myModal_forcerefresh" class="modal fade" style="">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Version </h5>
+                <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
+            </div>
+            <div class="modal-body">
+				
+				<h3>New Version Availble. Please click on "YES" to update version.</h3>
+			 </div>
+			<div class="modal-footer">
+				<a href="index.php?vs=<?php echo md5(rand()); ?>" class=" force_no btn btn-primary btn_language" >NO</a>
+				<a href="index.php?vs=<?php echo md5(rand()); ?>&force_refresh=yes" class="force_yes btn btn-success btn_language" >YES</a>
+           
+			</div>
+        </div>
+    </div>
+</div>
+
+<!-- END --->
+
 <body>
-	<div class="page_loader">
+	<!--<div class="page_loader">
 		<span id="load"></span>
-	</div>
+	</div>-->
 	<?php
 
 

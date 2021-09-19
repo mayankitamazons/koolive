@@ -39,6 +39,27 @@ if(isset($_POST['method']) && ($_POST['method'] == "directlogin")){
     echo json_encode($res);
 	die;
 }
+
+if(isset($_POST['method']) && ($_POST['method'] == "free_delivery_check")){
+	extract($_POST);
+	$up=mysqli_query($conn,"update users set free_delivery_check='$free_delivery_check' where id='$selected_user_id'");
+	die;
+}
+
+if(isset($_POST['method']) && ($_POST['method'] == "cash_on_delivery")){
+	extract($_POST);
+	$up=mysqli_query($conn,"UPDATE `users` SET `cash_on_delivery` =$cash_on_delivery where `id`=".$selected_user_id);
+	die;
+}
+
+if(isset($_POST['method']) && ($_POST['method'] == "no_product_options")){
+	extract($_POST);
+	$up=mysqli_query($conn,"UPDATE `users` SET `no_product_options` =$no_product_options where `id`=".$selected_user_id);
+	die;
+}
+
+
+
 if(isset($_POST['method']) && ($_POST['method'] == "productcartupdate")){ 
 	 extract($_POST);
 	 $up=mysqli_query($conn,"update products set add_to_cart_button='$cart_status' where id='$product_id'");
@@ -59,6 +80,19 @@ if(isset($_POST['method']) && ($_POST['method'] == "onesingalidsave")){
 	echo json_encode($res);
 	die;
 }  
+
+if(isset($_POST['method']) && ($_POST['method'] == "riderstel_phone")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set rider_tel_number='$tel_phone' where id='$order_id'");
+	 die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "delete_meremark")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"UPDATE `users` SET `merchant_remark_image` = '' WHERE `id` = ".$_POST['selected_user_id']);
+	 die;
+}
+
+
 /*
 if(isset($_POST['method']) && ($_POST['method'] == "riderdetailsave")){ 
 	 extract($_POST);
@@ -83,6 +117,26 @@ if(isset($_POST['method']) && ($_POST['method'] == "riderdetailsave")){
 if(isset($_POST['method']) && ($_POST['method'] == "cancelorder")){ 
 	 extract($_POST);
 	 $up=mysqli_query($conn,"update order_list set cancel_order=1,cancel_reason = '".$_POST['cancel_reason']."',inform_mecnt_status=6 where id='$orderid'");
+	 die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "foods_reason")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set foods_reason = '".$_POST['foods_reason']."' where id='$orderid'");
+	 die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "cancelperson")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update order_list set cancel_person = '".$_POST['cancel_person']."' where id='$orderid'");
+	 die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "reverse_cancel")){ 
+	 extract($_POST);
+	 $up = mysqli_query($conn,"update order_list set cancel_order=0,cancel_person = '',cancel_reason = '',inform_mecnt_status=0 where id='$orderid'");
+	 die;
+}
+if(isset($_POST['method']) && ($_POST['method'] == "google_sheet_check")){ 
+	 extract($_POST);
+	 $up = mysqli_query($conn,"update google_check set google_sheet_check=1, google_sheet_check_time='".date('Y-m-d H:i:s')."' where g_id =1");
 	 die;
 }
 if(isset($_POST['method']) && ($_POST['method'] == "ridersoptionsave")){ 
@@ -131,6 +185,31 @@ if(isset($_POST['data']) && ($_POST['data'] == "infomerchantsteptwo")){
 if(isset($_POST['method']) && ($_POST['method'] == "rider_cash_amount")){ 
 	 extract($_POST);
 	 $up=mysqli_query($conn,"update order_list set rider_cash_amount='".$_POST['bank_text']."' where id='$order_id'");
+	 
+	/* Update riders_cash_history */
+		$query_order = mysqli_query($conn, "select * from order_list where id = ".$order_id."");
+		$od_q = mysqli_fetch_assoc($query_order);
+		$riderid = $od_q['rider_info'];
+		$admin_cash_price = $od_q['admin_cash_price'];
+		$admin_commission_price = $od_q['admin_commission_price'];
+		$rider_cash_amount = $od_q['rider_cash_amount'];
+		$rc_cash_price = $admin_cash_price - $rider_cash_amount;
+		$select_q = mysqli_query($conn, "select * from riders_cash_history where rc_od_id = ".$order_id." ");
+		$assoc_q = mysqli_fetch_assoc($select_q);
+		$rc_id = $assoc_q['rc_id'];
+		$complete_date = date('Y-m-d H:i:s');
+		if($rc_id != ''){
+			//update
+			$query_rc = "UPDATE `riders_cash_history` SET rc_cash_price = '".$rc_cash_price."',rc_commission = '".$admin_commission_price."' , rc_updateddate = '".$complete_date."'   WHERE `rc_id` = ".$rc_id;
+			mysqli_query($conn, $query_rc);
+		}else{
+			//insert
+			//$qu_in = "INSERT INTO `riders_cash_history` (`rc_r_id`, `rc_od_id`, `rc_cash_price`,`rc_commission`, `rc_handover_admin`, `rc_createddate`) VALUES ( '".$riderid."', '".$order_id."', '".$rc_cash_price."','".$admin_commission_price."', '0', '".$complete_date."');";
+			//mysqli_query($conn, $qu_in);
+		}
+	/* End riders_cash_history */ 
+	
+	
 	 if($up)
 		$res = array('msg'=>"Bank price updated",'status'=>true);	
 	else
@@ -141,6 +220,7 @@ if(isset($_POST['method']) && ($_POST['method'] == "rider_cash_amount")){
 if(isset($_POST['method']) && ($_POST['method'] == "rider_bank_amount")){ 
 	 extract($_POST);
 	 $up=mysqli_query($conn,"update order_list set rider_bank_amount='".$_POST['bank_text']."' where id='$order_id'");
+	 
 	 if($up)
 		$res = array('msg'=>"Bank price updated",'status'=>true);	
 	else
@@ -153,7 +233,8 @@ if(isset($_POST['method']) && ($_POST['method'] == "rider_bank_amount")){
 if(isset($_POST['method']) && ($_POST['method'] == "admin_bank_price")){ 
 	 extract($_POST);
 	 $up=mysqli_query($conn,"update order_list set admin_bank_price='".$_POST['bank_text']."' where id='$order_id'");
-	 if($up)
+	 
+    if($up)
 		$res = array('msg'=>"Bank price updated",'status'=>true);	
 	else
 	$res = array('msg'=>"Failed to update",'status'=>false);
@@ -163,6 +244,30 @@ if(isset($_POST['method']) && ($_POST['method'] == "admin_bank_price")){
 if(isset($_POST['method']) && ($_POST['method'] == "admin_cash_price")){ 
 	 extract($_POST);
 	 $up=mysqli_query($conn,"update order_list set admin_cash_price='".$_POST['bank_text']."' where id='$order_id'");
+	 
+	 /* Update riders_cash_history */
+		$query_order = mysqli_query($conn, "select * from order_list where id = ".$order_id."");
+		$od_q = mysqli_fetch_assoc($query_order);
+		$riderid = $od_q['rider_info'];
+		$admin_cash_price = $od_q['admin_cash_price'];
+		$admin_commission_price = $od_q['admin_commission_price'];
+		$rider_cash_amount = $od_q['rider_cash_amount'];
+		$rc_cash_price = $admin_cash_price - $rider_cash_amount;
+		$select_q = mysqli_query($conn, "select * from riders_cash_history where rc_od_id = ".$order_id." ");
+		$assoc_q = mysqli_fetch_assoc($select_q);
+		$rc_id = $assoc_q['rc_id'];
+		$complete_date = date('Y-m-d H:i:s');
+		if($rc_id != ''){
+			//update
+			$query_rc = "UPDATE `riders_cash_history` SET rc_cash_price = '".$rc_cash_price."',rc_commission = '".$admin_commission_price."' , rc_updateddate = '".$complete_date."'   WHERE `rc_id` = ".$rc_id;
+			mysqli_query($conn, $query_rc);
+		}else{
+			//insert
+			//$qu_in = "INSERT INTO `riders_cash_history` (`rc_r_id`, `rc_od_id`, `rc_cash_price`,`rc_commission`, `rc_handover_admin`, `rc_createddate`) VALUES ( '".$riderid."', '".$order_id."', '".$rc_cash_price."','".$admin_commission_price."', '0', '".$complete_date."');";
+			//mysqli_query($conn, $qu_in);
+		}
+	/* End riders_cash_history */ 
+	
 	 if($up)
 		$res = array('msg'=>"Cash price updated",'status'=>true);	
 	else
@@ -174,7 +279,17 @@ if(isset($_POST['method']) && ($_POST['method'] == "admin_commission_price")){
 	 extract($_POST);
 	 $up=mysqli_query($conn,"update order_list set admin_commission_price='".$_POST['comm_text']."' where id='$order_id'");
 	// echo "update order_list set admin_commission_price='".$_POST['comm_text']."' where id='$order_id'";exit;
-	 if($up)
+	
+	$select_q = mysqli_query($conn, "select * from riders_cash_history where rc_od_id = ".$order_id." ");
+	$assoc_q = mysqli_fetch_assoc($select_q);
+	$rc_id = $assoc_q['rc_id'];
+	$complete_date = date('Y-m-d H:i:s');
+	if($rc_id != ''){
+		$query_rc = "UPDATE `riders_cash_history` SET rc_commission = '".$_POST['comm_text']."' , rc_updateddate = '".$complete_date."'   WHERE `rc_id` = ".$rc_id;
+		mysqli_query($conn, $query_rc);
+	}
+			
+	if($up)
 		$res = array('msg'=>"Commission price updated",'status'=>true);	
 	else
 	$res = array('msg'=>"Failed to update",'status'=>false);
@@ -219,16 +334,38 @@ if(isset($_POST['method']) && ($_POST['method'] == "admin_confirmed_by")){
 /*Start : info merchnt*/
 /* info merchnt update*/
 if(isset($_POST['data']) && ($_POST['data'] == "infomerchnt")){ 
-	$admin_code = $_POST['admin_code'];
+	//$admin_code = $_POST['admin_code'];
 	$ordeid = $_POST['ordeid'];
 	$inform_mecnt_status = $_POST['inform_mecnt_status'];
+	$informpop_name = $_POST['informpop_name'];
+	$informtime_complete = $_POST['informtime_complete'];
 	$info_merchant_admin_datetime = date('Y-m-d H:i:s');
-	$query_info = "update order_list SET info_merchant_admin='".$admin_code."', info_merchant_admin_datetime='".$info_merchant_admin_datetime."', inform_mecnt_status='".$inform_mecnt_status."' where id =".$ordeid;
-	//echo $query_info;
+	$query_info = "update order_list SET  info_merchant_admin_datetime='".$info_merchant_admin_datetime."', inform_mecnt_status='".$inform_mecnt_status."',informpop_name='".$informpop_name."',informtime_complete='".$informtime_complete."' where id =".$ordeid;
 	mysqli_query($conn,$query_info);
 	die;
 }
+
+
+if(isset($_POST['method']) && ($_POST['method'] == "inform_mecnt_status")){ 
+	$orderid = $_POST['orderid'];
+	$code_admin_code = $_POST['code_admin_code'];
+	$info_merchant_admin_datetime = date('Y-m-d H:i:s');
+	$query_info = "update order_list SET info_merchant_admin='".$code_admin_code."' where id =".$orderid;
+	mysqli_query($conn,$query_info);
+	die;
+}
+
+
 /* END*/
+
+if(isset($_POST['method']) && ($_POST['method'] == "food_receipt_seen")){ 
+	$orderid = $_POST['orderid'];
+	$food_receipt_seen = $_POST['food_receipt_seen'];
+	$query_info = "update order_list SET food_receipt_seen='".$food_receipt_seen."' where id =".$orderid;
+	mysqli_query($conn,$query_info);
+	die;
+}
+
 
 if(isset($_POST['method']) && ($_POST['method'] == "adminfeedbacksave")){
 	 extract($_POST);
@@ -245,6 +382,40 @@ if(isset($_POST['method']) && ($_POST['method'] == "adminfeedbacksave")){
 	echo json_encode($res);
 	die;
 }
+
+if(isset($_POST['method']) && ($_POST['method'] == "user_remarksave")){
+	extract($_POST);
+	$up=mysqli_query($conn,"update users set user_remark='$user_remark' where id='$selected_user_id'");
+	//echo "update users set merchant_remark='$merchant_remark' where id='$selected_user_id'";
+	//$res = array('msg'=>"Feedback found",'status'=>true);	
+	
+	//echo json_encode($res);
+	die;
+}
+
+
+if(isset($_POST['method']) && ($_POST['method'] == "merchnt_remarksave")){
+	extract($_POST);
+	$up=mysqli_query($conn,"update users set merchant_remark='$merchant_remark' where id='$selected_user_id'");
+	//echo "update users set merchant_remark='$merchant_remark' where id='$selected_user_id'";
+	//$res = array('msg'=>"Feedback found",'status'=>true);	
+	
+	//echo json_encode($res);
+	die;
+}
+
+if(isset($_POST['method']) && ($_POST['method'] == "merchantspecialcoin")){
+	extract($_POST);
+	$up=mysqli_query($conn,"update users set special_coin_name='$special_coin_name' where id='$selected_user_id'");
+	if($up){
+		$res = array('msg'=>"Update successfully",'status'=>true);	
+	}else{
+		$res = array('msg'=>"Error found!!",'status'=>false);	
+	}
+	echo json_encode($res);die;
+}
+
+
 if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){
    extract($_POST);
    $bal_update=false;
@@ -872,6 +1043,11 @@ if(isset($_POST['method']) && ($_POST['method'] == "shiftupload")){
 	   if($loginmatch)
 	   {
 		    $user_id=$loginmatch['id'];
+			
+			
+			$koocash_check = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM special_coin_wallet WHERE  coin_balance>0 and coin_active='y' and user_id='$user_id' AND `merchant_id` = 6419"));
+			$koocash_wallet= number_format($koocash_check['coin_balance'],2);
+			
 		    if($special_coin_name)
 		   {
 			  
@@ -897,6 +1073,7 @@ if(isset($_POST['method']) && ($_POST['method'] == "shiftupload")){
 		   // $loginmatch['balance_myr']=number_format($balance_myr,2);
 		   $balance_inr=$loginmatch['balance_inr'];
 		   $loginmatch['balance_special']=$balance_special;  
+		   $loginmatch['koocash_wallet']=$koocash_wallet;  
 		   if($balance_inr=='')
 			   $loginmatch['balance_inr']="0.00";
 		   //  user has to be added in defalut or trial plan first 
@@ -976,6 +1153,10 @@ if(isset($_POST['method']) && ($_POST['method'] == "shiftupload")){
 	   if($loginmatch)
 	   {
 		    $user_id=$loginmatch['id'];
+			$koocash_check = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM special_coin_wallet WHERE  coin_balance>0 and coin_active='y' and user_id='$user_id' AND `merchant_id` = 6419"));
+			$koocash_wallet= number_format($koocash_check['coin_balance'],2);
+			
+			
 		    if($special_coin_name)
 		   {
 			  
@@ -1001,6 +1182,7 @@ if(isset($_POST['method']) && ($_POST['method'] == "shiftupload")){
 		   // $loginmatch['balance_myr']=number_format($balance_myr,2);
 		   $balance_inr=$loginmatch['balance_inr'];
 		   $loginmatch['balance_special']=$balance_special;  
+		   $loginmatch['koocash_wallet']=$koocash_wallet;  
 		   if($balance_inr=='')
 			   $loginmatch['balance_inr']="0.00";
 		   //  user has to be added in defalut or trial plan first 
@@ -1065,12 +1247,77 @@ if(isset($_POST['method']) && ($_POST['method'] == "shiftupload")){
 	   }
 	   else
 	   {
-		   $item = array('userstatus'=>'new','msg'=>"new user",'status'=>false,'plan_label'=>'','plan_benefit'=>'');
-		   
+		   //$item = array('userstatus'=>'new','msg'=>"new user",'status'=>false,'plan_label'=>'','plan_benefit'=>'');
+			//users not exists; 
+			//insert into database as unverified
+			$otp_verified = 'n';
+			$otp = generatePIN();
+			$_SESSION['otp_code'] = $otp;
+			$_SESSION['step'] = 'otp';
+			
+			
+			//$insert_user = "INSERT INTO `users`(`user_otp`,`login_token`,`otp_datetime`,`mobile_number`,`user_roles`,`created_at`,`otp_verified`,`isLocked`) values ('".$otp."','".$otp."','".date('Y-m-d H:i:s')."','".$mobile_check."',1,'".date('Y-m-d H:i:s')."','".$otp_verified."',0)";
+			$insert_user = "INSERT INTO `users`(`mobile_number`,`user_roles`,`created_at`,`otp_verified`,`isLocked`) values ('".$mobile_check."',1,'".date('Y-m-d H:i:s')."','".$otp_verified."',0)";
+			$ft_user = mysqli_query($conn,$insert_user);
+			$user_id = mysqli_insert_id($conn) ;
+		    $loginmatch = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE  mobile_number ='".$mobile_check."'"));
+	  
+			//gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$mobile_check", "$otp is your otp code for Koo Families Login,Otp is valid for 24 hrs only");
+			$plan_label='';
+			$plan_benefit='';
+			$item = array('userstatus'=>'new','msg'=>"New User",'status'=>'new','data'=>$loginmatch,'plan_label'=>$plan_label,'plan_benefit'=>$plan_benefit);
 	   }     
 	   echo json_encode($item);
 		die;       
   }
+  
+ 
+if(isset($_POST['method']) && ($_POST['method'] == "sendotpbutton")){
+	$otp_verified = 'n';
+	$otp = generatePIN();
+	$_SESSION['otp_code'] = $otp;
+	$_SESSION['step'] = 'otp';
+	$user_id = $_POST['user_id'];
+	$user_mobile_number = $_POST['mobile_number'];
+	
+	$cDate = date('Y-m-d H:i:s');
+	$f_query = "select time_to_sec(timediff('".$cDate."', otp_datetime)) / 60 as totalminute,id,user_otp from users WHERE `mobile_number` ='$user_mobile_number'";
+	$pop_ot = 0; 
+	$fetch_data = mysqli_fetch_assoc(mysqli_query($conn,$f_query));
+	
+	if($fetch_data['id'] != ''){
+		if($fetch_data['user_otp'] != ''){
+			if($fetch_data['totalminute'] >= 5){
+				$q="UPDATE `users` SET `user_otp` = '$otp',`login_token`='$otp',otp_datetime='".date('Y-m-d H:i:s')."' WHERE `mobile_number` ='$user_mobile_number'";
+				mysqli_query($conn,$q);
+				$message = '<span style="color:rgb(81, 210, 183)">OTP sent your mobile number</otp>';
+				$status = true;
+				gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$user_mobile_number", "$otp is your otp code for Koo Families Login,Otp is valid for 24 hrs only"); 
+			}else{
+				//sent code after 5 minute
+				$mint = 5 - round($fetch_data['totalminute']);
+				$message = '<span style="color:red">Try again after '.$mint.' minutes!!</span>';
+				$status = false;
+				$pop_ot = 1;
+				$otp = $fetch_data['user_otp'];
+			}
+		}else{
+			$q="UPDATE `users` SET `user_otp` = '$otp',`login_token`='$otp',otp_datetime='".date('Y-m-d H:i:s')."' WHERE `mobile_number` ='$user_mobile_number'";
+			mysqli_query($conn,$q);
+			$message = '<span style="color:rgb(81, 210, 183)">OTP sent your mobile number</otp>';
+			$status = true;
+			gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$user_mobile_number", "$otp is your otp code for Koo Families Login,Otp is valid for 24 hrs only"); 
+		}
+	}
+	$item = array('otp'=>$otp,'status'=>$status,'message' =>$message,'pop_ot'=>$pop_ot,'user_id' => $user_id);
+	echo json_encode($item);   
+	die;
+	
+		
+	
+	
+}
+	
 if(isset($_POST['method']) && ($_POST['method'] == "getNoneImageProduct")){
     if($_POST['type'])
 	{
@@ -1356,6 +1603,103 @@ function gw_send_sms($user,$pass,$sms_from,$sms_to,$sms_msg){
 	      
     return $ok;  
 } 
+
+
+if( isset( $_POST['method']) && ( $_POST['method'] == "coinbalancesms" )  ) {
+	$mobile_number = $_POST['mobile_number'];
+	$coin_balance = $_POST['coin_balance'];
+	$user_id = $_POST['user_id'];
+	$coin_id = $_POST['coin_id'];
+	
+	$q = "UPDATE `special_coin_wallet` SET `sms_update` = '1' WHERE `special_coin_wallet`.`id` = ".$coin_id;
+	mysqli_query($conn,$q);
+	
+	$f_query = "select * from users WHERE `id` ='$user_id'";
+	$fetch_data = mysqli_fetch_assoc(mysqli_query($conn,$f_query));
+	
+			
+			
+	$link = "https://www.koofamilies.com/index.php?cid=".$user_id;
+	if($fetch_data['user_language'] == 'chinese'){
+		$sms_content = '亲爱的顾客，你的余额还有Rm'.$coin_balance.'。你可以通过'.$link.' 使用,敬请尽快使用（来自Koo Family 食物外送公司）';
+	}else{
+		$sms_content = 'You have unused credit of Cashback, Rm '.$coin_balance.' in your wallet, please use it on '.$link.' expiring on  31/8/2021. (From Koo Family Food Delivery)';
+	
+	}
+	gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$mobile_number", "$sms_content"); 
+}
+
+if( isset( $_POST['method']) && ( $_POST['method'] == "loginotp" )  ) {
+	
+	$otp = generatePIN();
+
+    // $_SESSION['is_new_user'] = true;
+    $_SESSION['otp_code'] = $otp;
+    // $_SESSION['guest_mobile_number'] = $cm;
+    // $mobile_number=$_POST['usermobile'];
+    
+    $_SESSION['step'] = 'otp';
+	$cm=$user_mobile=$_POST['mobile_number'];
+	
+	
+	//time_to_sec(timediff('".$cDate."', od.created_on)) / 60 as totalminute
+	$cDate = date('Y-m-d H:i:s');
+	$f_query = "select time_to_sec(timediff('".$cDate."', otp_datetime)) / 60 as totalminute,id,user_otp from users WHERE `mobile_number` ='$cm'";
+	##echo $f_query;##exit;
+	$fetch_data = mysqli_fetch_assoc(mysqli_query($conn,$f_query));
+	$user_id = $fetch_data['id'];
+	$pop_ot = 0; 
+	if($fetch_data['id'] != ''){
+		if($fetch_data['totalminute'] >= 5){
+			$q="UPDATE `users` SET `user_otp` = '$otp',`login_token`='$otp',otp_datetime='".date('Y-m-d H:i:s')."' WHERE `mobile_number` ='$cm'";
+			mysqli_query($conn,$q);
+			$message = 'OTP sent your mobile number';
+			$status = true;
+			gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm", "$otp is your otp code for Koo Families Login,Otp is valid for 24 hrs only"); 
+		}else{
+			//sent code after 5 minute
+			$mint = 5 - round($fetch_data['totalminute']);
+			$message = '<span style="color:red">Try again after '.$mint.' minutes!!</span>';
+			$status = false;
+			$pop_ot = 1;
+			$otp = $fetch_data['user_otp'];
+		}
+	}else{
+		
+		//users not exists; 
+		//insert into database as unverified
+		$message = 'OTP sent your mobile number!!';
+		$status = true;
+		$otp_verified = 'n';
+		
+		$insert_user = "INSERT INTO `users`(`user_otp`,`login_token`,`otp_datetime`,`mobile_number`,`user_roles`,`created_at`,`otp_verified`,`isLocked`) values ('".$otp."','".$otp."','".date('Y-m-d H:i:s')."','".$cm."',1,'".date('Y-m-d H:i:s')."','".$otp_verified."',0)";
+		$ft_user = mysqli_query($conn,$insert_user);
+		$user_id = mysqli_insert_id($conn) ;
+		gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm", "$otp is your otp code for Koo Families Login,Otp is valid for 24 hrs only"); 
+	}
+	
+	
+	/*$q="UPDATE `users` SET `user_otp` = '$otp',`login_token`='$otp',otp_datetime='".date('Y-m-d H:i:s')."' WHERE `mobile_number` ='$cm'";
+	mysqli_query($conn,$q);
+	if($merchant_id)
+	{
+		$merchant_detail = mysqli_fetch_assoc(mysqli_query($conn, "SELECT name FROM users WHERE mobile_number='".$cm."'"));
+		$merchant_name=$merchant_detail['name'];
+		// $sms_msg="Link to create shortcut "."https://www.koofamilies.com/structure_merchant.php?merchant_id=".$merchant_id."&l=".$login_token;
+		gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm", "$otp is your otp code for Koo Families Login, Otp is valid for 24 hrs only");
+	}
+    // gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm", "One time password for Koo Families is $otp");
+	else
+	{
+		gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm", "$otp is your otp code for Koo Families Login,Otp is valid for 24 hrs only");  
+	}  */ 
+	 $item = array('otp'=>$otp,'status'=>$status,'message' =>$message,'pop_ot'=>$pop_ot,'user_id' => $user_id);
+	
+		echo json_encode($item);   
+		die;
+}
+
+
 if( isset( $_POST['method']) && ( $_POST['method'] == "sendotp" )  ) {
 	$otp = generatePIN();
 	$login_token = generatePIN();
@@ -1389,18 +1733,19 @@ if( isset( $_POST['method']) && ( $_POST['method'] == "sendotpwithlink" )  ) {
     $_SESSION['otp_code'] = $otp;
     // $_SESSION['guest_mobile_number'] = $cm;
     $cm=$_POST['usermobile'];
-	$u_detail = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id FROM users WHERE mobile_number='".$cm."'"));
+	$u_detail = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id,user_otp FROM users WHERE mobile_number='".$cm."'"));
     $user_id=$u_detail['id'];
+	$otp = $u_detail['user_otp'];
     // $merchant_id=$_POST['merchant_id'];
     $_SESSION['step'] = 'otp';
 	$rand= substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),1,4);
 	$url="https://www.koofamilies.com/orderlist.php?did=".$user_id."&vs=".$rand."&ot=y";    
 	$send_sms="OTP is ".$otp.", or clicking on ".$url." to view your past order";
     // gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm", "$otp is your otp code for Koo Families ");  
-    gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm",$send_sms);  
+   // gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm",$send_sms);  
 	
 	 $item = array('otp'=>$otp,'status'=>true);
-      	 mysqli_query($conn,"UPDATE `users` SET `user_otp` = '$otp',`login_token`='$login_token' WHERE `users`.`mobile_number` ='$cm'");
+      //	 mysqli_query($conn,"UPDATE `users` SET `user_otp` = '$otp',`login_token`='$login_token' WHERE `users`.`mobile_number` ='$cm'");
 		echo json_encode($item);
 		die;
 }
@@ -1442,13 +1787,37 @@ if( isset( $_POST['method']) && ( $_POST['method'] == "forgotpass2" )  ) {
 	{  
 		$rand =mt_rand();
 		// $forgot_url = "https://".$_SERVER['HTTP_HOST']."/forgot_password.php?rand=".$rand."&mn=".$cm;
-		 mysqli_query($conn, "UPDATE users SET user_otp='$otp',rand_num='$rand',resetdate='".time()."' WHERE mobile_number='$cm'");
+		 /*mysqli_query($conn, "UPDATE users SET user_otp='$otp',rand_num='$rand',resetdate='".time()."' WHERE mobile_number='$cm'");
 		 // $cm="+919001025477";
 		  gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm", "$otp is your otp code for Koo Families Account Reset");  
 		   // gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm", "Password for your Account ($cm) : $forgot_url");
 		 // gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm", "Password for your Account ($cm) : $forgot_url");
 		  
-		 $item = array('otp'=>$otp,'msg'=>"Sms for resetting password has been sent to this mobile number",'status'=>true);
+		 $item = array('otp'=>$otp,'msg'=>"Sms for resetting password has been sent to this mobile number",'status'=>true);*/
+		 
+		  /* Start New code*/
+		 $cDate = date('Y-m-d H:i:s');
+		$f_query = "select time_to_sec(timediff('".$cDate."', reset_datetime)) / 60 as totalminute,id from users WHERE `mobile_number` ='$cm'";
+		##echo $f_query;##exit;
+		$fetch_data = mysqli_fetch_assoc(mysqli_query($conn,$f_query));
+		if($fetch_data['id'] != ''){
+			if($fetch_data['totalminute'] >= 5){
+				mysqli_query($conn, "UPDATE users SET user_otp='$otp',rand_num='$rand',resetdate='".time()."',reset_datetime='".$cDate."' WHERE mobile_number='$cm'");
+				gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", "$cm", "$otp is your otp code for Koo Families Account Reset");  
+				$item = array('otp'=>$otp,'msg'=>"Sms for resetting password has been sent to this mobile number",'status'=>true);
+			}else{
+				//sent code after 5 minute
+				$mint = 5 - round($fetch_data['totalminute']);
+				$message = '<span style="color:red">Try again after '.$mint.' minutes!!</span>';
+				$status = false;
+				$item = array('msg'=>$message,'status'=>false);	
+			}
+		}
+	
+	
+		 /* END New code*/
+		 
+		 
 	}
 	echo json_encode($item);
 	die;
@@ -1546,6 +1915,20 @@ if( isset( $_POST['method']) && ( $_POST['method'] == "userjoin" )  ) {
 		die;
 	}
 }
+
+if( isset( $_POST['method']) && ( $_POST['method'] == "verified_user" )  ) {
+	$user_id=$_POST['user_id'];
+	$order_id=$_POST['order_id'];
+	if($user_id)
+	{
+		mysqli_query($conn, "UPDATE users SET otp_verified='y' where id='$user_id'");
+		$item = array('status'=>true);
+		echo json_encode($item);
+		die;
+	}
+}
+
+
 if( isset( $_POST['method']) && ( $_POST['method'] == "neworder" )  ) {
 	$last_id=$_POST['last_id'];
 	

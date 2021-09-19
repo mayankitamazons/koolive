@@ -1,5 +1,9 @@
 <?php
 include("config.php");
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+//print_R($_SESSION);
 
 if(isset($_SESSION['admin']))
 {
@@ -31,6 +35,7 @@ if(isset($_POST['login']))
 		if($id)
 		{
 			$_SESSION['admin'] = $id;
+			
 			header("location:index.php");
 		}
 		else

@@ -139,7 +139,7 @@ $rider_links = "https://www.koofamilies.com/riders.php?rider=".$_GET['rider'];
 									$past_order = ' and rider_complete_order = 1';
 								}
 								
-								$query_od = "select ol.id as order_id,ol.update_merchnt_details,ol.rider_admin_option,ol.rider_bank_amount,ol.rider_cash_amount,ol.inform_mecnt_status,ol.rider_m_price_diff,ol.rider_reason_dif,ol.rider_m_receipt_img,ol.rider_m_food_img,ol.invoice_no,ol.rider_od_time_count,ol.rider_complete_order,ol.vendor_comission,ol.admin_bank_price,ol.admin_commission_price,ol.admin_cash_price,ol.rider_arrive_shop,ol.rider_od_assign_time,ol.rider_od_accept_time,ol.rider_arrive_shop,ol.rider_complete_time,ol.rider_accept_id,rider_info,ol.product_code, cust.name as customer_name,cust.lat_lng, merchnt.name as merchnt_name,ol.location as cust_address, cust.mobile_number as cust_contact_name, merchnt.google_map as merchnt_address,merchnt.mobile_number as merchnt_contact_name, merchnt.merchant_code as merchant_code,merchnt.sst_rate, merchnt.latitude as mer_latitude, merchnt.longitude as mer_longitude, ol.order_lat as cust_latitude, ol.order_lng as cust_longitude, ol.created_on, ol.location as shipping_address,ol.invoice_no,ol.wallet,ol.product_id,ol.quantity,ol.amount,ol.remark,ol.deliver_tax_amount,ol.speed_delivery_amount,ol.order_extra_charge,ol.special_delivery_amount,membership_discount,ol.coupon_discount,ol.wallet_paid_amount from order_list as ol Inner join users as cust ON cust.id = ol.user_id Inner join users as merchnt ON merchnt.id = ol.merchant_id WHERE cancel_order =0 and  rider_info =".$riderid."  ".$past_order."  order by ol.rider_od_assign_time desc";
+								$query_od = "select ol.id as order_id,ol.remark_extra,ol.update_merchnt_details,ol.rider_admin_option,ol.rider_bank_amount,ol.rider_cash_amount,ol.inform_mecnt_status,ol.rider_m_price_diff,ol.rider_reason_dif,ol.rider_m_receipt_img,ol.rider_m_food_img,ol.invoice_no,ol.rider_od_time_count,ol.rider_complete_order,ol.vendor_comission,ol.admin_bank_price,ol.admin_commission_price,ol.admin_cash_price,ol.rider_arrive_shop,ol.rider_od_assign_time,ol.rider_od_accept_time,ol.rider_arrive_shop,ol.rider_complete_time,ol.rider_accept_id,rider_info,ol.product_code,cust.user_remark, cust.name as customer_name,cust.lat_lng, merchnt.name as merchnt_name,ol.location as cust_address,ol.payment_proof, cust.mobile_number as cust_contact_name, merchnt.google_map as merchnt_address,merchnt.mobile_number as merchnt_contact_name, merchnt.merchant_code as merchant_code,merchnt.sst_rate, merchnt.latitude as mer_latitude, merchnt.longitude as mer_longitude, ol.order_lat as cust_latitude, ol.order_lng as cust_longitude, ol.created_on, ol.location as shipping_address,ol.invoice_no,ol.wallet,ol.product_id,ol.quantity,ol.amount,ol.remark,ol.deliver_tax_amount,ol.speed_delivery_amount,ol.order_extra_charge,ol.special_delivery_amount,membership_discount,ol.coupon_discount,ol.wallet_paid_amount from order_list as ol Inner join users as cust ON cust.id = ol.user_id Inner join users as merchnt ON merchnt.id = ol.merchant_id WHERE cancel_order =0 and  rider_info =".$riderid."  ".$past_order."  order by ol.rider_od_assign_time desc";
 
 								//and rider_complete_order != 1
 								#echo $query_od;
@@ -298,7 +298,7 @@ $rider_links = "https://www.koofamilies.com/riders.php?rider=".$_GET['rider'];
 						$style_c = '';
 						if($ordersData['inform_mecnt_status'] == 1){
 							//$labels = 'Inform already';
-							$labels = 'FP order sahaja';
+							$labels = 'Fp Order nama Koo Family';
 							$lab_cls = 'green';
 						}else if($ordersData['inform_mecnt_status'] == 2){
 							$labels = 'Sudah call guna 5670';//'Cannot reach  merchant, now inform customer rider is otw checking';
@@ -311,6 +311,12 @@ $rider_links = "https://www.koofamilies.com/riders.php?rider=".$_GET['rider'];
 							$lab_cls = 'red';
 						}else if($ordersData['inform_mecnt_status'] == 5){
 							$labels = 'Semua beli sendiri';//'Order Cancelled';
+							$lab_cls = 'red';
+						}else if($ordersData['inform_mecnt_status'] == 6){
+							$labels = 'Order Cancelled';
+							$lab_cls = 'red';
+						}else if($ordersData['inform_mecnt_status'] == 7){
+							$labels = 'Sudah group order, guna Koo Family';
 							$lab_cls = 'red';
 						}else{
 							$labels = 'tanya kerani';
@@ -402,13 +408,16 @@ function setTime() {
 									</b></span>
 										
 									</div>
-									
-									
+									<?php if($ordersData['remark_extra'] != ''){?>
+									<div style="color:red;">
+									<b>Order Remark</b> <?php echo $ordersData['remark_extra'];?>
+									</div>
+									<?php }?>
 									<div class="n_order_total">
 										<div class="mr-3 mt-2">
 											<!--<b>Order Total:</b> RM.<?php echo $Final_price;?> -->
 											<?php if($ordersData['admin_cash_price'] != ''){?>
-											<b>Cash Collect: </b> RM <?php echo number_format($ordersData['admin_cash_price'],2);?>
+											<b>Cash Collect: </b> <b style="color:red;">RM <?php echo number_format($ordersData['admin_cash_price'],2);?></b>
 											<?php }?>
 											<?php if($complete_time!= ''){?>
 										<br/>
@@ -490,7 +499,7 @@ function setTime() {
 												<?php 
 													$expand_label = "Expand";
 													$expand_div ="none;";
-												if($cls_show == 'show'){
+												/*if($cls_show == 'show'){
 													if($ordersData['rider_arrive_shop'] != '0000-00-00 00:00:00'){
 														$expand_label = "Hide";
 														$expand_div ="block;";	
@@ -498,11 +507,11 @@ function setTime() {
 												}else{
 													$expand_label = "Expand";
 													$expand_div ="none;";
-												}
+												}*/
 												
 												?>
 												
-												<span class="expand_merchant expand_merchant<?php echo $ordersData['order_id']; ?>" orderid ='<?php echo $ordersData['order_id']; ?>' style="cursor:pointer"><?php echo $expand_label;?></span>
+												<!--<span class="expand_merchant expand_merchant<?php echo $ordersData['order_id']; ?>" orderid ='<?php echo $ordersData['order_id']; ?>' style="cursor:pointer"><?php echo $expand_label;?></span>-->
 												</div>
 
 											</div>
@@ -540,12 +549,33 @@ function setTime() {
 
 									<div class="n_order_mer ">
 										<div class="order_n_div slick-slide slick-cloned slick-active">
+										
+										<?php 
+													$expand_label2 = "Expand";
+													$expand_div2 ="none;";
+												if($cls_show == 'show'){
+													if($ordersData['rider_arrive_shop'] != '0000-00-00 00:00:00' && $ordersData['update_merchnt_details'] == '0000-00-00 00:00:00' ){
+														$expand_label2 = "Hide";
+														$expand_div2 ="block;";	
+													}
+												}else{
+													$expand_label2 = "Expand";
+													$expand_div2 ="none;";
+												}
+												
+												?>
+												
+												
+												
 											<div class="order_head_line expand" orderid ='<?php echo $ordersData['order_id']; ?>' style="cursor:pointer">
 												<span <?php echo $style_c;?>><?php echo $labels;?></span>
-												<span class="expand expnd_<?php echo $ordersData['order_id']; ?>" orderid ='<?php echo $ordersData['order_id']; ?>' style="cursor:pointer">Expand</span>
-												
+												<!--<span class="expand expand_<?php echo $ordersData['order_id']; ?>" orderid ='<?php echo $ordersData['order_id']; ?>' style="cursor:pointer"><?php echo $expand_label2;?></span>
+												-->
 											</div>
-											<div class="n_order_body submit_details_<?php echo $ordersData['order_id']; ?>" style="display:none">
+											
+											
+												
+											<div class="n_order_body submit_details_<?php echo $ordersData['order_id']; ?>" style="display:<?php echo $expand_div2;?>">
 												
 												<?php 
 
@@ -690,6 +720,27 @@ function setTime() {
 								</p>
 								<p><?php echo $ordersData['lat_lng'];?></p>
 								<?php }?>
+								
+								<?php if($ordersData['user_remark'] != ''){?>
+									<div style="color:red;">
+									<b>User Remark:</b> <?php echo $ordersData['user_remark'];?>
+									</div>
+								<?php }?>
+									
+
+								<?php if($ordersData['payment_proof'] != '' ){?>
+						  <label class="btn-sm btn-yellow" style="background-color:darkgreen;margin-top:10px;width:103px">
+						  <a class="fancybox" rel="" href="<?php echo $site_url.'/upload/'.$ordersData['payment_proof'];?>" style="color:white" >
+Payment Proof </a>
+						  </label>
+					  <?php }else{?>
+						<?php if($ordersData['wallet'] == 'Internet Banking'){?>
+							<label class="btn-sm btn-yellow" style="background-color:red;margin-top:10px;width:183px;color:white">
+								No payment proof submitted.								
+							</label>
+						<?php }?>
+					  <?php }?>
+					  
 								<div class="count-wrap text-left py-3">
 									<?php if($ordersData['rider_complete_order'] == 0){?>
 										<span class="n_accept_btn btn btn-sm btn-primary complete_order float-none" order_id="<?php echo $ordersData['order_id'];?>"  style="cursor:auto">Complete Order</span>
@@ -700,7 +751,7 @@ function setTime() {
 									<?php }?>
 								</div>
 								
-								<span class="expand_cust expand_cust<?php echo $ordersData['order_id']; ?>" orderid ='<?php echo $ordersData['order_id']; ?>' style="cursor:pointer">Expand</span>
+								<!--<span class="expand_cust expand_cust<?php echo $ordersData['order_id']; ?>" orderid ='<?php echo $ordersData['order_id']; ?>' style="cursor:pointer">Expand</span>-->
 								
 							</div>
 							
@@ -849,26 +900,60 @@ function setTime() {
 		
 		
 		$(".switch").change(function(e) {
+			
+			var riderid = $("#hidden_rider_id").val();
+			
 			var class_chk = $(this).hasClass('checkbox-checked');
 			if(class_chk == true){
 			var btn_status = 'offline';//console.log('offline');
+			
+			//var cnfrmDelete = confirm("Before online, please share your live location in WhatsApp link, riders page.");
+			//if(cnfrmDelete==true){
+				$.ajax({  
+					type: "POST",  
+					url: "riderajax.php",  
+					data: {
+						type: 'onlinefunction',
+						btn_status: btn_status,
+						riderid: riderid,
+					},
+					success: function(value) { 
+					}
+				});
+			//}
+		
+		
 		}else{
 			//console.log('online');
 			var btn_status = 'online';
-		}
-		var riderid = $("#hidden_rider_id").val();
-		
-		$.ajax({  
-			type: "POST",  
-			url: "riderajax.php",  
-			data: {
-				type: 'onlinefunction',
-				btn_status: btn_status,
-				riderid: riderid,
-			},
-			success: function(value) { 
+			
+			var cnfrmDelete = confirm("Before online, please share your live location in WhatsApp link, riders page.");
+			if(cnfrmDelete==true){
+				$.ajax({  
+					type: "POST",  
+					url: "riderajax.php",  
+					data: {
+						type: 'onlinefunction',
+						btn_status: btn_status,
+						riderid: riderid,
+					},
+					success: function(value) { 
+						var red_url = '<?php echo $rider_links;?>';
+						window.location.href = red_url;
+					
+					}
+				});
+			}else{
+				var red_url = '<?php echo $rider_links;?>';
+				window.location.href = red_url;
 			}
-		});
+		
+		
+		
+		}
+		
+		
+		
 		
 		
 	});

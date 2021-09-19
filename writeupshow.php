@@ -25,6 +25,7 @@ if($s_id)
 	if($row)
 	{
 		$product_ids = explode(",",$row['product_id']);
+		$no_foods_options = explode(",",$row['no_foods_options']);
 		$quantity_ids = explode(",",$row['quantity']);
 		$amount_val = explode(",",$row['amount']);
 		$product_code = explode(",",$row['product_code']);
@@ -74,8 +75,8 @@ if($s_id)
 									$territory_price = " +".$territory_price;
 								}
 								
-							     $g_total=@number_format($total+$territory_price+$incsst+$row['speed_delivery_amount'], 2);
-								} else { $g_total=$total +$territory_price + $row['speed_delivery_amount'];} 
+							     $g_total=@number_format($total+$territory_price+$incsst+$row['speed_delivery_amount']+$row['donation_amount'], 2);
+								} else { $g_total=$total +$territory_price + $row['speed_delivery_amount']+$row['donation_amount'];} 
 		$total_bill=($g_total+$row['order_extra_charge']+$row['deliver_tax_amount']+$row['special_delivery_amount'] )-($row['wallet_paid_amount']+$row['membership_discount']+$row['coupon_discount']);
 		$r_str='';
 		$show_remark='';
@@ -96,7 +97,7 @@ if($s_id)
 		}
 		
 		if($row['free_delivery_prompt'] == 1){
-			$msg_str.="</br><b>*Free Delivery*</b>";
+			$msg_str.="</br><b>*Free Delivery, 相同顾客*</b>";
 		} 	
 		
 			
@@ -122,21 +123,7 @@ if($s_id)
 		/*if($territory_price){
 			$terr_label = " +(Territory Price) ";
 		}*/
-		if($v_comisssion)
-		{
-			
-			if($special_delivery_amount)
-			$msg_str.="<br/>Cash term Pay:(".$total."+(chinese man delivery) ".$terr_label.$speed_delivery_label.")-".$v_comisssion."(com)=".number_format($total-$v_comisssion,2);
-			else
-			$msg_str.="<br/>Cash term Pay:".$total.$speed_delivery_label.$terr_label."-".$v_comisssion."(com)=".number_format($total-$v_comisssion,2);
-		}
-		else
-		{
-			if($special_delivery_amount)
-			$msg_str.="<br/>Cash term Pay:".number_format($total,2)."+".number_format($special_delivery_amount,2)."(chinese man delivery)".$speed_delivery_label.$terr_label;
-			else
-			$msg_str.="<br/>Cash term Pay:".number_format($total,2).$speed_delivery_label.$terr_label;	  
-		}
+		
 		
 		
 		if($territory_label != ''){
@@ -160,12 +147,27 @@ if($s_id)
 			$user_location="</br>".$row['location'];
 		}
 		$wallet=$row['wallet'];
+		
+		//$phone_number = $row['mobile_number'];
+		$phone_number = $row['user_mobile'];
+		$str_length = strlen($phone_number);
+		if(substr($phone_number, 0,1) == 6){
+			$user_phone = substr($phone_number, 1, $str_length);
+		}else{
+			$user_phone = $phone_number;
+		}
+		$donation_text = '';
+		if($row['donation_amount'] == '5.00'){
+			$donation_text = "+".$row['donation_amount']."(Donation)";
+		}
+//To: ".$row['name']." </br>
+
 		if($row['coupon_discount']=='')
 			$row['coupon_discount']=0;
 		if($row['special_delivery_amount']==0)
-		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']." ".$speed_delivery_price.$territory_price.")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br>Order from:</br>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."".$user_location."</br> <p id='od_copy_details_".$row['id']."'>Order Detail:</br>";
+		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']." ".$speed_delivery_price.$territory_price.$donation_text.")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br>Order from:</br>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/>  ".$user_phone.$otp_str."".$user_location."</br> <p id='od_copy_details_".$row['id']."'>Order Detail:</br>";
 		else
-		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']."+".$row['special_delivery_amount']." ".$speed_delivery_price.$territory_price.")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br> Order from:</b>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/>  To: ".$row['user_name']." </br>,".$row['user_mobile'].$otp_str."".$user_location."</br> <p id='od_copy_details_".$row['id']."'>Order Detail:</br>";
+		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']."+".$row['special_delivery_amount']." ".$speed_delivery_price.$territory_price.$donation_text.")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br> Order from:</b>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/> ".$user_phone.$otp_str."".$user_location."</br> <p id='od_copy_details_".$row['id']."'>Order Detail:</br>";
 		$p=1;
 		$msg_str.="Invoice No: ".$row['invoice_no']."<br>";
 		foreach ($product_ids as $key )
@@ -179,6 +181,10 @@ if($s_id)
 			else
 			{
                $msg_str.=$key.'<br>';
+			}
+			if($no_foods_options[$i] && $no_foods_options[$i]!= "undefined")
+			{
+				$msg_str.= "<b>No Food</b>: <span style='color:red'>".$no_foods_options[$i].'</span><br>';   
 			}
 			
 			if($product['remark'])
@@ -204,7 +210,23 @@ if($s_id)
 			$p++;
 		}
 		$msg_str .= "Total qty : ".$total_qun."<br/>";
+		
 		$msg_str .="</p>";
+		if($v_comisssion)
+		{
+			
+			if($special_delivery_amount)
+			$msg_str.="<br/>Cash term Pay:(".$total."+(chinese man delivery) ".$terr_label.$speed_delivery_label.")-".$v_comisssion."(com)=".number_format($total-$v_comisssion,2);
+			else
+			$msg_str.="<br/>Cash term Pay:".$total.$speed_delivery_label.$terr_label."-".$v_comisssion."(com)=".number_format($total-$v_comisssion,2);
+		}
+		else
+		{
+			if($special_delivery_amount)
+			$msg_str.="<br/>Cash term Pay:".number_format($total,2)."+".number_format($special_delivery_amount,2)."(chinese man delivery)".$speed_delivery_label.$terr_label;
+			else
+			$msg_str.="<br/>Cash term Pay:".number_format($total,2).$speed_delivery_label.$terr_label;	  
+		}
 		if($row['location'])
 		{
 			$latlng=$row['order_lat'].",".$row['order_lng'];

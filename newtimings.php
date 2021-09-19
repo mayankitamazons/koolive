@@ -13,12 +13,13 @@ $bank_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE i
 {
     $not_working_text=$_POST['not_working_text'];
     $not_working_text_chiness=$_POST['not_working_text_chiness'];
+	$not_working_text_malay=$_POST['not_working_text_malay'];
   
   
-   if($not_working_text || $not_working_text_chiness)
+   if($not_working_text || $not_working_text_chiness || $not_working_text_malay)
    {
 	   // echo "updated users set not_working_text='$not_working_text' where id='$current_id'";
-	   $update=mysqli_query($conn,"update users set not_working_text='$not_working_text',not_working_text_chiness='$not_working_text_chiness' where id='$current_id'");
+	   $update=mysqli_query($conn,"update users set not_working_text='$not_working_text',not_working_text_chiness='$not_working_text_chiness', not_working_text_malay='$not_working_text_malay' where id='$current_id'");
 	  // die; 
    }
    $send_url=$site_url."/set_workinghours.php"."?vs=".md5(rand());
@@ -28,12 +29,13 @@ if(isset($_POST['working']))
 {
     $working_text=$_POST['working_text'];
     $working_text_chiness=$_POST['working_text_chiness'];
+	$working_text_malay = $_POST['working_text_malay'];
   
   
-   if($working_text || $working_text_chiness)
+   if($working_text || $working_text_chiness || $working_text_malay)
    {
 	   // echo "updated users set not_working_text='$not_working_text' where id='$current_id'";
-	   $update=mysqli_query($conn,"update users set working_text='$working_text',working_text_chiness='$working_text_chiness' where id='$current_id'");
+	   $update=mysqli_query($conn,"update users set working_text='$working_text',working_text_chiness='$working_text_chiness',working_text_malay='$working_text_malay' where id='$current_id'");
 	  // die; 
    }
    $send_url=$site_url."/set_workinghours.php"."?vs=".md5(rand());
@@ -243,16 +245,21 @@ if(isset($_GET['Delete']))
 									<div class="panel price panel-red">
 										<h2>Working Time text</h2>
 										<div  class="row col-md-12">
-										<div  class="col-md-5">
+										<div  class="col-md-6">
 										
 											<input type="text" class="form-control" value="<?php echo $bank_data['working_text']; ?>" name="working_text" placeholder="Updated text for Working Hours"/>
 										</div>
-										<div  class="col-md-5">
+										<div  class="col-md-6">
 										
 											<input type="text" class="form-control" value="<?php echo $bank_data['working_text_chiness']; ?>" name="working_text_chiness" placeholder="Updated text for  Working Hours in Chiness"/>
 										</div>
+										
+										<div  class="col-md-6" style="margin-top:10px">
+											<input type="text" class="form-control" value="<?php echo $bank_data['working_text_malay']; ?>" name="working_text_malay" placeholder="Updated text for  Working Hours in Malay"/>
+										</div>
+										
 
-										<div class="col-md-2">
+										<div class="col-md-6" style="margin-top:10px">
 											<input type="submit" class="btn btn-block btn-primary" name="working" value="Update">
 										</div>
 
@@ -277,16 +284,20 @@ if(isset($_GET['Delete']))
 									<div class="panel price panel-red">
 										<h2>Not  Working Time</h2>
 										<div  class="row col-md-12">
-										<div  class="col-md-5">
+										<div  class="col-md-6">
 										
 											<input type="text" class="form-control" value="<?php echo $bank_data['not_working_text']; ?>" name="not_working_text" placeholder="Updated text for Not Working Hours"/>
 										</div>
-										<div  class="col-md-5">
-										
+										<div  class="col-md-6">
 											<input type="text" class="form-control" value="<?php echo $bank_data['not_working_text_chiness']; ?>" name="not_working_text_chiness" placeholder="Updated text for Not Working Hours in Chiness"/>
 										</div>
+										
+										<div class="col-md-6" style="margin-top:10px">
+											<input type="text" class="form-control" value="<?php echo $bank_data['not_working_text_malay']; ?>" name="not_working_text_malay" placeholder="Updated text for Not Working Hours in Malay"/>
+										</div>
+										
 
-										<div class="col-md-2">
+										<div class="col-md-6" style="margin-top:10px">
 											<input type="submit" class="btn btn-block btn-primary" name="not_working" value="Update">
 										</div>
 

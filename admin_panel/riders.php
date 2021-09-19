@@ -1,10 +1,20 @@
 <?php 
 include("config.php");
 
+
+/*
 if(!isset($_SESSION['admin']))
 {
 	header("location:login.php");
+}*/
+
+if(!isset($_SESSION['madmin']))
+{
+	header("location:login2.php?rpage=riders");
 }
+
+
+
 $a_m="riders";
 $rec_limit = 40;
 
@@ -227,6 +237,11 @@ if(isset($_GET['data'])&&$_GET['data']=='handover_cash'){
 									
 									<a class="mr-2"  target="_blank" href="workingrider.php?r_id=<?php echo $row['r_id']?>" title="View Rider's Hours">
 										<i class="fa fa-clock-o" aria-hidden="true"></i>
+									</a>
+									
+									
+									<a class="mr-2"  target="_blank" href="jobhours.php?r_id=<?php echo $row['r_id']?>" title="View Rider's job Hrs">
+										<i class="fa fa-briefcase"></i>
 									</a>
 									
 									

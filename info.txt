@@ -1,0 +1,27 @@
+/*
+company name: Koo Family Sdn Bhd
+merchant code: M31571
+key: IzXIhfJHUJ
+live url: https://payment.ipay88.com.my/epayment/report/
+login: koofamily
+password: AAaa9639
+
+*/
+
+
+CREATE TABLE `tbl_ipay88_payment` ( `p_id` INT(11) NOT NULL AUTO_INCREMENT , `p_order_id` INT(11) NOT NULL COMMENT 'primary key of order_list' , `p_user_id` INT(11) NOT NULL COMMENT 'primary key users' , `p_trans_id` VARCHAR(255) NOT NULL COMMENT 'transcation id from payment gateway' , `p_status` VARCHAR(255) NOT NULL , `p_amount` VARCHAR(20) NOT NULL , `p_response` LONGTEXT NOT NULL , `p_createddate` DATETIME NOT NULL , PRIMARY KEY (`p_id`)) ENGINE = MyISAM;
+
+CREATE TABLE `tbl_temp_saveorder` ( `t_id` INT NOT NULL AUTO_INCREMENT , `t_user_id` INT NOT NULL COMMENT 'primary key of users' , `t_m_id` INT NOT NULL COMMENT 'primary key of users' , `t_order_response` LONGTEXT NOT NULL , `t_createddate` DATETIME NOT NULL , PRIMARY KEY (`t_id`)) ENGINE = MyISAM COMMENT = 'Tem order save before ipay88 payment';
+
+ALTER TABLE `tbl_temp_saveorder` ADD `t_mobile_number` VARCHAR(25) NOT NULL AFTER `t_m_id`;
+ALTER TABLE `tbl_temp_saveorder` ADD `t_payment_status` VARCHAR(20) NOT NULL AFTER `t_order_response`, ADD `t_transid` VARCHAR(25) NOT NULL AFTER `t_payment_status`;
+ALTER TABLE `tbl_ipay88_payment` ADD `p_message` VARCHAR(255) NOT NULL AFTER `p_response`;
+
+ALTER TABLE `tbl_ipay88_payment` ADD `p_temp_order_id` INT NOT NULL COMMENT 'primary key of tbl_temp_saveorder' AFTER `p_user_id`;
+
+
+ALTER TABLE `order_list` ADD `ipay_p_id` INT(11) NOT NULL COMMENT 'primary key tbl_ipay88_payment' AFTER `merchant_id`;
+
+ALTER TABLE `order_list` ADD `ipay_payment_status` INT NOT NULL COMMENT '0->failed 1->success' AFTER `speed_delivery_amount`, ADD `ipay_message` VARCHAR(255) NOT NULL COMMENT 'message response from payment gateway' AFTER `ipay_payment_status`;
+
+ALTER TABLE `order_list` ADD `pay_transid` VARCHAR(255) NOT NULL AFTER `ipay_message`;

@@ -92,6 +92,7 @@
 							else $wal_label=$wallet;
 							
 							$product_ids = explode(",",$fetchData['product_id']);
+							$no_foods_options = explode(",",$fetchData['no_foods_options']);
 							$quantity_ids = explode(",",$fetchData['quantity']);
 							$product_code = explode(",",$fetchData['product_code']);
 							$remark_ids = explode("|",$fetchData['remark']);
@@ -439,6 +440,13 @@
 																	<?php echo $remark_ids[$j];?>
 																	</span>
 																	<?php }?>
+																	
+																	<?php if($no_foods_options[$j] != ''  && $no_foods_options[$j]!= "undefined"){?>
+																	<br/>
+																	<span><strong>No Food: </strong> 
+																	<?php echo $no_foods_options[$j];?>
+																	</span>
+																	<?php }?>
 																</p>
 																<a class="moreless-button moreless-button_<?php echo $key;?>" href="javascript:void(0)" product_id ="<?php echo $key;?>">Read more</a>
 
@@ -501,15 +509,16 @@
 									?>
 									
 														<tr class="table-borderless">	
-															<td class="mobile-hide"  colspan="2"><span class="costright">Subtotal</span></td>
-															<td  data-label="Subtotal"><?php  echo number_format($total,2);?></td>
-														</tr>
-
-														<tr class="table-borderless">	
 															<td class="mobile-hide"  colspan="2"><span class="costright">Service Fee <?php echo $sstper;?>%</span></td>
 															<td  data-label="Service Fee 6%"><?php echo $incsst; ?></td>
 														</tr>
 
+														<tr class="table-borderless">	
+															<td class="mobile-hide"  colspan="2"><span class="costright">Subtotal</span></td>
+															<td  data-label="Subtotal"><?php  echo number_format($total,2);?></td>
+														</tr>
+
+														
 														<tr class="table-borderless">	
 															<td  class="mobile-hide" colspan="2"><span class="costright">Delivery Tax</span></td>
 															<td  data-label="Delivery Tax"><?php  echo @number_format($fetchData['deliver_tax_amount'],2); ?></td>
@@ -566,14 +575,21 @@
 <?php }?>
 
 									
-									
+									<?php if($fetchData['donation_amount']){?>
+														<tr class="table-borderless">	
+															<td class="mobile-hide"  colspan="2"><span class="costright">Donation</span></td>
+															<td  data-label="Donation"><?php echo @number_format($fetchData['donation_amount'],2); ?></td>
+														</tr>
+<?php }?>
+
+
 									
 														<tr class="table-borderless">	
 															<td  class="mobile-hide" colspan="2"><span class="costright">Grand Total</span></td>
-															<td  data-label="Grand Total"><?php  echo @number_format(($g_total+$fetchData['od_extra_charge']+$territory_price+$fetchData['deliver_tax_amount']+$fetchData['special_delivery_amount']+$fetchData['speed_delivery_amount'])-($fetchData['membership_discount']+$fetchData['coupon_discount']),2); ?></td>
+															<td  data-label="Grand Total"><?php  echo @number_format(($g_total+$fetchData['od_extra_charge']+$territory_price+$fetchData['deliver_tax_amount']+$fetchData['special_delivery_amount']+$fetchData['speed_delivery_amount'] + $fetchData['donation_amount'])-($fetchData['membership_discount']+$fetchData['coupon_discount']),2); ?></td>
 														</tr>
 
-<?php if($ordersData['wallet_paid_amount']){?>
+<?php if($fetchData['wallet_paid_amount']){?>
 														<tr class="table-borderless">	
 															<td  class="mobile-hide" colspan="2"><span class="costright">Paid By Wallet</span></td>
 															<td  data-label="Paid By Wallet"><?php  echo @number_format($fetchData['wallet_paid_amount'],2); ?></td>
@@ -582,7 +598,7 @@
 
 														<tr class="table table-borderless">	
 															<td  class="mobile-hide" colspan="2"><span class="costright">Balance Payment</span></td>
-															<td  data-label="Balance Payment"><?php echo @number_format(($g_total+$fetchData['od_extra_charge']+$territory_price+$fetchData['deliver_tax_amount']+$fetchData['special_delivery_amount']+$fetchData['speed_delivery_amount'])-($fetchData['wallet_paid_amount']+$fetchData['membership_discount']+$fetchData['coupon_discount']), 2); ?></td>
+															<td  data-label="Balance Payment"><?php echo @number_format(($g_total+$fetchData['od_extra_charge']+$territory_price+$fetchData['deliver_tax_amount']+$fetchData['special_delivery_amount']+$fetchData['speed_delivery_amount'] + $fetchData['donation_amount'])-($fetchData['wallet_paid_amount']+$fetchData['membership_discount']+$fetchData['coupon_discount']), 2); ?></td>
 														</tr>
 
 

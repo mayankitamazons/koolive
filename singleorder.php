@@ -8,6 +8,7 @@ if($s_id)
 	if($row)
 	{
 		$product_ids = explode(",",$row['product_id']);
+		$no_foods_options = explode(",",$row['no_foods_options']);
 		$quantity_ids = explode(",",$row['quantity']);
 		$amount_val = explode(",",$row['amount']);
 		$product_code = explode(",",$row['product_code']);
@@ -39,6 +40,11 @@ if($s_id)
 			}
 			// print_R($product['remark']);
 			// die;
+			if($no_foods_options[$i]  && $no_foods_options[$i]!= "undefined")
+			{
+				 echo  "<b>No Food</b>: <span style='color:red'>".$no_foods_options[$i].'</span><br>';   
+			}
+			
 			if($product['remark'])
 			{
 				echo $msg_str.= "Product Remark :".$product['remark'].'<br>';   

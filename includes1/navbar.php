@@ -44,6 +44,13 @@ else
 }
 ?>
 
+<?php
+if($_GET['force_refresh'] == 'yes'){
+	header('Clear-Site-Data: "cache", "cookies", "storage", "executionContexts"');
+	//$url="https://www.koofamilies.com/";
+	//header("Location:$url");
+}
+?>
 
 
 <style>
@@ -124,6 +131,17 @@ $page_script = $_SERVER['SCRIPT_URL'];
 		</li!-->
     <?php }?>
 	<!--new-->
+<?php 
+//get current page URL
+$protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";  
+$CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+if($_SERVER['QUERY_STRING']!= ''){
+	$frce_text = "&force_refresh=yes";
+}else{
+	$frce_text = "?force_refresh=yes";
+}
+ ?>
+ 
 	<?php  if( isset($profile_data['user_roles']) && $profile_data['user_roles'] !=  '') { ?>
 	<?php if($_SESSION['login']){ ?>
 	<!--li class="btn btn-primary" style="background:#51d2b7;border:none;height: 38%;margin-top:30px;margin-right: 18px;">	 
@@ -137,6 +155,10 @@ $page_script = $_SERVER['SCRIPT_URL'];
     </li!-->
 	
 	<?php  }?>
+<li style="color: white;font-size: 24px;border-radius: 14px;">
+			<a href="<?php //echo $CurPageURL.$frce_text; ?>"  title="Refresh" class="myrefresh"><i class="fa fa-refresh" style="padding-right:8px"></i></a>
+		</li>
+
 <li class="home_screen">	 
     	<div class="home_screen">
             <input type="hidden" class="sender_id" value="<?php echo $_SESSION['login'];?>">
@@ -147,11 +169,13 @@ $page_script = $_SERVER['SCRIPT_URL'];
     	</div>
     </li>
     <?php } else { ?>
-	<?php 
-//get current page URL
-$protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";  
-$CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>
+	
 
+
+		<li style="color: white;font-size: 24px;border-radius: 14px;">
+			<a href="<?php //echo $CurPageURL.$frce_text; ?>"  title="Refresh" class="myrefresh"><i class="fa fa-refresh" style="padding-right:8px"></i></a>
+		</li>
+		
 		<li class="home_screen">	 
     	<div class="home_screen">
     
@@ -358,3 +382,49 @@ i.fa.fa-bars {
 }
 
 </style>
+
+ <!--- Force Refresh -->
+<?php //if($_GET['mode'] =='dev'){?>
+<script>
+    $(document).ready(function(){
+		$(".myrefresh").click(function(){
+			$("#myModal_forcerefresh").modal({
+			show: false,
+			backdrop: 'static'
+			});
+			$("#myModal_forcerefresh").modal('show');
+			$("#myModal_language").modal('hide'); 
+			$("#myModal").modal('hide');
+			return false;
+		});
+		
+    });
+</script>
+<?php //}?>
+<div id="myModal_forcerefresh" class="modal fade" style="top:90px">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cache/Cookies </h5>
+                <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
+            </div>
+            <div class="modal-body">
+				
+				<h3>
+				<?php if($_SESSION["langfile"] == 'chinese'){?>
+				由于系统升级，我们这里将协助你把旧记录清楚。如果页面没有更新, <a href="<?php echo $CurPageURL;?>" target="_blank" class="" style="color:red;text-decoration:underline">请按这里</a>.
+<?php }else{ ?>
+				Due to upgrade of system, we need you to clear page history to avoid order error. if this page has no respond, please click <a href="<?php echo $CurPageURL;?>" target="_blank" class="" style="color:red;text-decoration:underline">HERE</a>
+				<?php }?>
+				</h3>
+			 </div>
+			<div class="modal-footer">
+				<a href="#" class=" force_no btn btn-primary btn_language" data-dismiss="modal" >NO</a>
+				<a href="<?php echo $CurPageURL.$frce_text; ?>" class="force_yes btn btn-success btn_language" >YES</a>
+           
+			</div>
+        </div>
+    </div>
+</div>
+
+<!-- END --->
