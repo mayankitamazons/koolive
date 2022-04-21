@@ -127,6 +127,56 @@ td.del {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
 $(document).ready(function(){
+	
+	
+	
+	$('.show_index_page').change(function() {
+		 var selected_product_id= $(this).attr('pro_id');
+		if(this.checked) {
+			var show_index_page=1;
+		}
+		else
+		{
+			var show_index_page=0;
+		}
+		$.ajax({
+			url :'functions.php',
+			 type:"post",
+			 data:{product_id:selected_product_id,show_index_page:show_index_page,method:"show_index_page"},     
+			 dataType:'json',
+			 success:function(result){  
+				// var data = JSON.parse(JSON.stringify(result));   
+				// alert(data.msg);
+			 }
+			});
+	});
+		
+	
+	
+	
+		$('.one_qty_prd_offer').change(function() {
+			 var selected_product_id= $(this).attr('pro_id');
+			if(this.checked) {
+				var one_qty_prd_offer=1;
+			}
+			else
+			{
+				var one_qty_prd_offer=0;
+			}
+			$.ajax({
+					url :'functions.php',
+					 type:"post",
+					 data:{product_id:selected_product_id,one_qty_prd_offer:one_qty_prd_offer,method:"one_qty_prd_offer"},     
+					 dataType:'json',
+					 success:function(result){  
+						// var data = JSON.parse(JSON.stringify(result));   
+						// alert(data.msg);
+					 }
+				});
+		});
+		
+		
+	
 		 $('.add_to_cart_button').change(function() {
 			 var selected_product_id= $(this).attr('pro_id');
 			if(this.checked) {
@@ -208,6 +258,8 @@ $(document).ready(function(){
         <th>Image</th>
         <th>Code</th>
         <th>Cart Button</th>
+		<th>Only 1 QTY</th>
+		<th>Show Index Page</th>
        
         <th>Action</th>
       </tr>
@@ -231,15 +283,22 @@ $(document).ready(function(){
 			$color="";
 		}
 		$add_to_cart_button=$row['add_to_cart_button'];
+		$one_qty_prd_offer = $row['one_qty_prd_offer'];
+		$show_index_page = $row['show_index_page'];
 	?>
   
 	<tr style="<?php if($color){ echo "color:".$color;} ?>">
        <!-- <td class="name" data-id=<?php //echo $row['id']; ?> style="cursor:pointer;"><?php //echo $row['name'];  ?></td> -->
 
          <!--<td class='status' name='status' onchange="update_product('<?php //echo $row['id'];?>')"></td>-->
-		      <td class="stock" data-id="<?php echo $row['id']; ?>"><button <?php echo ($row['on_stock']) ? 'class="btn btn-success"' : 'class="btn btn-danger"' ?>><?php echo ($row['on_stock']) ? 'Available' : 'Empty' ?></button></td>
+		      <td class="stock" data-id="<?php echo $row['id']; ?>"><button <?php echo ($row['on_stock']) ? 'class="btn btn-success"' : 'class="btn btn-danger"' ?>><?php echo ($row['on_stock']) ? 'Available' : 'Empty' ?></button>
+			  
+			  
+			  </td>
      
-        <td><?php echo $row['product_name'];  ?></td>
+        <td><?php echo $row['product_name'];  ?>
+		 
+		</td>
 		        <td><?php echo $row['id'];  ?></td>
 		   <td><?php echo $row['category'];  ?></td>
 		  <td><?php echo $row['product_type'];  ?></td>
@@ -279,6 +338,14 @@ $(document).ready(function(){
    <?php }
       ?>
 	  <td><input class="form-control add_to_cart_button" pro_id="<?php echo $row['id']; ?>" type="checkbox" name="add_to_cart_button" <?php if($add_to_cart_button == '1') echo "checked='checked'";?>><br></td>
+	  
+	  <td><input class="form-control one_qty_prd_offer" pro_id="<?php echo $row['id']; ?>" type="checkbox" name="one_qty_prd_offer" <?php if($one_qty_prd_offer == '1') echo "checked='checked'";?>><br></td>
+	  
+	  <td>
+	  <input class="form-control show_index_page" pro_id="<?php echo $row['id']; ?>" type="checkbox" name="show_index_page" <?php if($show_index_page == '1') echo "checked='checked'";?>>
+			 
+	  </td>
+	  
       <td class="pop_up" data-id="<?php echo $row['id']; ?>">Edit</td> 
       <td class="stock_check" data-id="<?php echo $row['id']; ?>">Stock</td> 
    <td class="sub_product" data-del="<?php echo $row['id']; ?>"><a href="<?php echo $site_url; ?>/sub_product.php?p_id=<?php echo $row['id']; ?>">Product Varieties</a></td>
@@ -412,6 +479,12 @@ $(document).ready(function(){
 		 	<input type="text" name="productname" id = "product_name" class="form-control" value="" required>
        <input type="hidden" id="id" name="id" value=""> 
       </div>
+	  
+	  <div class="form-group">
+      <label>Product Slug</label>
+		 	<input type="text" name="product_slug" id = "product_slug" class="form-control" value="" required>
+      </div>
+	  
       <div class="form-group">
       <label>Category</label>
       <select  name="category" class="form-control" id="category">
@@ -796,7 +869,8 @@ $(document).ready(function(){
       }
       $("#id").val(response.id);
       $("#product_name").val(response.product_name);
-      $("#product_discount").val(response.product_discount); 
+      $("#product_slug").val(response.product_slug);
+	  $("#product_discount").val(response.product_discount); 
       $("#category").val(response.category);
       $("#product_type").val(response.product_type);
       $("#product_price").val(response.product_price);

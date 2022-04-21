@@ -68,7 +68,7 @@ $LOCSTATESQL = '';
 if($_POST['type'] == 'popular'){
 	$main_title = 'Popular Restaurants';
 	$view_btn = '<div style="margin:5px 0 0 0;float: left;" class="col-md-2"><a href="merchant_find.php">View All</a></div>';
-	$sql="select set_working_hr.*,users.order_min_charge,users.mobile_number,users.free_delivery_check,users.banner_image,users.name,users.address,users.login_status,users.id,about.image,users.shop_open,cs.shift_pos from classification_arrange_system as cs inner join users on users.id=cs.merchant_id LEFT JOIN about on  users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where cs.classfication_id='3' and users.user_roles = 2  and users.shop_open=1 $LOCSQL $LOCSTATESQL group by users.id ORDER BY cs.shift_pos  ASC  limit 20";
+	$sql="select set_working_hr.*,users.order_min_charge,users.default_lang,users.mobile_number,users.slug,users.free_delivery_check,users.banner_image,users.name,users.address,users.login_status,users.id,about.image,users.shop_open,cs.shift_pos from classification_arrange_system as cs inner join users on users.id=cs.merchant_id LEFT JOIN about on  users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where cs.classfication_id='3' and users.user_roles = 2  and users.shop_open=1 $LOCSQL $LOCSTATESQL group by users.id ORDER BY cs.shift_pos  ASC  limit 20";
 	//echo $sql;
 }else{
 	if($_POST['type'] == 'seafood'){
@@ -98,7 +98,7 @@ if($_POST['type'] == 'popular'){
 	$select_query = mysqli_fetch_assoc(mysqli_query($conn,$class_query));
 	$main_title = $select_query['classification_name'];
 
-	$sql="select users.banner_image,users.order_min_charge,users.free_delivery_check,users.name, users.address,service.short_name,about.image,users.mobile_number,set_working_hr.*,
+	$sql="select users.banner_image,users.order_min_charge,users.default_lang,users.slug,users.free_delivery_check,users.name, users.address,service.short_name,about.image,users.mobile_number,set_working_hr.*,
 	users.order_extra_charge,users.delivery_plan,users.not_working_text,users.not_working_text_chiness 
 	from classification_arrange_system as cs   inner join users on users.id=cs.merchant_id left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN set_working_hr on users.id=set_working_hr.merchant_id where cs.classfication_id='$c_id' and users.user_roles = 2 and users.shop_open=1 $LOCSQL $LOCSTATESQL group by users.id ORDER BY cs.shift_pos ASC limit 20";
 }
@@ -178,7 +178,24 @@ $response .= '<h2 style="text-align: center;color: black;" class="ss_title">'.$m
 					$response .='<img  data-src="'.$image_cdn.'about_images/'.$rd['image'].'?w=200" class="owl-lazy lazy2 Sirv" alt="">'; 
 				} 
 				}
-				$response .='<a href="view_merchant.php?vs='.md5(rand()).'&sid='.$rd['mobile_number'].'" class="strip_info"><div class="item_title index_hotel"><h3>'.$rd['name'].'</h3><small>';
+				
+				$default_lang = $rd['default_lang'];  
+				if($default_lang==1)
+				{
+				  $langfile="english";
+				} else if($default_lang==2)
+				{
+				  $langfile="chinese";
+				} else if($default_lang==3)
+				{
+				  $langfile="malaysian";
+				}
+
+
+				$view_link = $site_url."/merchant/".$langfile."/".$rd['slug']."/".rand(10000,999999);
+				
+				
+				$response .='<a href="'.$view_link.'" class="strip_info"><div class="item_title index_hotel"><h3>'.$rd['name'].'</h3><small>';
 				if($work_str==""){
 					$response .="<br>";
 				}else{ 

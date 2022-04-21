@@ -70,12 +70,19 @@ if($_GET['order'] == 'notdone'){
 }
 
 
+if (isset($_GET['pageno'])) {
+    $pageno = $_GET['pageno'];
+} else {
+    $pageno = 1;
+}
+$no_of_records_per_page = 100;
+$offset = ($pageno-1) * $no_of_records_per_page; 
 
-$query="select order_list.user_id as od_user_id,user.otp_verified,order_list.*,user.mobile_number as user_mobile_number,u.google_map,user.id as l_user_id,user.user_remark,user.lat_lng,u.merchant_remark,u.shop_open,u.working_text,u.sst_rate,u.working_text_chiness,u.not_working_text_chiness,u.not_working_text,u.name as merchant_name,u.merchant_remark_image,user.latitude,user.longitude,u.mobile_number as merchant_mobile_number,u.whatsapp_link,u.foodpanda_link,u.vendor_comission as vc_user, u.price_hike as price_hike_user from order_list 
+$query="select order_list.user_id as od_user_id,user.otp_verified,order_list.*,user.mobile_number as user_mobile_number,u.google_map,user.id as l_user_id,user.user_remark,user.lat_lng,u.merchant_remark,u.shop_open,u.working_text,u.sst_rate,u.working_text_chiness,u.not_working_text_chiness,u.not_working_text,u.name as merchant_name,u.c1_code,u.merchant_short_name,u.merchant_remark_image,user.latitude,user.longitude,u.mobile_number as merchant_mobile_number,u.whatsapp_link,u.foodpanda_link,u.vendor_comission as vc_user, u.price_hike as price_hike_user from order_list 
 inner join users as u on u.id=order_list.merchant_id  
 inner join users as user on user.id=order_list.user_id
 ".$rider_where." ".$infrm_where." ".$accept_where." ".$notdone_where."
-order by order_list.id desc limit 0,100";
+order by order_list.id desc limit ".$offset.",".$no_of_records_per_page." ";
 
 #echo $query;
 
@@ -105,16 +112,25 @@ $s_admin_google_link = $select_s_admin['google_link'];
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google Tag Manager -->
+<?php include("includes1/head_google_script.php"); ?>
+<!-- End Google Tag Manager -->
   <title>Latest order</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">-->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  
   <link rel="stylesheet" href="./css/font-awesome.min.css">  
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>-->
+  <script src="/js/bootstrap.min.js"></script>
+
 </head>
 <body>
-
+<!-- Google Tag Manager (noscript) -->
+<?php include("includes1/body_google_script.php"); ?>
+<!-- End Google Tag Manager (noscript) -->
 <?php 
 
 //order not completed in 1 hour
@@ -161,6 +177,10 @@ $riders_query_2 = "select * from tbl_riders where r_status = 1 and r_online = 1"
 //$riders_query = "select (select count(*) as dd from order_list as od where od.rider_info = r.r_id and rider_complete_order = 0 ) as rider_process_count,r.* from tbl_riders as r where r_status = 1 and r_online = 1";
 $ridersFetch2 = mysqli_query($conn,$riders_query_2);
 
+$riders_query_offline = "select * from tbl_riders where r_status = 1 and r_online = 0";
+//$riders_query = "select (select count(*) as dd from order_list as od where od.rider_info = r.r_id and rider_complete_order = 0 ) as rider_process_count,r.* from tbl_riders as r where r_status = 1 and r_online = 1";
+$ridersFetchOffline = mysqli_query($conn,$riders_query_offline);
+
 
 //FPX count
 
@@ -185,7 +205,7 @@ $minutes_gp = $interval_gp->i;
 
 ?>
 
-<div class="container" style="margin-left:3px !important;">
+<div class="container" style="margin-left:3px !important;width:100%">
   <h2>Latest Order <?php if(count($fpx_last_order) != 0){?>
   <a href="fpx_orders.php" target="_blank" class="btn-sm btn-yellow <?php if($minutes_fpx >=5){?>blink_info_button<?php }?>" style="cursor:pointer;color: white;padding: 10px;font-weight: bold;background-color:red;margin:3px;">FPX Order</a>
   <?php }?>
@@ -219,11 +239,24 @@ $minutes_gp = $interval_gp->i;
 		}
 		//echo "Jobs:".$riderJobArray[$r_value1['r_id']]." ".$r_value1['r_name']."(".$r_value1['r_mobile_number'].")"; 
 }
-
 ?>
 <div>
-<?php foreach($green_riders as $gkey => $gvalue){?>
-<a style="background-color:green;border-color:green;cursor:pointer;margin:3px;" target="_blank" href="<?php echo $gvalue['r_link'];?>" class="status btn btn-primary"><?php echo $gvalue['r_name']." (".$riderJobArray[$gvalue['r_id']].")";?></a>
+<?php foreach($green_riders as $gkey => $gvalue){
+		$currentDATE = $gvalue['button_click_time'];
+		//$date_riders=date_create($currentDATE);
+		//$riderTimeDiff  = date_diff($date_riders, date_create($current_time));
+		//$diff_rider_hour = $riderTimeDiff->h;
+		$timestamp1 = strtotime($currentDATE);
+		$timestamp2 = strtotime($current_time); //currentdatetime
+		$diff_rider_hour = round(abs($timestamp2 - $timestamp1)/(60*60));	
+
+        if(intval($diff_rider_hour) >= 8){?>
+			<a style="background-color:#4b1879;border-color:#4b1879;cursor:pointer;margin:3px;" diff_rider_hour = "<?php echo $diff_rider_hour;?>" riderId="<?php echo $gvalue['r_id'];?>" href="javascript:void(0);" class="status btn btn-primary button_click_rideradmin" ridername ="<?php echo $gvalue['r_name'];?>"><?php echo $gvalue['r_name']." (".$riderJobArray[$gvalue['r_id']].")";?></a>
+		<?php }else{?>
+			<a style="background-color:green;border-color:green;cursor:pointer;margin:3px;" diff_rider_hour = "<?php echo $diff_rider_hour;?>" riderId="<?php echo $gvalue['r_id'];?>" target="_blank" href="<?php echo $gvalue['r_link'];?>" class="status btn btn-primary"><?php echo $gvalue['r_name']." (".$riderJobArray[$gvalue['r_id']].")";?></a>
+		<?php }?> 
+
+
 <?php }?>
 
 <?php foreach($red_riders as $rkey => $rvalue){?>
@@ -231,9 +264,38 @@ $minutes_gp = $interval_gp->i;
 <?php }?>
 </div>
 
-<?php 
-?>
-          
+<br/>
+<div style=" margin:unset;padding:unset">
+<h4>Offline Riders:</h4>
+<?php  while($r_value_offline = mysqli_fetch_assoc($ridersFetchOffline)){
+	if(date('Y-m-d') != $r_value_offline['offline_update_date']){
+		$style_offriders = 	"background-color:red;border-color:red;cursor:pointer;margin:3px;";
+		$class_offline1 = "blink_info_button";
+	}else{
+		$style_offriders = 	"background-color:lightblue;border-color:lightblue;cursor:pointer;margin:3px;";
+		$class_offline1 = "";
+	}
+	?>
+<a style="<?php echo $style_offriders;?>" href="javascript:void(0)" 
+offline_admin_name ="<?php echo $r_value_offline['offline_admin_name'];?>" 
+offline_reason ="<?php echo $r_value_offline['offline_reason'];?>" 
+offline_time ="<?php echo $r_value_offline['offline_time'];?>" 
+ridername ="<?php echo $r_value_offline['r_name'];?>" 
+riderId="<?php echo $r_value_offline['r_id'];?>" class="<?php echo $class_offline1;?> status btn btn-primary offline_riders"><?php echo $r_value_offline['r_name']." (".$riderJobArray[$r_value_offline['r_id']].")";?></a>
+<?php }?>
+</div>          
+ <nav aria-label="Page navigation example" style="text-align:right">
+	<ul class="pagination">
+		<?php for ($x = 1; $x <= 5; $x++) {
+			$clas_active = "";
+			if($pageno == $x){
+				$clas_active = "active";
+			}
+			?>	
+			<li class="page-item <?php echo $clas_active;?>"><a class="page-link " href="showorder.php?sid=<?php echo $sid;?>&ms=<?php echo md5(rand());?>&pageno=<?php echo $x;?>"><?php echo $x;?></a></li>
+		<?php }?>
+	</ul>
+	</nav>
   <table class="table">
     <thead>
       <tr>
@@ -246,6 +308,7 @@ $minutes_gp = $interval_gp->i;
         <th>Detail <a href='showorder.php?sid=<?php echo $sid;?>&ms=<?php echo md5(rand());?>&order=infrms'>
 		<span style="color:red;font-size:22px">(<?php echo $order_inf_count;?>)</span></a>
 		</th>
+		<th>User Detail</th>
 		<th>Rider Info 
 		<a href='showorder.php?sid=<?php echo $sid;?>&ms=<?php echo md5(rand());?>&order=pendings' title="Rider Assign Pending">
 		<span style="color:red;font-size:22px">(<?php echo $order_pedning_count?>)</span></a>
@@ -264,7 +327,7 @@ $minutes_gp = $interval_gp->i;
 		</th>
         <th>Selling Price</th>
 		<th>Purchase Price</th>
-        <th>User Detail</th>
+        
         <th>Merchant Name</th>
         <th>Merchant Address</th>
         <th>Food Panda Link</th>
@@ -275,7 +338,12 @@ $minutes_gp = $interval_gp->i;
     <tbody>
 	<?php 
      $qu=mysqli_query($conn,$query);
-	 $c=1;
+	 
+	 if (isset($_GET['pageno']) && $_GET['pageno']!= 1 ) {
+		$c=(($_GET['pageno']-1)*100)+1;
+	 }else{
+		$c=1; 
+	 }
 	 while($r=mysqli_fetch_array($qu))
 	 {
 		   $created =$row['created_on'];
@@ -535,8 +603,9 @@ $minutes_gp = $interval_gp->i;
 
 
 </td>
-<td><a target="_blank
-" href="orderview.php?did=<?php echo $row['merchant_id'];?>&vs=<?php  echo md5(rand());?>">Check order</a>
+<td>
+<a target="_blank" class="btn btn-danger" style="background-color:#41bade;border-color:#41bade" href="orderview.php?did=<?php echo $row['merchant_id'];?>&vs=<?php  echo md5(rand());?>">
+Check order</a>
 
 
 
@@ -640,12 +709,58 @@ Payment Proof </a>
 			<span class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i><span></td>
 		
 							
-		<td  style="font-size:18px;" >
+		<td  style="font-size:18px;min-width:200px" >
+		<!--
+		<span class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></span>-->
 		
-		<span class="s_order_detail btn btn-blue" total_bill="<?php echo number_format($total_bill,2); ?>" order_id='<?php echo $row['id']; ?>'><?php echo $language['detail']; ?></span>
-		
+		<!-- b1 code--->
+		<p style="<?php if($row['b1_code']  == ''){echo 'display:block;';}else{echo 'display:none;';}?>" class="gc_main_<?php echo $row['id']; ?>">
+		<input type="text" class="form-control b1_code" name="b1_code" id="b1_code<?php echo $row['id']; ?>" order_id='<?php echo $row['id']; ?>' placeholder="B1 Code" style="width:80px;float:left" value="<?php echo $row['b1_code'];?>">
+		<a  name="button" order_id='<?php echo $row['id']; ?>' class="btn btn-danger generate_code rounded-0" style="width: 103px;padding-left: 0px;padding-right: 0px;">Generate Code</a>
+		</p>
+		<p style="<?php //if($row['b1_code']  == ''){echo 'display:none;';}else{echo 'display:block;';}?>" class="copycode_<?php echo $row['id']; ?>">
+			<?php $fpcode = '';if($row['foodpanda_link'] != ''){$fpcode = '-FP';}
+			 if($r['merchant_short_name'] != ''){ $merchant_short_name = $r['merchant_short_name']; }else{ $merchant_short_name = substr($r['merchant_name'],0,7);}
+			 $odc_remark = '';
+			  $bcode = '';
+			 if($row['remark_extra'] != ''){$odc_remark = "-".$row['remark_extra'];}
+			 if($row['b1_code'] != ''){ $bcode = "-".$row['b1_code'];}
+			 if($row['wallet'] == 'Internet Banking'){
+				$pay_type = 'Bank';	
+			 }else if($row['wallet'] == 'cash'){
+				$pay_type = 'Cash';	
+			 }else if($row['wallet'] == 'fpx'){
+				$pay_type = 'fpx';	
+			 }else{
+				$pay_type = 'wallet';	 
+			 }
+			 
+			$speed_man1 = '';
+			$chinese_man1 = '';
+			if($row['special_delivery_amount']!= '0'){
+				$chinese_man1 = '-Chiness';
+			}
+			if($row['speed_delivery_amount']!= '0'){
+				$speed_man1 = '-Speed';
+			}
+			$odTime = '';
+			if($row['od_delivery_date'] != '' && $row['od_delivery_time'] != '00:00:00' ){
+				$deliveryTime = '';
+				if($row['od_delivery_time'] != '00:00:00' || $row['od_delivery_time'] != '' ){
+					$deliveryTime = "(".$row['od_delivery_time'].")";
+				}
+				$odTime = "-".$row['od_delivery_date']." ".$deliveryTime;
+			}
+
+			 
+			?>
+			<span id="codecontent_<?php echo $row['id']; ?>">
+			Yet-<?php echo $r['c1_code']; ?><span id="b1value_<?php echo $row['id']; ?>"><?php echo $bcode; ?></span><?php echo "-".$merchant_short_name.$fpcode."-".$row['invoice_no']."-".$pay_type.$odc_remark.$chinese_man1.$speed_man1.$odTime; ?>
+			</span>
+			<a class="btn btn-primary copy-text gccopy_<?php echo $row['id'];?>" onclick="gccopy('#codecontent_<?php  echo $row['id'];?>','gccopy_<?php echo $row['id'];?>','<?php echo $row['id'];?>')"> Copy </a>
+		</p>
+		<!-- END b1 code -->
 		<!--- info Merchant Button-->
-		<br/>
 		<?php 
 		
 		$years = $interval->y;
@@ -809,9 +924,9 @@ Payment Proof </a>
 			
 				<label style="font-size:12px;font-weight:normal"><?php echo $labels;?></label>
 			
-			<?php if($row['informpop_name'] != ''){ echo '<br/>'.$row['informpop_name'];}?>
+			<?php if($row['informpop_name'] != ''){ echo '<br/> RM '.$row['informpop_name'];}?>
 			
-			<?php if($row['informtime_complete'] != ''){ echo '<br/>'.$row['informtime_complete'];}?>
+			<?php if($row['informtime_complete'] != ''){ echo '<br/>'.$row['informtime_complete']." minutes";}?>
 			
 			
 			
@@ -914,6 +1029,81 @@ Payment Proof </a>
 		
 		</td>
 		
+			<td>
+		<div style="width:200px !important;">
+		
+		<?php 
+		if($r['user_name']){  echo $r['user_name']."- ".$r['user_mobile']; } else { echo $r['user_mobile'];} ?>
+		
+		<a href="https://api.whatsapp.com/send?phone=<?php  echo $r['user_mobile_number']?>" target="_blank">
+							
+							<img src="images/whatapp.png" style="max-width:40px;"/></a>
+							
+							<a target="_blank" href="../dashboard.php?did=<?php echo $r['od_user_id'];?>">
+							<!--<a target="_blank" href="../dashboard.php?did=<?php echo $r['l_user_id'];?>">-->
+							<i style="font-size:30px;" class="fa fa-info"></i></a>
+							<br/>
+		<!--
+		<b>Latitude:</b> <?php echo $r['latitude'];?><br/>
+		<b>Longtitude:</b> <?php echo $r['longitude'];?><br/!-->
+		<!--<input type="text" class="form-control lat_lng" name="lat_lng" selected_user_id="<?php echo $r['l_user_id']; ?>" value="<?php echo $r['lat_lng']; ?>" placeholder="latitude & longitude"/>-->
+		
+		<?php if($row['ipay_p_id'] != 0){?>
+							<?php if($row['ipay_payment_status'] == 0){?>
+								<br/>
+								 <label class= "btn btn-primary status"  style="background-color:red"> <?php echo $row['ipay_message']; ?></label>
+								 <br/>Transaction Id: 
+								 <?php echo $row['pay_transid']; ?>
+							<?php }?>
+							<?php if($row['ipay_payment_status'] == 1){?>
+								<br/>
+								 <label class= "btn btn-primary status"  style="background-color:green"> Success<?php //echo $row['ipay_message']; ?></label>
+								 <br/>Transaction Id: 
+								 <?php echo $row['pay_transid']; ?>
+								 </br>
+							<?php }?>
+						<?php }?>
+						
+				<a class="" target="_blank" href="http://maps.google.com/maps?q=<?php echo  $row['location']; ?>">  <?php echo $row['location']; ?></a>
+				<?php 
+				$created_on = $row['created_on'];
+				$created_on1 = new DateTime($created_on);
+				$now21 = new DateTime(Date('Y-m-d H:i:s'));
+				$interval_21 = $created_on1->diff($now21);
+				$hours_21 = $interval_21->h;
+				$minutes_21 = $interval_21->i;
+				$cls_txt = '';
+				$cls_cnfrm =  '';
+				
+				if($minutes_21 >=5){
+					if($row['cancel_order'] != 1){
+						if($row['admin_code'] == ''){
+							$cls_txt = "blink_info_button";
+						}
+						if($row['admin_confirmed_by'] == ''){
+							$cls_cnfrm = "blink_info_button";
+						}
+					}
+					
+				}
+
+				
+				?>
+		<p style="padding-bottom:10px">
+			 Code: <input type="text" class="<?php echo $cls_txt;?> form-control admin_code" name="admin_code" id="admin_code" value="<?php echo $row['admin_code'];?>" order_id="<?php echo $row['id']; ?>" style="width:50%;float:right;height:10%;background-color:white!important;"/>
+			 </p>
+			 <p style="padding-bottom:10px">
+		Commission: <input type="number" class="form-control admin_commission_price acp_<?php echo $row['id']; ?>" name="admin_commission_price" id="admin_commission_price" value="<?php echo $row['admin_commission_price'];?>" order_id="<?php echo $row['id']; ?>" <?php echo $price_readonly;?> style="width:50%;float:right;height:10%;;background-color:white!important;" />	
+				
+				</p>
+		<p>
+		Confirm By: <input type="text" class="<?php echo $cls_cnfrm;?> form-control admin_confirmed_by" name="admin_confirmed_by" id="admin_confirmed_by" value="<?php echo $row['admin_confirmed_by'];?>" order_id="<?php echo $row['id']; ?>" style="width:50%;float:right;height:10%;;background-color:white!important;" />
+		</p>
+			</div>
+		</td>
+		
+	
+		
 		<!--
 		<td style="min-width:190px;"><input type="text" selected_user_id="<?php echo $row['id']; ?>"  name="rider_info" placeholder="%" class="form-control rider_info" value="<?php echo $row['rider_info'];?>"></td>
 		-->
@@ -949,7 +1139,26 @@ Payment Proof </a>
 							$s_label4 = '商家正在准备食物，食物完成后，我们的司机就会把美食送上';
 						}
 						?>
-						<select name="s_rider_option" id="s_rider_option_<?php echo $row['id']; ?>" class="form-control s_rider_option"  order_id="<?php echo $row['id']; ?>">
+						<?php 
+						$op_class = '';
+						$created_ons = $row['created_on'];
+						$created_ons1 = new DateTime($created_ons);
+						$nows21 = new DateTime(Date('Y-m-d H:i:s'));
+						$intervals_21 = $created_ons1->diff($nows21);
+						$minutess_21 = $intervals_21->i;
+						$hr_21 = $intervals_21->h ;
+						$sstyle_c = '';
+						if($row['s_rider_option'] == 0 || $row['s_rider_option'] ==''){
+							
+							
+							if($minutess_21 >= 20 || $hr_21 >=1 ){
+								if($row['cancel_order'] != 1){
+									$op_class = 'blink_info_button';
+									$sstyle_c = 'style="color:white"';
+								}
+							}
+						}?>
+						<select name="s_rider_option" id="s_rider_option_<?php echo $row['id']; ?>" class="form-control s_rider_option <?php echo $op_class;?>" <?php echo $sstyle_c ;?>  order_id="<?php echo $row['id']; ?>">
 								<option value="0">Select Option</option>
 								<option <?php if($row['s_rider_option'] == '1'){ echo 'selected';}?> value="1"><?php echo $s_label1;?></option>
 								<option <?php if($row['s_rider_option'] == '2'){ echo 'selected';}?> value="2"><?php echo $s_label2;?></option>
@@ -960,11 +1169,7 @@ Payment Proof </a>
 						
 						<?php 
 						
-						$created_ons = $row['created_on'];
-						$created_ons1 = new DateTime($created_ons);
-						$nows21 = new DateTime(Date('Y-m-d H:i:s'));
-						$intervals_21 = $created_ons1->diff($nows21);
-						$minutess_21 = $intervals_21->i;
+						
 				
 				
 						$cls_rider_blink = "";
@@ -1004,7 +1209,8 @@ Payment Proof </a>
 								<?php }}?>
 						<?php }?>
 						</select>
-						<?php if($row['rider_info'] == 26){
+						<?php //if($row['rider_info'] == 26){
+						if($row['rider_tel_number'] != ''){ 
 							$b_css = "float:right;height:10%;;background-color:white!important;margin-top:10px;margin-bottom:10px;";
 							 if($row['rider_tel_number'] == ''){ 
 								$b_css = 'float:right;height:10%;;background-color:white!important;margin-top:10px;margin-bottom:10px;border:1px solid red';
@@ -1173,7 +1379,8 @@ Payment Proof </a>
 	
 	<p>
 		
-		 <input type="text" class="form-control food_receipt_seen <?php if(($interval_complete->h >= 1 || $interval_complete->i >= 45) && $row['food_receipt_seen'] == '' ){  if($row['cancel_order'] == 0 ){ echo 'blink_info_button';} }?> " name="food_receipt_seen" id="food_receipt_seen<?php echo $row['id']; ?>" order_id='<?php echo $row['id']; ?>' placeholder="Admin 名字看到餐厅收据" style="float:right;height:10%;;background-color:white!important;margin-top:10px;margin-bottom:10px;" value="<?php echo $row['food_receipt_seen'];?>">
+		 <textarea type="text" class="form-control food_receipt_seen <?php if(($interval_complete->h >= 1 || $interval_complete->i >= 45) && $row['food_receipt_seen'] == '' ){  if($row['cancel_order'] == 0 ){ echo 'blink_info_button';} }?> " name="food_receipt_seen" id="food_receipt_seen<?php echo $row['id']; ?>" order_id='<?php echo $row['id']; ?>' placeholder="Admin investigation : 20% & late 1 hour delivery" style="float:right;height:100px;min-width:150px;background-color:white!important;" maxlength="200"><?php if($row['food_receipt_seen'] != ''){echo trim($row['food_receipt_seen']);}?></textarea>
+		<div id="countlimit<?php echo $row['id']; ?>"></div>
 		
 	</p>
 		
@@ -1197,14 +1404,14 @@ Payment Proof </a>
 			<?php if($row['merchant_remark_image'] != '' ){?>
 				<label class="btn-sm btn-yellow" style="background-color:darkgreen;width:155px">
 					<a class="fancybox" rel="" href="<?php echo $site_url.'/upload/merchant_remark/'.$row['merchant_remark_image'];?>" style="color:white" >
-					Merchant Remark </a>
+					商家 Touch &go </a>
 					<a href="javascript:void(0)" class="delete_meremark" selected_user_id="<?php echo $row['merchant_id']; ?>" orderid="<?php echo $row['id']; ?>" style="color:#000"><i class="fa fa-trash" style="margin-left:20px;color:white"> </i></a>
 				</label>
 			<?php }else{?>
 					<form method="post" id="remark-form_<?php echo $row['id']; ?>" class="remark-form" orderid='<?php echo $row['id']; ?>' selected_user_id="<?php echo $row['merchant_id']; ?>" enctype="multipart/form-data" onSubmit="return false;" style="min-height:0px !important;width:203px">
 						<div class="input-group mt-3 mb-3 input-has-value flex-wrap">
 							<input type="file" name="file_remark" class="file_remark" style="visibility: hidden;position: absolute;">
-							<input type="text" class="form-control remark_proof" disabled="" placeholder="Remark Image" id="file_remark" style="width:85px">
+							<input type="text" class="form-control remark_proof" disabled="" placeholder="Touch & Go" id="file_remark" style="width:85px">
 							<button type="button" class="browse_remark btn btn-primary rounded-0" style="width: 53px;padding-left: 0px;padding-right: 0px;">Browse</button>
 							&nbsp;
 							<input type="submit" name="submit" value="Submit" class="btn btn-danger btn_remark_upload rounded-0" style="width: 53px;padding-left: 0px;padding-right: 0px;">
@@ -1226,79 +1433,6 @@ Payment Proof </a>
 	   
         	<!--<td class="writeup_set" id="writeup_set_<?php  echo $row['id'];?>" order_id='<?php echo $row['id']; ?>'><i class="fa fa-copy" style="font-size:25px;margin-left: 10%;"></i></td>-->
 		
-		
-		<td>
-		<div style="width:200px !important;">
-		
-		<?php 
-		if($r['user_name']){  echo $r['user_name']."- ".$r['user_mobile']; } else { echo $r['user_mobile'];} ?>
-		
-		<a href="https://api.whatsapp.com/send?phone=<?php  echo $r['user_mobile_number']?>" target="_blank">
-							
-							<img src="images/whatapp.png" style="max-width:40px;"/></a>
-							
-							<a target="_blank" href="../dashboard.php?did=<?php echo $r['od_user_id'];?>">
-							<!--<a target="_blank" href="../dashboard.php?did=<?php echo $r['l_user_id'];?>">-->
-							<i style="font-size:30px;" class="fa fa-info"></i></a>
-							<br/>
-		<!--
-		<b>Latitude:</b> <?php echo $r['latitude'];?><br/>
-		<b>Longtitude:</b> <?php echo $r['longitude'];?><br/!-->
-		<!--<input type="text" class="form-control lat_lng" name="lat_lng" selected_user_id="<?php echo $r['l_user_id']; ?>" value="<?php echo $r['lat_lng']; ?>" placeholder="latitude & longitude"/>-->
-		
-		<?php if($row['ipay_p_id'] != 0){?>
-							<?php if($row['ipay_payment_status'] == 0){?>
-								<br/>
-								 <label class= "btn btn-primary status"  style="background-color:red"> <?php echo $row['ipay_message']; ?></label>
-								 <br/>Transaction Id: 
-								 <?php echo $row['pay_transid']; ?>
-							<?php }?>
-							<?php if($row['ipay_payment_status'] == 1){?>
-								<br/>
-								 <label class= "btn btn-primary status"  style="background-color:green"> Success<?php //echo $row['ipay_message']; ?></label>
-								 <br/>Transaction Id: 
-								 <?php echo $row['pay_transid']; ?>
-								 </br>
-							<?php }?>
-						<?php }?>
-						
-				<a class="" target="_blank" href="http://maps.google.com/maps?q=<?php echo  $row['location']; ?>">  <?php echo $row['location']; ?></a>
-				<?php 
-				$created_on = $row['created_on'];
-				$created_on1 = new DateTime($created_on);
-				$now21 = new DateTime(Date('Y-m-d H:i:s'));
-				$interval_21 = $created_on1->diff($now21);
-				$hours_21 = $interval_21->h;
-				$minutes_21 = $interval_21->i;
-				$cls_txt = '';
-				$cls_cnfrm =  '';
-				
-				if($minutes_21 >=5){
-					if($row['cancel_order'] != 1){
-						if($row['admin_code'] == ''){
-							$cls_txt = "blink_info_button";
-						}
-						if($row['admin_confirmed_by'] == ''){
-							$cls_cnfrm = "blink_info_button";
-						}
-					}
-					
-				}
-
-				
-				?>
-		<p style="padding-bottom:10px">
-			 Code: <input type="text" class="<?php echo $cls_txt;?> form-control admin_code" name="admin_code" id="admin_code" value="<?php echo $row['admin_code'];?>" order_id="<?php echo $row['id']; ?>" style="width:50%;float:right;height:10%;background-color:white!important;"/>
-			 </p>
-			 <p style="padding-bottom:10px">
-		Commission: <input type="number" class="form-control admin_commission_price acp_<?php echo $row['id']; ?>" name="admin_commission_price" id="admin_commission_price" value="<?php echo $row['admin_commission_price'];?>" order_id="<?php echo $row['id']; ?>" <?php echo $price_readonly;?> style="width:50%;float:right;height:10%;;background-color:white!important;" />	
-				
-				</p>
-		<p>
-		Confirm By: <input type="text" class="<?php echo $cls_cnfrm;?> form-control admin_confirmed_by" name="admin_confirmed_by" id="admin_confirmed_by" value="<?php echo $row['admin_confirmed_by'];?>" order_id="<?php echo $row['id']; ?>" style="width:50%;float:right;height:10%;;background-color:white!important;" />
-		</p>
-			</div>
-		</td>
 		
 		<td><?php echo $r['merchant_name']; ?>
 		
@@ -1395,6 +1529,22 @@ Payment Proof </a>
       
     </tbody>
   </table>
+  
+ 
+  <nav aria-label="Page navigation example" style="text-align:center">
+	<ul class="pagination">
+		<?php for ($x = 1; $x <= 5; $x++) {
+			$clas_active = "";
+			if($pageno == $x){
+				$clas_active = "active";
+			}
+			?>	
+			<li class="page-item <?php echo $clas_active;?>"><a class="page-link " href="showorder.php?sid=<?php echo $sid;?>&ms=<?php echo md5(rand());?>&pageno=<?php echo $x;?>"><?php echo $x;?></a></li>
+		<?php }?>
+	</ul>
+	</nav>
+
+
 </div>
 <div class="modal fade" id="orderdetailmodel" role="dialog" style="margin-top:12%;"> 
 							<div class="modal-dialog">
@@ -1456,7 +1606,7 @@ Payment Proof </a>
 
 						</select>
 						
-						<input type="textbox" name="informtime_complete" id="informtime_complete" class="form-control informtime_complete" placeholder="Time To Complete" value="" style="display:none;margin-top:10px;" />
+						<input type="number" name="informtime_complete" id="informtime_complete" class="form-control informtime_complete" placeholder="Time To Complete" value="" style="display:none;margin-top:10px;" />
 						
 						<input type="textbox" name="informpop_name" id="informpop_name" class="form-control informpop_name" placeholder="How Much??" value="" style="display:none;margin-top:10px" />
 					</div>
@@ -1482,7 +1632,195 @@ Payment Proof </a>
 
 
 <!-- END-->	
+
+
+<!-- rideradmin modal-->
+<div id="myModal_rideradmin" class="modal fade" role="dialog" style="margin-top:12%;">
+    <div class="modal-dialog modal-sm" style="">
+        <div class="modal-content" style="" >
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h5 class="modal-title"><b>请确保司机分享8个小时Live location</b></h5>
+            </div>
+            <div class="modal-body">
+				
+				<p> <b>Rider Name:</b> <span class="rider_pop_nmae"></span></p>
+					<div class="form-group mx-sm-3 mb-2" style="margin-bottom:10px">
+					<b>Admin Name:</b> <input type="textbox" name="button_click_admin" id="button_click_admin" class="form-control button_click_admin" placeholder="Admin Name" value="" style=";margin-top:10px;" />
+
+					</div>
+					
+					<div class="form-group mx-sm-3 mb-2">
+						<input type="hidden" class="" name="admin_rider_id" id="admin_rider_id" value=""/>
+					</div>
+					<button type="button" class="btn btn-primary mb-2 submit_admin_riders">Submit</button>
+					<img src="img/ajax-loader.gif" class="ajx_lang_resp" style="display:none;padding-top:10px"/>
+					&nbsp;
+					<span class="please_wait_text" style="display:none;color:red">Please wait ....</span>
+            </div>
+			<div class="modal-footer">
+		
+			</div>
+        </div>
+    </div>
+</div>
+
+<!--END-->
+
+
+<!-- Offline rider popup-->
+
+<!-- rideradmin modal-->
+<div id="myModal_offline_rideradmin" class="modal fade" role="dialog" style="margin-top:12%;">
+    <div class="modal-dialog modal-sm" style="">
+        <div class="modal-content" style="" >
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h5 class="modal-title"><b>Offline Rider:</b> <span class="off_rider_pop_nmae"></span></h5>
+            </div>
+            <div class="modal-body">
+				<div class="form-group mx-sm-3 mb-2" style="margin-bottom:10px">
+					<b>Admin Name:</b> <input type="text" name="button_click_off_admin" id="button_click_off_admin" class="form-control button_click_off_admin" placeholder="Admin Name" value="" style=";margin-top:10px;" />
+				</div>
+				<div class="form-group mx-sm-3 mb-2" style="margin-bottom:10px">
+					<b>Why?</b> 
+					<textarea rows="5" name="button_click_admin_why" id="button_click_admin_why" class="form-control button_click_admin_why" placeholder="why?" value="" style=";margin-top:10px;"></textarea>
+				</div>
+				
+				<div class="form-group mx-sm-3 mb-2" style="margin-bottom:10px">
+					<b>What Time?</b> <input type="text" name="button_click_admin_time" id="button_click_admin_time" class="form-control button_click_admin_time" placeholder="What Time?" value="" style=";margin-top:10px;" />
+				</div>
+				
+				
+				<div class="form-group mx-sm-3 mb-2">
+					<input type="hidden" class="" name="admin_off_rider_id" id="admin_off_rider_id" value=""/>
+				</div>
+				<button type="button" class="btn btn-primary mb-2 submit_admin_off_riders">Submit</button>
+				<img src="img/ajax-loader.gif" class="ajx_lang_resp" style="display:none;padding-top:10px"/>
+				&nbsp;
+				<span class="please_wait_text" style="display:none;color:red">Please wait ....</span>
+            </div>
+			<div class="modal-footer">
+		
+			</div>
+        </div>
+    </div>
+</div>
+
+<!--END-->
+<!-- END-->
 <script>
+
+
+
+$(document).ready(function(){
+	$(".offline_riders").click(function(){
+		var riderId = $(this).attr('riderId');
+		var ridername = $(this).attr('ridername');
+		var offline_admin_name = $(this).attr('offline_admin_name');
+		var offline_reason = $(this).attr('offline_reason');
+		var offline_time = $(this).attr('offline_time');
+		
+		$("#button_click_off_admin").val(offline_admin_name);
+		$("#button_click_admin_why").val(offline_reason);
+		$("#button_click_admin_time").val(offline_time);
+		
+		$("#myModal_offline_rideradmin").modal('show');
+		$(".off_rider_pop_nmae").html(ridername);
+		$("#admin_off_rider_id").val(riderId);
+	});
+	
+	$(".submit_admin_off_riders").click(function(){
+		var admin_off_rider_id = $("#admin_off_rider_id").val();
+		var button_click_off_admin = $("#button_click_off_admin").val();
+		var button_click_admin_why = $("#button_click_admin_why").val();
+		var button_click_admin_time = $("#button_click_admin_time").val();
+		
+			$("#button_click_off_admin").css('border','');
+			$("#button_click_admin_why").css('border','');
+			$("#button_click_admin_time").css('border','');
+			
+		if(button_click_off_admin == ''){
+			$("#button_click_off_admin").css('border','1px solid red');
+			$("#button_click_off_admin").focus();
+			return false;
+		}else if(button_click_admin_why == ''){
+			$("#button_click_admin_why").css('border','1px solid red');
+			$("#button_click_admin_why").focus();
+			return false;
+		}else if(button_click_admin_time == ''){
+			$("#button_click_admin_time").css('border','1px solid red');
+			$("#button_click_admin_time").focus();
+			return false;
+		}else{
+			var cnfrmDelete = confirm("Are you sure to submit?");
+			if(cnfrmDelete==true){
+				 $.ajax({
+					url :'functions.php',
+					type:"post",
+					data:{method:"offline_rider_button_click",button_click_off_admin:button_click_off_admin,admin_off_rider_id:admin_off_rider_id,button_click_admin_why:button_click_admin_why,button_click_admin_time:button_click_admin_time},
+					dataType:'json',
+					success:function(result){  
+							var data = JSON.parse(JSON.stringify(result));   
+							if(data.status==true){location.reload(true);}
+							else{alert('Failed to update');	}
+						}
+				});      
+			}
+		}
+
+	});
+		
+});
+
+/*START: */
+	$(document).ready(function(){
+		$(".button_click_rideradmin").click(function(){
+			var riderId = $(this).attr('riderId');
+			var ridername = $(this).attr('ridername');
+			$("#myModal_rideradmin").modal('show');
+			$(".rider_pop_nmae").html(ridername);
+			$("#admin_rider_id").val(riderId);
+		});
+		
+		
+		$(".submit_admin_riders").click(function(){
+			var admin_rider_id = $("#admin_rider_id").val();
+			var button_click_admin = $("#button_click_admin").val();
+			if(button_click_admin == ''){
+				$("#button_click_admin").css('border','1px solid red');
+				$("#button_click_admin").focus();
+				return false;
+			}else{
+				var cnfrmDelete = confirm("Are you sure to verified this rider?");
+				if(cnfrmDelete==true){
+					 $.ajax({
+						url :'functions.php',
+						type:"post",
+						data:{button_click_admin:button_click_admin,method:"rider_button_click",admin_rider_id:admin_rider_id},
+						dataType:'json',
+						success:function(result){  
+							var data = JSON.parse(JSON.stringify(result));   
+							if(data.status==true)
+							{  
+							   location.reload(true);
+							}
+							else
+							{alert('Failed to update');	}
+							
+							}
+				});      
+				
+				}
+			}
+			
+		});
+		
+		
+	});
+	/*END*/	
+	
+	
 function generatetokenno(length) {
    var result           = '';
    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -1709,7 +2047,8 @@ $(document).ready(function(){
 				 type:"post",
 				 data:{tel_phone:tel_phone,method:"riderstel_phone",order_id:order_id},     
 				 dataType:'json',
-				 success:function(result){  
+				 success:function(result){ 
+						location.reload(true);
 				 }
 			});
 						
@@ -1726,6 +2065,12 @@ $(document).ready(function(){
 		if(rider_text == 26){
 			$(".rider_tel_number_"+order_id).show();
 			$(".rider_tel_number").css('border','1px solid red');
+			
+			if($(".rider_tel_number_"+order_id).val() == ''){
+				$(this).val(0);
+				$(".rider_info").css('border','1px solid red');
+				return false;
+			}
 		}
 		
 		
@@ -1764,9 +2109,6 @@ $(document).ready(function(){
 										$("#s_rider_option_"+order_id).val('2');
 										//console.log('here');
 										$(".s_rider_option").trigger('change');
-										
-										
-										
 									}
 									location.reload(); 
 								}
@@ -2148,6 +2490,21 @@ $(".delete_meremark").click(function(){
 	
 });
 /* END: Merchant remark image*/
+/*Copy code*/
+function gccopy(element,clsn,orderid) {
+	var $temp = $("<textarea>");
+	$("body").append($temp);
+	$("#b1value_"+orderid).removeAttr('id');
+	var html = $(element).html();
+	html = html.replace(/<span><\/span>/g, ""); // or \r\n
+	html = html.replace(/<span>/g, ""); // or \r\n
+	html = html.replace(/<\/span>/g, ""); // or \r\n
+	//console.log(html);
+	$temp.val(html).select();
+	document.execCommand("copy");
+	$temp.remove();
+	$("."+clsn).html('Copied'); 	
+}
 
 /*Copy writeup*/
 function copyToCustAdd(element,clsn,orderid) {
@@ -2286,6 +2643,28 @@ $(document).ready(function(){
 	});
 	
 	
+	$(".generate_code").click(function(){
+		var orderid = $(this).attr('order_id');
+		var b1_Code = $("#b1_code"+orderid).val();
+		if(b1_Code == ''){
+			$("#b1_code"+orderid).css('border','1px solid red');
+			return false;
+		}else{
+			$("#b1value_"+orderid).html("-"+b1_Code);
+			
+			
+			$.ajax({
+				url:'functions.php',
+				method:'POST',
+				data:{method:'b1_code',orderid:orderid,b1_Code:b1_Code},
+				success:function(res){
+					$(".gc_main_"+orderid).hide();
+					$(".copycode_"+orderid).show();
+					//location.reload(true);
+				}
+			});	
+		}
+	});
 	
 	$(".code_admin_code").focusout(function(){
 		var orderid = $(this).attr('order_id');
@@ -2302,6 +2681,11 @@ $(document).ready(function(){
 		
 	});
 	
+	var max = 200;
+	$(".food_receipt_seen").keyup(function(e){
+		var orderid = $(this).attr('order_id');
+		$("#countlimit"+orderid).text("Characters left: " + (max - $(this).val().length));
+	});
 	
 	$(".food_receipt_seen").focusout(function(){
 		var orderid = $(this).attr('order_id');
@@ -2592,6 +2976,7 @@ $(".rider_bank_amount").focusout(function(e){
 	});
 	/* END :: save admin_bank_price & admin_cash_price*/
 	 
+	
 </script>
 
 

@@ -219,9 +219,10 @@ while ($row=mysqli_fetch_assoc($total_rows)){
 		  	       
 			$message= $_POST['message'] = "Rider has not been assigned for Invoice no: (".$invoice_no."). ".$url." ".$client.",KooFamilies alert.";
 			
+			
 	
-			$sms_to = '+60123115670,'.$row['handphone_number'];
-				$sms_to = '+60127088661'.',+60123115670,'.$row['handphone_number'];
+			$sms_to = '+60123115670'.',+60127500913,'.$row['handphone_number'];
+				$sms_to = '+60127500913'.',+60123115670,'.$row['handphone_number'];
 			
 			$sms_msg = $_POST['message'];   
 			$smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $sms_to,$sms_msg);  
@@ -264,7 +265,9 @@ while($u_chkData = mysqli_fetch_assoc($chkt_query)){
 			if($chk_pending_hrs <= 1){
 				//echo 'sent_sms';
 				$update_od_q = mysqli_query($conn,"UPDATE `order_list` SET `sent_message_customer` = '1',sent_message_time = '".date('Y-m-d H:i:s')."' WHERE `order_list`.`id` =".$u_chkData['id']);
-				$sms_content = 'Hurry up ! Enjoy RM 1 discount on your order now ( 1 hours are left ). https://www.koofamilies.com/index.php?cid='.$user_id;
+				$sms_content = 'Koo Family food delivery voucher, Hurry up ! Enjoy RM 1 discount on your order now ( 1 hours are left ). https://www.koofamilies.com/index.php?cid='.$user_id;
+								
+				
 				$smsend=gw_send_sms("APIHKXVL33N5E", "APIHKXVL33N5EHKXVL", "9787136232", $us_mobileNumber,$sms_content);  
 			}	
 		}

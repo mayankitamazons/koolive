@@ -30,6 +30,8 @@ if(isset($_POST['id']) && isset($_POST['update_stock'])){
 
  $id=$_POST['id'];
  $productname=$_POST['productname'];
+ $product_slug=$_POST['product_slug'];
+ 
  $category=$_POST['category'];
  $product_type=$_POST['product_type'];
  $product_price=$_POST['product_price'];
@@ -89,7 +91,8 @@ $old_image=$pro_data['image'];
 	 $image_code=$pro_data['code'];
  //~ $image_pic=$_FILES["image_pic"]["name"]; 
 
-  $qu="UPDATE `products` SET product_discount='$product_discount',varient_must='$varient_must',`product_name`='$productname', category='$category' , product_type='$product_type', product_price='$product_price',print_ip_address='$print_ip_address',remark = '$remark', image='$uniquesavename', code='$image_code',category_id='$category_id',active_time='$active_date',modifiedid='$userid',`printer_profile`='$printer_profile',`usb_name`='$usb_name' WHERE `id`=$id";
+
+  $qu="UPDATE `products` SET product_slug ='$product_slug',product_discount='$product_discount',varient_must='$varient_must',`product_name`='$productname', category='$category' , product_type='$product_type', product_price='$product_price',print_ip_address='$print_ip_address',remark = '$remark', image='$uniquesavename', code='$image_code',category_id='$category_id',active_time='$active_date',modifiedid='$userid',`printer_profile`='$printer_profile',`usb_name`='$usb_name' WHERE `id`=$id";
  // die;  
  $tt = mysqli_query($conn,$qu);
 

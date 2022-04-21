@@ -46,16 +46,18 @@ if($LocaState){
 	$LOCSTATESQL = " and users.m_state='$LocaState'" ;
 }
 
+///*and shop_open = 1 and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time and users.slug LIKE '%Yun-Lai-Dian-Xi%'
 	
 if(isset($sort_by) && $sort_by=="sort_distance" && $type=="all"){
-	$sql = "SELECT   users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open,
+	#echo 'all';exit;
+	$sql = "SELECT   users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.slug,	users.order_extra_charge,users.delivery_plan,users.shop_open,
        		(6371 * ACOS ( COS ( RADIANS (".$_POST['latitude'].")) * COS ( RADIANS(users.latitude)) * COS(RADIANS(users.longitude) - RADIANS(".$_POST['longitude']."))
-       		+ SIN(RADIANS(".$_POST['latitude'].")) * SIN(RADIANS(users.latitude)))) AS distance,users.not_working_text,users.not_working_text_chiness
+       		+ SIN(RADIANS(".$_POST['latitude'].")) * SIN(RADIANS(users.latitude)))) AS distance,users.working_text,users.working_text_chiness,users.not_working_text,users.not_working_text_chiness
       		FROM users 
 			left JOIN service on users.service_id = service.id 
 			LEFT JOIN about on users.id=about.userid 
 			LEFT JOIN timings on users.id=timings.merchant_id   
-			WHERE users.user_roles = 2 and users.isLocked= 0 and users.latitude!='' and users.longitude!='' and users.show_merchant='1' $LOCSQL
+			WHERE users.user_roles = 2 and users.isLocked= 0 and users.latitude!='' and users.longitude!='' and users.show_merchant='1' and shop_open = 1 and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time
 			group by users.id 
 			order by distance asc";   
 
@@ -64,19 +66,20 @@ if(isset($sort_by) && $sort_by=="sort_distance" && $type=="all"){
 			left JOIN service on users.service_id = service.id 
 			LEFT JOIN about on users.id=about.userid 
 			LEFT JOIN timings on users.id=timings.merchant_id   
-			WHERE users.user_roles = 2 and users.isLocked= 0 and users.latitude!='' and users.longitude!='' $LOCSQL
+			WHERE users.user_roles = 2 and users.isLocked= 0 and users.latitude!='' and users.longitude!='' and shop_open = 1 and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time
 			group by users.id 
 			order by distance asc";
 } 
 else if(isset($sort_by) && $sort_by=="sort_distance" && $type=="popular"){
-	 $sql = "SELECT   users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.order_extra_charge,users.delivery_plan,users.shop_open,
+	#echo 'popular';exit;
+	 $sql = "SELECT   users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.slug,users.order_extra_charge,users.delivery_plan,users.shop_open,
         	(6371 * ACOS ( COS ( RADIANS (".$_POST['latitude'].")) * COS ( RADIANS(users.latitude)) * COS(RADIANS(users.longitude) - RADIANS(".$_POST['longitude']."))
    			+ SIN(RADIANS(".$_POST['latitude'].")) * SIN(RADIANS(users.latitude)))) AS distance,users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness
       		FROM users 
 			left JOIN service on users.service_id = service.id 
 			LEFT JOIN about on users.id=about.userid 
 			LEFT JOIN timings on users.id=timings.merchant_id   
-			WHERE users.user_roles = 2 and users.isLocked= 0 and users.popular_restro=1 and users.latitude!='' and users.longitude!='' and users.show_merchant='1' $LOCSQL
+			WHERE users.user_roles = 2 and users.isLocked= 0 and users.popular_restro=1 and users.latitude!='' and users.longitude!='' and users.show_merchant='1' and shop_open = 1 and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time
 			group by users.id 
 			order by distance asc";   
 
@@ -85,7 +88,7 @@ else if(isset($sort_by) && $sort_by=="sort_distance" && $type=="popular"){
 			left JOIN service on users.service_id = service.id 
 			LEFT JOIN about on users.id=about.userid 
 			LEFT JOIN timings on users.id=timings.merchant_id   
-			WHERE users.user_roles = 2 and users.isLocked= 0 and users.popular_restro=1 and users.latitude!='' and users.longitude!=''  $LOCSQL
+			WHERE users.user_roles = 2 and users.isLocked= 0 and users.popular_restro=1 and users.latitude!='' and users.longitude!='' and shop_open = 1 and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time
 			group by users.id 
 			order by distance asc";  
 
@@ -113,10 +116,9 @@ $sql = "SELECT   users.name, (SELECT count(*) FROM `timings` WHERE day = '".date
 	}else{
 		$lang_shop = "";
 	}
-	
-	$sql = "(SELECT users.order_min_charge,users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.free_delivery_check,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop." and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time $LOCSQL $LOCSTATESQL  group by users.id order by users.name asc)
+	$sql = "(SELECT users.order_min_charge,users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.slug	,users.free_delivery_check,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop." and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time $LOCSQL $LOCSTATESQL  group by users.id order by users.name asc)
 UNION ALL
-(SELECT users.order_min_charge,users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.free_delivery_check,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop." and day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN start_time and end_time $LOCSQL $LOCSTATESQL  group by users.id order by users.name asc
+(SELECT users.order_min_charge,users.name, users.address,service.short_name,about.image,users.mobile_number,timings.*,users.slug	,users.free_delivery_check,users.order_extra_charge,users.delivery_plan,users.shop_open, users.working_text,users.working_text_chiness,users.banner_image,users.not_working_text,users.not_working_text_chiness FROM users left JOIN service on users.service_id = service.id LEFT JOIN about on users.id=about.userid LEFT JOIN timings on users.id=timings.merchant_id WHERE users.user_roles = 2 and users.isLocked= 0 and users.show_merchant='1' ".$lang_shop." and day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN start_time and end_time $LOCSQL $LOCSTATESQL  group by users.id order by users.name asc
 )";  
 			
 	
@@ -177,6 +179,7 @@ if($count > 0){
 		?>
 			<div class="col-sm-12">
 				<div class="text-center">
+				<input type="hidden" sort_by=<?php echo $sort_by;?> class="no_of_searchs_shops" value="<?php echo $total;?>" />
 					<?php 
 						if($show_prev){
 							?>
@@ -295,7 +298,9 @@ if($count > 0){
 										$work_str.=" -".$rd['not_working_text'];
 									}  
 								}
-	                        ?>  
+	                        ?>  <span style="display:none" class="check_q" >
+							<?php echo $working."===".$work_str."###".$rd['working_text'];?>
+							</span>
 							
 							<?php if($rd['free_delivery_check'] ==1 || $rd['order_min_charge'] > 0){?>
 								<style>
@@ -322,8 +327,28 @@ if($count > 0){
 									}
 									</style>
 								<?php }?>
+								<?php 
+				/*http://localhost/koofamilies/merchant/3rd-junction-cafe(Kulai)/1232625561/French-Fries*/
+				
+				$default_lang = $rd['default_lang'];  
+				if($default_lang==1)
+				{
+				  $langfile="english";
+				} else if($default_lang==2)
+				{
+				  $langfile="chinese";
+				} else if($default_lang==3)
+				{
+				  $langfile="malaysian";
+				}
+
+
+				$view_link = $site_url."/merchant/".$langfile."/".$rd['slug']."/".rand(10000,999999);
+			?>
+			
 	                        <li class="showLoader6">
-								<a href="view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $rd['mobile_number'];?>">
+								<!--<a href="view_merchant.php?vs=<?=md5(rand()) ?>&sid=<?php echo $rd['mobile_number'];?>">-->
+								<a href="<?php echo $view_link;?>">
 									<figure class="<?php //if($working=="n"){echo "shop_close";} ?>">
 										<?php if($rd['free_delivery_check'] ==1){?>
 										<div class="tooo" style="width:191px;">

@@ -46,19 +46,81 @@ if(isset($_POST['method']) && ($_POST['method'] == "free_delivery_check")){
 	die;
 }
 
+
+if(isset($_POST['method']) && ($_POST['method'] == "rider_button_click")){
+	extract($_POST);
+	$up=mysqli_query($conn,"update tbl_riders set button_click_admin='$button_click_admin', button_click_time='".date('Y-m-d H:i:s')."' where r_id ='$admin_rider_id'");
+	$res = array('msg'=>"success",'status'=>true);
+	 echo json_encode($res);die;
+}
+
+if(isset($_POST['method']) && ($_POST['method'] == "locationsList")){
+	extract($_POST);
+	$res = array('msg'=>'failed','status'=>false);
+	$up= mysqli_fetch_assoc(mysqli_query($conn,"select * from location join city On city.CityID = location.l_city_id where l_status =1 and l_name='".$locationsList."'"));
+	//echo "select * from location join city On city.CityID = location.l_city_id where l_status =1 and l_name='".$locationsList."'";
+	if(isset($up['CityName'])){
+		$link = 'https://koofamilies.com/index.php?vs='.md5(rand()).'&locationsort='.$up["CityName"].'&statesort='.$up["StateName"].'&language='.$_SESSION["langfile"];
+		$msg = "Your location's City : <a href='".$link."' class='text-bold'><b>".$up['CityName']."</b></a>";
+		$res = array('msg'=>$msg,'status'=>true);
+	}
+	echo json_encode($res);die;
+}
+
+if(isset($_POST['method']) && ($_POST['method'] == "offline_rider_button_click")){
+	extract($_POST);
+	$up = mysqli_query($conn,"update tbl_riders set offline_admin_name='$button_click_off_admin',
+	offline_reason='$button_click_admin_why',offline_time='$button_click_admin_time',offline_update_date='".date('Y-m-d')."' where r_id ='$admin_off_rider_id'");
+	
+	$query2 = mysqli_query($conn,"INSERT INTO `tbl_offline_riders_reason` (`of_r_id`, `of_admin_name`, `of_reason`, `of_time`, `of_createddate`) VALUES ('$admin_off_rider_id', '$button_click_off_admin', '$button_click_admin_why', '$button_click_admin_time', '".date('Y-m-d H:i:s')."')");
+	$res = array('msg'=>"success",'status'=>true);
+	 echo json_encode($res);die;
+}
+
+
+if(isset($_POST['method']) && ($_POST['method'] == "dine_active")){
+	extract($_POST);
+	$up=mysqli_query($conn,"UPDATE `users` SET `dine_active` =$dine_active where `id`=".$selected_user_id);
+	die;
+}
 if(isset($_POST['method']) && ($_POST['method'] == "cash_on_delivery")){
 	extract($_POST);
 	$up=mysqli_query($conn,"UPDATE `users` SET `cash_on_delivery` =$cash_on_delivery where `id`=".$selected_user_id);
 	die;
 }
-
 if(isset($_POST['method']) && ($_POST['method'] == "no_product_options")){
 	extract($_POST);
 	$up=mysqli_query($conn,"UPDATE `users` SET `no_product_options` =$no_product_options where `id`=".$selected_user_id);
 	die;
 }
+if(isset($_POST['method']) && ($_POST['method'] == "one_product_offer")){
+	extract($_POST);
+	$up=mysqli_query($conn,"UPDATE `users` SET `one_product_offer` =$one_product_offer where `id`=".$selected_user_id);
+	die;
+}
+
+if(isset($_POST['method']) && ($_POST['method'] == "show_index_page")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update products set show_index_page='$show_index_page' where id='$product_id'");
+	 if($up)
+		$res = array('msg'=>"Prodcut offer Updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+} 
 
 
+if(isset($_POST['method']) && ($_POST['method'] == "one_qty_prd_offer")){ 
+	 extract($_POST);
+	 $up=mysqli_query($conn,"update products set one_qty_prd_offer='$one_qty_prd_offer' where id='$product_id'");
+	 if($up)
+		$res = array('msg'=>"Prodcut offer Updated",'status'=>true);	
+	else
+	$res = array('msg'=>"Failed to update",'status'=>false);
+	echo json_encode($res);
+	die;
+}  
 
 if(isset($_POST['method']) && ($_POST['method'] == "productcartupdate")){ 
 	 extract($_POST);
@@ -355,6 +417,15 @@ if(isset($_POST['method']) && ($_POST['method'] == "inform_mecnt_status")){
 	die;
 }
 
+if(isset($_POST['method']) && ($_POST['method'] == "b1_code")){ 
+	$orderid = $_POST['orderid'];
+	$b1_code = $_POST['b1_Code'];
+	echo $query_info = "update order_list SET b1_code='".$b1_code."' where id =".$orderid;
+	mysqli_query($conn,$query_info);
+	die;
+}
+
+
 
 /* END*/
 
@@ -414,6 +485,43 @@ if(isset($_POST['method']) && ($_POST['method'] == "merchantspecialcoin")){
 	}
 	echo json_encode($res);die;
 }
+
+if(isset($_POST['method']) && ($_POST['method'] == "c1_code")){
+	extract($_POST);
+	$up=mysqli_query($conn,"update users set c1_code='$c1_code' where id='$selected_user_id'");
+	if($up){
+		$res = array('msg'=>"Update successfully",'status'=>true);	
+	}else{
+		$res = array('msg'=>"Error found!!",'status'=>false);	
+	}
+	echo json_encode($res);die;
+}
+
+if(isset($_POST['method']) && ($_POST['method'] == "merchant_short_name")){
+	extract($_POST);
+	$up=mysqli_query($conn,"update users set merchant_short_name='$merchant_short_name' where id='$selected_user_id'");
+	if($up){
+		$res = array('msg'=>"Update successfully",'status'=>true);	
+	}else{
+		$res = array('msg'=>"Error found!!",'status'=>false);	
+	}
+	echo json_encode($res);die;
+}
+
+
+if(isset($_POST['method']) && ($_POST['method'] == "merchantslug")){
+	extract($_POST);
+	$up=mysqli_query($conn,"update users set slug='$slug' where id='$selected_user_id'");
+	if($up){
+		$res = array('msg'=>"Update successfully",'status'=>true);	
+	}else{
+		$res = array('msg'=>"Error found!!",'status'=>false);	
+	}
+	echo json_encode($res);die;
+}
+
+
+
 
 
 if(isset($_POST['method']) && ($_POST['method'] == "adminprofilesave")){

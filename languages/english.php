@@ -315,7 +315,7 @@ $language['search_merchant'] ="Search Merchant";
 $language['total_cart_amount'] ="Total Cart Amount";      
 $language['service_fee'] ="Service fee";  
 $language['payable_amount'] ="Payable Amount";  
-$language['internet_banking'] = "BANK IN on Delivery"; //"Internet banking(Free)";  
+$language['internet_banking'] = "BANK IN on Delivery (Discount Rm0.50)"; //"Internet banking(Free)";  
 $language['w1'] ="Our delivery hours is from ";  
 $language['w2'] =" to ";  
 $language['w3'] =" You can still place order during non-working hours";  
@@ -359,7 +359,8 @@ $language['grand_total'] ="Grand total";
 $language['review'] ="Review";        
 $language['detail'] ="Detail";        
 $language['difficulty'] ="Have difficulty in placing order? </br>place through whatapp";        
-$language['search_by_location'] ="Search by location (385 shops)"; 
+$language['search_by_location'] ="Search Shops near me"; 
+$language['shops'] ="shops"; 
 $language['post_job_list'] ="Post/Search jobs";     
 $language['near_by_shop_2'] ="Nearby shops (385 shops)";        
 $language['rider_info'] ="Rider info";          
@@ -374,7 +375,7 @@ $language['sorry_rest'] ="";
 $language['past_order'] =" Past Order";  
 $language['reselect_location'] ="Reselect Location";  
 $language['search_based_location'] ="Search Shops based on current location";  
-$language['fetch_map'] ="Fetch Map";  
+$language['fetch_map'] ="Google map";  
 $language['saved_address'] ="SAVED ADDRESSES";
 $language['comission_list'] ="Merchant Refferal List";        
 $language['add_refferal_code']	= "Add Refferal Merchant";
@@ -402,11 +403,15 @@ $language["note"]="Note:";
 $language["confirm_wallet_login"] ='Pay by Cashback';
 $language["sms_text"] ='Sms confirmation will be delivered to you once your order is successfully placed.';
 $language["speed_text"] ='*Speed delivery: foods arrived within 30 minutes for kulai area, 60 minutes for outstations. Exceeding time limit will refund Rm 2 back';
-$language["transfer_complete_message"] = 'Important: Please click on below button to proceed after completion of bank transfer.';
+$language["transfer_complete_message"] = 'Important: Please click on above button to proceed after completion of bank transfer.';
+$language["transfer_complete_message_1"] = 'Important: Please click on';
+$language["transfer_complete_message_2"] = ' above ';
+$language["transfer_complete_message_3"] = 'button to proceed after completion of bank transfer.';
+
 $language['confirm_order_btn'] = 'Confirm order';
 $language['back_to_last_page_order'] = 'Back to last page';
 
-$language['label_pay_with_internet_banking'] = 'Pay with Internet Banking (Free)';
+$language['label_pay_with_internet_banking'] = 'Pay with Internet Banking (Discount Rm0.50)';
 $language['label_bank_name'] = 'Bank Name';
 $language['label_bank_account'] = 'Bank Account';
 $language['label_enquiry'] = 'Enquiry';
@@ -420,7 +425,7 @@ $language['reselect_location_kulai']="Reselect Location (now Kulai)";
 $language['reselect_location_skudai']="Your searched location is Skudai";
 $language['rider_contact_text']="Please share your location through whatapp to facilitate our rider in locating your address";
 $language['coupon_list']="Coupon List";
-$language['donation_button_text']="Donate a meal(RM5) to Covid's Victim";
+$language['donation_button_text']="Donation ( Rm5) to Orphanage  nursing home";
 $language['past_donation_record']="Past Donation Records";
 
 
@@ -463,4 +468,61 @@ $language['food_not_availble_option1'] ="Remove it from my order";
 $language['food_not_availble_option2'] ="Cancel the entire order";
 $language['food_not_availble_option3'] ="Call me";
 $language['food_not_availble_option4'] ="Buy from other best rating merchant";
+
+$language['please_pay_exact_amount'] = "Please pay Exact Amount to:";
+
+$language['internet_free_tooltip'] = "To encourage contactless to combat Covid-19, we offer Rm0.50 discount for internet banking";
+
+
+$language['minimumn_order'] = "Minimum Order ";
+$language['search_btn'] = "Search";
+$language['sort_by_name'] = 'Sort By Name';
+$language['sort_by_nearby'] = 'Search nearby';
+$language['view_all_text'] = 'View All';
+$language['search_placeholder'] = 'Search Product';
+$language['extra_label'] = "extra";
+
+$language['apply_btn'] = "Apply";
+$language['enter_promo_code'] = "Enter Promo code";
+$language['username1'] = "Username";
+$language['mobilenumber1'] = " Mobile Number";
+
+$language['hurry_up'] = "Hurry Up!!";
+$language['congrt_text1'] = "Congratulation!! Place your free Delivery order within";
+$language['minutes_text'] = "Minutes";
+$language['read_more1'] = "Read More";
+$language['read_less1'] = "Read Less";
+$language['delivery_palce_required'] = 'Delivery place is required';
+$language['others_within_kms'] = "Others (within 30km)";
+$language['send_otp1'] = 'SEND OTP';
+$language['internet_bank_fpx'] = 'Internet Banking ( FPX )';
+$language["checkout_button_1"] = 'Checkout';
+$language['order_summary'] = 'Order Summary'; 
+$language['success_label'] = 'Success';
+$language['product_success_addded'] = 'Product successfully added!';
+$language['showing_text'] = 'Showing';
+$language['result_for'] = 'results for';
+$language['show_menu1'] = 'Show Menu';
+$language['out_of_stock'] = 'Out of stock';
+$language['same_order_not_allowed'] = 'Same Order within 5 min is not allowed ';
+$language['only_one_qty_per_order'] = "Only one quantity per order";
+$language['delivery_time'] = 'Delivery Time:';
+$language['delivery_now'] = 'Now';
+$language['delivery_later'] = 'Later';
+$language["add_to_cart1"] = 'ADD TO CART';
+$language["remark1"] = 'Remarks';
+$language["total1"] = 'Total';
+$language['product_name'] = 'product Name';
+$language['special_products'] = 'Special Promotion';
+$language['free_delivery_40'] = 'Free Delivery > RM 40';
+$language['mini_order_value'] = 'Minimum Order';
+$language['limit_1_order'] = 'Limit to 1 order';
+$language["phone_no_lang"] = 'Phone Number :';
+$language["tble_number_lang"] = 'Table Number :';
+$language["section_lang"] = 'Section:';
+$language["payment_prrof_place"] = 'Payment Proof';
+$language["payment_prrof_browser"] = 'Browse';
+$language["rider_info_message"] = 'Our rider is not allowed to open and inspect the foods due to Covid" 19.';
+$language["login_success_msg"] = 'Login Successfully.';
+$language["no_cash_payment_after_time"] = 'No cash payment after 10:00pm for rider safety';
 ?>

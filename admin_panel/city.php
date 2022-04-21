@@ -171,6 +171,11 @@ if(!isset($_SESSION['admin']))
 								
                         		 <td>
                                      <a href="javascript:void(0)" class="deleteRecord" jId="<?php echo $row['CityID']?>">Delete</a>
+									 &nbsp;|&nbsp;
+									 <a href="./addcity.php?id=<?php echo $row['CityID']?>" >Edit</a>
+									 &nbsp;|&nbsp;
+									 <a href="./locations.php?cityid=<?php echo $row['CityID']?>" >Add Locations</a>
+									   
                                  </td>
                               </tr>
                     	<?php

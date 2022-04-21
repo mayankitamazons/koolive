@@ -1,18 +1,18 @@
 <!-- Scripts -->
-<script src="./Dashboard_files/popper.min.js.download"></script>
-<script src="./Dashboard_files/bootstrap.min.js.download"></script>
+<script src="<?php echo $site_url; ?>/Dashboard_files/popper.min.js.download"></script>
+<script src="<?php echo $site_url; ?>/Dashboard_files/bootstrap.min.js.download"></script>
 <!-- Head Libs -->
-<script src="/Dashboard_files/modernizr.min.js.download" defer></script>
-<script src="./Dashboard_files/mediaelementplayer.min.js.download" defer></script>
-<script src="./Dashboard_files/metisMenu.min.js.download" defer></script>
-<script src="./Dashboard_files/perfect-scrollbar.jquery.js.download" defer></script>
-<script src="./Dashboard_files/jquery.waypoints.min.js.download" defer></script>
-<script src="./Dashboard_files/moment.min.js.download" defer></script>   
-<script src="./Dashboard_files/jquery-ui.min.js.download" defer></script>
-<script src="./Dashboard_files/theme.js.download" defer></script>
-<script src="./Dashboard_files/isotop.min.js"></script>
+<script src="<?php echo $site_url; ?>/Dashboard_files/modernizr.min.js.download" defer></script>
+<script src="<?php echo $site_url; ?>/Dashboard_files/mediaelementplayer.min.js.download" defer></script>
+<script src="<?php echo $site_url; ?>/Dashboard_files/metisMenu.min.js.download" defer></script>
+<script src="<?php echo $site_url; ?>/Dashboard_files/perfect-scrollbar.jquery.js.download" defer></script>
+<script src="<?php echo $site_url; ?>/Dashboard_files/jquery.waypoints.min.js.download" defer></script>
+<script src="<?php echo $site_url; ?>/Dashboard_files/moment.min.js.download" defer></script>   
+<script src="<?php echo $site_url; ?>/Dashboard_files/jquery-ui.min.js.download" defer></script>
+<script src="<?php echo $site_url; ?>/Dashboard_files/theme.js.download" defer></script>
+<script src="<?php echo $site_url; ?>/Dashboard_files/isotop.min.js"></script>
 <script src="//rum-static.pingdom.net/pa-60309b987c17460013000172.js" async></script>
-<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5D6JWJ3RCH"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -21,7 +21,7 @@
 
   gtag('config', 'G-5D6JWJ3RCH');
 </script>
-
+-->
  <script>
       var loadDeferredStyles = function() {
         var addStylesNode = document.getElementById("deferred-styles");

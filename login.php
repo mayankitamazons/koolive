@@ -731,6 +731,9 @@ if(isset($_POST['forget_fund']))
 <html>
 
 <head>
+<!-- Google Tag Manager -->
+<?php include("includes1/head_google_script.php"); ?>
+<!-- End Google Tag Manager -->
     <title>Login | koofamilies</title>
     <!--Custom Theme files-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -756,10 +759,10 @@ if(isset($_POST['forget_fund']))
 	<link rel="stylesheet" href="intlTelInput/css/intlTelInput.css">
     <!--//web-fonts-->
 
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="<?php echo $site_url; ?>/Dashboard_files/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="<?php echo $site_url; ?>/Dashboard_files/bootstrap.min.js"></script>
 
 	
 
@@ -861,10 +864,13 @@ box-shadow: inset 0px 100px 0px 0px rgba(255, 255, 255, 0.5);
 
 	</style>
     <!--//js-->
+
 </head>
 
 <body>
-
+<!-- Google Tag Manager (noscript) -->
+<?php include("includes1/body_google_script.php"); ?>
+<!-- End Google Tag Manager (noscript) -->
 	<div class="page_loader">
 		<span id="load"></span>
 	</div>
@@ -2123,7 +2129,7 @@ $("input[name='user_rolehwe']").change(function(){
 });
 
 </script>
- <a href="https://chat.whatsapp.com/FdbA1lt6YQVBNDeXuY7uWd" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
+ <a href="https://chat.whatsapp.com/JASeiw19xnG3gNKkyO5tBO" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
 
 <div class="modal fade" id="OtpModel" role="dialog" style="z-index:999999;margin-top:15%;">
 

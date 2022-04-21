@@ -166,13 +166,18 @@ include("config.php");
 <html lang="en" style="" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths">
 
 <head>
+<!-- Google Tag Manager -->
+<?php include("includes1/head_google_script.php"); ?>
+<!-- End Google Tag Manager -->
     <?php include("includes1/v_header.php"); ?>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://scripts.sirv.com/sirv.js" defer></script> 
 	 <meta name="theme-color" content="#317EFB"/>
 	</head>
 	<body class="header-light sidebar-dark sidebar-expand pace-done">
-
+<!-- Google Tag Manager (noscript) -->
+<?php include("includes1/body_google_script.php"); ?>
+<!-- End Google Tag Manager (noscript) -->
     <div class="pace  pace-inactive">
         <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
             <div class="pace-progress-inner"></div>
@@ -242,7 +247,7 @@ include("config.php");
 			</a>
 			
 			<?php }?>
-				<a style="text-align:center;width:100%;margin-top:2%;" href="https://play.google.com/store/apps/details?id=com.app.koofamily" target="blank">
+				<a style="text-align:center;width:100%;margin-top:2%;" href="https://play.google.com/store/apps/details?id=koo.app.family" target="blank">
 					<img style="max-width:140px;" src="google.png" alt=""></a>
 				<a style="text-align:center;width:100%;margin-top:2%;" href="https://apps.apple.com/us/app/id1491595615?mt=8" target="blank">
                                 <img style="max-width:140px;max-height:40px;" src="appstore.png" alt="">
@@ -358,7 +363,7 @@ include("config.php");
 							</a>
 							
                         <?php }?>
-						<a style="text-align:center;width:100%;margin-top:2%;" href="https://play.google.com/store/apps/details?id=com.app.koofamily" target="blank">
+						<a style="text-align:center;width:100%;margin-top:2%;" href="https://play.google.com/store/apps/details?id=koo.app.family" target="blank">
 					<img style="max-width:140px;" src="google.png" alt=""></a>
 					<a style="text-align:center;width:100%;margin-top:2%;" href="https://apps.apple.com/us/app/id1491595615?mt=8" target="blank">
                                 <img style="max-width:140px;max-height:40px;" src="appstore.png" alt="">

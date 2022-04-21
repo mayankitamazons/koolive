@@ -5,7 +5,9 @@ if(!isset($_SESSION['admin']))
 {
 	header("location:login.php");
 }
-
+$stateName = '';
+$CityName = '';
+$cityid = '';
 $a_m="city";
 if(isset($_POST['addcity'])){
     extract($_POST);
@@ -28,6 +30,31 @@ if(isset($_POST['addcity'])){
 		echo "Duplicate Entet for Rider code";
 	}
 }
+
+if(isset($_GET['id'])){
+    $cityid = $_GET['id'];
+    $query = mysqli_query($conn, "select * from city where CityID ='$cityid'");
+    $data = mysqli_fetch_assoc($query);
+	
+    $stateName = $data['StateName'];
+	$CityName = $data['CityName'];
+}
+if(isset($_POST['updatecity'])){
+    extract($_POST);
+  
+    
+    
+    $q="UPDATE `city` SET `StateName` = '$state_name',`CityName`='$city_name',`DateUpdated`='".date('Y-m-d')."' WHERE `city`.`CityID` =".$cityid;
+    $query = mysqli_query($conn,$q);
+    if($query){
+        header('Location: city.php');
+    }
+	else
+	{
+		echo "Failed!!!";
+	}
+}
+
 
 ?>
 <!DOCTYPE html>
@@ -56,19 +83,26 @@ if(isset($_POST['addcity'])){
                 <div class="container-fluid" id="main-content" style="padding-top:25px">
 
         <div class="container">
-            <h3 class="mb-3">Add City</h3>
+            <h3 class="mb-3">
+			<?php if($cityid != ''){?>Update City<?php }else{?>Add City<?php }?>
+			</h3>
             <form action="addcity.php" method="POST">
                 <div class="form-group">
                     <label for="title">State Name<span style="color:red;">*</span></label>
-                    <input type="text" required name="state_name" class="form-control"  placeholder="State Name">
+                    <input type="text" required name="state_name" value="<?php echo $stateName;?>" class="form-control"  placeholder="State Name">
                 </div>
                 
                 <div class="form-group">
                     <label for="title">City Name<span style="color:red;">*</span></label>
-                    <input type="text" name="city_name" class="form-control" required  placeholder="City Name">
+                    <input type="text" name="city_name" class="form-control" required  value="<?php echo $CityName;?>" placeholder="City Name">
                 </div>
-		
-                <input type="submit" name="addcity" class="btn btn-lg btn-outline-primary" id="submitForm" value="Add">
+				<?php if($cityid != ''){?>
+				<input type="hidden" name="cityid" value="<?php echo $cityid;?>">
+				<input type="submit" name="updatecity" class="btn btn-lg btn-outline-primary" id="submitForm" value="Update">
+				<?php }else{?>
+				<input type="submit" name="addcity" class="btn btn-lg btn-outline-primary" id="submitForm" value="Add">
+				<?php }?>
+                
             </form>
         </div>
 

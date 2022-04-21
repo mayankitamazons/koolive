@@ -8,7 +8,11 @@
 	?>
 <!DOCTYPE html>
 <html lang="en" style="" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths">
-<head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<head>
+<!-- Google Tag Manager -->
+<?php include("includes1/head_google_script.php"); ?>
+<!-- End Google Tag Manager -->
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 	<link rel="stylesheet" href="./css/font-awesome.min.css">
 	<link rel="stylesheet" href="./css/ordercss.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,8 +22,13 @@
 	<?php // include("mpush.php"); ?>
 	<link rel="manifest" id="my-manifest-placeholder">
 	<meta name="theme-color" content="#317EFB"/>
+
+
 </head>
 <body class="header-light sidebar-dark sidebar-expand pace-done">
+<!-- Google Tag Manager (noscript) -->
+<?php include("includes1/body_google_script.php"); ?>
+<!-- End Google Tag Manager (noscript) -->
 	<div class="pace  pace-inactive">
 		<div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
 			<div class="pace-progress-inner"></div>
@@ -582,11 +591,21 @@
 														</tr>
 <?php }?>
 
-
+<?php 
+						$free_discount = '0.00'; 
+						if($wal_label == 'Internet Banking'){
+							$free_discount = '0.50';?>
+							<tr class="table-borderless">	
+										<td class="mobile-hide"  colspan="2"><span class="costright">Discount</span></td>
+										<td  data-label="Donation"><?php echo @number_format($free_discount,2); ?></td>
+									</tr>
+														
+							<?php
+						}?>
 									
 														<tr class="table-borderless">	
 															<td  class="mobile-hide" colspan="2"><span class="costright">Grand Total</span></td>
-															<td  data-label="Grand Total"><?php  echo @number_format(($g_total+$fetchData['od_extra_charge']+$territory_price+$fetchData['deliver_tax_amount']+$fetchData['special_delivery_amount']+$fetchData['speed_delivery_amount'] + $fetchData['donation_amount'])-($fetchData['membership_discount']+$fetchData['coupon_discount']),2); ?></td>
+															<td  data-label="Grand Total"><?php  echo @number_format(($g_total+$fetchData['od_extra_charge']+$territory_price+$fetchData['deliver_tax_amount']+$fetchData['special_delivery_amount']+$fetchData['speed_delivery_amount'] + $fetchData['donation_amount'])-($fetchData['membership_discount']+$fetchData['coupon_discount']+$free_discount),2); ?></td>
 														</tr>
 
 <?php if($fetchData['wallet_paid_amount']){?>
@@ -598,7 +617,7 @@
 
 														<tr class="table table-borderless">	
 															<td  class="mobile-hide" colspan="2"><span class="costright">Balance Payment</span></td>
-															<td  data-label="Balance Payment"><?php echo @number_format(($g_total+$fetchData['od_extra_charge']+$territory_price+$fetchData['deliver_tax_amount']+$fetchData['special_delivery_amount']+$fetchData['speed_delivery_amount'] + $fetchData['donation_amount'])-($fetchData['wallet_paid_amount']+$fetchData['membership_discount']+$fetchData['coupon_discount']), 2); ?></td>
+															<td  data-label="Balance Payment"><?php echo @number_format(($g_total+$fetchData['od_extra_charge']+$territory_price+$fetchData['deliver_tax_amount']+$fetchData['special_delivery_amount']+$fetchData['speed_delivery_amount'] + $fetchData['donation_amount'])-($fetchData['wallet_paid_amount']+$fetchData['membership_discount']+$fetchData['coupon_discount']+$free_discount), 2); ?></td>
 														</tr>
 
 
@@ -626,7 +645,7 @@
 
 
 
-							<a href="https://chat.whatsapp.com/LdvomJRqXoIG6aXqsf5PgX" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
+							<a href="https://chat.whatsapp.com/JASeiw19xnG3gNKkyO5tBO" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
 							<link rel="stylesheet" href="css/fancybox.css" type="text/css" media="screen" />
 							<script type="text/javascript" src="js/fancybox.js"></script>
 

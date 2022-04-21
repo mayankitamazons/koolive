@@ -171,14 +171,18 @@ if(isset($_POST['data']) && $_POST['data']=='complete_order'){
 		$donation_amount_value = $od_q['donation_amount']; 
 		$discount = $od_q['membership_discount'];
 		$coupon_discount = $od_q['coupon_discount'];
-		$merchant_id  = $od_q['merchant_id'];
+		$merchant_id  = '6741';//$od_q['merchant_id'];//'6741';//$od_q['merchant_id'];
 		$invoice_no  = $od_q['invoice_no'];
 		
 		$orderFinalTOTAL = @number_format(($total_cart_amount + $territory_price + $deliver_tax_amount + $special_delivery_amount +$speed_delivery_amount + $donation_amount_value) - ($discount + $coupon_discount));
 
 		$two_Perc_rebeat =   @number_format(($orderFinalTOTAL * (2 / 100)),2);
 		$merchant_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE id='".$merchant_id."'"));
-
+	
+		//echo "select * from tranfer where sender_id='$merchant_id' and invoice_no='$invoice_no' and amount='$two_Perc_rebeat' and  receiver_id = '".$user_id."'";
+		$chk_rec = mysqli_fetch_assoc(mysqli_connect($conn,"select * from tranfer where sender_id='$merchant_id' and invoice_no='$invoice_no' and amount='$two_Perc_rebeat' and  receiver_id = '".$user_id."'"));
+		if($chk_rec){
+		}else{
 		if($merchant_data['special_coin_name'] != ""){
 			$merchantCoinName = $merchant_data['special_coin_name']; //get the coinname
 		}else{
@@ -200,6 +204,7 @@ if(isset($_POST['data']) && $_POST['data']=='complete_order'){
 		}
 		$update_order_coin=  mysqli_query($conn,"update order_list set coin_rebate_value='$two_Perc_rebeat' where id='$order_id'");
 		
+		
 		$insert_history=  mysqli_query($conn,"INSERT INTO tranfer SET sender_id='$merchant_id',invoice_no='$invoice_no',
 		amount='$two_Perc_rebeat', receiver_id = '".$user_id."',
 		coin_merchant_id = '".$merchant_id."',
@@ -207,7 +212,7 @@ if(isset($_POST['data']) && $_POST['data']=='complete_order'){
 		created_on='".strtotime(date('Y-m-d H:i:s'))."',
 		status='0',
 		details='2% rebate',type_method='2% rebate',remark='2% rebate',created_date='".date('Y-m-d H:i:s')."'");
-		
+		}
 	//}
 	 /*END: Get 2% rebate of every order*/
 	 

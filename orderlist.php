@@ -296,7 +296,11 @@ $months = floor(($diff - $years * 365*60*60*24)
    	?>
 <!DOCTYPE html>
 <html lang="en" style="" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths">
-   <head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+   <head>
+  <!-- Google Tag Manager -->
+<?php include("includes1/head_google_script.php"); ?>
+<!-- End Google Tag Manager -->
+   <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
       <link rel="stylesheet" href="./css/font-awesome.min.css">
 	<link rel="stylesheet" href="./css/ordercss.css">
      <style type="text/css">
@@ -1096,8 +1100,15 @@ input[name='p_total[]'],input[name='p_price[]']{
       <?php // include("mpush.php"); ?>
 	  <link rel="manifest" id="my-manifest-placeholder">
 	   <meta name="theme-color" content="#317EFB"/>
+
+<script src="../jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
    </head>
    <body class="header-light sidebar-dark sidebar-expand pace-done">
+<!-- Google Tag Manager (noscript) -->
+<?php include("includes1/body_google_script.php"); ?>
+<!-- End Google Tag Manager (noscript) -->
+
+
       <div class="pace  pace-inactive">
         <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
             <div class="pace-progress-inner"></div>
@@ -1134,7 +1145,9 @@ input[name='p_total[]'],input[name='p_price[]']{
 
                     </div>      
             <h3>Order list
-			<a style="text-align:center;width:100%;margin-top:2%;" href="https://slack-files.com/TUWLAGXHD-F013R5GMVB9-07b7ebbed4" target="blank">
+			<!--
+			<a style="text-align:center;width:100%;margin-top:2%;" href="https://slack-files.com/TUWLAGXHD-F013R5GMVB9-07b7ebbed4" target="blank">-->
+			<a style="text-align:center;width:100%;margin-top:2%;" href="https://play.google.com/store/apps/details?id=koo.app.family" target="blank">
 							  <img style="max-width:140px;" src="google.png" alt="">
 			</a>
 			<a style="text-align:center;width:100%;margin-top:2%;" href="https://apps.apple.com/us/app/id1491595615?mt=8" target="blank">
@@ -1334,7 +1347,12 @@ span.title_fr:before {
 						
 						| Invoice: #<?php echo $row['invoice_no'];?> </span>
 						<span class="tn_order_date">  Date: <?php echo date_format($date,"M d,Y H:i:s");  ?></span>
-						<span class="tn_order_total">  Order Total: RM <?php  echo @number_format(($g_total+$row['od_extra_charge']+$territory_price+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount']+$row['donation_amount'])-($row['membership_discount']+$row['coupon_discount']),2); ?> </span>
+						<?php 
+						$free_discount = '0.00'; 
+						if($wal_label == 'Internet Banking'){
+							$free_discount = '0.50';
+						}?>
+						<span class="tn_order_total">  Order Total: RM <?php  echo @number_format(($g_total+$row['od_extra_charge']+$territory_price+$row['deliver_tax_amount']+$row['special_delivery_amount']+$row['speed_delivery_amount']+$row['donation_amount'])-($row['membership_discount']+$row['coupon_discount']+$free_discount),2); ?> </span>
 					</a>
 				</div>
 
@@ -1399,7 +1417,7 @@ span.title_fr:before {
 										
 										<div class="btn-box-wrap mt-4">
 										<span class="btn-border mx-1" style="">
-									 <a href="https://chat.whatsapp.com/LdvomJRqXoIG6aXqsf5PgX" target="_blank" style="color:black">	
+									 <a href="https://chat.whatsapp.com/JASeiw19xnG3gNKkyO5tBO" target="_blank" style="color:black">	
 									 <i class="fa fa-whatsapp" aria-hidden="true"></i>
 
 											Helpline
@@ -2882,18 +2900,18 @@ Payment Proof </a>
 						
 							<div class="col-md-12 pad0" style="font-size:18px">
 							<p>Please pay Exact Amount to ： RM <span id="bank_merchant_order_total" style="color:red;font-size:18px;font-weight:bold"></span></p>
-								<b><?php echo $language['name']; ?>:</b> Chong Woi Joon </br>
-								<b><?php echo $language['label_bank_name']; ?>:</b> Hong Leong Bank </br>
-								<b><?php echo $language['label_bank_account']; ?>:</b> 22850076859 </br>
+								<b><?php echo $language['name']; ?>:</b> Koo Family Sdn Bhd </br>
+								<b><?php echo $language['label_bank_name']; ?>:</b> Public Bank </br>
+								<b><?php echo $language['label_bank_account']; ?>:</b> 3208811410 </br>
 							</div>
 							<span style="border-bottom:1px solid lightgray;height:7px;width:100%"></span>
 							
 							<div class="col-md-12 pad0">
 							
 								<h6 style="margin-top:10px">Boostpay Number(Chong woi joon): <b>+60123115670</b></h6>
-								<h6 style="margin:0px">Touch & Go account ( Wong Siew Foon): <b>+6014-3521349</b></h6>
+								<h6 style="margin:0px">Touch & Go account (Chong Woi Joon):  <b>+60123115670</b></h6>
 								<div style="width: 100%;text-align: center;">
-									<img class="img-responsive Sirv" src="https://koofamilies.sirv.com/qr_code.png" />  
+									<img class="img-responsive Sirv" src="https://koofamilies.sirv.com/qr_code1.png" />  
 								</div>
 								<b><?php if ($_SESSION["langfile"] == "chinese"){echo "请写商家店名在“银行参考”";}else{ ?>                         (Please write <?php echo $merchant_detail['name']; ?> in "bank reference")<?php } ?><b> <br/>
 								<!--<b><span style="color: red;" class="final_amount_label"><?php echo $language['payable_amount']; ?>:</span></b> Rm <span style="font-weight:bold;" class="final_amount_value"></span><br/>-->
@@ -3089,7 +3107,7 @@ Payment Proof </a>
     </div>
 	<div class="row">
 	   <p style="font-size: 16px;margin-bottom: 0px;margin-left:1%;">Download our app for future easy ordering</p>
-		<a href="https://play.google.com/store/apps/details?id=com.app.koofamily" target="_blank">
+		<a href="https://play.google.com/store/apps/details?id=koo.app.family" target="_blank">
 			  <img style="max-height:40px;" src="google.png"/></a>
 			  <a  href="https://apps.apple.com/us/app/id1491595615?mt=8" target="blank">
                                 <img style="max-width:140px;max-height:40px;" src="appstore.png" alt="">
@@ -3127,8 +3145,9 @@ Payment Proof </a>
     </div>
   </div>
 </div>
-   <a href="https://chat.whatsapp.com/FdbA1lt6YQVBNDeXuY7uWd" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
+   <a href="<?php echo $helpLink ;?>" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
  <link rel="stylesheet" href="css/fancybox.css" type="text/css" media="screen" />
+   
    <script type="text/javascript" src="js/fancybox.js"></script>
 
    </body>
@@ -4362,3 +4381,21 @@ $(document).ready(function() {
 		
 </script>
 <!-- End Payment proof-->
+<!-- Facebook Pixel Code -->
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '229277018358702');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=229277018358702&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->

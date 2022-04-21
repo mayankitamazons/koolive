@@ -107,8 +107,8 @@ if(isset($_POST['add_coin'])){
 		$row = mysqli_fetch_assoc(mysqli_query($conn,$sql));
 		$rec_count = $row['total_count'];
 		$rec_limit = 100;
-		if( isset($_GET{'page'} ) ) {
-            $page = $_GET{'page'} + 1;
+		if( isset($_GET['page'] ) ) {
+            $page = $_GET['page'] + 1;
             $offset = $rec_limit * $page;
          }else {
             $page = 0;
@@ -144,8 +144,17 @@ if(isset($_POST['add_coin'])){
 								<div class="ui-widget">
 									<div class="form-group">
 										<label for="tags_merchant"><?php echo $language['choose_merchant']; ?></label>
-										<input class="form-control" required id="tags_merchant" placeholder="<?php echo $language['enter_merchant_name']; ?>"/>
+										<!-- <input class="form-control" required id="tags_merchant" placeholder="<?php echo $language['enter_merchant_name']; ?>"/> -->
+										<select class="select2 form-control" id="tags_merchant" name="tags_merchant">
+										<?php  	
+										$qMerchant = mysqli_query($conn, "SELECT id,name FROM users WHERE user_roles = '2' and special_coin_name!='' and id!='$merchant_id' ORDER BY name ASC");
+											while($row = mysqli_fetch_assoc($qMerchant)){  ?>
+											<option value="<?php echo $row['name']; ?>"><?php echo $row['name']; ?></option>
+										<?php } ?>
+											
+									</select>
 									</div>
+								
 								</div>
 							</div>
 							<div class="col-md-3 col-sm-12">
@@ -318,22 +327,31 @@ if(isset($_POST['add_coin'])){
 	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
 	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 	<script>
 	   var merchant_tags = [];
 	    $(document).ready(function(){
-			<?php 
-				$qMerchant = mysqli_query($conn, "SELECT id,name FROM users WHERE user_roles = '2' and special_coin_name!='' and id!='$merchant_id' ORDER BY name ASC");
-				while($row = mysqli_fetch_assoc($qMerchant)){
-					// print_R($row);
-					// die;
-					echo "merchant_tags.push('" . $row['name'] . "');\n";
-					echo "console.log('" . $row['name'] . "');\n";
-				}
+			$('#tags_merchant').select2();
+			// <?php 
+			// 	$qMerchant = mysqli_query($conn, "SELECT id,name FROM users WHERE user_roles = '2' and special_coin_name!='' and id!='$merchant_id' ORDER BY name ASC");
+			// 	while($row = mysqli_fetch_assoc($qMerchant)){
+			// 		// print_R($row);
+			// 		// die;
+			// 		$m_name = str_replace("'", ' ', $row['name']);
+			// 		$m_name = str_replace("(", ' ', $m_name);
+			// 		$m_name = str_replace(")", ' ', $m_name);
+					
+			// 		echo "merchant_tags.push('" . $m_name . "');\n";   
 				
-			?>  
-			$( "#tags_merchant" ).autocomplete({
-				source: merchant_tags
-			});
+				
+			// 	}
+				
+			// ?>  
+			// $( "#tags_merchant" ).autocomplete({
+			// 	source: merchant_tags
+			// });
+			
 			$("#tags_merchant").change(function(){  
 				var tags_merchant=$('#tags_merchant').val();
 				// alert(tags_merchant);

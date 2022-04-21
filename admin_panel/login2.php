@@ -23,9 +23,11 @@ if(isset($_POST['login']))
 		
 		
 		if($_SESSION['mdadmin_page'] == '1'){
-			$id = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id FROM s_admin WHERE username='$email' AND password3='$password'"))['id'];
+            $q="SELECT id FROM s_admin WHERE username='$email' AND password3='$password'";
+			$id = mysqli_fetch_assoc(mysqli_query($conn,$q))['id'];
 		}else{
-			$id = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id FROM s_admin WHERE username='$email' AND password2='$password'"))['id'];
+            $q="SELECT id FROM s_admin WHERE username='$email' AND password2='$password'";
+			$id = mysqli_fetch_assoc(mysqli_query($conn,$q))['id'];
 		}
 		
 		

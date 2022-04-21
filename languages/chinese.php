@@ -329,7 +329,7 @@ $language['search_merchant'] ="寻找商家";
 $language['total_cart_amount'] ="商品价格";  
 $language['service_fee'] =" 服务费";  
 $language['payable_amount'] ="总共需付款";  
-$language['internet_banking'] = "食物到后银行转账";//"银行转账付款（免手续费）"; 
+$language['internet_banking'] = "食物到后银行转账 （折扣Rm0.50)";//"银行转账付款（免手续费）"; 
 $language['w1'] ="我们的营业时间是从";  
 $language['w2'] ="至";  
 $language['w3'] ="您仍然可以在非工作时间下订单"; 
@@ -372,7 +372,8 @@ $language['grand_total'] ="累计";
 $language['review'] ="评论";
 $language['detail'] ="详情"; 
 $language['difficulty'] ="如果还是有困难下单，可以通过 whatapp 这里下单";   
-$language['search_by_location'] ="寻找附近餐厅 (385 家)";   
+$language['search_by_location'] ="寻找附近餐厅 ";  
+$language['shops'] ="家";  
 $language['near_by_shop_2'] ="附近商店 （385 家）";  
 $language['rider_info'] ="Rider info";     
 $language['new_timing_working'] ="Multiple Working"; 
@@ -410,14 +411,21 @@ $language["i_4"]="1）只需消费满 RM 50, 可以获得 Rm3 的运费礼券";
 $language["i_5"]="2） 只需消费满 RM 100, 可获得 Rm7 的运费礼券";
 $language["speed_delivery"]="紧急快送";
 $language["note"]="回扣";
-$language["confirm_wallet_login"] ='Pay by Cashback';
+$language["confirm_wallet_login"] ='支付方式（cashback)';
 $language["sms_text"] ='完成订单后，你会收到一个短讯通知';
 $language["speed_text"] ='* 紧急运送：古来区食物会在30分钟内抵达，外地则在60分钟内抵达。不然，我们会退款RM2';
-$language["transfer_complete_message"] = '重要备注： 请在完成银行转账后，按以下的 “确认下单”';
+$language["transfer_complete_message"] = '重要提示：银行转账完成后请点击上面的按钮继续。';
+
+$language["transfer_complete_message_1"] = '重要提示：银行转账完成后请点击';
+$language["transfer_complete_message_2"] = '上面';
+$language["transfer_complete_message_3"] = '的按钮继续。';
+
+
+
 $language['confirm_order_btn'] = '确认订单';
 $language['back_to_last_page_order'] = '回到上一页';
 
-$language['label_pay_with_internet_banking'] = '银行转账付款（免手续费）';
+$language['label_pay_with_internet_banking'] = '银行转账付款（折扣Rm0.50）';
 $language['label_bank_name'] = '银行名字';
 $language['label_bank_account'] = '户口名字';
 $language['label_enquiry'] = '任何询问';
@@ -429,8 +437,8 @@ $language['more_categories'] = '更多种类';
 $language['reselect_location_kulai']="从新选择地区（现在-古来）";
 $language['reselect_location_skudai']="你寻找商家地点是 Skudai";
 $language['rider_contact_text']="通过whatapp 分享你的地址可以帮助司机更容易寻找你的地址";
-$language['coupon_list']="Coupon List";
-$language['donation_button_text']="资助疫情受害者食物Rm5";
+$language['coupon_list']="优惠券表";
+$language['donation_button_text']="捐赠（RM5）给孤儿院疗养院";
 $language['past_donation_record']="旧捐款记录";
 
 $language['donation_label']="捐款资料";
@@ -439,7 +447,7 @@ $language['donation_amount']="当日捐献";
 $language['donation_payto']="利益集团";
 $language['donation_list_of_donor']="捐献者名单";
 
-$language["login_with_otp"] = "SMS 登入";
+$language["login_with_otp"] = "使用短信登录";
 $language["verify_otp"] = "VERIFY SMS";
 $language["login_password"] = "密码登入";
 $language["shop_index_status"] = "(休息中）";
@@ -453,7 +461,7 @@ $language["m_address"] = "地址";
 $language["m_intoducer"] = "介绍人电话号码";
 $language["m_intoducer_text"] = "介绍人电话号码：介绍人可以赚取RM 3, 如果成功加盟我们";
 $language['message_48offer'] = "恭喜你！ 你的下一张单可以享受 Rm 1 的折扣（截止日期 ";
-$language['payment_prrof_text'] = '或者你可以展示转账记录给我们的司机看。';
+$language['payment_prrof_text'] = '或者您可以向我们的骑手出示银行单据作为付款证明。';
 $language['covid_error'] = '由于疫情Covid-19, 这个商家的现金付款暂时停止使用，你依然可以使用银行转账（免费）当食物到达后。';
 $language['the_cart_empty'] = '你还未选择产品 ！';
 $language['footer_important_notes'] = '重要笔记：';
@@ -465,6 +473,67 @@ $language['fullmenu_option'] ="完整菜单";
 $language['food_not_availble_label'] ="如果这个产品没有了";
 $language['food_not_availble_option1'] ="从订单中取消此产品";
 $language['food_not_availble_option2'] ="取消整张订单";
-$language['food_not_availble_option3'] ="联系我更改其他食物或商家";
+$language['food_not_availble_option3'] ="请联系我更换食物或换其他商家";
 $language['food_not_availble_option4'] ="帮我去其他好评商家购买同样产品";
+$language['please_pay_exact_amount'] = "您只需支付款项为：";
+$language['internet_free_tooltip'] = "为了鼓励非接触式来对抗 Covid-19，我们为网上银行提供 Rm0.50 的折扣。";
+
+$language['minimumn_order'] = "最小訂單 ";
+$language['search_btn'] = "搜索";
+$language['sort_by_name'] = 'Sort By Name';
+$language['sort_by_nearby'] = '搜索附近';
+$language['view_all_text'] = '查看全部';
+$language['search_placeholder'] = '搜索产品';
+$language['extra_label'] = "而外";
+
+$language['apply_btn'] = "申请";
+$language['enter_promo_code'] = "促销代码";
+$language['username1'] = "用户名：：";
+$language['mobilenumber1'] = " 手机号码：";
+$language['only_one_qty_per_order'] = "每个订单仅限一个数量";
+
+
+$language['hurry_up'] = "赶快！！";
+$language['congrt_text1'] = "恭喜！！请在限时内下单，以获得免运费";
+$language['minutes_text'] = "分钟";
+
+$language['read_more1'] = "更多";
+$language['read_less1'] = "kurang baca";
+$language['delivery_palce_required'] = '送货地点必填项';
+
+$language['others_within_kms'] = "其他（30公里以内）";
+$language['send_otp1'] = '发送动态密码';
+
+$language['internet_bank_fpx'] = '网上银行 (FPX)';
+$language['same_order_not_allowed'] = '不允许在 5 分钟内下单';
+
+
+$language["checkout_button_1"] = '查看';
+$language['order_summary'] = '订单摘要';
+
+$language['success_label'] = '成功';
+$language['product_success_addded'] = '产品添加成功！';
+$language['showing_text'] = '显示';
+$language['result_for'] = '结果';
+$language['show_menu1'] = '显示菜单';
+$language['out_of_stock'] = '缺货';
+$language['delivery_time'] = '交货时间';
+$language['delivery_now'] = '现在';
+$language['delivery_later'] = '之后';
+$language["add_to_cart1"] = '添加到购物车';
+$language["remark1"] = '备注';
+$language["total1"] = '总数';
+$language['product_name'] = '产品名称';
+$language['special_products'] = '特别产品';
+$language['free_delivery_40'] = '免运费 > RM 40';
+$language['mini_order_value'] = '最低消费';
+$language['limit_1_order'] = '仅限一个产品';
+$language["phone_no_lang"] = 'Phone Number :';
+$language["tble_number_lang"] = '桌子号码:';
+$language["section_lang"] = '区域:';
+$language["payment_prrof_place"] = '付款凭证';
+$language["payment_prrof_browser"] = '浏览';
+$language["rider_info_message"] = '由于 Covid" 19，我们的骑手不允许打开和检查食物。';
+$language["login_success_msg"] = '成功登录。';
+$language["no_cash_payment_after_time"] = '为了骑手的安全，晚上十点后不再支付现金';
 ?>

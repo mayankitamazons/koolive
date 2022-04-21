@@ -18,6 +18,40 @@ if(isset($_GET['data'])&&$_GET['data']=='deleteRecord'){
 	$merchant_id = $_GET['merchant_id'];
 		$m_query = mysqli_query($conn,"DELETE FROM `users` WHERE `id`='$merchant_id' and user_roles = 2");
 	if($m_query){
+		
+		
+		/* Start: delete image from sirv*/
+		require_once('../sirv.api.class.php');
+		$sirvClient = new SirvClient(
+		  // S3 bucket
+		  'koofamilies',
+		  // S3 Access Key
+		  'click4mayank@gmail.com',
+		  // S3 Secret Key
+		  'iFOyO1LVMp7EOYIW3IP9VOn76UBFFWdxGaDzuJGj2tHlHMP0'
+		);
+		$fetchData1 = mysqli_query($conn,"SELECT * from products WHERE `user_id`='$merchant_id'");
+		
+		if ($sirvClient->testConnection()) {  
+			
+			while($row11=mysqli_fetch_assoc($fetchData1)){
+				$old_image = $row11['image'];
+				if($old_image)
+				{
+					$old_image_path="product/".$old_image;  
+					$sirvClient->deleteFile($old_image_path);  
+				}
+			}
+			
+		}
+		
+		
+
+		
+		
+
+		
+		/* END*/
 		$product_query = mysqli_query($conn,"DELETE FROM `products` WHERE `user_id`='$merchant_id'");
 		$cat_query = mysqli_query($conn,"DELETE FROM `category` WHERE `user_id` = '$merchant_id'");
 	

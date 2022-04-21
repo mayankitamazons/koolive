@@ -109,6 +109,15 @@ if($s_id)
 		{
 			$msg_str.="</br><b><u>(Order Remark:)".$row['remark_extra']."</u></b>";
 		}
+		if($row['od_delivery_date'] != '' && $row['od_delivery_time'] != '00:00:00' ){
+			$deliveryTime = '';
+			if($row['od_delivery_time'] != '00:00:00' || $row['od_delivery_time'] != '' ){
+				$deliveryTime = "(".$row['od_delivery_time'].")";
+			}
+			//if($row['od_delivery_time'] != 'ASAP'){
+				$msg_str.="</br><b>Delivery Time : ".$row['od_delivery_date']." ".$deliveryTime." </b>";
+			//}
+		}
 		if($merchant_name['merchant_remark'])
 		{
 			$msg_str.="</br>Merchant Remark:".$merchant_name['merchant_remark'];
@@ -162,6 +171,11 @@ if($s_id)
 		}
 //To: ".$row['name']." </br>
 
+		if($row['pickup_type'] == 'Dine in'){
+			$msg_str.="<br>Table no: ".$row['table_type'].", ";
+			$msg_str.="section: ".$row['section_type']."";
+		}
+		
 		if($row['coupon_discount']=='')
 			$row['coupon_discount']=0;
 		if($row['special_delivery_amount']==0)
@@ -170,7 +184,10 @@ if($s_id)
 		$msg_str.="</br>Collect:{".$total."+".$incsst."(SST)+".$row['order_extra_charge']."+".$row['deliver_tax_amount']."+".$row['special_delivery_amount']." ".$speed_delivery_price.$territory_price.$donation_text.")-(".$row['wallet_paid_amount']."(WALLET)-".$row['membership_discount']."-".$row['coupon_discount']."}=".number_format($total_bill,2)."</br>".$inv_str."</br>Pickup Type:".$row['pickup_type']."</br> Order from:</b>".$merchant_name['name'].",</br>".$merchant_name['google_map']." ,</br> Mobile - ".$merchant_name['mobile_number']." <br/> ".$user_phone.$otp_str."".$user_location."</br> <p id='od_copy_details_".$row['id']."'>Order Detail:</br>";
 		$p=1;
 		$msg_str.="Invoice No: ".$row['invoice_no']."<br>";
-		foreach ($product_ids as $key )
+		
+		
+		
+		foreach ($product_ids as $key)
         {  
 			if(is_numeric($key))
             {
@@ -184,7 +201,7 @@ if($s_id)
 			}
 			if($no_foods_options[$i] && $no_foods_options[$i]!= "undefined")
 			{
-				$msg_str.= "<b>No Food</b>: <span style='color:red'>".$no_foods_options[$i].'</span><br>';   
+				$msg_str.= "<b>No Food</b>: ".$no_foods_options[$i].'<br>';   
 			}
 			
 			if($product['remark'])

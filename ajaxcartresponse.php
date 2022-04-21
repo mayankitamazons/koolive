@@ -4,7 +4,21 @@ if($_POST['type'] == 'save_session'){
 	session_start();
 	//$_SESSION['AjaxCartResponse'][$_POST['id']] = $_POST;
 	$merchant_id = $_SESSION['AjaxCartResponse']['merchant_id'];
-	$_SESSION['AjaxCartResponse'][$merchant_id][$_POST['id']] = $_POST;
+	//$_SESSION['AjaxCartResponse'][$merchant_id][$_POST['id']] = $_POST;
+	
+	
+	/*if($_POST['prd_one_offer'] == 1 && $_POST['one_product_offer'] == 1){
+		if(count($_SESSION['AjaxCartResponse'][$merchant_id][$_POST['id']) > 0){
+			 echo 'error1';exit;
+			foreach($_SESSION['AjaxCartResponse'][$merchant_id] as $cart_key => $cart_val){
+				if($cart_val['s_id'] == $_POST['s_id']){
+				  echo 'error';exit;
+				}
+			}
+		}
+	}else{*/
+		$_SESSION['AjaxCartResponse'][$merchant_id][$_POST['id']] = $_POST;
+	//}
 	
 	echo '<pre>';
 	print_R($_SESSION['AjaxCartResponse'][$merchant_id]);
@@ -152,7 +166,7 @@ if($_POST['type'] == 'repeat_last_order'){
 			if($product_subitem != ''){
 				$subvarientsHtml ='<div class="varient_list" ><p class="moretext va_sub" id="moretext_'.$product['id'].'_'.$i.'" style="display:none">'.$product_subitem.'</p><a class="moreless-button moreless-button_'.$product['id'].'_'.$i.'" href="javascript:void(0)" product_id="'.$product['id'].'_'.$i.'">Read more</a></div>';
 			}
-			$response .= '<div class="cart-detail-row producttr producttr_'.$product['id'].'">'.$cart_html1.'<div class="cart-d-cell c-t-cell"><p class="remove-icon removebutton" remove_productid='.$product['id'].'><i class="fa fa-trash-o" aria-hidden="true"></i></p><div class="title-qty"><input type="number" name="qty[]" class="product_qty quatity" min="1" maxlength="3" value=".$quantity_ids[$i]." id="'.$product['id'].'_test_athy" onchange="UpdateTotal(' .$product['id']. ','.$amount_val[$i].')" style="width: 25px;padding: 4px;height: 25px;float: right;"/><p class="prd-name pro1_name">'.$cartData[$product['id']]['only_name'].'| '.$prd_code.' </p></div></div>'.$subvarientsHtml.'<div class="cart-d-cell"></div><div class="cart-d-cell"><p class="remark-text"><a href="#remarks_area" data-rid="'.$product['id'].'" role="button" class="introduce-remarks btn btn-large btn-primary hideLoader" data-toggle="modal">' .(($remarks_product[$i] == '') ? $cartData[$product['id']]['remark_lable'] : $remarks_product[$i]). '</a> </p><p class="price-text"><strong>Total : </strong>RM <span class="p_span_total '.$product['id'].'_cat_total">'.number_format($product_qty_price,2).'</span></p></div></div>';
+			$response .= '<div class="cart-detail-row producttr producttr_'.$product['id'].'">'.$cart_html1.'<div class="cart-d-cell c-t-cell"><p class="remove-icon removebutton" remove_productid='.$product['id'].'><i class="fa fa-trash-o" aria-hidden="true"></i></p><div class="title-qty"><input type="number" name="qty[]" class="product_qty quatity" min="1" maxlength="3" value="'.$quantity_ids[$i].'" id="'.$product['id'].'_test_athy" onchange="UpdateTotal(' .$product['id']. ','.$amount_val[$i].')" style="width: 25px;padding: 4px;height: 25px;float: right;"/><p class="prd-name pro1_name">'.$cartData[$product['id']]['only_name'].'| '.$prd_code.' </p></div></div>'.$subvarientsHtml.'<div class="cart-d-cell"></div><div class="cart-d-cell"><p class="remark-text"><a href="#remarks_area" data-rid="'.$product['id'].'" role="button" class="introduce-remarks btn btn-large btn-primary hideLoader" data-toggle="modal">' .(($remarks_product[$i] == '') ? $cartData[$product['id']]['remark_lable'] : $remarks_product[$i]). '</a> </p><p class="price-text"><strong>Total : </strong>RM <span class="p_span_total '.$product['id'].'_cat_total">'.number_format($product_qty_price,2).'</span></p></div></div>';
 
 			
 

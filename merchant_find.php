@@ -37,6 +37,10 @@ if($_POST['method'] == 'c_city'){
 <!DOCTYPE html>
 <html lang="en" style="" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths">
    <head>
+<!-- Google Tag Manager -->
+<?php include("includes1/head_google_script.php"); ?>
+<!-- End Google Tag Manager -->
+
       <script type="text/javascript" src="jquery-3.5.1.min.js"></script>
 <?php include("includes1/v_header.php"); ?>
 	      <meta name="theme-color" content="#317EFB"/>
@@ -176,6 +180,9 @@ if($_POST['method'] == 'c_city'){
 	   <meta name="theme-color" content="#317EFB"/>
    </head>
    <body class="header-light sidebar-dark sidebar-expand pace-done">
+   <!-- Google Tag Manager (noscript) -->
+<?php include("includes1/body_google_script.php"); ?>
+<!-- End Google Tag Manager (noscript) -->
       <div class="pace  pace-inactive">
          <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
             <div class="pace-progress-inner"></div>

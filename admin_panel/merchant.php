@@ -32,11 +32,22 @@ if( isset($_GET{'page'} ) ) {
          }
          
 $left_rec = $rec_count - ($page * $rec_limit);
-     $query="select SQL_NO_CACHE users.*,about.image from users left join about on users.id=about.userid Where users.user_roles = 2 order by name desc LIMIT $offset, $rec_limit";
+     //$query="select SQL_NO_CACHE users.*,about.image from users left join about on users.id=about.userid Where users.user_roles = 2 order by name desc LIMIT $offset, $rec_limit";
+	 
+	 $query="select SQL_NO_CACHE users.*,about.image,count(od.id) as order_count from users 
+	 left join about on users.id=about.userid 
+	 LEFT JOIN order_list as od ON od.merchant_id = users.id
+	 Where users.user_roles = 2 group by users.id order by order_count desc LIMIT $offset, $rec_limit";
+	 #echo $query;
 if($_POST['m_id'])
 {
 	$m_id=$_POST['m_id'];
-	 $query="select SQL_NO_CACHE users.*,about.image from users left join about on users.id=about.userid Where users.user_roles = 2 and users.id='$m_id' order by name desc LIMIT $offset, $rec_limit";
+	// $query="select SQL_NO_CACHE users.*,about.image from users left join about on users.id=about.userid Where users.user_roles = 2 and users.id='$m_id' order by name desc LIMIT $offset, $rec_limit";
+	
+	$query="select SQL_NO_CACHE users.*,about.image,about.xlsx_upload,count(od.id) as order_count from users left join about on users.id=about.userid LEFT JOIN order_list as od ON od.merchant_id = users.id Where users.user_roles = 2 and users.id='$m_id' group by users.id order by order_count desc LIMIT $offset, $rec_limit";
+	
+	
+	 
 	 // $query="select SQL_NO_CACHE * from users Where user_roles = 2 and id='$m_id' order by name desc LIMIT $offset, $rec_limit";
 }
 $user = mysqli_query($conn,$query);
@@ -284,7 +295,7 @@ exit();
 										<label for="tags_merchant">Choose a merchant</label>
 									
 									
-									<select class="tags_merchant_select" name='m_id'>
+									<select class="tags_merchant_select" name='m_id' style="width:300px !important">
 									    <option value='-1'>Select Merchant</option>
 										<?php 
 										  
@@ -332,6 +343,7 @@ exit();
 							<th>Particular</th>
 							<th>Merchant id</th>
 							<th style="min-width:200px;">Name</th>
+							<th>Address Google Map</th>
 							<th style="min-width:200px;">Merchant Remark</th>
 							<th> </th>
 							<th style="min-width:200px;">Food Panda Link</th>
@@ -343,7 +355,7 @@ exit();
 							<th>Territory</th>
 
 							<th>Defalut Lanaguage</th>
-							<th>Address Google Map</th>
+							
 							<th>Mobile Nmber</th>
 							<th>K Type</th>
 							<th>Wallet Coin</th>
@@ -376,6 +388,9 @@ exit();
 							// print_R($row);
 							// die;
 							 $default_lang=$row['default_lang'];
+							 $order_query = mysqli_query($conn,"select created_on  from order_list where merchant_id = ".$row['id']." ORDER BY created_on DESC");
+							# echo "select created_on  from order_list where merchant_id = ".$row['id']." ORDER BY created_on DESC";
+							 $rowod=mysqli_fetch_assoc($order_query);
 							 ?>
                         	  <tr>
                         		 <td> <?php echo $i; ?> </td>
@@ -389,9 +404,32 @@ exit();
 								 <b>Cash Delivery:</b> <input type="Checkbox" selected_user_id="<?php echo $row['id']; ?>" value="1" class="cash_on_delivery" name="cash_on_delivery" id="cash_on_delivery" <?php if($row['cash_on_delivery'] == 1){ echo 'checked';}?> />
 								 </p>
 								 
+								 <p style="width:150px">
+								 <b>Dine In:</b> <input type="Checkbox" selected_user_id="<?php echo $row['id']; ?>" value="1" class="dine_active" name="dine_active" id="dine_active" <?php if($row['dine_active'] == 1){ echo 'checked';}?> />
+								 </p>
+								 
+								 
 								 
 								 <p style="width:150px">
 								 <b>No Product options:</b> <input type="Checkbox" selected_user_id="<?php echo $row['id']; ?>" value="1" class="no_product_options" name="no_product_options" id="no_product_options" <?php if($row['no_product_options'] == 1){ echo 'checked';}?> />
+								 </p>
+								 
+								 <!-- customer can eligible 1 qty product/ order in particular product -->
+								 <p style="width:150px">
+								 <b>Qty-1 offer:</b> <input type="Checkbox" selected_user_id="<?php echo $row['id']; ?>" value="1" class="one_product_offer" name="one_product_offer" id="one_product_offer" <?php if($row['one_product_offer'] == 1){ echo 'checked';}?> />
+								 </p>
+								 
+								 <p style="width:150px">
+								  <b style="float:left;">C1 Code:</b>&nbsp;
+								  <input type="text" selected_user_id="<?php echo $row['id']; ?>" value="<?php echo $row['c1_code'];?>" class="form-control c1_code" name="c1_code" id="c1_code" style="width: 50px;float: LEFT;height: 10px;margin-top: -4px;" />
+								 </p>
+								 
+								 <p style="width: 179px;clear: both;">
+								 <b>Last OrderDate:</b> <?php echo date('Y/m/d', strtotime($rowod['created_on']));?>
+								 </p>
+								 
+								 <p>
+								 <b>Total Invoice:</b> <?php echo $row['order_count'];?>
 								 </p>
 								 
 								 
@@ -404,7 +442,26 @@ exit();
 								<b>COIN Name:</b>
 								<textarea  style="max-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control special_coin_name" rows="1" name="special_coin_name"><?php if(isset($row['special_coin_name'])){ echo $row['special_coin_name']; }?></textarea>
 								</p>
+								
+								<p>
+								<b>Short Name:</b>
+								<textarea  style="max-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control merchant_short_name" rows="1" name="merchant_short_name"><?php if($row['merchant_short_name'] != ''){ echo $row['merchant_short_name']; }else{ echo substr($row['name'],0,7);}?></textarea>
+								</p>
+								
+								
 								</td>
+								<td>
+									<textarea  style="min-width: 200px;max-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control mapSearch" rows="5" name="google_map"><?php if(isset($row['google_map'])){ echo $row['google_map']; }?></textarea>
+									
+									<br/>
+									
+									<p>
+										<b>SHOP URL:</b>
+										<textarea  style="min-width: 200px;max-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control merchantslug" rows="5" name="slug"><?php if(isset($row['slug'])){ echo $row['slug']; }?></textarea>
+									</p>
+								
+								</td>
+									
 								<td style="min-width:200px;">
 								<textarea  style="min-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control merchant_remark" rows="5" name="merchant_remark"><?php if(isset($row['merchant_remark'])){ echo $row['merchant_remark']; }?></textarea></td>
 								<td><a target="_blank" href="../orderview.php?did=<?php echo $row['id'];?>"><i style="font-size: 60px;" class="fa fa-info"></i></a>
@@ -421,9 +478,13 @@ exit();
 								  <input name="image" type="file">
 								   <input name="selected_user_id" type="hidden" value="<?php echo $row['id']; ?>">
 								     <input type="submit" value="Upload" />
-								   <?php if($row['image']==""){ ?>
-							<img src="images/logo_new.jpg" data-src="images/logo_new.jpg"  alt=""> <?php
-							}else{ ?> <img src="<?php echo $image_cdn; ?>about_images/<?php echo $row['image']?>" data-src="<?php echo $image_cdn; ?>about_images/<?php echo $row['image']?>" alt=""> <?php }?>
+								<?php if($row['image']==""){ ?>
+									<img class="img" src="images/logo_new.jpg" data-src="images/logo_new.jpg"  alt=""> 
+								<?php }else if($row['image']!="" && $row['xlsx_upload'] == 0){ ?> 
+									<img class="img_xlsx_0" src="<?php echo $image_cdn; ?>about_images/<?php echo $row['image']?>" data-src="<?php echo $image_cdn; ?>about_images/<?php echo $row['image']?>" alt=""> 
+								<?php }else{?>
+									<img class="img_xlsx_1"  src="<?php echo $image_cdn; ?>about_images/<?php echo $row['image']?>" data-src="<?php echo $image_cdn; ?>about_images/<?php echo $row['image']?>" alt="">
+								<?php }?>
 			                
 								
 								</form></td>
@@ -431,17 +492,15 @@ exit();
 								  <input name="banner_image" type="file">
 								  <input name="selected_user_id" type="hidden" value="<?php echo $row['id']; ?>">
 								  <input type="submit" value="Upload" />
-								  <?php if ($row['banner_image']) {  ?>
-
-													<img ref="banner_image" data-src="<?php echo $image_cdn; ?>banner_image/<?php echo $row['banner_image'] ?>?w=400" class="owl-lazy lazy2 Sirv" alt="">
-
-													<?php } else {
-													if ($row['image'] == "") { ?>
-
-														<img src="images/logo_new.jpg" data-src="images/logo_new.jpg" class="owl-lazy" alt=""> <?php
-
-																																			} else { ?> <img data-src="<?php echo $image_cdn; ?>about_images/<?php echo $row['image'] ?>?w=200" class="owl-lazy lazy2 Sirv" alt=""> <?php }
-																																						} ?>
+									<?php if ($row['banner_image']) {  ?>
+										<img ref="banner_image" data-src="<?php echo $image_cdn; ?>about_images/<?php echo $row['banner_image'] ?>?w=400" class="banner_1 owl-lazy lazy2 Sirv" alt="">
+									<?php } else {
+											if ($row['image'] == "") { ?>
+												<img src="images/logo_new.jpg" data-src="images/logo_new.jpg" class="owl-lazy img_null" alt=""> 
+											<?php } else if($row['image']!="" && $row['xlsx_upload'] == 0) { ?> <img data-src="<?php echo $image_cdn; ?>about_images/<?php echo $row['image'] ?>?w=200" class="img_xlsx_0 owl-lazy lazy2 Sirv" alt=""> 
+											<?php }else{ ?>
+													<img data-src="<?php echo $image_cdn; ?>about_images/<?php echo $row['image'] ?>?w=200" class="img_xlsx_1 owl-lazy lazy2 Sirv" alt="">
+									<?php } }?>
 								  
 								</form></td>
 								
@@ -514,8 +573,7 @@ exit();
                                     </select>
 
                         	    </td>
-								<td>
-									<textarea  style="min-width: 200px;" selected_user_id="<?php echo $row['id']; ?>" class="form-control mapSearch" rows="5" name="google_map"><?php if(isset($row['google_map'])){ echo $row['google_map']; }?></textarea></td>
+								
                                 
 								<td><?php echo $row['mobile_number'];  ?></td>
                                 <td><?php echo $row['account_type'];?></td>
@@ -649,6 +707,8 @@ exit();
             $('#kType_table').DataTable({
 				"bSort": false,
 				"pageLength":1000,
+								//"pagingType": "numbers",
+
 				dom: 'Bfrtip',
 				 buttons: [
 					'copy', 'csv', 'excel', 'pdf', 'print'
@@ -799,6 +859,81 @@ exit();
 	});
 	
 	
+	 $(".merchantslug").focusout(function(e){
+		var selected_user_id= $(this).attr('selected_user_id');
+		var slug = this.value; 
+		if(selected_user_id)
+		{  
+			$.ajax({
+				url :'../functions.php',
+				 type:"post",
+				 data:{slug:slug,method:"merchantslug",selected_user_id:selected_user_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{  
+					   // location.reload(true);
+					}
+					else
+					{alert('Failed to update');	}
+					
+				}
+			});      
+		}
+		});
+		
+		
+		
+	 $(".merchant_short_name").focusout(function(e){
+		var selected_user_id= $(this).attr('selected_user_id');
+		var merchant_short_name=this.value; 
+		if(selected_user_id)
+		{  
+			$.ajax({
+				url :'../functions.php',
+				 type:"post",
+				 data:{merchant_short_name:merchant_short_name,method:"merchant_short_name",selected_user_id:selected_user_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{  
+					}
+					else
+					{alert('Failed to update');	}
+					
+				}
+			});      
+		}
+	});
+	
+	 $(".c1_code").focusout(function(e){
+		var selected_user_id= $(this).attr('selected_user_id');
+		var c1_code=this.value; 
+		if(selected_user_id)
+		{  
+			$.ajax({
+				url :'../functions.php',
+				 type:"post",
+				 data:{c1_code:c1_code,method:"c1_code",selected_user_id:selected_user_id},     
+				 dataType:'json',
+				 success:function(result){  
+					var data = JSON.parse(JSON.stringify(result));   
+					if(data.status==true)
+					{  
+					}
+					else
+					{alert('Failed to update');	}
+					
+				}
+			});      
+		}
+	});
+	
+	
+		
+	
 	 $(".special_coin_name").focusout(function(e){
 		var selected_user_id= $(this).attr('selected_user_id');
 		var special_coin_name=this.value; 
@@ -886,6 +1021,32 @@ exit();
 		
 		
 		
+		$(".one_product_offer").click(function(e){
+			var selected_user_id= $(this).attr('selected_user_id');
+			var one_product_offer = this.value; 
+			if (this.checked) {
+				var one_product_offer = 1;
+			}else{
+				var one_product_offer = 0;
+			}
+			if( selected_user_id)
+			{  
+			  $.ajax({
+					url :'../functions.php',
+					type:"post",
+					data:{one_product_offer:one_product_offer,method:"one_product_offer",selected_user_id:selected_user_id},     
+					dataType:'json',
+					success:function(result){  
+						var data = JSON.parse(JSON.stringify(result));   
+						if(data.status==true){}
+						else{alert('Failed to update');	}
+						}
+					});      
+			}
+		});
+		
+		
+		
 		$(".no_product_options").click(function(e){
 			var selected_user_id= $(this).attr('selected_user_id');
 			var no_product_options = this.value; 
@@ -911,6 +1072,29 @@ exit();
 		});
 		
 		
+		$(".dine_active").click(function(e){
+			var selected_user_id= $(this).attr('selected_user_id');
+			var dine_active = this.value; 
+			if (this.checked) {
+				var dine_active = 1;
+			}else{
+				var dine_active = 0;
+			}
+			if( selected_user_id)
+			{  
+				$.ajax({
+					url :'../functions.php',
+					 type:"post",
+					 data:{dine_active:dine_active,method:"dine_active",selected_user_id:selected_user_id},     
+					 dataType:'json',
+					 success:function(result){  
+						var data = JSON.parse(JSON.stringify(result));   
+						if(data.status==true){}else{alert('Failed to update');	}
+						
+					 }
+				});      
+			}
+		});
 		
 		
 		$(".cash_on_delivery").click(function(e){

@@ -2,3 +2,9 @@ RewriteEngine On
 
 Redirect https://www.koofamilies.com/ https://www.koofamilies.com/index.php
 Redirect https://koofamilies.com https://www.koofamilies.com/index.php?vs=2c19ac7effea21eb68735804a0fb783c
+
+
+RewriteRule ^merchant/([^/]+)/([^/]+)/([^/]+)/([^/]+)$ view_merchant.php?language=$1&shopname=$2&product=$3&ms=$4 [L,NC,QSA] 
+##language/merchantShop/ProductName/uniquenumber 
+
+RewriteRule ^merchant/([^/]+)/([^/]+)/([^/]+)$ view_merchant.php?language=$1&shopname=$2&ms=$3 [L,NC,QSA] ##language/merchantShop/uniquenumber

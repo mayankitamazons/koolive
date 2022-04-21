@@ -6,7 +6,7 @@
 
 
 
-<script src="/Dashboard_files/pace.min.js.download" defer></script>
+<script src="<?php echo $site_url; ?>/Dashboard_files/pace.min.js.download" defer></script>
 
 
 
@@ -17,11 +17,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
 <title>koofamilies</title>
-<link rel="stylesheet" href="./css/font-awesome.min.css">
-<link href="./Dashboard_files/style.css" rel="stylesheet" type="text/css">
-<link href="./Dashboard_files/v_style.css" rel="stylesheet" type="text/css">
-<link href="./css/jquery-ui.min.css" rel="stylesheet" type="text/css">
-<link href="./css/custom.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="<?php echo $site_url; ?>/css/font-awesome.min.css">
+<link href="<?php echo $site_url; ?>/Dashboard_files/style.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $site_url; ?>/Dashboard_files/v_style.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $site_url; ?>/css/jquery-ui.min.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $site_url; ?>/css/custom.css" rel="stylesheet" type="text/css">
 
 <link rel="manifest" id="my-manifest-placeholder">
 

@@ -15,7 +15,7 @@ if(isset($_POST['submit']))
     if($Cat_data['CMasterID'] > 0 ){
         
         $categoryname = implode(',' , $_POST['categoryname']); 
-        mysqli_query($conn, "update  cat_mater SET CatName='$categoryname' where UserID='$current_id'");
+        mysqli_query($conn, 'update  cat_mater SET CatName="'.$categoryname.'" where UserID='.$current_id);
         
         /**
         
@@ -39,6 +39,9 @@ if(isset($_POST['submit']))
 <html lang="en" style="" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths">
 
 <head>
+<script src="js/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script
     <?php include("includes1/head.php"); ?>
 	<style>
 	.well
@@ -67,11 +70,11 @@ if(isset($_POST['submit']))
     <div id="wrapper" class="wrapper">
         <!-- HEADER & TOP NAVIGATION -->
         <?php include("includes1/navbar.php"); ?>
-        <!-- /.navbar -->
+        <!-- navbar -->
         <div class="content-wrapper">
             <!-- SIDEBAR -->
             <?php include("includes1/sidebar.php"); ?>
-            <!-- /.site-sidebar -->
+            <!-- site-sidebar -->
 
 
             <main class="main-wrapper clearfix" style="min-height: 522px;">
@@ -92,15 +95,25 @@ if(isset($_POST['submit']))
 									<h2>Master Category Details</h2>
 									<br><br>
 									<?php
+									$row_counts =  15;
 									$M_Cat_array = explode(',' , $Cat_data['CatName']);
-									
+									$row_counts = count($M_Cat_array);
+									if($row_counts < 15){
+										$row_counts =  15;
+									}
 									?>
 									<div class="form-group">
 										<label>mater category list</label>
-										<input type="text" name="categoryname[]" class="form-control" value="<?php echo  @$M_Cat_array[0] ?>" required /> <br/>
+										<!--<input type="text" name="categoryname[]" class="form-control" value="<?php echo  @$M_Cat_array[0] ?>" required /> <br/>
 										<input type="text" name="categoryname[]" class="form-control" value="<?php echo  @$M_Cat_array[1] ?>"  /><br/>
 										<input type="text" name="categoryname[]" class="form-control" value="<?php echo  @$M_Cat_array[2] ?>" /><br/>
 										<input type="text" name="categoryname[]" class="form-control" value="<?php echo  @$M_Cat_array[3] ?>"  /><br/>
+										-->
+										<?php for ($x = 0; $x < $row_counts; $x++) {?>
+										<input type="text" name="categoryname[]" class="form-control" value="<?php echo  @$M_Cat_array[$x] ?>" <?php if($x == 0){?>required <?php }?> /> <br/>
+										<?php }?>
+
+										
 									</div>
 									<br>
 									<input type="submit" class="btn btn-block btn-primary" name="submit" value="Submit">

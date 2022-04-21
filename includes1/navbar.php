@@ -66,7 +66,7 @@ if($_GET['force_refresh'] == 'yes'){
 	}
 
 	#load {
-		background-image: url("loader.gif");
+		background-image: url("https://www.koofamilies.com/loader.gif");
 		background-position: center center;
 		background-repeat: no-repeat;
 		bottom: 0;
@@ -88,6 +88,7 @@ if($_GET['force_refresh'] == 'yes'){
 </style>
 <?php 
 $page_script = $_SERVER['SCRIPT_URL'];
+$page_SCRIPT_NAME = $_SERVER['SCRIPT_NAME'];
 
 //if($page_script != '/orderlist.php'){?>
 <div class="page_loader" style="display:none!important;"><span id="load"></span></div>
@@ -99,7 +100,7 @@ $page_script = $_SERVER['SCRIPT_URL'];
     <input type="hidden" class="user_id" value="<?php echo $_SESSION['login'];?>" >
 <!-- Logo Area -->
 <div class="navbar-header">
-<a href="index.php?vs=<?=md5(rand()) ?>" class="navbar-brand">
+<a href="<?php echo $site_url; ?>/index.php?vs=<?=md5(rand()) ?>" class="navbar-brand">
     <p class="logo-expand">Koo Families</p>
     <p class="logo-collapse">Koo</p>
 <!-- <p>OSCAR</p> -->
@@ -209,16 +210,34 @@ if($_SERVER['QUERY_STRING']!= ''){
 		   $g_url.="&".$key."=".$value;
 	   }
   }
+   if($_GET['shopname']){
+	  $shop_link = $_GET['shopname']."/".$_GET['ms'];
+  }
+  
 	  ?>
   <?php ?>
+  <?php if($_GET['shopname']){?>
   <ul class="dropdown-menu" style="padding:10px 15px;">
-	<a href="?language=english<?php echo $g_url; ?>" style="display:block; color:#000; font-size: 18px; margin-bottom: 10px;">English</a>
-	<a href="?language=chinese<?php echo $g_url; ?>" style="display:block; color:#000; font-size: 18px; margin-bottom: 10px;">Chinese</a>
-	<a href="?language=malaysian<?php echo $g_url; ?>" style="display:block; color:#000; font-size: 18px; margin-bottom: 10px;">Malay</a>
+	<a href="<?php echo $site_url; ?>/merchant/english/<?php echo $shop_link; ?>" style="display:block; color:#000; font-size: 18px; margin-bottom: 10px;">English</a>
+	<a href="<?php echo $site_url; ?>/merchant/chinese/<?php echo $shop_link; ?>" style="display:block; color:#000; font-size: 18px; margin-bottom: 10px;">Chinese</a>
+	<a href="<?php echo $site_url; ?>/merchant/malaysian/<?php echo $shop_link; ?>" style="display:block; color:#000; font-size: 18px; margin-bottom: 10px;">Malay</a>
   </ul>
+  <?php }else if($_GET['sid']){?>
+  <ul class="dropdown-menu" style="padding:10px 15px;">
+	<a href="<?php echo $site_url; ?>/view_merchant.php?language=english<?php echo $g_url; ?>" style="display:block; color:#000; font-size: 18px; margin-bottom: 10px;">English</a>
+	<a href="<?php echo $site_url; ?>/view_merchant.php?language=chinese<?php echo $g_url; ?>" style="display:block; color:#000; font-size: 18px; margin-bottom: 10px;">Chinese</a>
+	<a href="<?php echo $site_url; ?>/view_merchant.php?language=malaysian<?php echo $g_url; ?>" style="display:block; color:#000; font-size: 18px; margin-bottom: 10px;">Malay</a>
+  </ul>
+  <?php }else{?>
+  <ul class="dropdown-menu" style="padding:10px 15px;">
+	<a href="<?php echo $site_url; ?>/?language=english<?php echo $g_url; ?>" style="display:block; color:#000; font-size: 18px; margin-bottom: 10px;">English</a>
+	<a href="<?php echo $site_url; ?>/?language=chinese<?php echo $g_url; ?>" style="display:block; color:#000; font-size: 18px; margin-bottom: 10px;">Chinese</a>
+	<a href="<?php echo $site_url; ?>/?language=malaysian<?php echo $g_url; ?>" style="display:block; color:#000; font-size: 18px; margin-bottom: 10px;">Malay</a>
+  </ul>
+  <?php } ?>
 </li>
 <li class="dropdown">
-  <a class="dropdown-toggle" style="cursor:pointer" data-toggle="dropdown"><img src="images/wallet.png" style="width:40px"></a>
+  <a class="dropdown-toggle" style="cursor:pointer" data-toggle="dropdown"><img src="<?php echo $site_url; ?>/images/wallet.png" style="width:40px"></a>
   <?php
   // $balance = isset($_SESSION['login']) ? mysqli_fetch_assoc(mysqli_query($conn, "SELECT special_coin_name,mobile_number,id,user_roles,setup_shop,balance_usd,balance_inr,balance_myr FROM users WHERE id='".$_SESSION['login']."'")) : '';
   $balance =$profile_data;
@@ -255,7 +274,7 @@ if($_SERVER['QUERY_STRING']!= ''){
 					?>
 					
 					<tr><th><?php echo $swallet['special_coin_name'];?></th>
-					<td><a href="structure_merchant.php?merchant_id=<?php echo $swallet['merchant_id'];?>">
+					<td><a href="<?php echo $site_url; ?>/structure_merchant.php?merchant_id=<?php echo $swallet['merchant_id'];?>">
 					<?php if($swallet['coin_balance']){echo number_format($swallet['coin_balance'],2);}else{ echo "0.00";} ?></a></td></tr>
 						
 							<?php } } ?>
@@ -263,7 +282,7 @@ if($_SERVER['QUERY_STRING']!= ''){
   </ul>
 </li>
 <li class="dropdown"><a href="javascript:void(0);" class="dropdown-toggle ripple" data-toggle="dropdown">
-<span class="thumb-sm"><img src="./Dashboard_files/user-image.png" class="rounded-circle" alt="" style="width: 40px;"> </span></a>
+<span class="thumb-sm"><img src="<?php echo $site_url; ?>/Dashboard_files/user-image.png" class="rounded-circle" alt="" style="width: 40px;"> </span></a>
 <div class="dropdown-menu dropdown-left dropdown-card-dark text-inverse" style="padding:8px">
 	<!-- logout menu -->
 	<?php   
@@ -291,7 +310,7 @@ if($_SERVER['QUERY_STRING']!= ''){
 			</div>
 			<div class="modal-body" style="text-align: left;">
 				<div class="credentials-container">
-					<img src="qrcode/qrcode.php?text=<?php echo $a_mboile_no; ?>" style="width:100%" class="text_qrcode">
+					<img src="<?php echo $site_url; ?>/qrcode/qrcode.php?text=<?php echo $a_mboile_no; ?>" style="width:100%" class="text_qrcode">
 				</div>
 			</div>
 		</div>
@@ -310,7 +329,7 @@ if($_SERVER['QUERY_STRING']!= ''){
                                     <form id ="closeshop">
                                         <div class="modal-body closeshop" style="padding-bottom:0px;max-height:50vh;overflow-x: auto;">
 										  
-												<span href="logout.php?s=shop_close" type="shop_close" class="btn btn-primary logout">Shop Close with Logout  </span>  	 
+												<span href="<?php echo $site_url; ?>/logout.php?s=shop_close" type="shop_close" class="btn btn-primary logout">Shop Close with Logout  </span>  	 
 												&nbsp;&nbsp;&nbsp;&nbsp;
 												<?php
 												  if($pending_count>0)
@@ -384,10 +403,12 @@ i.fa.fa-bars {
 </style>
 
  <!--- Force Refresh -->
-<?php //if($_GET['mode'] =='dev'){?>
+<?php //if($_GET['mode'] =='dev'){
+if($page_SCRIPT_NAME != '/dashboard.php'){?>
 <script>
     $(document).ready(function(){
 		$(".myrefresh").click(function(){
+			$("#newuser_model").modal('hide');
 			$("#myModal_forcerefresh").modal({
 			show: false,
 			backdrop: 'static'
@@ -400,7 +421,8 @@ i.fa.fa-bars {
 		
     });
 </script>
-<?php //}?>
+<?php }
+//}?>
 <div id="myModal_forcerefresh" class="modal fade" style="top:90px">
     <div class="modal-dialog">
         <div class="modal-content">

@@ -2,7 +2,7 @@
 //include("config.php");
 date_default_timezone_set("Asia/Kuala_Lumpur");
 session_start();
-//ini_set('max_execution_time', '3000'); // for infinite time of execution 
+#ini_set('max_execution_time', '3000'); // for infinite time of execution 
 $conn = mysqli_connect("localhost", "koofamilies_user", "k00Family_deMo", "koofamilies_demo");
 if($_POST['language_name'] == 1){
 	@mysqli_query($conn,"SET CHARACTER SET 'latin1'"); //if langugae chinese
@@ -20,8 +20,8 @@ if(!isset($_SESSION['admin']))
 header('Content-Type: text/html; charset=utf-8');
 //header('Content-Type: text/html; charset=latin1');
 error_reporting(1);
-ini_set('memory_limit', '-1'); // unlimited memory limit
-ini_set('max_execution_time', 3000);
+#ini_set('memory_limit', '-1'); // unlimited memory limit
+//ini_set('max_execution_time', 3000);
 
 $a_m="foodpanda";
 include('SimpleXLSX.php');
@@ -147,14 +147,36 @@ if(isset($_POST['addCat'])){
 					$row++;	
 					}
 				}
-				/*if(count($merchantArray['Tesco (Kulai)']['category_array']) > 0){
-					$keys_category = array_keys($merchantArray['Tesco (Kulai)']['category_array']);
+				/*
+				if(count($merchantArray['Tesco (Kulai) 2']['category_array']) > 0){
+					$keys_category = array_keys($merchantArray['Tesco (Kulai) 2']['category_array']);
 					$master_category = implode(",",$keys_category);
 					echo $master_category;
 				}
+				for ($x = 14; $x <= 44; $x++) {
+					
+					$product_name = $merchantArray['Tesco (Kulai) 2']['products'][$x]['name'];
+					$product_slug = str_replace(" ","-",$product_name);
+					$product_price = $merchantArray['Tesco (Kulai) 2']['products'][$x]['product_price'];
+					$product_image = $merchantArray['Tesco (Kulai) 2']['products'][$x]['product_image'];
+					$lastcategory_id = "35193";
+					$varient_exit = 'n';
+					$lastexcel_id = "591";
+					if($product_image != ''){
+						$product_image = "XLSX/".$product_image.".jpg";
+					}else{
+						$product_image = '';
+					}
+									
+					 echo "INSERT INTO products (`user_id`,`product_name`,`product_slug`,`category`,`product_price`,`image`,`status`,`created_date`,`category_id`,`varient_exit`,`csv_import`,`csv_id`) VALUES ('18414','".$product_name."','".$product_slug."','Lotus\'s Brand','".$product_price."','".$product_image."',0,'".date('Y-m-d')."','".$lastcategory_id."','".$varient_exit."',1,'".$lastexcel_id."')";
+					echo '<br/>';
+				}					
+									
+									
 				echo '<pre>';
 				print_R($merchantArray);
-				exit;*/
+				exit;
+				*/
 				if(count($merchantArray) > 0){
 					//echo '<pre>';
 					//print_R($merchantArray);
@@ -163,6 +185,7 @@ if(isset($_POST['addCat'])){
 					
 					foreach($merchantArray as $key => $value){
 						$m_name = addslashes($value['name']);
+						$user_slug = str_replace(" ","-",$m_name);
 						$mobile_number = $value['telephone'];
 						if($mobile_number == ''){
 							$mobile_number = rand();
@@ -203,16 +226,20 @@ if(isset($_POST['addCat'])){
 						$working_text = $value['working_text'];
 						$working_text_chiness = $value['working_text_chiness'];
 						$foodpanda_link	 = $value['foodpanda_link'];
-
+						$merchant_remark = 'Fp (if fp no open, please check google for phone number).';
 						//insert merchants in users table
-						$user_query = "INSERT INTO users (`user_language`,`name`,`mobile_number`,`user_roles`,`image`,`banner_image`,`address`,`google_map`,`latitude`,`longitude`,`created_at`,`working_text`,`working_text_chiness`,`foodpanda_link`,`csv_import`,`city`,`m_state`,`isLocked`,`show_merchant`,`csv_id`,`special_price_value`,`cash_on_delivery`,`table_exit`,`delivery_address_exit`,`special_coin_name`)
-						VALUES ('english','".$m_name."','".$mobile_number."','".$user_roles."','".$banner_image."','".$banner_image."','".$address."','".$google_map."','".$latitude."','".$longitude."','".$created_at."','".$working_text."','".$working_text_chiness."','".$foodpanda_link."','1','".$city."','".$m_state."',0,1,'".$lastexcel_id."',0,1,0,1,'".$special_coin_name."')";
+						$user_query = "INSERT INTO users (`user_language`,`name`,`mobile_number`,`user_roles`,`image`,`banner_image`,`address`,`google_map`,`latitude`,`longitude`,`created_at`,`working_text`,`working_text_chiness`,`foodpanda_link`,`csv_import`,`city`,`m_state`,`isLocked`,`show_merchant`,`csv_id`,`special_price_value`,`cash_on_delivery`,`table_exit`,`delivery_address_exit`,`special_coin_name`,`sst_rate`,`merchant_remark`,`slug`)
+						VALUES ('english','".$m_name."','".$mobile_number."','".$user_roles."','".$banner_image."','".$banner_image."','".$address."','".$google_map."','".$latitude."','".$longitude."','".$created_at."','".$working_text."','".$working_text_chiness."','".$foodpanda_link."','1','".$city."','".$m_state."',0,1,'".$lastexcel_id."',0,1,0,1,'".$special_coin_name."',0,'".$merchant_remark."','".$user_slug."')";
 						
 						//echo $s."===========".$user_query;
 						//echo '<br/>';
 						$insert_users = mysqli_query($conn,$user_query);	
 						$lastuser_id = mysqli_insert_id($conn);
 						
+						$about_user ="INSERT INTO `about` (`id`, `userid`, `description`, `link`, `welcome_note`, `image`, `video_upload`, `xlsx_upload`) VALUES (NULL, '".$lastuser_id."', ' ', '', ' ', '".$banner_image."', '', '1');";
+						$abouts_users = mysqli_query($conn,$about_user);	
+
+
 						//echo '<pre>';
 						//print_R($value['timing_array']);
 						
@@ -382,6 +409,9 @@ if(isset($_POST['addCat'])){
 								}
 								
 								$product_name = addslashes($p_value['name']);
+								
+								$product_slug = str_replace(" ","-",$product_name);
+								
 								$product_remark = $p_value['remark'];
 								$product_price = str_replace("MYR","",$p_value['product_price']);
 								$product_price = str_replace("RM","",$product_price);
@@ -394,13 +424,13 @@ if(isset($_POST['addCat'])){
 										$link_img = $p_value['product_image'];
 										$link_array = explode("/",$link_img);
 										$imgArrayCount = count($link_array) - 1;
-										$product_image = "XLSX/".$link_array[$imgArrayCount];
+										$product_image = "../XLSX4/".$link_array[$imgArrayCount];
 									}else{
 										$product_image = '';
 									}
 								}else{
 									if($p_value['product_image'] != ''){
-										$product_image = "XLSX/".$p_value['product_image'].".jpg";
+										$product_image = "../XLSX4/".$p_value['product_image'].".jpg";
 									}else{
 										$product_image = '';
 									}
@@ -422,7 +452,7 @@ if(isset($_POST['addCat'])){
 										
 								}
 								
-								 $product_query = "INSERT INTO products (`user_id`,`product_name`,`category`,`product_price`,`image`,`status`,`created_date`,`category_id`,`varient_exit`,`csv_import`,`csv_id`) VALUES ('".$lastuser_id."','".$product_name."','".$category."','".$product_price."','".$product_image."',0,'".date('Y-m-d')."','".$lastcategory_id."','".$varient_exit."',1,'".$lastexcel_id."')";
+								 $product_query = "INSERT INTO products (`user_id`,`product_name`,`product_slug`,`category`,`remark`,`product_price`,`image`,`status`,`created_date`,`category_id`,`varient_exit`,`csv_import`,`csv_id`) VALUES ('".$lastuser_id."','".$product_name."','".$product_slug."','".$category."','".$product_remark."','".$product_price."','".$product_image."',0,'".date('Y-m-d')."','".$lastcategory_id."','".$varient_exit."',1,'".$lastexcel_id."')";
 								//echo '<br/>';
 								$insert_product = mysqli_query($conn,$product_query);	
 								$lastproduct_id = mysqli_insert_id($conn);

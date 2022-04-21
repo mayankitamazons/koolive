@@ -135,15 +135,15 @@ if($user_roles=="5")
 	<nav class="sidebar-nav">
 		<ul class="nav in side-menu">
 			<?php if(isset($_SESSION['login'])){ ?>
-			  <li> <a href="dashboard.php?vs=<?=md5(rand()) ?>" class="<?php if($me=="dashboard"){ echo "active";} ?>"> <?php echo $language["dashboard"] ?> </a> </li> 
+			  <li> <a href="<?php echo $site_url; ?>/dashboard.php?vs=<?=md5(rand()) ?>" class="<?php if($me=="dashboard"){ echo "active";} ?>"> <?php echo $language["dashboard"] ?> </a> </li> 
 			
 				<?php if($user_roles=="2" || $user_roles=="5"){ ?>
 				<li class="menu-item-has-children">
 							<a href="#" class=""> <?php echo $language['language']; ?></a>
 							<ul class="list-unstyled sub-menu collapse" aria-expanded="false">
-								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="?language=english<?php echo $g_url; ?>">English</a></li> 
-								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
-								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
+								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="<?php echo $site_url; ?>/?language=english<?php echo $g_url; ?>">English</a></li> 
+								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="<?php echo $site_url; ?>/?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
+								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="<?php echo $site_url; ?>/?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
 								
 								
 							</ul>
@@ -153,56 +153,56 @@ if($user_roles=="5")
 					<ul class="list-unstyled sub-menu collapse" aria-expanded="true">
 					    <!-- setup of order list  !-->
 						<?php if($user_roles=="2"){ ?>
-					  	<li><a href="orderview.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="order_list"){ echo "active";}?>"><?php echo $language["order_list"];?></a></li> 
+					  	<li><a href="<?php echo $site_url; ?>/orderview.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="order_list"){ echo "active";}?>"><?php echo $language["order_list"];?></a></li> 
 						<?php if($profile_data['voice_recognition']){ ?>
-						<li><a href="voiceorderview.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="voice_order_view"){ echo "active";}?>"><?php echo $language["voice_order_list"];?></a></li> 
+						<li><a href="<?php echo $site_url; ?>/voiceorderview.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="voice_order_view"){ echo "active";}?>"><?php echo $language["voice_order_list"];?></a></li> 
 						<?php } } else if($profile_data['user_roles'] ==  '5' && $orderlistperm==1){ ?>
-							<li><a href="orderview-staff.php?vs=<?=md5(rand()) ?>"" class="<?php if ($me=="order_list_staff"){ echo "active";}?>"><?php echo $language['order_list'];?></a></li> 
+							<li><a href="<?php echo $site_url; ?>/orderview-staff.php?vs=<?=md5(rand()) ?>"" class="<?php if ($me=="order_list_staff"){ echo "active";}?>"><?php echo $language['order_list'];?></a></li> 
 						<?php } ?>
 						<!-- end of order list  !-->
 						<!-- setup of report  !-->
 						<?php if($user_roles=="2"){ ?>
-						<li><a href="report.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="report"){ echo "active";}?>"><?php echo $language["report"];?></a></li> 
+						<li><a href="<?php echo $site_url; ?>/report.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="report"){ echo "active";}?>"><?php echo $language["report"];?></a></li> 
 						<?php } else if($profile_data['user_roles'] ==  '5' && $report==1){ ?>
-							<li><a href="report.php" class="<?php if ($me=="report"){ echo "active";}?>"><?php echo $language['report'];?></a></li> 
+							<li><a href="<?php echo $site_url; ?>/report.php" class="<?php if ($me=="report"){ echo "active";}?>"><?php echo $language['report'];?></a></li> 
 						<?php } ?>
 						<!-- end of report  !-->
 						<?php if($user_roles=="2"){ ?>
-						 <li><a href="add_mater_category.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="add_master"){ echo "active";}?>"><?php echo $language['add_master']; ?></a></li>
+						 <li><a href="<?php echo $site_url; ?>/add_mater_category.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="add_master"){ echo "active";}?>"><?php echo $language['add_master']; ?></a></li>
 						<?php } else if($profile_data['user_roles'] ==  '5' && $addmasterper==1){ ?>
-							<li><a href="add_mater_category.php" class="<?php if ($me=="add_master"){ echo "active";}?>"><?php echo $language['add_master']; ?></a></li>
+							<li><a href="<?php echo $site_url; ?>/add_mater_category.php" class="<?php if ($me=="add_master"){ echo "active";}?>"><?php echo $language['add_master']; ?></a></li>
 						<?php } ?>
 						
 						<?php if($user_roles=="2"){ ?>   
 						  <li class="menu-item-has-children">
 						    <a href="#" class="<?php if ($category_tab=="y"){ echo "active";}?>"><?php echo $language['category']; ?></a>
 							<ul class="list-unstyled sub-menu collapse">
-								<li><a href="add_category.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="add_category_button"){ echo "active";}?>"><?php echo $language['add_button']; ?></a></li>
-								<li><a href="view_category.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="edit_category_button"){ echo "active";}?>"><?php echo $language['edit_button']; ?></a></li>
-								<li><a href="category_order.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="position_category_button"){ echo "active";}?>"><?php echo $language['position_button']; ?></a></li>
+								<li><a href="<?php echo $site_url; ?>/add_category.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="add_category_button"){ echo "active";}?>"><?php echo $language['add_button']; ?></a></li>
+								<li><a href="<?php echo $site_url; ?>/view_category.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="edit_category_button"){ echo "active";}?>"><?php echo $language['edit_button']; ?></a></li>
+								<li><a href="<?php echo $site_url; ?>/category_order.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="position_category_button"){ echo "active";}?>"><?php echo $language['position_button']; ?></a></li>
 							</ul>  
 						  </li>
 						  <li class="menu-item-has-children">
 						    <a href="#" class="<?php if ($product_tab=="y"){ echo "active";}?>"><?php echo $language['product']; ?></a>
 							<ul class="list-unstyled sub-menu collapse" aria-expanded="true">
-								<li><a href="merchant_product.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="add_product_button"){ echo "active";}?>"><?php echo $language['add_button']; ?></a></li>
-								<li><a href="view_product.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="edit_product_button"){ echo "active";}?>"><?php echo $language['edit_button']; ?></a></li>
-								<li><a href="product_order.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="position_product_button"){ echo "active";}?>"><?php echo $language['position_button']; ?></a></li>
+								<li><a href="<?php echo $site_url; ?>/merchant_product.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="add_product_button"){ echo "active";}?>"><?php echo $language['add_button']; ?></a></li>
+								<li><a href="<?php echo $site_url; ?>/view_product.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="edit_product_button"){ echo "active";}?>"><?php echo $language['edit_button']; ?></a></li>
+								<li><a href="<?php echo $site_url; ?>/product_order.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="position_product_button"){ echo "active";}?>"><?php echo $language['position_button']; ?></a></li>
 							</ul>
 						  </li>
-						   <li><a href="remark.php" class="<?php if ($me=="remark"){ echo "active";}?>"><span class="hide-menu"><?php echo $language['remarks']; ?></span></a></li>
-						   <li><a href="set_workinghours.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="workinghrs"){ echo "active";}?>"><?php echo $language["timing_working"];?></a></li> 
-						   <li><a href="newtimings.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="workinghrs"){ echo "active";}?>"><?php echo $language["new_timing_working"];?></a></li> 
-						   <li><a href="offers.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="offers"){ echo "active";}?>"><?php echo $language['offers'];?></a></li>   
-						   <li><a href="sections.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="sections"){ echo "active";}?>"><?php echo $language['sections'];?></a></li>
+						   <li><a href="<?php echo $site_url; ?>/remark.php" class="<?php if ($me=="remark"){ echo "active";}?>"><span class="hide-menu"><?php echo $language['remarks']; ?></span></a></li>
+						   <li><a href="<?php echo $site_url; ?>/set_workinghours.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="workinghrs"){ echo "active";}?>"><?php echo $language["timing_working"];?></a></li> 
+						   <li><a href="<?php echo $site_url; ?>/newtimings.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="workinghrs"){ echo "active";}?>"><?php echo $language["new_timing_working"];?></a></li> 
+						   <li><a href="<?php echo $site_url; ?>/offers.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="offers"){ echo "active";}?>"><?php echo $language['offers'];?></a></li>   
+						   <li><a href="<?php echo $site_url; ?>/sections.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="sections"){ echo "active";}?>"><?php echo $language['sections'];?></a></li>
 						<?php } else if($profile_data['user_roles'] ==  '5'){ 
 							 if($addmasterper==1 || $viewcategoryper==1){?>
 							<li class="menu-item-has-children">
 								  <a href="#" class="<?php if ($category_tab=="y"){ echo "active";}?>"><?php echo $language['category']; ?></a>
 								<ul class="list-unstyled sub-menu collapse" aria-expanded="true">
 								  <?php if($addmasterper==1){ ?>
-								 <li><a href="add_category.php" class="<?php if ($me=="add_category_button"){ echo "active";}?>"><?php echo $language['add_button']; ?></a></li> <?php } if($viewcategoryper==1){ ?>
-								 <li><a href="view_category.php" class="<?php if ($me=="edit_category_button"){ echo "active";}?>"><?php echo $language['edit_button']; ?></a></li><?php } ?>
+								 <li><a href="<?php echo $site_url; ?>/add_category.php" class="<?php if ($me=="add_category_button"){ echo "active";}?>"><?php echo $language['add_button']; ?></a></li> <?php } if($viewcategoryper==1){ ?>
+								 <li><a href="<?php echo $site_url; ?>/view_category.php" class="<?php if ($me=="edit_category_button"){ echo "active";}?>"><?php echo $language['edit_button']; ?></a></li><?php } ?>
 									
 								</ul>
 							</li>
@@ -211,8 +211,8 @@ if($user_roles=="5")
 								 <a href="#" class="<?php if ($product_tab=="y"){ echo "active";}?>"><?php echo $language['product']; ?></a>
 								<ul class="list-unstyled sub-menu collapse" aria-expanded="true">
 								  <?php if($addproductper==1){ ?>
-								 <li><a href="merchant_product.php" class="<?php if ($me=="add_product_button"){ echo "active";}?>"><?php echo $language['add_button']; ?></a></li> <?php } if($viewproductper==1){ ?>
-								 <li><a href="view_product.php" class="<?php if ($me=="edit_product_button"){ echo "active";}?>"><?php echo $language['edit_button']; ?></a></li><?php } ?>
+								 <li><a href="<?php echo $site_url; ?>/merchant_product.php" class="<?php if ($me=="add_product_button"){ echo "active";}?>"><?php echo $language['add_button']; ?></a></li> <?php } if($viewproductper==1){ ?>
+								 <li><a href="<?php echo $site_url; ?>/view_product.php" class="<?php if ($me=="edit_product_button"){ echo "active";}?>"><?php echo $language['edit_button']; ?></a></li><?php } ?>
 									
 								</ul>
 							</li>
@@ -221,21 +221,21 @@ if($user_roles=="5")
 					</ul>
 					</li>
 					  <?php if($profile_data['unrecognize_coin']=='1'){ ?>
-			  <li><a href="partner_list.php" class="<?php if($me=="partner_list"){ echo "active";} ?>"><?php echo $language["partner_list"];?></a></li> <?php } ?>
+			  <li><a href="<?php echo $site_url; ?>/partner_list.php" class="<?php if($me=="partner_list"){ echo "active";} ?>"><?php echo $language["partner_list"];?></a></li> <?php } ?>
 				<?php if($profile_data['special_coin_name']){ ?>
-				 <li><a href="coinuserlist.php" class="<?php if($me=="special_coin_name"){ echo "active";} ?>"><?php echo $profile_data['special_coin_name'];?></a>  </li>
+				 <li><a href="<?php echo $site_url; ?>/coinuserlist.php" class="<?php if($me=="special_coin_name"){ echo "active";} ?>"><?php echo $profile_data['special_coin_name'];?></a>  </li>
 				<?php } } ?>
 				<li class="menu-item-has-children">
 					<a href='#' class="<?php if($find_merchant_tab=="y") echo "active"; ?>"><?php echo $language["find_merchant"];?></a>
 					<ul class="list-unstyled sub-menu collapse" aria-expanded="true">
-						<li><a href="merchant_find.php" class="<?php if ($me=="merchant_find"){ echo "active";}?>"><?php echo $language["find_merchant"];?></a></li>
-						<li><a href="favorite.php" class="<?php if ($me=="favorite"){ echo "active";}?>"><?php echo $language['fav_merchant'];?></a></li>
+						<li><a href="<?php echo $site_url; ?>/merchant_find.php" class="<?php if ($me=="merchant_find"){ echo "active";}?>"><?php echo $language["find_merchant"];?></a></li>
+						<li><a href="<?php echo $site_url; ?>/favorite.php" class="<?php if ($me=="favorite"){ echo "active";}?>"><?php echo $language['fav_merchant'];?></a></li>
 					</ul>
 				</li>
 				<?php  if($_SESSION['login']){?>
-					<li><a href="orderlist.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="orderlist"){ echo "active";}?>"><?php echo $language['list_order_payment'];?></a></li>
-					<li><a href="comission_list.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="comission_list"){ echo "active";}?>"><span class="hide-menu"><?php echo $language["comission_list"];?></span></a></li> 
-					<li><a href="voiceorderlist.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="voice_order_list"){ echo "active";}?>"><?php echo "Voice Order History";?></a></li>  
+					<li><a href="<?php echo $site_url; ?>/orderlist.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="orderlist"){ echo "active";}?>"><?php echo $language['list_order_payment'];?></a></li>
+					<li><a href="<?php echo $site_url; ?>/comission_list.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="comission_list"){ echo "active";}?>"><span class="hide-menu"><?php echo $language["comission_list"];?></span></a></li> 
+					<li><a href="<?php echo $site_url; ?>/voiceorderlist.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="voice_order_list"){ echo "active";}?>"><?php echo "Voice Order History";?></a></li>  
 				<?php } ?>   
 				<?php if($user_roles=="2" || $user_roles=="5"){ ?>
 			
@@ -243,23 +243,23 @@ if($user_roles=="5")
 						<li class="menu-item-has-children">
 							<a href="#" class="<?php if ($memebership_tab=="y"){ echo "active";}?>"><?php echo $language['membership']; ?></a>
 							<ul class="list-unstyled sub-menu collapse" aria-expanded="true">
-								<li><a href="memberlist.php"  class="<?php if ($me=="refferal_member_list"){ echo "active";}?>"><?php echo $language["refferal_member_list"];?></a></li> 
+								<li><a href="<?php echo $site_url; ?>/memberlist.php"  class="<?php if ($me=="refferal_member_list"){ echo "active";}?>"><?php echo $language["refferal_member_list"];?></a></li> 
 								<?php if($membership_plan_set==1){ ?>
-								<li><a href="subscription.php"  class="<?php if ($me=="subscription_plan"){ echo "active";}?>"><span class="hide-menu"><?php echo $language["subscription_plan"];?></span></a></li>
+								<li><a href="<?php echo $site_url; ?>/subscription.php"  class="<?php if ($me=="subscription_plan"){ echo "active";}?>"><span class="hide-menu"><?php echo $language["subscription_plan"];?></span></a></li>
 								<?php } ?>
 								<!--li><a href='#'>Member Application</a> </li!-->
 							</ul>
 						</li>
 						<?php if($coupon_offer==1){ ?>
-						<li><a href="coupon_list.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="coupon_code_list"){ echo "active";}?>"><span class="hide-menu"><?php echo $language["coupon_code_list"];?></span></a></li> <?php } ?>
-						<li><a href="deliveryplan.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="delivery_plan"){ echo "active";}?>"><span class="hide-menu"><?php echo $language["delivery_plan"];?></span></a></li>
-						<li><a href="referral_list.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="referral_list"){ echo "active";}?>"><span class="hide-menu"><?php echo $language['referral_list'];?></span></a> </li>
+						<li><a href="<?php echo $site_url; ?>/coupon_list.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="coupon_code_list"){ echo "active";}?>"><span class="hide-menu"><?php echo $language["coupon_code_list"];?></span></a></li> <?php } ?>
+						<li><a href="<?php echo $site_url; ?>/deliveryplan.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="delivery_plan"){ echo "active";}?>"><span class="hide-menu"><?php echo $language["delivery_plan"];?></span></a></li>
+						<li><a href="<?php echo $site_url; ?>/referral_list.php?vs=<?=md5(rand()) ?>" class="<?php if ($me=="referral_list"){ echo "active";}?>"><span class="hide-menu"><?php echo $language['referral_list'];?></span></a> </li>
 						<li class="menu-item-has-children">
 						  <a href="#" class="<?php if ($profile_tab=="y"){ echo "active";}?>"><?php echo $language['profile']; ?></a>
 							<ul class="list-unstyled sub-menu collapse" aria-expanded="true">
-								<li><a href="profile_merchant.php" ><span class="hide-menu <?php if ($me=="profile_merchant"){ echo "active";}?>"><?php echo $language['profile']; ?></span></a></li>
-								<li><a href="about_us.php"><span class="hide-menu <?php if ($me=="about_us"){ echo "active";}?>"><?php echo $language['about_us']; ?></span></a></li>
-								<li><a href="staff.php"><span class="hide-menu <?php if ($me=="staff"){ echo "active";}?>"><?php echo $language["staff"];?></span></a></li>
+								<li><a href="<?php echo $site_url; ?>/profile_merchant.php" ><span class="hide-menu <?php if ($me=="profile_merchant"){ echo "active";}?>"><?php echo $language['profile']; ?></span></a></li>
+								<li><a href="<?php echo $site_url; ?>/about_us.php"><span class="hide-menu <?php if ($me=="about_us"){ echo "active";}?>"><?php echo $language['about_us']; ?></span></a></li>
+								<li><a href="<?php echo $site_url; ?>/staff.php"><span class="hide-menu <?php if ($me=="staff"){ echo "active";}?>"><?php echo $language["staff"];?></span></a></li>
 								<!--li><a href="#">Subscription</a></li!-->
 							</ul>
 						</li> 
@@ -277,29 +277,29 @@ if($user_roles=="5")
 					<?php } ?>
 				<?php } ?>
 			<?php } if($user_roles=="1"){  ?>
-				 <li><a href="profile.php?vs=<?=md5(rand()) ?>"><span class="hide-menu <?php if($me=="profile"){echo "active";} ?>"><?php echo $language['profile'];?></span></a></li>
-				 <li><a href="referral_list.php?vs=<?=md5(rand()) ?>"><span class="hide-menu <?php if($me=="referral_list"){echo "active";} ?>"><?php echo $language['referral_list'];?></span></a> </li>
-				   <li><a href="investor_relations.php" class="investor_relation"><span class="hide-menu <?php if($me=="investor_relation"){echo "active";} ?>"><?php echo $language['InvestorRelations']; ?></span><i class='fa fa-star' style="color:yellow;"></i></a></li>
-				   <li><a href="contact.php"><span class="hide-menu <?php if($me=="contact"){echo "active";} ?>"><?php echo $language['contact'];?></span></a></li>  
+				 <li><a href="<?php echo $site_url; ?>/profile.php?vs=<?=md5(rand()) ?>"><span class="hide-menu <?php if($me=="profile"){echo "active";} ?>"><?php echo $language['profile'];?></span></a></li>
+				 <li><a href="<?php echo $site_url; ?>/referral_list.php?vs=<?=md5(rand()) ?>"><span class="hide-menu <?php if($me=="referral_list"){echo "active";} ?>"><?php echo $language['referral_list'];?></span></a> </li>
+				   <li><a href="<?php echo $site_url; ?>/investor_relations.php" class="investor_relation"><span class="hide-menu <?php if($me=="investor_relation"){echo "active";} ?>"><?php echo $language['InvestorRelations']; ?></span><i class='fa fa-star' style="color:yellow;"></i></a></li>
+				   <li><a href="<?php echo $site_url; ?>/contact.php"><span class="hide-menu <?php if($me=="contact"){echo "active";} ?>"><?php echo $language['contact'];?></span></a></li>  
 				   <li class="menu-item-has-children">
 							<a href="#" class=""> <?php echo $language['language']; ?></a>
 							<ul class="list-unstyled sub-menu collapse" aria-expanded="false">
-								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="?language=english<?php echo $g_url; ?>">English</a></li> 
-								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
-								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
+								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="<?php echo $site_url; ?>/?language=english<?php echo $g_url; ?>">English</a></li> 
+								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="<?php echo $site_url; ?>/?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
+								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="<?php echo $site_url; ?>/?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
 								
 								
 							</ul>
 			</li>
 				   <li><a href="#"  type="normal_logout" class="logout"><?php echo $language['log_out']; ?>  </a></li>
 				<?php }else if($user_roles==''){ ?>
-				<li><a href="merchant_find.php"><span class="hide-menu <?php if($me=="merchant_find"){ echo "active";} ?>"><?php echo $language["find_merchant"];?></span></a></li>
+				<li><a href="<?php echo $site_url; ?>/merchant_find.php"><span class="hide-menu <?php if($me=="merchant_find"){ echo "active";} ?>"><?php echo $language["find_merchant"];?></span></a></li>
 				<li class="menu-item-has-children">
 							<a href="#" class=""> <?php echo $language['language']; ?></a>
 							<ul class="list-unstyled sub-menu collapse" aria-expanded="false">
-								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="?language=english<?php echo $g_url; ?>">English</a></li> 
-								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
-								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
+								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="<?php echo $site_url; ?>/?language=english<?php echo $g_url; ?>">English</a></li> 
+								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="<?php echo $site_url; ?>/?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
+								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="<?php echo $site_url; ?>/?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
 								
 								
 							</ul>
@@ -307,18 +307,18 @@ if($user_roles=="5")
 
 
 			</li>
-				<li><a href="investor_relations.php" class="investor_relation"><span class="hide-menu <?php if($me=="investor_relation"){ echo "active";} ?>"><?php echo $language['InvestorRelations']; ?></span><i class="fa fa-star" style="color:yellow;"></i></a></li>
-				<li><a href="contact.php"><span class="hide-menu <?php if($me=="contact"){ echo "active";} ?>"><?php echo $language['contact'];?></span></a></li>
-				<li><a href="login.php?redirect=<?php echo urlencode($CurPageURL);?>"><span class="hide-menu <?php if($me=="login"){ echo "active";} ?>"><?php echo $language['login'];?></span></a>	</li>
+				<li><a href="<?php echo $site_url; ?>/investor_relations.php" class="investor_relation"><span class="hide-menu <?php if($me=="investor_relation"){ echo "active";} ?>"><?php echo $language['InvestorRelations']; ?></span><i class="fa fa-star" style="color:yellow;"></i></a></li>
+				<li><a href="<?php echo $site_url; ?>/contact.php"><span class="hide-menu <?php if($me=="contact"){ echo "active";} ?>"><?php echo $language['contact'];?></span></a></li>
+				<li><a href="<?php echo $site_url; ?>/login.php?redirect=<?php echo urlencode($CurPageURL);?>"><span class="hide-menu <?php if($me=="login"){ echo "active";} ?>"><?php echo $language['login'];?></span></a>	</li>
 				
 			<?php } ?>  
 			<?php if($user_roles==5){ ?>
 			<li class="menu-item-has-children">
 							<a href="#" class=""> <?php echo $language['language']; ?></a>
 							<ul class="list-unstyled sub-menu collapse" aria-expanded="false">
-								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="?language=english<?php echo $g_url; ?>">English</a></li> 
-								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
-								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
+								<li><a class="<?php if($_SESSION['langfile']=="english"){ echo "active";} ?>" href="<?php echo $site_url; ?>/?language=english<?php echo $g_url; ?>">English</a></li> 
+								<li><a class="<?php if($_SESSION['langfile']=="chinese"){ echo "active";} ?>" href="<?php echo $site_url; ?>/?language=chinese<?php echo $g_url; ?>">Chinese</a></li> 
+								<li><a  class="<?php if($_SESSION['langfile']=="malaysian"){ echo "active";} ?>" href="<?php echo $site_url; ?>/?language=malaysian<?php echo $g_url; ?>">Malay</a></li> 
 								
 								
 							</ul>

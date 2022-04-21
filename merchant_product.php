@@ -174,9 +174,10 @@ if(isset($_POST['submit']))
 }
 
     $current_date= date("Y/m/d");  
+	$product_slug = str_replace(" ","-",$productname);
 	if($add_to_cart_button =="on") $add_to_cart_button = '1';
 	else $add_to_cart_button = "0";
-	 $insert="INSERT INTO products SET add_to_cart_button='$add_to_cart_button',image_cdn_url='$image_cdn_url',product_discount='$product_discount',product_name='$productname',user_id='$current_id', category='$category',category_id='$category_id',product_type='$product_type',product_price='$product_price', remark = '$remark', image='$uniquesavename', code='$code',created_date='$current_date',print_ip_address='$print_ip_address',printer_ip_2='$printer_ip_2',printer_profile='$printer_profile',usb_name='$usb_name'";
+	 $insert="INSERT INTO products SET add_to_cart_button='$add_to_cart_button',image_cdn_url='$image_cdn_url',product_discount='$product_discount',product_name='$productname',product_slug = '$product_slug',user_id='$current_id', category='$category',category_id='$category_id',product_type='$product_type',product_price='$product_price', remark = '$remark', image='$uniquesavename', code='$code',created_date='$current_date',print_ip_address='$print_ip_address',printer_ip_2='$printer_ip_2',printer_profile='$printer_profile',usb_name='$usb_name'";
 	
 	mysqli_query($conn,$insert);
 
@@ -186,6 +187,9 @@ if(isset($_POST['submit']))
 <html lang="en" style="" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths">
 
 <head>
+<!-- Google Tag Manager -->
+<?php include("includes1/head_google_script.php"); ?>
+<!-- End Google Tag Manager -->
     <?php include("includes1/head.php"); ?>
 	<style>
 	.well
@@ -200,10 +204,14 @@ if(isset($_POST['submit']))
 		box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
 	}
 	</style>
+	
+
 </head>
 
 <body class="header-light sidebar-dark sidebar-expand pace-done">
-
+<!-- Google Tag Manager (noscript) -->
+<?php include("includes1/body_google_script.php"); ?>
+<!-- End Google Tag Manager (noscript) -->
     <div class="pace  pace-inactive">
         <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
             <div class="pace-progress-inner"></div>

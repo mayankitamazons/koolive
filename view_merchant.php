@@ -1,7 +1,22 @@
 <?php
 include ("config.php");
 include_once ('php/Section.php');
+ini_set('max_execution_time', '300');
 
+/* START: Rewrite URL*/
+if($_GET['shopname'] && $_GET['shopname']!= '' ){
+    $shopSlug = $_GET['shopname'];
+    $check_slug_exists = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE slug='".$shopSlug."' AND user_roles = 2"));
+    $_GET['sid'] = $check_slug_exists['mobile_number'];
+}
+if($_GET['product'] && $_GET['product']!= '' ){
+    $productSlug = $_GET['product'];
+    $check_product_slug_exists = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM products WHERE product_slug='".$productSlug."'"));
+    $_GET['pd'] = $check_product_slug_exists['id'];
+}
+
+
+/* END: Rewrite URL*/
 
 include_once ('IPay88.class.php'); //include payment gateway Files
 $ipay88 = new IPay88('M31571'); // MerchantCode
@@ -462,7 +477,9 @@ if (isset($_GET['data']))
 
     $tablenumber = $epxplode[1];
 }
-if ($merchant_detail['id'] == 5062 || $merchant_detail['id'] == 1107) $dine_in = "y";
+//if ($merchant_detail['id'] == 5062 || $merchant_detail['id'] == 1107) $dine_in = "y";
+
+if($merchant_detail['dine_active'] == 1 ){$dine_in = "y";}
 ?>
 
 <?php $login_user_id = $_SESSION['login'];
@@ -491,7 +508,9 @@ if (isset($login_user_id))
 
 <head>
 
-
+<!-- Google Tag Manager -->
+<?php include("includes1/head_google_script.php"); ?>
+<!-- End Google Tag Manager -->
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 
@@ -511,9 +530,9 @@ if (isset($login_user_id))
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.6/dist/jquery.fancybox.min.css">
-    <link rel="stylesheet" href="extra/css/view_merchant.css">
+    <link rel="stylesheet" href="<?php echo $site_url; ?>/extra/css/view_merchant.css">
 
-    <script src="js/jquery.fancybox.min.js" defer></script>
+    <script src="<?php echo $site_url; ?>/js/jquery.fancybox.min.js" defer></script>
     <style>
     #map{ height: 500px; background: #f2f2f2; }
     /* Modal Popup OTP's input style */
@@ -558,7 +577,7 @@ if (isset($login_user_id))
 </style> 
 <!-- Images Loaded js -->
 
-<script src="js/imagesloaded.pkgd.min.js" defer></script>
+<script src="<?php echo $site_url; ?>/js/imagesloaded.pkgd.min.js" defer></script>
 <script>
     function merchantclose() {
         $(".modal.in").removeClass("in").addClass("fade").hide();
@@ -594,17 +613,22 @@ if (isset($login_user_id))
 <!-- <script src="location/vendor/jquery/jquery-3.3.1.js" type="text/javascript"></script>  -->
 <script src="https://scripts.sirv.com/sirv.js" defer></script>
 
-<link rel="stylesheet" type="text/css" href="css/sweetalert.css">
+<link rel="stylesheet" type="text/css" href="<?php echo $site_url; ?>/css/sweetalert.css">
 <meta name="theme-color" content="#317EFB" />
 <script>
   fbq('track', 'ViewContent');
 </script>
+
+
+
 </head>
 
 
 
 <body class="header-light sidebar-dark sidebar-expand pace-done">
-
+<!-- Google Tag Manager (noscript) -->
+<?php include("includes1/body_google_script.php"); ?>
+<!-- End Google Tag Manager (noscript) -->
     <?php
     $id = $_SESSION['mm_id'];
 
@@ -616,7 +640,7 @@ if (isset($login_user_id))
     if ($merchant_detail['id'] == '')
     {
 
-        header("location:merchant_find.php");
+        header("location:".$site_url."/merchant_find.php");
     }
 
     if ($merchant_detail['id'] == '5062')
@@ -904,7 +928,7 @@ if (isset($login_user_id))
 
                         <div class="title">
 
-                            <div class="title-left"> <img src="new/images/merchant.png">
+                            <div class="title-left"> <img src="<?php echo $site_url; ?>/new/images/merchant.png">
                                 <div class="title-h"> <a href="#"> Merchant Name : <?php echo $merchant_detail['name']; ?></a> </div>
                             </div>
 
@@ -980,7 +1004,7 @@ if (isset($login_user_id))
                                             <?php if (isset($_SESSION['invitation_id']) && (!isset($_SESSION['login'])))
                                             { ?>
 
-                                                <a class="col-md-2" href="signup.php?invitation_id=<?php echo $_SESSION['invitation_id']; ?>"><img src="img/join-us.jpg" style="width: 100px;"></a>
+                                                <a class="col-md-2" href="<?php echo $site_url; ?>signup.php?invitation_id=<?php echo $_SESSION['invitation_id']; ?>"><img src="<?php echo $site_url; ?>/img/join-us.jpg" style="width: 100px;"></a>
 
 
 
@@ -1045,13 +1069,16 @@ if (isset($login_user_id))
 
                                 <div class="view-merchant-wrapper" style="margin-top:-10px">
                                  <div class="download-google-wrap" style="margin-bottom:10px">
-                                   <a href="https://slack-files.com/TUWLAGXHD-F013R5GMVB9-07b7ebbed4"  target="blank"> <img  src="google.png"  alt=""> </a>
-                                   <a href="https://apps.apple.com/us/app/id1491595615?mt=8" target="blank">   <img  src="appstore.png" alt=""> </a>
+                                   <!--<a href="https://slack-files.com/TUWLAGXHD-F013R5GMVB9-07b7ebbed4"  target="blank">--> 
+								   <a href="https://play.google.com/store/apps/details?id=koo.app.family"  target="blank">
+								   <img  src="<?php echo $site_url; ?>/google.png"  alt=""> 
+								   </a>
+                                   <a href="https://apps.apple.com/us/app/id1491595615?mt=8" target="blank">   <img  src="<?php echo $site_url; ?>/appstore.png" alt=""> </a>
                                </div>
 								<div style="clearfix:both"></div>
 								<br/>
 							<div class="view-all-shop" style="margin-bottom:36px">
-                                <h6><a href="index.php?vs=<?=md5(rand()) ?>" style="padding-right: 4px; padding-left: 5px;right: unset;left: 10px;margin-top:30px;"> <?php echo $language['more_shops']; ?> 
+                                <h6><a href="<?php echo $site_url; ?>/index.php?vs=<?=md5(rand()) ?>" style="padding-right: 4px; padding-left: 5px;right: unset;left: 10px;margin-top:30px;"> <?php echo $language['more_shops']; ?> 
 								 <img class="Sirv sirv-image-loaded" data-src="https://koofamilies.sirv.com/shop.png" srcset="https://koofamilies.sirv.com/shop.png?scale.option=fill&amp;scale.width=32&amp;scale.height=32" src="https://koofamilies.sirv.com/shop.png?scale.option=fill&amp;scale.width=32&amp;scale.height=32" style="max-width: 25px;height:25px">
 								  <img class="Sirv sirv-image-loaded" data-src="https://koofamilies.sirv.com/shop.png" srcset="https://koofamilies.sirv.com/shop.png?scale.option=fill&amp;scale.width=32&amp;scale.height=32" src="https://koofamilies.sirv.com/shop.png?scale.option=fill&amp;scale.width=32&amp;scale.height=32" style="max-width: 25px;height:25px">
 								   <img class="Sirv sirv-image-loaded" data-src="https://koofamilies.sirv.com/shop.png" srcset="https://koofamilies.sirv.com/shop.png?scale.option=fill&amp;scale.width=32&amp;scale.height=32" src="https://koofamilies.sirv.com/shop.png?scale.option=fill&amp;scale.width=32&amp;scale.height=32" style="max-width: 25px;height:25px">
@@ -1083,9 +1110,9 @@ if($merchant_detail['about_image']==""){
 	if($merchant_detail['image']!= '' && @getimagesize($file_pointer)){
 
 	?>   
-	<img style=" background-image: url('https://koofamilies.com/images/bg1.png');" src="<?php echo $image_cdn; ?>about_images/<?php echo $merchant_detail['image']?>?w=200" alt="Image" class="w-100">
+	<img style=" background-image: url('<?php echo $site_url; ?>/images/bg1.png');" src="<?php echo $image_cdn; ?>about_images/<?php echo $merchant_detail['image']?>?w=200" alt="Image" class="w-100">
 	<?php }else{?>
-		<img src="https://koofamilies.com/images/bg1.png" alt="Image" class="w-100">
+		<img src="<?php echo $site_url; ?>/images/bg1.png" alt="Image" class="w-100">
 	<?php
 	}
 } 
@@ -1110,12 +1137,12 @@ else{
                         </div>
                     </div>
                     <div class="place-order-info" style="background-color:#cbdaff">
-                        <h4 style="color:red"><?php echo $language['difficulty']; ?> <a href="https://chat.whatsapp.com/Db2atY5JO2v5CMNeiYNs9B" target="_blank">
-                            <img src="images/whatapp.png" style="max-width:32px;">
+                        <h4 style="color:red"><?php echo $language['difficulty']; ?> <a href="https://chat.whatsapp.com/BrAiY1i09oV8sJsFp82k4L" target="_blank">
+                            <img src="<?php echo $site_url; ?>/images/whatapp.png" style="max-width:32px;">
                         </a>
 						<!--<a data-toggle="modal" data-target="#wechatModal">-->
 						<a href="https://koofamilies.sirv.com/qr_wechat.jpeg" target="_blank">
-                            <img src="img/we-chat.png" style="max-height:26px;">
+                            <img src="<?php echo $site_url; ?>/img/we-chat.png" style="max-height:26px;">
                         </a>
 						<!--<br/>
 						<a class="merchant_about" style="background:#dedede;color: black;padding: 8px;border-radius: 9px;" href="https://www.koofamilies.com/about_menu.php"  data-toggle="modal" data-target="#wechatModal">
@@ -1143,21 +1170,23 @@ else{
 
   <?php   if ($merchant_detail['chat_with_merchant']){
       if ($merchant_detail['chat_group']){ ?>
-         <a class="chk" href="<?php echo $merchant_detail['chat_with_merchant']; ?>" target="_blank">
-            <img src="images/whatapp.png" style="max-width:32px;">
+         <a class="chk #1" href="<?php echo $merchant_detail['chat_with_merchant']; ?>" target="_blank">
+            <img src="<?php echo $site_url; ?>/images/whatapp.png" style="max-width:32px;">
         </a>
     <?php } else { ?>
-     <a class="chk1" href="https://api.whatsapp.com/send?phone=<?php echo $merchant_detail['chat_with_merchant'] ?>" target="_blank"> <img src="images/whatapp.png" style="max-width:32px;"></a>
+     <a class="chk1 #2" href="https://api.whatsapp.com/send?phone=<?php echo $merchant_detail['chat_with_merchant'] ?>" target="_blank"> <img src="<?php echo $site_url; ?>/images/whatapp.png" style="max-width:32px;"></a>
  <?php } } else {
   $chat_merchant_list = array(6958,6956,7634,7785,7799,7839,7808,7818,7846,7912,7953,7837,7209,7462,7209,7723,7674,7663,7726,7703,7554,6960,7658,7662,7462);
   if (in_array($merchant_detail['id'], $chat_merchant_list))
-     { ?>
-         <a class="chk3" href="https://chat.whatsapp.com/BtuVlvwlwBJA824nRSmYd5" target="_blank"> <img src="images/whatapp.png" style="max-width:32px;"></a>
+     { 
+ //https://chat.whatsapp.com/BtuVlvwlwBJA824nRSmYd5
+ ?>
+         <a class="chk3" href="https://chat.whatsapp.com/JASeiw19xnG3gNKkyO5tBO" target="_blank"> <img src="<?php echo $site_url; ?>/images/whatapp.png" style="max-width:32px;"></a>
      <?php }else{ ?>
 	 <!--
       <a class="chk4" href="https://api.whatsapp.com/send?phone=<?php echo $merchant_detail['mobile_number'] ?>" target="_blank"> <img src="images/whatapp.png" style="max-width:32px;"></a>-->
 	  
-	   <a class="chk3" href="https://chat.whatsapp.com/BtuVlvwlwBJA824nRSmYd5" target="_blank"> <img src="images/whatapp.png" style="max-width:32px;"></a>
+	   <a class="chk3" href="https://chat.whatsapp.com/JASeiw19xnG3gNKkyO5tBO" target="_blank"> <img src="<?php echo $site_url; ?>/images/whatapp.png" style="max-width:32px;"></a>
   <?php } } ?>
 </h2>
 										<!--
@@ -1330,9 +1359,10 @@ else{
         var terr_price = $(".postcode_main_div").find('option:selected').attr('price_optn');
 
         var free_delivery_status = $("#free_delivery_status").val();			
-
+		var check_temp_free = '0';
 		//console.log(x);		
 		if ( msLeft < 1000 ) {
+			var check_temp_free = '0';
 			//console.log("111");		
             element.innerHTML = "0:00";
             $(".hurry_div").html('');
@@ -1343,7 +1373,7 @@ else{
 			$("#delivery_label").show();
 			$('#additonal_delivery_charges').val(additonal_delivery_charges);
 			$("#free_delivery_status").val(0);
-
+console.log('asd2');
 			if(d_charges != ''){
 				$("#delivery_charges").val(d_charges);
 				$("#order_extra_label").html(d_charges);
@@ -1360,12 +1390,14 @@ else{
 				totalcart();
 			}
         } else {
+			var check_temp_free = '0';
 			//console.log("222");		
 			//$("#territory_hidden_id").val(terr_id);
 			//console.log(terr_id_last_order+"====="+terr_id);
 			$("#free_delivery_status").val(1);
 			if(terr_id_last_order == terr_id){
-				//console.log("333");		
+				console.log("333");		
+				var check_temp_free = '1';
 				//console.log('#same###');
 				$("#delivery_charges").val('0.00');
 				$("#delivery_label").show();
@@ -1381,6 +1413,7 @@ else{
 				$("#postcode_delivery_charge_hidden_price").val('0.00');
 				if(x == 1){totalcart();}
 			}else{
+				var check_temp_free = '0';
 				//console.log("444");		
 				//console.log('nottt');
 				$("#free_delivery_status").val(0);
@@ -1388,6 +1421,7 @@ else{
 				var d_charges = "<?php echo $merchant_detail['order_extra_charge'];?>";
 				$("#delivery_label").show();
 				$('#additonal_delivery_charges').val(additonal_delivery_charges);
+				console.log('asd4');
 				if(d_charges != ''){
 					$("#delivery_charges").val(d_charges);
 					$("#order_extra_label").html(d_charges);
@@ -1434,8 +1468,11 @@ if($free_delivery_popup == 'yes' && $offer_one == 1){
 	$discount_offer_minus = '0'; //offer 2 not applied;
     ?>
     <div class="tip tab_fr hurry_div" style="display:block;">
-     <span class="title_fr">Hurry Up!!</span>
-     <p>Congratulation!! Place your free Delivery order within  <span id="ten-countdown"></span> Minutes</p>
+     <span class="title_fr"><?php echo $language['hurry_up'];?></span>
+     <p><?php echo $language['congrt_text1'];?> 
+	 <span id="ten-countdown"></span> 
+	 <?php echo $language['minutes_text'];?> 
+	 </p>
  </div>
 
 <?php }else{
@@ -1444,7 +1481,7 @@ if($free_delivery_popup == 'yes' && $offer_one == 1){
 	if($offer_delivery_discount == 'yes' && $offer_two == 1){?>
 		<br/>
 		<div class="tip tab_fr hurry_div" style="display:block;">
-          <span class="title_fr">Hurry Up!!</span>
+          <span class="title_fr"><?php echo $language['hurry_up'];?></span>
 
           <p><?php echo $language['message_48offer']; ?> <span class="" style="font-weight:bold;color:red;"><?php echo date('d F	Y',strtotime($upcoming_48hours));?></span>) </p>
       </div>
@@ -1490,25 +1527,25 @@ if ($go_ahead == true)
 
 <!-- START: Search--->
 <?php
-    if ($merchant_detail['menu_type'] == 2){ $viewFile = 'view_merchant_layout2.php'; }
+    if ($merchant_detail['menu_type'] == 2){ $viewFile = $site_url.'/view_merchant_layout2.php'; }
     else{ $viewFile = 'view_merchant_layout1.php'; }
 	
-	$curr_pageLink = "https://koofamilies.com".$_SERVER['REQUEST_URI'];
+	$curr_pageLink = $site_url."/".$_SERVER['REQUEST_URI'];
 	$URLENCODE = urlencode($curr_pageLink);
    ?>
 
 <div class="row mb-3">
 	<div class="" style="margin-left:20px;display:block">
-		<input class="form-control search_bar" id="search_bar" name="search_bar" placeholder="Search Product" style="width:146px;float:left;" value="">
-		<a class="btn btn-primary search_button" style="margin-left:10px;padding-left:6px;padding-right:6px" viewFile="<?php echo $viewFile;?>" merchant_id = "<?php echo $id;?>" prduct_qty="<?php echo $product['pro_ct'];?>" dataRedirectLink = "<?php echo $URLENCODE;?>" >Search</a>
-		<a href="https://koofamilies.com<?php echo $_SERVER['REQUEST_URI'];?>"  class="btn btn-info fullmenu_option " style="padding-left:6px;padding-right:6px;display:none" ><?php echo $language['fullmenu_option'];?></a>
+		<input class="form-control search_bar" id="search_bar" name="search_bar" placeholder="<?php echo $language['search_placeholder'];?>" style="width:146px;float:left;" value="">
+		<a class="btn btn-primary search_button" style="margin-left:10px;padding-left:6px;padding-right:6px" viewFile="<?php echo $viewFile;?>" merchant_id = "<?php echo $id;?>" prduct_qty="<?php echo $product['pro_ct'];?>" dataRedirectLink = "<?php echo $URLENCODE;?>" price_hike="<?php echo $merchant_detail['price_hike'];?>" ><?php echo $language['search_btn'];?></a>
+		<a href="<?php echo $site_url; ?><?php echo $_SERVER['REQUEST_URI'];?>"  class="btn btn-info fullmenu_option " style="padding-left:6px;padding-right:6px;display:none" ><?php echo $language['fullmenu_option'];?></a>
 	</div>
 		
 </div>
 <?php if($merchant_detail['order_min_charge'] > 0){?>
 	
 <div class="tooo" style="background: red;padding: 10px;font-weight: bold;margin-bottom: 10px;">
-  Minimum Order RM <?php echo $merchant_detail['order_min_charge'];?>
+  <?php echo $language['minimumn_order'];?> RM <?php echo $merchant_detail['order_min_charge'];?>
 </div>
 <?php }?>
 										
@@ -1618,7 +1655,7 @@ if ($merchant_detail['menu_type'] == 1)
 
 
 
-                                <td class="text_add_cart_without  <?php echo $cart_class ?>" data-id="<?php echo $row['id'] ?>" data-code="<?php echo $row['product_type'] ?>" data-pr="<?php echo number_format((float)$row['product_price'], 2, '.', ''); ?>" data-name="<?php echo $row['product_name'] ?>" id="text_without">Add to Cart</td>
+                                <td class="text_add_cart_without  <?php echo $cart_class ?>" data-id="<?php echo $row['id'] ?>" prd_one_offer="<?php echo $row['one_qty_prd_offer'] ?>" data-code="<?php echo $row['product_type'] ?>" data-pr="<?php echo number_format((float)$row['product_price'], 2, '.', ''); ?>" data-name="<?php echo $row['product_name'] ?>" id="text_without"><?php echo $language["add_to_cart1"];?></td>
 
                                 <?php
                             }
@@ -1627,7 +1664,7 @@ if ($merchant_detail['menu_type'] == 1)
 
                                 ?>
 
-                                <p class='no_stock_add_to_cart'>Out of stock</p>
+                                <p class='no_stock_add_to_cart'><?php echo $language['out_of_stock'];?></p>
 
 
 
@@ -1696,7 +1733,7 @@ if ($merchant_detail['menu_type'] == 1)
     <?php if (!isset($profile_data['user_roles']) || $profile_data['user_roles'] == '')
     { ?>
 
-        <form method="post" id="order_place" action="order_cash.php">
+        <form method="post" id="order_place" action="<?php echo $site_url; ?>/order_cash.php">
 
             <?php
             $stl_key = rand();
@@ -1714,7 +1751,7 @@ if ($merchant_detail['menu_type'] == 1)
         else
             { ?>
 
-                <form id="order_place" action="order_cash.php" method="post">
+                <form id="order_place" action="<?php echo $site_url; ?>/order_cash.php" method="post">
 
                     <?php
                 } ?>
@@ -1739,6 +1776,13 @@ if ($merchant_detail['menu_type'] == 1)
                $product_pre_exit=0;
                if(count($_SESSION['AjaxCartResponse'][$cart_merchant_id]) >0){
                   foreach($_SESSION['AjaxCartResponse'][$cart_merchant_id] as $cart_key => $cart_val){
+					$prd_one_offer = $cart_val['prd_one_offer'];
+					$one_product_offer =$merchant_detail['one_product_offer'];	
+					$qty_readonly = '';
+					if($prd_one_offer == 1 && $one_product_offer == 1){
+						$qty_readonly = "readonly='readonly'";
+					}
+		
                    ?>
                    <div class="cart-detail-row producttr producttr_<?php echo $cart_val['id'];?> ">
 				   <?php echo "<input type='hidden' name='rebate_amount[]' class='rebate_amount' value=".$cart_val['rebate_amount']." id='".$cart_val['id']."rebate_amount'><input type='hidden' name='rebate_per[]' value=".$cart_val['rebate_per']." id='".$cart_val['id']."rebate_per'><input type= hidden name='p_id[]' value= ".$cart_val['s_id']."><input type= hidden name='p_code[]' value= ".$cart_val['code']."><input type='hidden' name='ingredients' value='".$cart_val['single_remarks']."'/><input type='hidden' name='varient_type[]' value=".$cart_val['varient_type']."><input type='hidden' id='".$cart_val['extra_child_id']."' name='extra' value='".$cart_val['extra_price']. "'><input type='hidden' style='width:70px;' class='p_total' name='p_total[]' value= ".$cart_val['p_total']." readonly  id='".$cart_val['id']."_cat_total'><input style='width:70px;' type='hidden' name='p_price[]' value='".$cart_val['product_price']."' readonly><input id='no_food_hidden_options_".$cart_val['id']."' type='hidden' name='no_food_hidden_options[]' value='".$cart_val['no_foods_options']."'>				   <input style='width:70px;text-align:right;' type='hidden' name='p_extra' id='".$cart_val['extra_child_id']."' value='".number_format($cart_val['extra_price'], 2, '.', ',')."' readonly>";?>
@@ -1747,7 +1791,7 @@ if ($merchant_detail['menu_type'] == 1)
                        <div class="title-qty">
 
 
-                           <input type="number" name='qty[]' class="product_qty quatity" min='1' maxlength='3' value="<?php echo $cart_val['quantity'];?>" id='<?php echo $cart_val['id']."_test_athy"?>' onchange='UpdateTotal("<?php echo $cart_val['id'];?>","<?php echo $cart_val['product_price'];?>")'
+                           <input type="number" <?php echo $qty_readonly;?> name='qty[]' class="mw3 product_qty quatity" min='1' maxlength='3' value="<?php echo $cart_val['quantity'];?>" id='<?php echo $cart_val['id']."_test_athy"?>' onchange='UpdateTotal("<?php echo $cart_val['id'];?>","<?php echo $cart_val['product_price'];?>")'
                            style="width: 25px;padding: 4px;height: 25px;float: right;"/>
                            <p class="prd-name pro1_name"><?php echo $cart_val['only_name'];?>| <?php echo $cart_val['code'];?> </p>
                        </div>
@@ -1761,14 +1805,14 @@ if ($merchant_detail['menu_type'] == 1)
 						<br/><span><?php echo $cart_val['no_foods_options'];?></span>
 						<?php }?>
 					   </p>
-                       <a class="moreless-button moreless-button_<?php echo $cart_val['id']."_".$product_pre_exit;?>" href="javascript:void(0)" product_id="<?php echo $cart_val['id']."_".$product_pre_exit;?>">Read more</a>
+                       <a class="moreless-button moreless-button_<?php echo $cart_val['id']."_".$product_pre_exit;?>" href="javascript:void(0)" product_id="<?php echo $cart_val['id']."_".$product_pre_exit;?>"><?php echo $language['read_more1'];?></a>
                    </div>
                <?php }?>
 			   <?php if($cart_val['sub_varient']== '' && $cart_val['no_foods_options']!= ''){?>
 			   <div class="varient_list" >
 				 <p class="moretext va_sub" id="moretext_<?php echo $cart_val['id']."_".$product_pre_exit;?>" style="display:none"><?php echo $cart_val['no_foods_options'];?></p>
 				 
-			    <a class="moreless-button moreless-button_<?php echo $cart_val['id']."_".$product_pre_exit;?>" href="javascript:void(0)" product_id="<?php echo $cart_val['id']."_".$product_pre_exit;?>">Read more</a>
+			    <a class="moreless-button moreless-button_<?php echo $cart_val['id']."_".$product_pre_exit;?>" href="javascript:void(0)" product_id="<?php echo $cart_val['id']."_".$product_pre_exit;?>"><?php echo $language['read_more1'];?></a>
 			   </div>
 			   <?php }?>
 
@@ -1779,7 +1823,7 @@ if ($merchant_detail['menu_type'] == 1)
 
                <div class="cart-d-cell">
                    <p class="remark-text"><a href="#remarks_area" data-rid="<?php echo $cart_val['id'];?>" role="button" class="introduce-remarks btn btn-large btn-primary hideLoader" data-toggle="modal"><?php echo (($cart_val['single_remarks'] == '') ? $cart_val['remark_lable'] : $cart_val['single_remarks'])  ?></a> </p>
-                   <p class="price-text"><strong>Total : </strong>RM <span class="p_span_total <?php echo $cart_val['id'];?>_cat_total"><?php echo number_format($cart_val['p_total'], 2, '.', ',');?></span></p>
+                   <p class="price-text"><strong><?php echo $language["total1"];?> : </strong>RM <span class="p_span_total <?php echo $cart_val['id'];?>_cat_total"><?php echo number_format($cart_val['p_total'], 2, '.', ',');?></span></p>
                </div>
            </div>
            <?php $product_pre_exit++;
@@ -1827,6 +1871,10 @@ else
 				</div>
 			</div>
 			<?php if ($dine_in == "y"){ ?>
+			
+				<span style="margin-left: 10px;margin-right: 20px; margin-top: 16px;font-weight: bold;">
+					OR 
+				</span>
 				<div class="">
 					<div class=" divert">
 						<input type="checkbox" id="divein" /> <?php echo $language['dinein_pickup']; ?>
@@ -1871,7 +1919,8 @@ else
      <div class="w-100" >
          <!-- <div><img src="images/worldwide-location.png"></div> -->
          <small><?php echo $language['location_more']; ?></small>
-         <small id="location_error" style="display:none;color:red;font-size:16px;">Delivery place is required</small>
+         <small id="location_error" style="display:none;color:red;font-size:16px;">
+		 <?php echo $language['delivery_palce_required']; ?></small>
      </div>
  </div>
 </div>
@@ -1900,7 +1949,7 @@ else
              <option value="<?php echo $srow["t_id"];?>" price_optn='<?php echo $srow["t_price"];?>'><?php echo $srow["t_location_name"].' - RM '.$price;?></option>
          <?php }?>
      <?php }?>
-     <option value="-1" price_optn="0.00">Others (within 30km)</option>
+     <option value="-1" price_optn="0.00"><?php echo $language['others_within_kms'];?></option>
  </select>
  <div id="suggesstion-box"></div>
 </div>
@@ -1918,6 +1967,67 @@ else
         </div>
     </div>
 </div>
+
+<!-- Delivery date and time --->
+<!--
+<div class="delivery_date" style="margin-top: 15px;width:100%;display:<?php if($merchant_detail['id'] == 1107){ echo 'block';}else{ echo 'none';}?>">-->
+<div class="delivery_date" style="margin-top: 15px;width:100%;display:block">
+    <div>
+        <label class="head_loca" ><?php echo $language['delivery_time']; ?></label>
+		
+			<input type="radio" name="del_type" value="now" id="now_type" del_type="now_type" class="del_type" checked /> <label style="display: inline;padding: 5px;" for="now_type"> <?php echo $language['delivery_now']; ?> </label>
+			<input type="radio" name="del_type" value="later" id="later_type" del_type="later_type" class="del_type" /> <label style="display: inline;padding: 5px;" for="later_type"> <?php echo $language['delivery_later']; ?> </label>
+			
+			<?php  
+				$delidate = new DateTime();
+				$deliindex = 0;
+			?>
+			<div class="later_box" style="display:none">
+				<select name = "od_delivery_date" id="od_delivery_date" class="form-control" style="
+    width: 130px !important;float: left; margin-right: 10px;display:inline-flex">
+					<?php while( $deliindex < 4){
+						if($deliindex != 0){
+							$delidate->modify("+1 day");
+						}
+						if($deliindex == 0){
+							$dellDate = "Today, ".$delidate->format('M d');
+						}else if($deliindex == 1){
+							$dellDate = "Tomorrow, ".$delidate->format('M d');
+						}else{
+							$dellDate = $delidate->format('l, M d');
+						}
+					?>
+					<option value="<?php echo $dellDate;?>"><?php echo $dellDate;?></option>
+					<?php $deliindex++; }?>
+			    </select>
+				
+				<?php
+					$timeIndex = 0;
+					$ddrange=range(strtotime("08:00"),strtotime("22:00"),15*60);
+					$currentTime = time();
+				?>
+				<select name = "od_delivery_time" id="od_delivery_time" class="form-control" style="width: 130px !important;float: left; margin-right: 10px;display:inline-flex">
+	<?php foreach($ddrange as $time){
+						if($timeIndex != 96){
+							$timeset = date("h:i A",$time);
+						}
+						$class_time="shows";
+						if($currentTime >= $time){
+							$class_time="chk_hide";
+						}
+						
+				?>
+					<option value="<?php echo $timeset;?>" class ="<?php echo $class_time;?>"><?php echo  $timeset;?></option>
+					<?php $timeIndex++; }?>
+				</select>
+				<!--<input type="text"  name = "od_delivery_time" id="od_delivery_time" class="form-control" style="width:145px;display:inline-flex" Placeholder="Select Time" value="<?php echo date('H:i');?>" />
+				--></div>
+				<!--<input type="time"  minutestep="900" name = "od_delivery_time" id="od_delivery_time" class="form-control" style="width:145px;display:inline-flex" value="<?php echo date('H:i');?>" />-->
+    </div>
+</div>
+<div style=" clear: both;"></div>
+<!-- END Delivery date and time -->
+
 <!-- 3 button start--->
 <div class="rider-box-wrapper" style="margin-top: 15px;">
     <div class="rider-box">
@@ -1927,7 +2037,7 @@ else
                    <label class="PillList-item">
                     <input type="checkbox" id="special_delivery">
                     <span class="PillList-label"> <?php echo $language['chinese_delivery']; ?><br/>
-                       <span class="speed">(Rm <?php echo number_format($merchant_detail['special_price_value'], 2); ?> extra)</span> 
+                       <span class="speed">(Rm <?php echo number_format($merchant_detail['special_price_value'], 2); ?> <?php echo $language['extra_label']; ?>)</span> 
                        <span class="Icon Icon--checkLight Icon--smallest"><i class="fa fa-check"></i></span>  </span>
                    </label>
                </div>
@@ -1939,7 +2049,7 @@ else
                <label class="PillList-item">
                 <input type="checkbox" id="speed_delivery">
                 <span class="PillList-label"> 
-                    <?php echo $language['speed_delivery']; ?> <br/>  <span class="speed">(Rm <?php echo number_format($merchant_detail['speed_delivery'], 2); ?> extra)* </span>
+                    <?php echo $language['speed_delivery']; ?> <br/>  <span class="speed">(Rm <?php echo number_format($merchant_detail['speed_delivery'], 2); ?> <?php echo $language['extra_label']; ?>)* </span>
                     <span class="Icon Icon--checkLight Icon--smallest"><i class="fa fa-check"></i></span>  </span>
                 </label>
             </div>
@@ -1971,7 +2081,7 @@ else
 	</div>
 	<?php }?>
 </div>
-<a href="koo_donation.php" target="_blank" style="text-decoration: underline;"><?php echo $language['past_donation_record']; ?></a>
+<a href="<?php echo $site_url; ?>/koo_donation.php" target="_blank" style="text-decoration: underline;"><?php echo $language['past_donation_record']; ?></a>
 </div>
 
 <!-- 3 button end --->
@@ -1988,7 +2098,7 @@ else
  <?php endforeach; ?>
 </select>
 </div>
-<div style="display:none;float: left;width:110px;" id="table_show">
+<div style="display:none;float: left;width:115px;" id="table_show">
    <label><?php echo $language['show_table_number']; ?></label>
    <input type="text" class="form-control table" id="table_type" name="table_type" <?php if ($merchant_detail['table_required'] == "1"){echo "required";} ?> value="<?php echo $tablenumber; ?>" />
 </div>
@@ -2019,9 +2129,9 @@ else
         </div>
         <input type="number" autocomplete="tel" maxlength='10' id="mobile_number" class="mobile_number form-control" value="<?php if ($check_number){echo $check_number;} ?>" placeholder="<?php echo $language['key_in_phone']; ?>" name="mobile_number" required="" />
         
-		<a href="javascript:void(0)" class="btn btn-primary send_otp_button" name="send_otp_button" style="display: none;padding-right: 2px; padding-left: 2px;">SEND OTP</a>
+		<a href="javascript:void(0)" class="btn btn-primary send_otp_button" name="send_otp_button" style="display: none;padding-right: 2px; padding-left: 2px;"><?php echo $language['send_otp1'];?></a>
         <?php if($_SESSION['user_id']==''){ ?>
-            <a href="login.php?redirect=<?php echo urlencode($CurPageURL);?>"><span class="btn btn-primary <?php if($me=="login"){ echo "active";} ?>" style="padding-right: 9px;padding-left: 9px;margin-left: 7px;"><?php echo $language['login'];?></span></a>
+            <a href="<?php echo $site_url; ?>/login.php?redirect=<?php echo urlencode($CurPageURL);?>"><span class="btn btn-primary <?php if($me=="login"){ echo "active";} ?>" style="padding-right: 9px;padding-left: 9px;margin-left: 7px;"><?php echo $language['login'];?></span></a>
         <?php } ?>
 		
 	
@@ -2120,9 +2230,9 @@ if (isset($_SESSION['login'])){
     <div class="apply-c-wrapper">
         <div class="input-group mb-2" style="margin-bottom:0px !important;">
             <input type="hidden" id="coupon_id" name="coupon_id" />
-            <input type="text" autocomplete="tel" maxlength='100' id="coupon_code" class="coupon_code form-control" placeholder="Enter Promo Code" name="coupon_code" />
+            <input type="text" autocomplete="tel" maxlength='100' id="coupon_code" class="coupon_code form-control" placeholder="<?php echo $language['enter_promo_code'];?>" name="coupon_code" />
             <div class="apply-box">
-               <a class="btn btn-info " id="apply_coupon">Apply</a>
+               <a class="btn btn-info " id="apply_coupon"><?php echo $language['apply_btn'];?></a>
                <?php if($special_coupon_count>1){ ?>
                 <span  class="btn btn-primary coupon_list ml-1" onclick="couponlist();"><?php echo $language['coupon_list']; ?></span>
             <?php } ?>   
@@ -2141,7 +2251,7 @@ if (isset($_SESSION['login'])){
 <!--start total-cart-wrapper -->
 
 <div class="box-white-with-shadow total-cart-wrapper">
-    <h3>Order Summary</h3>
+    <h3><?php echo $language['order_summary'];?></h3>
     <div style="width:100%">
         <div class="" style="display:none;" id="total_cart_amount_label_show">
             <div class="total-title" >
@@ -2184,7 +2294,7 @@ if (isset($_SESSION['login'])){
             <input type="hidden" name="special_delivery_amount" id="special_delivery_amount" value="0" />
             <input type="hidden" name="speed_delivery_amount" id="speed_delivery_amount" value="0" />   
             <input type="hidden" name="donation_amount_value" id="donation_amount_value" value="0" />   
-            <input type="hidden" name="pickup_type" id="pickup_type" value="takein" />
+            <input type="hidden" name="pickup_type" id="pickup_type" value="<?php if($merchant_detail['dine_active'] == 1 ){echo 'divein';}else{echo "takein";}?>" />
         </div>
         <!---postcode--->
         <div class="" style="display:none;" id="postcode_delivery_charge">
@@ -2217,8 +2327,8 @@ if (isset($_SESSION['login'])){
         </div>
     </div>
     <div class="checkout-container">
-      <button type="button" class="btn btn-primary"  id="order_confirm_btn" session_block_pay ="<?php echo $_SESSION['block_pay'];?>" internet_banking ="<?php echo $merchant_detail['internet_banking'];?>" value="">
-         <i class="fa fa-cart-plus" aria-hidden="true"></i> &nbsp;&nbsp;<?php echo 'Checkout';//$language["order_confirm_button"]; ?>
+      <button type="button" class="btn btn-primary"  id="order_confirm_btn" session_block_pay ="<?php echo $_SESSION['block_pay'];?>" internet_banking ="<?php echo $merchant_detail['internet_banking'];?>" value="" style="font-size: 1.41rem;">
+         <i class="fa fa-cart-plus" aria-hidden="true"></i> &nbsp;&nbsp;<?php echo $language["checkout_button_1"];?>
      </button>
 
      <div class="row main_box_div mode_btn_hide ">
@@ -2236,14 +2346,22 @@ if (isset($_SESSION['login'])){
             <input type="hidden" id="selected_wallet_bal" name="selected_wallet_bal" value="">
             <input type="hidden" value='<?php echo $login_user_id; ?>' name="login_user_id" id="login_user_id" />
             <input type="hidden" value='<?php echo $login_user_id; ?>' name="login_for_wallet_id" id="login_for_wallet_id" />
-
+			<?php //echo date('H:i');?>
             <?php if ($_SESSION['block_pay'] !== "y"){ ?>
               <?php if ($merchant_detail['cash_on_delivery'] == 1){ ?>
-               <div class="col-xs-4 pdbtn-10">
+               <div class="col-xs-4 pdbtn-10 actual_cashbutton" <?php if (date('H') >= 22) {?> style="display:none" <?php }?>>
                   <button type="submit" class="each_mode_btn_hide block_pay_btn btn-lg btn cash_od_btn btn-block btn-primary showLoader submit_button" name="cashpayment" actual_payment_mode="cash" id="confm" style="display: block;">
                      <i class="fa fa-money"></i>&nbsp;&nbsp;<?php echo $language["confirm_order"]; ?>
                  </button>
              </div>
+			 
+			 
+			 <div class="col-xs-4 pdbtn-10 cashbtn_offer_timezone" <?php if (date('H') >= 22) {?> style="display:block" <?php }else{?> style="display:none" <?php }?> >
+				<a class="each_mode_btn_hide block_pay_btn btn-lg btn btn-block btn-primary" mo_type="page" name="" actual_payment_mode="cash" style="display: block;background-color: #ef6264;border-color: #ef6264; width: 268px !important; margin-top: 15px;box-shadow: -3px 3px #fa7953, -2px 2px #fa7953, -1px 1px #fa7953;opacity:0.5;white-space: initial;">
+               <i class="fa fa-money"></i>&nbsp;&nbsp;<?php echo $language["confirm_order"]; ?>
+			   <h6><?php echo "(".$language["no_cash_payment_after_time"].")"; ?></h6>
+				</a>
+		   </div>
          <?php }else{?>
           <div class="col-xs-4 pdbtn-10" >
               <a  class=" show_restriction each_mode_btn_hide block_pay_btn btn-lg btn btn-block btn-primary" mo_type="page" name="" actual_payment_mode="cash" style="display: block;background-color: #ef6264;border-color: #ef6264; width: 268px !important; margin-top: 15px;box-shadow: -3px 3px #fa7953, -2px 2px #fa7953, -1px 1px #fa7953;opacity:0.5">
@@ -2255,15 +2373,21 @@ if (isset($_SESSION['login'])){
 <?php }?>
 <?php  if ($merchant_detail['internet_banking']){ ?>
    <div class="col-xs-4 pdbtn-10">
-      <button type="submit" actual_payment_mode="internet_banking_free" class="each_mode_btn_hide banking_od_btn mode_btn_hide internet_banking_btn btn btn-block btn-primary submit_button internet_banking btn-lg" name="internet_banking" style="display: block;">
+      <button type="submit" actual_payment_mode="internet_banking_free" class="each_mode_btn_hide banking_od_btn mode_btn_hide internet_banking_btn btn btn-block btn-primary submit_button internet_banking btn-lg" name="internet_banking" style="display: block;white-space: initial;">
          <i class="fa fa-bank"></i>&nbsp;&nbsp;<?php echo $language['internet_banking'];?>
+		 
+		<a class="showing_internetfree_offer" style="display: inline-flex;" href="javascript:void(0)" title="<?php echo $language['internet_free_tooltip'];?>" data-toggle="tooltip" data-placement="bottom" title="<?php echo $language['internet_free_tooltip'];?>">
+					<span class="media align-items-center">
+					  <span class="fa fa-info-circle mr-3"></span>
+					</span>
+		</a>
      </button>
  </div>
 <?php }?>
 
 <div class="col-xs-4 pdbtn-10">
   <button type="button" actual_payment_mode="internet_banking_fpx" class="each_mode_btn_hide mode_btn_hide btn btn-block btn-primary submit_button btn-lg internet_banking_fpx banking_od_btn" name="internet_banking_fpx" style="display: block;">
-     <i class="fa fa-bank"></i>&nbsp;&nbsp;Internet Banking ( FPX )
+     <i class="fa fa-bank"></i>&nbsp;&nbsp;<?php echo $language['internet_bank_fpx'];?>
  </button>
 </div>
 
@@ -2276,7 +2400,7 @@ if (isset($_SESSION['login'])){
 <?php if ($voice_recognition){ ?>
   <div class="col-xs-4">
    <div class="microphne-sec" style="width: 50px;margin-left: 10px;cursor: pointer;" id="m_click">
-    <img src="images/Microphone.png" class="img-responsive microphone_click" id="microphone_click">
+    <img src="<?php echo $site_url; ?>/images/Microphone.png" class="img-responsive microphone_click" id="microphone_click">
 </div>
 </div>
 <?php } ?>
@@ -2291,14 +2415,15 @@ if (isset($_SESSION['login'])){
 </div>
 <br/>
 <b><?php echo $language['footer_important_notes']; ?></b><br/>
-<span style="color:red;"><?php echo $language['sms_text']; ?></span> <br/>
+<span style="color:red;font-size: 17px;">*<?php echo $language['sms_text']; ?></span> <br/>
+<span style="color:#818726;font-size: 17px;">*<?php echo $language['rider_info_message']; ?></span> <br/>
 <span style="color:#03a9f3"><?php echo $language['customer_urged']; ?></span><br/>
 <p><?php echo $language['speed_text']; ?></p>
-<span style="color:#ca1592;"> <?php echo $language['we_can_contact']; ?></span><br/>
+<span style="color:#ca1592;"> *<?php echo $language['we_can_contact']; ?></span><br/>
 
 <span id="cash_order_process" style="color:red;display:none;font-weight:bold;">Please wait......., we are processing your order..</span>
 <!-- End Code --->
-<a href="https://chat.whatsapp.com/FdbA1lt6YQVBNDeXuY7uWd" target="_blank"><img src="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
+<a href="<?php echo $helpLink ;?>" target="_blank"><img src="<?php echo $site_url; ?>/images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
 
 <div class="location_merchant">
     <input type="hidden" id="id" name="m_id" value="<?php echo $id; ?>">
@@ -2313,7 +2438,7 @@ if (isset($_SESSION['login'])){
     <input type="hidden" id="koo_balance" name="koo_balance" value="<?php echo $koo_balance; ?>" />
     <input type="hidden" name="hidden_final_cart_price" id="hidden_final_cart_price" value="0"/>
 </div>
-<a href="#cartsection"><img src="images/cartnew.png" style="width:75px;height:75px;position: fixed;right: 10px;bottom: 70px;z-index:999;"></a>
+<a href="#cartsection"><img src="<?php echo $site_url; ?>/images/cartnew.png" style="width:75px;height:75px;position: fixed;right: 10px;bottom: 70px;z-index:999;"></a>
 </form>
 
 <!-- Start Hidden field for ipay88 payment-->
@@ -2522,7 +2647,7 @@ $ipay88->setField('UserContact', '0123456789');
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header">
-		  <h4 class="modal-title">WeChat <img src="img/we-chat.png" style="max-height:26px;"></h4>
+		  <h4 class="modal-title">WeChat <img src="<?php echo $site_url; ?>/img/we-chat.png" style="max-height:26px;"></h4>
           <button type="button" class="close" data-dismiss="modal" style="top: -9px; right: -9px;">&times;</button>
         </div>
         <div class="modal-body">
@@ -2555,7 +2680,7 @@ $ipay88->setField('UserContact', '0123456789');
 <?php //include("includes1/view_merchant_footer.php");
 
 ?>
-<script type="text/javascript" src="js/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="<?php echo $site_url; ?>/js/jquery.lazy.min.js"></script>
 
 
 <div class="modal fade" id="ProductModel" role="dialog" style="width:100%!important;"> 
@@ -2602,7 +2727,7 @@ $ipay88->setField('UserContact', '0123456789');
                         <table border="1px solid" style="width:80%;color:black;">
 
                             <tr>
-                                <td> Product Name </td>
+                                <td> <?php echo $language['product_name'];?> </td>
                                 <td> Rm </td>
                             </tr>
 
@@ -2615,13 +2740,13 @@ $ipay88->setField('UserContact', '0123456789');
 
 
                             <tr>
-                                <td> <b> Total : </b></td>
+                                <td> <b> <?php echo $language['total'];?> : </b></td>
                                 <td id="pr_total"></td>
                             </tr>
 
                             <tbody>
                                 <tr>
-                                    <td>Remarks</td>
+                                    <td><?php echo $language['remarks'];?> :</td>
                                     <td id="remark_td"></td>
                                 </tr>
                             </tbody>
@@ -2644,12 +2769,16 @@ $ipay88->setField('UserContact', '0123456789');
 
                 </div>
                 <p id="varient_error" style="color:red;display:none;">Please select at least one choice. Thank</p>
-<style>
-.wthvarient #pop_cart{
-    margin-right: -24px !important;
-	
-}
-</style>
+				<style>
+				.wthvarient #pop_cart{
+					margin-right: -24px !important;
+					
+				}
+				.cart-d-cell i {
+					background: #fe8356 !important;
+				}
+
+				</style>
 <!-- Start:with varient : no food code --->
 <!-- END:with varient : no food code --->
 
@@ -2748,7 +2877,7 @@ $ipay88->setField('UserContact', '0123456789');
 
                 <div class="col-md-12" style="text-align: center;">
 
-                    <h5>Same Order within 5 min is not allowed </h5>
+                    <h5><?php echo $language['same_order_not_allowed'];?></h5>
 
 
 
@@ -3131,7 +3260,7 @@ $ipay88->setField('UserContact', '0123456789');
                         </div>
 
                         <div class="col-md-6">
-                            <button type="button" class="btn btn-primary" id="no_button" style="margin-left:19%;width:50%;margin-bottom: 3%;text-align: center;color:black;"><a href="index.php" style="color:black;"><?php echo $language['no']; ?></a></button>
+                            <button type="button" class="btn btn-primary" id="no_button" style="margin-left:19%;width:50%;margin-bottom: 3%;text-align: center;color:black;"><a href="<?php echo $site_url; ?>/index.php" style="color:black;"><?php echo $language['no']; ?></a></button>
 
                         </div>
 
@@ -3216,7 +3345,7 @@ $ipay88->setField('UserContact', '0123456789');
                 <div class="element-item modal-header">
 
 
-                    <h5 class="product_name_popup"></h5>
+                    <h5 class="product_name_popup" style="font-size:22px"></h5>
                     <button type="button" class="close" data-dismiss="modal" style="background:black;margin-right:2px">&times;</button>
 
 
@@ -3225,7 +3354,8 @@ $ipay88->setField('UserContact', '0123456789');
 
                 </div>
 
-                <p class="product_price_popup" style="padding-top:10px;padding-bottom:10px"><b><?php echo $language['the_product_popup_price']; ?></b> RM <span class="span_price_popup"></span></p>
+                <p class="product_price_popup" style="padding-top:10px;padding-bottom:10px;font-size: 18px;
+"><b><?php echo $language['the_product_popup_price']; ?></b> RM <span class="span_price_popup"></span></p>
                 <span style="border-bottom:1px solid #e9ecef;margin:-1px calc(-25px - 1px) 0"></span>
 
 			<!--<p style="padding:10px;margin:0px;text-align:center;"><?php echo $language['the_product_added']; ?></p>
@@ -3238,10 +3368,10 @@ $ipay88->setField('UserContact', '0123456789');
 					<!--<span style="font-weight:bold;font-size: 11px; color: gray;">If this product is not available</span>-->
 					<select name="no_foods_options" id="no_foods_options" class="form-control no_foods_options" style="margin-top: 7px;height: 29px;font-size: 13px;margin-bottom: -12px;padding: 0px;">
 						<option value=""><?php echo $language['food_not_availble_label'];?></option>
-						<option value="Remove it from my order"><?php echo $language['food_not_availble_option1'];?></option>
-						<option value="Cancel the entire order"><?php echo $language['food_not_availble_option2'];?></option>
-						<option value="Call me"><?php echo $language['food_not_availble_option3'];?></option>
-						<option value="Buy from other best rating merchant"><?php echo $language['food_not_availble_option4'];?></option>
+						<option value="<?php echo $language['food_not_availble_option1'];?>"><?php echo $language['food_not_availble_option1'];?></option>
+						<option value="<?php echo $language['food_not_availble_option2'];?>"><?php echo $language['food_not_availble_option2'];?></option>
+						<option value="<?php echo $language['food_not_availble_option3'];?>"><?php echo $language['food_not_availble_option3'];?></option>
+						<option value="<?php echo $language['food_not_availble_option4'];?>"><?php echo $language['food_not_availble_option4'];?></option>
 					</select>
 					<?php }?>
 				<?php //}?>
@@ -3415,7 +3545,7 @@ $ipay88->setField('UserContact', '0123456789');
 
                                 <tbody>
 
-                                    <form id="sub_mer_form" action="structure_merchant.php" method="post">
+                                    <form id="sub_mer_form" action="<?php echo $site_url; ?>/structure_merchant.php" method="post">
 
 
 
@@ -3739,10 +3869,20 @@ $ipay88->setField('UserContact', '0123456789');
 
             <div class="row" style="margin: 0;padding: 0;">
                <div class="col-12 col-sm-6 cash_wallet_f_main" style="margin: 0px;padding: 0;margin-top: 10px;">
-                  <span class="btn btn-primary make_payment showLoader8 cash_wallet_f" style="width: 98%;padding-left:11px;">Place order With Cashback<?php //echo $language['login_with_otp']; ?></span>
+                  <span class="btn btn-primary make_payment showLoader8 showLoader cash_wallet_f" style="width: 98%;padding-left:11px;">Place order With Cashback<?php //echo $language['login_with_otp']; ?></span>
                   <?php if ($_SESSION['block_pay'] !== "y"){ ?>
                       <?php if ($merchant_detail['cash_on_delivery'] == 1){ ?>
-                          <span class="btn btn-primary make_payment showLoader8 no_need_paymnetoptions" style="width: 98%;padding-left:11px;background: #03a9f3;border-color: #03a9f3;"><?php echo $language["confirm_order"]; ?></span>
+                          <span class="btn btn-primary make_payment showLoader8 <?php if (date('H') >= 22) {?>date_later_div <?php }else{?>no_need_paymnetoptions <?php }?>" <?php if (date('H') >= 22) {?> style="width: 98%;padding-left:11px;background: #03a9f3;border-color: #03a9f3;display:none" <?php }else{?>style="width: 98%;padding-left:11px;background: #03a9f3;border-color: #03a9f3;display:block;"<?php }?>><?php echo $language["confirm_order"]; ?></span>
+						  
+						  
+						  <span class="btn btn-primary cashbtn_offer_timezone" <?php if (date('H') >= 22) {?> style="width: 98%;padding-left:11px;background: #ddd3d3;border-color: #ddd3d3;display:block;white-space: initial;" <?php }else{?> style="width: 98%;padding-left:11px;background: #ddd3d3;border-color: #ddd3d3;display:none;white-space: initial;" <?php }?>><?php echo $language["confirm_order"]; ?>
+						  <h6><?php echo "(".$language["no_cash_payment_after_time"].")"; ?></h6>
+						  </span>
+						  
+						
+		   
+		   
+		   
                       <?php }else{?>
                           <a  class=" show_restriction no_need_paymnetoptions btn btn-primary " mo_type="wallet" name="" actual_payment_mode="cash" style="width: 98%;padding-left:11px;background: #03a9f3;border-color: #03a9f3;opacity:0.5">
                            <?php echo $language["confirm_order"]; ?>
@@ -3836,19 +3976,35 @@ $ipay88->setField('UserContact', '0123456789');
 <div class="modal fade" id="InternetModel" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="form-group">
-            <div class="modal-content">
+            <div class="modal-content" style="overflow-y:scroll;height:700px;overflow-x:hidden;">
                 <div class="modal-header" style="padding-top: 0;padding-bottom: 1px;">
                  <h5><?php echo $language['label_pay_with_internet_banking']; ?></h5>
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="top: 1px;right:0px;">
+                    <span aria-hidden="true" >&times;</span>
                 </button>
             </div>
             <div class="modal-body pad0" >
              <div class="container-fluid pad0">
-              <div class="row">
-               <h6 style="font-size:16px;margin-top:8px"> Please pay Exact Amount to: <span style="color:red">Rm <span style="font-weight:bold;color:red" class="final_amount_value internet_free_modal_amount"></span>
+              <div class="row" id="ibbuttonsdiv">
+               <h6 style="font-size:16px;margin-top:8px"> <?php echo $language['please_pay_exact_amount']; ?> <span style="color:red">Rm <span style="font-weight:bold;color:red" class="final_amount_value internet_free_modal_amount"></span>
+			   
+				<a class="showing_internetfree_offer" style="display: inline-flex;" href="javascript:void(0)" title="<?php echo $language['internet_free_tooltip'];?>" data-toggle="tooltip" data-placement="bottom" title="<?php echo $language['internet_free_tooltip'];?>">
+					<span class="media align-items-center">
+					  <span class="fa fa-info-circle mr-3"></span>
+					</span>
+				</a>
+				
                </span></h6>
                <span class="paid_wallet_if_popup"></span>
+			   <div  >
+				<button type="button" class="col-6 btn btn-primary trasfer_complete showLoader"><?php echo $language['confirm_order_btn']; ?><span></span></button>
+				<button type="button" class="col-6 btn  back_btn_m back_to_last" style="margin-left: -3px;margin-right: -7px;" ><?php echo $language['back_to_last_page_order']; ?></button>
+				<br/>
+				</div>
+				<span style="border-bottom:1px solid lightgray;height:7px;width:100%"></span>
+				<br/>
+				<b>Payment details:</b>
+				<br/>
                <input type="hidden" id="payment_mode_cashback" value="0" >
                <?php if ($merchant_detail['id'] == '5062'){ ?>
                    <div class="col-md-11 pad0">
@@ -3861,18 +4017,21 @@ $ipay88->setField('UserContact', '0123456789');
                 </div>
             <?php }else{?>
                <div class="col-md-12 pad0">
-                <b><?php echo $language['name']; ?>:</b> Chong Woi Joon </br>
-                <b><?php echo $language['label_bank_name']; ?>:</b> Hong Leong Bank </br>
-                <b><?php echo $language['label_bank_account']; ?>:</b> 22850076859 </br>
+                <b><?php echo $language['name']; ?>:</b> Koo Family Sdn Bhd </br>
+                <b><?php echo $language['label_bank_name']; ?>:</b> Public Bank </br>
+                <b><?php echo $language['label_bank_account']; ?>:</b> 3208811410 </br>
             </div>
             <span style="border-bottom:1px solid lightgray;height:7px;width:100%"></span>
 
             <div class="col-md-12 pad0">
-
+  
                 <h6 style="margin-top:10px">Boostpay Number(Chong woi joon): <b>+60123115670</b></h6>
-                <h6 style="margin:0px">Touch & Go account ( Wong Siew Foon): <b>+6014-3521349</b></h6>
+                <h6 style="margin:0px">Touch & Go account (Chong Woi Joon): <b>+60123115670</b></h6>
+				
+				
+ 
                 <div style="width: 100%;text-align: center;">
-                 <img class="img-responsive Sirv" src="https://koofamilies.sirv.com/qr_code.png" />  
+                 <img class="img-responsive Sirv" src="https://koofamilies.sirv.com/qr_code1.png" />  
              </div>
              <b><?php if ($_SESSION["langfile"] == "chinese"){echo "请写商家店名在“银行参考”";}else{ ?>                         (Please write <?php echo $merchant_detail['name']; ?> in "bank reference")<?php } ?><b> <br/>
                 <!--<b><span style="color: red;" class="final_amount_label"><?php echo $language['payable_amount']; ?>:</span></b> Rm <span style="font-weight:bold;" class="final_amount_value"></span><br/>-->
@@ -3883,10 +4042,10 @@ $ipay88->setField('UserContact', '0123456789');
         <form method="post" id="image-form" class="image-form"  enctype="multipart/form-data" onSubmit="return false;" style="min-height:0px !important;">
             <div class="input-group mt-3 mb-3 input-has-value flex-wrap1 main_image_div" id="main_image_div" style="padding-bottom:13px">
              <input type="file" name="file" class="file" style="visibility: hidden;position: absolute;">
-             <input type="text" class="form-control payment_proof" disabled="" placeholder="Payment Proof" id="file" style="width:100px">
-             <button type="button" class="browse btn btn-primary rounded-0" style="width: 80px;background: lightgray;border: gray;">Browse</button>
+             <input type="text" class="form-control payment_proof" disabled="" placeholder="<?php echo $language['payment_prrof_place']; ?>" id="file" style="width:100px">
+             <button type="button" class="browse btn btn-primary rounded-0" style="width: 80px;background: lightgray;border: gray;"><?php echo $language['payment_prrof_browser']; ?></button>
              &nbsp;
-             <input type="submit" name="submit" value="Submit" class="btn btn-danger btn_proof_upload rounded-0" >
+             <input type="submit" name="submit" value="<?php echo $language["submit"]; ?>" class="btn btn-danger btn_proof_upload rounded-0" >
              <p style="color:red" class="err_payment_proof"></p>
          </div>
          <div class="main_image_namediv" id="main_image_namediv" style="padding:10px;"></div>
@@ -3896,9 +4055,11 @@ $ipay88->setField('UserContact', '0123456789');
 
 
      <div class="col-md-12 pad0">
-        <span style="color:red;font-size: 13px;font-weight: bold;"> 
-         <?php echo $language['transfer_complete_message']; ?>
-     </span>
+        <a href="#ibbuttonsdiv" style="color:red;font-size: 13px;font-weight: bold;"> 
+         <?php echo $language['transfer_complete_message_1']; ?>
+		 <span style="text-decoration:underline"><?php echo $language['transfer_complete_message_2']; ?></span>
+		 <?php echo $language['transfer_complete_message_3']; ?>
+     </a>
  </div>
 </div>
 </div>
@@ -3908,8 +4069,9 @@ $ipay88->setField('UserContact', '0123456789');
 
 <div class="modal-footer" style="padding-top: 10px;padding-bottom: 10px;border-bottom:none">
  <span id="process_internet_order" style="color:red;font-weight:bold;"></span>
- <button type="button" class="btn btn-primary trasfer_complete showLoader"><?php echo $language['confirm_order_btn']; ?><span></span></button>
+ <!--<button type="button" class="btn btn-primary trasfer_complete showLoader"><?php echo $language['confirm_order_btn']; ?><span></span></button>
  <button type="button" class="btn  back_btn_m back_to_last" style="margin-left: -3px;margin-right: -7px;" ><?php echo $language['back_to_last_page_order']; ?></button>
+ -->
 </div>
 </div>
 </div>
@@ -3943,7 +4105,10 @@ $ipay88->setField('UserContact', '0123456789');
              </p>
          </div>
          <div class="wallet_mode" style="display:none;">
-          <h4>Please choose your wallet to pay</h4>
+          <a href="" title="Refresh your wallet" class="myrefresh btn btn-danger" style="background-color:red"></i>Refresh your wallet</a>
+		  <br/>
+		  <h4>Please choose your wallet to pay </h4>
+		  
           <div class="row">
                      <!--div style="margin: 2%;max-height: 80px;text-align: left;padding: 0%;" class="col-md-3 card bg-primary text-white">
                         <div class="card-body wallet_select" wallet_name="MYR" type="myr_bal">MYR <br> <span  id="myr_bal"><?php if(isset($urecord['balance_myr'])){ echo $urecord['balance_myr'];} ?></span></div>
@@ -4122,6 +4287,26 @@ $ipay88->setField('UserContact', '0123456789');
 </div>
 
 <!-- end login popup for rebeat process!-->
+<div class="modal" id="login-success-popup" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Success!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Login Successfully.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 <div class="modal fade" id="newmodel_check" tabindex="-1" role="dialog" aria-labelledby="login_passwd_modal_title" aria-hidden="true">
 
@@ -4176,8 +4361,8 @@ $ipay88->setField('UserContact', '0123456789');
                     </div>
 
                     <div class="popup_info_user" style="display:none">
-                      <p style="font-weight: normal;"><b>USERNAME: </b><span class="popup_info_user1 tsd"> - </span></p>
-                      <p  style="font-weight: normal;"><b>Mobile Number: </b><span class="popup_info_user2"> - </span></p>
+                      <p style="font-weight: normal;"><b><?php echo $language['username1'];?> </b><span class="popup_info_user1 tsd"> - </span></p>
+                      <p  style="font-weight: normal;"><b><?php echo $language['mobilenumber1'];?> </b><span class="popup_info_user2"> - </span></p>
                       <input class="koo_check_wallet" type="hidden" value= ""/>
                   </div>
 
@@ -4307,7 +4492,9 @@ $ipay88->setField('UserContact', '0123456789');
                  <div class="row" style="margin: 0;padding: 0;">
 
                    <div class="col-12 col-sm-5 lgn_div_otp" style="margin: 0px;padding: 0;margin-top: 10px;">
-                      <span class="btn btn-primary login_with_otp myBtnLogWithOTP" id="myBtnLogWithOTP" style="width: 98%;"><?php echo $language['login_with_otp']; ?></span>
+                       <input type="button" class="btn btn-primary show_pwd_box" name="show_pwd_box" value="<?php echo $language["login_password"]; ?>" style="width: 98%;padding-left:11px">
+					  <input type="submit" class="btn btn-primary login_ajax_new" name="login_ajax" value="<?php echo $language['login_password']; ?>" style="display:none;width: 98%;" />
+				  
                   </div>
 
                   <div class="col-12 col-sm-5" id="ne_forg_div"  class="col otp_fields forgot_now" style="padding: 0;margin-top: 10px;;display:none;">
@@ -4315,10 +4502,11 @@ $ipay88->setField('UserContact', '0123456789');
                 </div>
 
                 <div class="col-9 col-sm-5 otp_fields join_now" style="margin: 0;padding: 0;margin-top: 10px;">
-                  <input type="button" class="btn btn-primary show_pwd_box" name="show_pwd_box" value="<?php echo $language["login_password"]; ?>" style="width: 98%;padding-left:11px">
-                  <input type="submit" class="btn btn-primary login_ajax_new" name="login_ajax" value="<?php echo $language['login_password']; ?>" style="display:none;width: 98%;" />
+                  
+				  <span class="btn btn-primary login_with_otp myBtnLogWithOTP" id="myBtnLogWithOTP" style="width: 98%;"><?php echo $language['login_with_otp']; ?></span>
+					 
                   <!--<small id="login_error_new" style="display: none;color:#e6614f;"></small>-->
-              </div>
+                </div>
 					  <!--<div class="col-8 col-sm-4" style="margin: 0px;padding: 0;margin-top: 10px;">
 						<span class="btn btn-primary login_with_otp myBtnLogWithOTP" id="myBtnLogWithOTP" style="width: 98%;"><?php echo $language['login_with_otp']; ?></span>
                    </div>-->
@@ -4343,14 +4531,14 @@ $ipay88->setField('UserContact', '0123456789');
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
-            <form method="post" action="v.php" id="myForm">
+            <form method="post" action="<?php echo $site_url; ?>/v.php" id="myForm">
                 <input type="hidden" name="mobile_number" id="mobile_numberC">
                 <input type="hidden" name="user_rolehwe" value="1">
                 <input type="hidden" name="user_roleget" value="2">
                 <input type="hidden" name="user_role" value="1">
                 <input type="hidden" id="login_otp">
                 <input type="hidden" id="login_via" name="login_via" value="normal">
-                <input type="hidden" name="back_url_link" value="view_merchant.php" id="back_url_link">
+                <input type="hidden" name="back_url_link" value="<?php echo $site_url; ?>/view_merchant.php" id="back_url_link">
 
                 <div class="modal-header">
                     <h4 class="text-primary">Key in OTP code to login</h4>
@@ -4719,10 +4907,10 @@ else
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="product_added_to_cart">Success</h5>
+                <h5 class="modal-title" id="product_added_to_cart"><?php echo $language['success_label'];?></h5>
             </div>
             <div class="modal-body">
-                <b>Product successfully added!</b>
+                <b><?php echo $language['product_success_addded'];?></b>
             </div>
         </div>
     </div>
@@ -4750,7 +4938,10 @@ else
 </div>
 
 
+ <link rel="stylesheet" href="<?php echo $site_url;?>/extra/css/wickedpicker.css">
+        <script type="text/javascript" src="<?php echo $site_url;?>/extra/js/wickedpicker.js"></script>
 
+		
 </body>
 </html>
 
@@ -4768,6 +4959,15 @@ $("#myModal_forcerefresh").modal({
 <?php }*/?>
 
 <script>
+$(function() {
+				//$('#od_delivery_time').timepicker();
+				$('#od_delivery_time2').wickedpicker({twentyFour: false, title:
+                    'Select Time', showSeconds: false,minutesInterval: 15});		
+			});
+			
+	
+			
+			
     $(document).ready(function() {
         $("#myBtnLogWithOTP").click(function() {
 			$("#myBtnLogWithOTP").attr('style','width: 98%;');
@@ -4820,7 +5020,7 @@ $("#myModal_forcerefresh").modal({
         if (number.length >= 9 && number.length <= 12 && (number[0] == 1 || number[0] == 6 || number[0] == 0)) {
                  // alert('inside');
                  $.ajax({
-                    url: 'functions.php',
+                    url: '<?php echo $site_url; ?>/functions.php',
                     type: 'POST',
                     dataType: 'json',
                     data: {mobile_number: number,
@@ -4832,6 +5032,7 @@ $("#myModal_forcerefresh").modal({
                             if (data.status == true) {
                                 $("#myModal").modal('show');
                                 $('#newmodel_check').modal('hide');
+								//$('#login-success-popup').modal('show');
                                 $('#login_otp').val(data.otp);
                                 $('#otp_label').show();
                                 $('#otp_label').css('color', 'rgb(81, 210, 183)');
@@ -4914,7 +5115,7 @@ $("#myModal_forcerefresh").modal({
                         str_otp: user_input};
 
                         $.ajax({
-                            url: 'login.php',
+                            url: '<?php echo $site_url; ?>/login.php',
                             type: 'POST',
                             dataType: 'json',
                             data: dataJ,
@@ -4924,6 +5125,8 @@ $("#myModal_forcerefresh").modal({
 
                                 if (data.status) {
                                  $('#myModal').modal('hide');
+								 $('#login-success-popup').modal('show');
+
                                  if(koo_check_wallet != 0){
                                      $(".wallet_ajax_value").html(" (Rm"+koo_check_wallet+")");
                                      $(".koo_check_wallet").html(koo_check_wallet);
@@ -5010,7 +5213,7 @@ if(already_login || mobile_number)
 {
     $.ajax({
 
-      url: "s_coupon_list.php",
+      url: "<?php echo $site_url; ?>/s_coupon_list.php",
 
       type: "post",
 
@@ -5041,7 +5244,7 @@ if(already_login || mobile_number)
 {
     $.ajax({
 
-      url: "pastaddress.php",
+      url: "<?php echo $site_url; ?>/pastaddress.php",
 
       type: "post",
 
@@ -5508,10 +5711,10 @@ function updateMarkerAddress(str) {
         $(".introduce-remarks.selected").siblings("input[name='extra']").val(extras);
 
         $("input[name='single_ingredients'].selected").siblings("input[name='extra']").val(extras);
-
+		var remark_lable = '<?php echo $language["remark1"];?>';
         if (!$(".introduce-remarks.selected").parent().hasClass("pop_model")) {
 
-            $("a.introduce-remarks.selected").html((selected.toString() == '') ? "Remarks" : selected.toString().split("_").join(" "));
+            $("a.introduce-remarks.selected").html((selected.toString() == '') ? remark_lable : selected.toString().split("_").join(" "));
 
         } else {
 
@@ -5550,7 +5753,7 @@ function updateMarkerAddress(str) {
 
     $(".redirect_fav").click(function(e) {
 
-        window.location.href = "index.php";
+        window.location.href = "<?php echo $site_url; ?>/index.php";
 
     });
 
@@ -5584,7 +5787,7 @@ function updateMarkerAddress(str) {
 
         $.ajax({
 
-            url: "functions.php",
+            url: "<?php echo $site_url; ?>/functions.php",
 
             type: "post",
 
@@ -5661,8 +5864,6 @@ function updateMarkerAddress(str) {
           var d = new Date();
 		var sorry_rest = "";//"<?php echo $language['sorry_rest'] ?>";
 		var selected_lang = "<?php echo $_SESSION['langfile'] ?>";
-		
-		console.log(selected_lang);
         var not_working_text = "<?php echo $merchant_detail['not_working_text']; ?>";
         var not_working_text_chiness = "<?php echo $merchant_detail['not_working_text_chiness']; ?>";
 		var not_working_text_malay = "<?php echo $merchant_detail['not_working_text_malay']; ?>";
@@ -5779,6 +5980,7 @@ if (total_work=="y") {
 $("#shop_model_text").html(m);
 $('#error_label').html(m1);
 $('#shop_model').modal('show');
+console.log("shop_status###");
 $("#shop_model").on("hide.bs.modal", function() {
     const urlParams = new URLSearchParams(window.location.search)
     if (urlParams.has("pd")) {
@@ -6010,12 +6212,15 @@ $(".modal-footer").on("click", ".introduce-remarks", function() {
             $("#remarks_area").addClass("no-back");
 
         }
-
+		
+		var add_to_cart_lang = '<?php echo $language["add_to_cart1"];?>';
+		var remark1_lang = '<?php echo $language["remark1"];?>';
+	
         $('#ProductModel').modal('hide');
 
         $(".text_add_cart[data-id='" + id + "']").parent().siblings(".introduce-remarks").click();
-
-        $(".modal_pop").html("<a href='#remarks_area' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal'>Remarks</a><input type='hidden' name='single_ingredients' value='" + single_remarks + "'/><input type='hidden' name='extra' value='" + p_extra + "'/><span id='pop_cart' data-id='" + id + "' data-code='" + code + "'  data-name='" + name + "' data-quantity='" + quantity + "'>Add to Cart</span>");
+		
+        $(".modal_pop").html("<a href='#remarks_area' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal'>"+remark1_lang+"</a><input type='hidden' name='single_ingredients' value='" + single_remarks + "'/><input type='hidden' name='extra' value='" + p_extra + "'/><span id='pop_cart' data-id='" + id + "' data-code='" + code + "'  data-name='" + name + "' data-quantity='" + quantity + "'>"+add_to_cart_lang+"</span>");
 
         return false;
 
@@ -6027,7 +6232,7 @@ $(".modal-footer").on("click", ".introduce-remarks", function() {
 
     //$(".without_varient").on("click", function() {
 	$('.search_response').on('click', '.without_varient', function(e) {
-        // console.log("Without varient");
+         console.log("###Without varient###");
 
         // $(this).hide();
 
@@ -6113,10 +6318,26 @@ $(".modal-footer").on("click", ".introduce-remarks", function() {
         var ok_lable = '<?php echo $language["ok"] ?>';
 
         var remark_lable = '<?php echo $language["remarks"] ?>';
+		
+		var prd_one_offer = $(this).attr('prd_one_offer');
+		var one_product_offer ="<?php echo $merchant_detail['one_product_offer'];?>";	
+		//console.log("prd_one_offer="+prd_one_offer);
+		//console.log("one_product_offer="+one_product_offer);
+		var qty_readonly = '';
+		var show_pop_cart = $(this).attr('show_pop_cart');
+		var style_acart=" ";
+		if(prd_one_offer == 1 && one_product_offer == 1){
+			var qty_readonly = "readonly='readonly'";
+			if(show_pop_cart == 'hide'){
+				var style_acart=";display:none";
+			}
+			
+		}
 
         // console.log(qty_lable);
 		$(".no_foods_options").addClass("no_foods_options_"+id);
-        $("#without_varient_footer").html("<div class='row'><div class='col-md-12'>" + qty_lable + ": <input name='quantity_input' min='1' type='number' class='quatity' value='" + quantity + "' style='width:2.5em;text-align:center' min='0' max='99'/></div></div><a href='#remarks_area' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal' style='top:unset;bottom:3px;right:100px;border-radius: 5px;'>" + remark_lable + "</a><input type='hidden' name='single_ingredients' value='" + single_remarks + "'/><input type='hidden' name='extra' value='" + extra_price + "'/><span id='pop_cart' data-rebate='" + rebate + "' data-id='" + id + "' data-code='" + code + "'  data-name='" + name + "' data-quantity='" + quantity + "' data-pr=" + p_price + " class='close_pop btn btn-large btn-primary' data-dismiss='modal' style='background:#50D2B7;border:none;'>" + ok_lable + "</span>");
+        $("#without_varient_footer").html("<div class='row'><div class='col-md-12'>" + qty_lable + ": <input name='quantity_input' min='1' "+ qty_readonly +" type='number' class='quatity' value='" + quantity + "' style='width:2.5em;text-align:center' min='0' max='99'/></div></div><a href='#remarks_area' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal' style='top:unset;bottom:3px;right:100px;border-radius: 5px;'>" + remark_lable + "</a><input type='hidden' name='single_ingredients' value='" + single_remarks + "'/><input type='hidden' name='extra' value='" + extra_price + "'/><span id='pop_cart' data-rebate='" + rebate + "' data-id='" + id + "' data-code='" + code + "' prd_one_offer ='"+prd_one_offer+"'  data-name='" + name + "' data-quantity='" + quantity + "' data-pr=" + p_price + " class='close_pop btn btn-large btn-primary' data-dismiss='modal' style='background:#50D2B7;border:none;'>" + ok_lable + "</span>");
+        $("#without_varient_footer").html("<div class='row'><div class='col-md-12'>" + qty_lable + ": <input name='quantity_input' min='1' "+ qty_readonly+" type='number' class='quatity' value='" + quantity + "' style='width:2.5em;text-align:center' min='0' max='99'/></div></div><a href='#remarks_area' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal' style='top:unset;bottom:3px;right:100px;border-radius: 5px;"+style_acart+"'>" + remark_lable + "</a><input type='hidden' name='single_ingredients' value='" + single_remarks + "'/><input type='hidden' name='extra' value='" + extra_price + "'/><span id='pop_cart' data-rebate='" + rebate + "' data-id='" + id + "' data-code='" + code + "' prd_one_offer ='"+prd_one_offer+"'  data-name='" + name + "' data-quantity='" + quantity + "' data-pr=" + p_price + " class='close_pop btn btn-large btn-primary' data-dismiss='modal' style='background:#50D2B7;border:none;"+style_acart+"'>" + ok_lable + "</span>");
 
 
 
@@ -6160,6 +6381,15 @@ $("#without_varient_footer").on("change", "input[name='quantity_input']", functi
 
 });
 
+// varient with qty
+$(".pop_model_withvarient").on("change", "input[name='quantity_input']", function() {
+
+    var newQuantity = $(this).val();
+
+    $(this).parent().parent().parent().find("#pop_cart").attr("data-quantity", newQuantity);
+
+});
+
 //$(".with_varient").on("click", function() {
 $('.search_response').on('click', '.with_varient', function(e) {
         // $(this).hide();
@@ -6168,7 +6398,7 @@ $('.search_response').on('click', '.with_varient', function(e) {
 		//$(".no_foods_options").val('');
         var p_price = $(this).data("pr");
 
-        console.log(p_price);
+        console.log(p_price+"===with_varients");
 
         // $('#varient_count').val(0);
 
@@ -6209,6 +6439,8 @@ $('.search_response').on('click', '.with_varient', function(e) {
         var rebate = $(this).data("rebate");
 
         var quantity = $(this).siblings(".quantity").children(".quatity").val();
+		
+		var prd_one_offer = $(this).attr('prd_one_offer');
 
         // alert(quantity);
 
@@ -6234,16 +6466,47 @@ $('.search_response').on('click', '.with_varient', function(e) {
 		
 		var chk_no_product_options ="<?php echo $merchant_detail['no_product_options'];?>";	
 		var temp_uid = "<?php echo $_SESSION['user_id'];?>";	
+		var add_to_cart_lang = '<?php echo $language["add_to_cart1"];?>';
+		var remark1_lang = '<?php echo $language["remark1"];?>';
+	
+		var prd_one_offer = $(this).attr('prd_one_offer');
+		var one_product_offer ="<?php echo $merchant_detail['one_product_offer'];?>";	
+		
+		var qty_lable = '<?php echo $language["quantity"] ?>';
+		var qty_readonly = '';
+		var style_acart=" ";
+		var show_pop_cart = $(this).attr('show_pop_cart');
+		if(prd_one_offer == 1 && one_product_offer == 1){
+			var qty_readonly = "readonly='readonly'";
+			if(show_pop_cart == 'hide'){
+				var style_acart=";display:none";
+			}
+			
+		}
+		
+		console.log(prd_one_offer+"===one_product_offer===="+one_product_offer);
+
+
 		
 		if(chk_no_product_options == 1 ){
-		var no_foods_html ='<select name="no_foods_options" id="no_foods_options" class="form-control  no_foods_options_'+id+' " style="margin-top: 10px;height:29px;font-size: 13px;padding:0px;width: 150px !important;margin-right: 6px;"><option value=""><?php echo $language["food_not_availble_label"];?></option><option value="Remove it from my order"><?php echo $language["food_not_availble_option1"];?></option><option value="Cancel the entire order"><?php echo $language["food_not_availble_option2"];?></option><option value="Call me"><?php echo $language["food_not_availble_option3"];?></option><option value="Buy from other best rating merchant"><?php echo $language["food_not_availble_option4"];?></option></select>';
+		var no_foods_html ='<select name="no_foods_options" id="no_foods_options" class="form-control  no_foods_options_'+id+' " style="height:29px;font-size: 13px;padding:0px;width: 150px !important;margin-left: -40px;"><option value=""><?php echo $language["food_not_availble_label"];?></option><option value="Remove it from my order"><?php echo $language["food_not_availble_option1"];?></option><option value="Cancel the entire order"><?php echo $language["food_not_availble_option2"];?></option><option value="Call me for change of food/merchant"><?php echo $language["food_not_availble_option3"];?></option><option value="Buy from other best rating merchant"><?php echo $language["food_not_availble_option4"];?></option></select>';
 		
-		$(".pop_model_withvarient").html("<div class='row' style='width:11em'></div>"+no_foods_html+"<a href='#remarks_area' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal' style='padding: 3px;padding-top: 12px;padding-bottom: 12px;margin-top: 10px;'>Remarks</a><input type='hidden' name='single_ingredients' value='" + single_remarks + "'/><input type='hidden' name='extra' value='" + p_extra + "'/><span id='pop_cart' data-rebate='" + rebate + "' data-pr=" + p_price + " data-id='" + id + "' data-code='" + code + "'  data-name='" + name + "' data-quantity='" + quantity + "' style='width:300px'>Add to Cart</span>");
+		
+		/*$(".pop_model_withvarient").html("<div class='row' style='width:11em'></div>"+no_foods_html+"<a href='#remarks_area' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal' style='padding: 3px;padding-top: 12px;padding-bottom: 12px;margin-top: 10px;'>"+remark1_lang+"</a><input type='hidden' name='single_ingredients' value='" + single_remarks + "'/><input type='hidden' name='extra' value='" + p_extra + "'/><span id='pop_cart' prd_one_offer ='"+prd_one_offer+"' data-rebate='" + rebate + "' data-pr=" + p_price + " data-id='" + id + "' data-code='" + code + "'  data-name='" + name + "' data-quantity='" + quantity + "' style='width:300px'>"+add_to_cart_lang+"</span>");*/
+		
+		
+		$(".pop_model_withvarient").html("<div class='row'><div class='col-6'>"+ qty_lable +"<input name='quantity_input' min='1' "+ qty_readonly +" type='number' class='quatity' value='" + quantity + "' style='width:2.5em;text-align:center;margin-left:10px' min='0' max='99'/></div><div class='col-6'>"+no_foods_html+"</div><div class='col-6'><a href='#remarks_area' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal' style='width:100px;padding: 3px;padding-top: 12px;padding-bottom: 12px;margin-top: 10px;"+style_acart+"'>"+remark1_lang+"</a></div><div class='col-6'><input type='hidden' name='extra' value='" + p_extra + "'/><input type='hidden' name='single_ingredients' value='" + single_remarks + "'/><span id='pop_cart' prd_one_offer ='"+prd_one_offer+"' data-rebate='" + rebate + "' data-pr=" + p_price + " data-id='" + id + "' data-code='" + code + "'  data-name='" + name + "' data-quantity='" + quantity + "' style='width: 165px;margin-left:-40px;   margin-top:10px;height:39px;"+style_acart+"'>"+add_to_cart_lang+"</span></div></div>");
+		
+		
+		
 		
 		}else{
 			var no_foods_html ='';
 		
-		$(".pop_model_withvarient").html("<div class='row' style='width:11em'></div>"+no_foods_html+"<a href='#remarks_area' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal' style='padding: 3px;padding-top: 12px;padding-bottom: 12px;margin-top: 10px;'>Remarks</a><input type='hidden' name='single_ingredients' value='" + single_remarks + "'/><input type='hidden' name='extra' value='" + p_extra + "'/><span id='pop_cart' data-rebate='" + rebate + "' data-pr=" + p_price + " data-id='" + id + "' data-code='" + code + "'  data-name='" + name + "' data-quantity='" + quantity + "'>Add to Cart</span>");
+		/*$(".pop_model_withvarient").html("<div class='row' style='width:11em'></div>"+no_foods_html+"<a href='#remarks_area' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal' style='padding: 3px;padding-top: 12px;padding-bottom: 12px;margin-top: 10px;'>"+remark1_lang+"</a><input type='hidden' name='single_ingredients' value='" + single_remarks + "'/><input type='hidden' name='extra' value='" + p_extra + "'/><span id='pop_cart' data-rebate='" + rebate + "' data-pr=" + p_price + " data-id='" + id + "' data-code='" + code + "'  data-name='" + name + "' data-quantity='" + quantity + "'>"+add_to_cart_lang+"</span>");*/
+		$(".pop_model_withvarient").html("<div class='row'><div class='col-6'>"+ qty_lable +"<input name='quantity_input' min='1' "+ qty_readonly +" type='number' class='quatity' value='" + quantity + "' style='width:2.5em;text-align:center;margin-left:10px' min='0' max='99'/></div><div class='col-6'>"+no_foods_html+"</div><div class='col-6'><a href='#remarks_area' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal' style='width:100px;padding: 3px;padding-top: 12px;padding-bottom: 12px;margin-top: 10px;'>"+remark1_lang+"</a></div><div class='col-6'><input type='hidden' name='extra' value='" + p_extra + "'/><input type='hidden' name='single_ingredients' value='" + single_remarks + "'/><span id='pop_cart' prd_one_offer ='"+prd_one_offer+"' data-rebate='" + rebate + "' data-pr=" + p_price + " data-id='" + id + "' data-code='" + code + "'  data-name='" + name + "' data-quantity='" + quantity + "' style='width: 187px;margin-left:-40px;   margin-top:10px;height:39px;'>"+add_to_cart_lang+"</span></div></div>");
+			
+			
 			
 		}
 		
@@ -6322,7 +6585,7 @@ $('.search_response').on('click', '.with_varient', function(e) {
             varient_selected = [];
 
             if (showModal) {
-
+				console.log('show_prd_modal1');
                 $("#ProductModel").modal("show");
 
             } else {
@@ -6589,12 +6852,22 @@ if(f_html != ''){
 }
 
 var no_foods_options = $(".no_foods_options_"+s_id).val();
-console.log(id+"===s_id###===="+s_id+"==foods==="+no_foods_options);
+//console.log(id+"===s_id###===="+s_id+"==foods==="+no_foods_options);
 if(no_foods_options == 'undefined'){
 	var no_foods_options = '';
 }
 
-console.log(id+"===s_id===="+s_id+"==foods==="+no_foods_options);
+//console.log(id+"===s_id===="+s_id+"==foods==="+no_foods_options);
+
+	var prd_one_offer = $(this).attr('prd_one_offer');
+	var one_product_offer ="<?php echo $merchant_detail['one_product_offer'];?>";	
+	var qty_readonly = '';
+	if(prd_one_offer == 1 && one_product_offer == 1){
+		 var qty_readonly = "readonly='readonly'";
+		 $("#product_child_"+id).hide();
+	}
+
+
 var cartData = {};
 cartData['type'] = 'save_session';
 cartData['name'] = name;
@@ -6603,6 +6876,8 @@ cartData['only_name'] = $(this).data("name");
 cartData['sub_varient'] = f_html;
 cartData['rebate_amount'] = rebate_amount;
 cartData['id'] = id;
+cartData['prd_one_offer'] = prd_one_offer;
+cartData['one_product_offer'] = one_product_offer;
 cartData['rebate_per'] = rebate_per;
 cartData['product_price'] = product_price;
 cartData['quantity'] = quantity;
@@ -6614,7 +6889,7 @@ cartData['extra_price'] = extra_price;
 cartData['extra_child_id'] = extra_child_id;
 cartData['p_total'] = p_total;
 cartData['varient_type'] = varient_type;
-jQuery.post('/ajaxcartresponse.php', cartData, function (result) {
+jQuery.post('<?php echo $site_url; ?>/ajaxcartresponse.php', cartData, function (result) {
 //var response = jQuery.parseJSON(result);
 console.log(result);
 });
@@ -6629,21 +6904,22 @@ console.log(result);
 $subvarientsHtml = '';
 $rand_iddds = randomNumber(1, 10);
 //
+var lang_readmore = "<?php echo $language['read_more1'];?>";
 if(f_html != ''){
-	$subvarientsHtml = '<div class="varient_list" ><p class="moretext va_sub" id="moretext_'+ id +'_'+$rand_iddds+'" style="display:none">'+ f_html +'<br/><span>'+no_foods_options+'</span></p><a class="moreless-button moreless-button_'+ id +'_'+$rand_iddds+'" href="javascript:void(0)" product_id="'+ id +'_'+$rand_iddds+'">Read more</a></div>';
+	$subvarientsHtml = '<div class="varient_list" ><p class="moretext va_sub" id="moretext_'+ id +'_'+$rand_iddds+'" style="display:none">'+ f_html +'<br/><span>'+no_foods_options+'</span></p><a class="moreless-button moreless-button_'+ id +'_'+$rand_iddds+'" href="javascript:void(0)" product_id="'+ id +'_'+$rand_iddds+'">'+lang_readmore+'</a></div>';
 }
 
-if(f_html == '' && no_foods_options != ''){
-	$subvarientsHtml = '<div class="varient_list" ><p class="moretext va_sub" id="moretext_'+ id +'_'+$rand_iddds+'" style="display:none">'+ no_foods_options +'</p><a class="moreless-button moreless-button_'+ id +'_'+$rand_iddds+'" href="javascript:void(0)" product_id="'+ id +'_'+$rand_iddds+'">Read more</a></div>';
+if(f_html == '' && no_foods_options != '' && no_foods_options == 'undefined'){
+	$subvarientsHtml = '<div class="varient_list" ><p class="moretext va_sub" id="moretext_'+ id +'_'+$rand_iddds+'" style="display:none">'+ no_foods_options +'</p><a class="moreless-button moreless-button_'+ id +'_'+$rand_iddds+'" href="javascript:void(0)" product_id="'+ id +'_'+$rand_iddds+'">'+lang_readmore+'</a></div>';
 }
 
 //$cart_html1 = "<input type='hidden' name='rebate_amount[]' class='rebate_amount' value=" + rebate_amount + " id='" + id + "rebate_amount'><input type='hidden' name='rebate_per[]' value=" + rebate_per + " id='" + id + "rebate_per'><input type= hidden name='p_id[]' value= " + s_id + "><input type= hidden name='p_code[]' value= " + code + "><input type='hidden' name='ingredients' value='" + single_remarks + "'/><input type='hidden' id='" + extra_child_id + "' name='extra' value='" + extra_price + "'><input type='hidden' name='varient_type[]' value=" + varient_type + ">";
 
-
+var total_label = '<?php echo $language["total1"] ;?>';
  
 $cart_html1 = "<input type='hidden' name='rebate_amount[]' class='rebate_amount' value=" + rebate_amount +" id='"+ id +"rebate_amount'><input type='hidden' name='rebate_per[]' value="+ rebate_per + " id='"+ id +"rebate_per'><input type= hidden name='p_id[]' value= "+ s_id +"><input type= hidden name='p_code[]' value= "+ code +"><input type='hidden' name='ingredients' value='"+ single_remarks +"'/><input type='hidden' name='varient_type[]' value="+ varient_type +"><input type='hidden' id='"+ extra_child_id +"' name='extra' value='"+ extra_price +"'><input type='hidden' style='width:70px;' class='p_total' name='p_total[]' value= "+p_total+" readonly  id='"+ id +"_cat_total'><input style='width:70px;' type='hidden' name='p_price[]' value='"+ product_price + "' readonly><input type='hidden' name='no_food_hidden_options[]' value='"+no_foods_options+"'><input style='width:70px;text-align:right;' type='hidden' name='p_extra' id='"+ extra_child_id + "' value='"+ extra_price +"' readonly>";
 
-$cart_html2 = '<div class="cart-detail-row producttr producttr_'+ id +'">'+$cart_html1+'<div class="cart-d-cell c-t-cell"><p class="remove-icon removebutton" remove_productid='+ id +'><i class="fa fa-trash-o" aria-hidden="true"></i></p><div class="title-qty"><input type="number" name="qty[]" class="product_qty quatity" min="1" maxlength="3" value='+ quantity +' id="'+ id + '_test_athy" onchange="UpdateTotal(' + id + ',' + product_price + ')" style="width: 25px;padding: 4px;height: 25px;float: right;"/><p class="prd-name pro1_name">'+ only_name +'| '+code+' </p></div></div>'+$subvarientsHtml+'<div class="cart-d-cell"></div><div class="cart-d-cell"><p class="remark-text"><a href="#remarks_area" data-rid="'+ id +'" role="button" class="introduce-remarks btn btn-large btn-primary hideLoader" data-toggle="modal">'+  ((single_remarks == "") ? remark_lable : single_remarks) +'</a> </p><p class="price-text"><strong>Total : </strong>RM <span class="p_span_total '+ id +'_cat_total">'+ p_total +'</span></p></div></div>';
+$cart_html2 = '<div class="cart-detail-row producttr producttr_'+ id +'">'+$cart_html1+'<div class="cart-d-cell c-t-cell"><p class="remove-icon removebutton" prd_id = '+s_id+' one_product_offer = '+one_product_offer+' prd_one_offer='+prd_one_offer+' remove_productid='+ id +'><i class="fa fa-trash-o" aria-hidden="true"></i></p><div class="title-qty"><input type="number" name="qty[]" class="mw1 product_qty quatity" min="1" maxlength="3" '+qty_readonly+' value='+ quantity +' id="'+ id + '_test_athy" onchange="UpdateTotal(' + id + ',' + product_price + ')" style="width: 25px;padding: 4px;height: 25px;float: right;"/><p class="prd-name pro1_name">'+ only_name +'| '+code+' </p></div></div>'+$subvarientsHtml+'<div class="cart-d-cell"></div><div class="cart-d-cell"><p class="remark-text"><a href="#remarks_area" data-rid="'+ id +'" role="button" class="introduce-remarks btn btn-large btn-primary hideLoader" data-toggle="modal">'+  ((single_remarks == "") ? remark_lable : single_remarks) +'</a> </p><p class="price-text"><strong>'+total_label+' : </strong>RM <span class="p_span_total '+ id +'_cat_total">'+ p_total +'</span></p></div></div>';
 
 $cart_final_html = $cart_html1+$cart_html2;
 $(".cart_wrapper").append($cart_html2);
@@ -6809,7 +7085,7 @@ totalcart();
 
         jQuery(".other_product_name").autocomplete({
 
-            source: "auto_complete_product_name.php",
+            source: "<?php echo $site_url; ?>/auto_complete_product_name.php",
 
             minLength: 1,
 
@@ -6865,7 +7141,7 @@ totalcart();
 
                     $.ajax({
 
-                        url: 'product_check.php',
+                        url: '<?php echo $site_url; ?>/product_check.php',
 
                         type: 'POST',
 
@@ -6945,7 +7221,7 @@ totalcart();
 
         jQuery(".other_product_code").autocomplete({
 
-            source: "auto_complete_product_code.php",
+            source: "<?php echo $site_url; ?>/auto_complete_product_code.php",
 
             minLength: 1,
 
@@ -6999,7 +7275,7 @@ totalcart();
 
                     $.ajax({
 
-                        url: 'product_check.php',
+                        url: '<?php echo $site_url; ?>/product_check.php',
 
                         type: 'POST',
 
@@ -7078,7 +7354,15 @@ jQuery(document).on('click', '.removebutton', function() {
 
     alert("Product has Removed");
     var productid = $(this).attr('remove_productid');
-
+	
+	
+	var productMainid = $(this).attr('prd_id');
+	var one_product_offer = $(this).attr('one_product_offer');
+	var prd_one_offer = $(this).attr('prd_one_offer');
+	
+	
+	
+	
     jQuery('.producttr_'+productid).remove();
 	totalcart();
         //jQuery(this).closest('tr').remove();
@@ -7089,8 +7373,12 @@ jQuery(document).on('click', '.removebutton', function() {
         var cartData = {};
         cartData['type'] = 'remove_product';
         cartData['id'] = remove_productid;
-        jQuery.post('/ajaxcartresponse.php', cartData, function (result) {
+        jQuery.post('<?php echo $site_url; ?>/ajaxcartresponse.php', cartData, function (result) {
            console.log(result);
+			//if(one_product_offer == 1 && prd_one_offer == 1){
+				$("#product_child_"+productMainid).show();
+				$("#product_child_"+productMainid).css( "display",'block !important;' );;
+			//}
        });
         /*End cart qty update to session - 23/12/20 */
 
@@ -7114,7 +7402,7 @@ $("#agent_code_input").on("keyup", function() {
 
         if (number.length >= 9 && number.length <= 12 && (number[0] == 1 || number[0] == 6)) {
 
-            $.get("./view_merchant.php", {
+            $.get("<?php echo $site_url; ?>//view_merchant.php", {
 
                 q: "verifyAgentCode",
 
@@ -7176,7 +7464,7 @@ $("#agent_code_input").on("focusout", function(e) {
 
             $("#agent_code").val($("#agent_code_input").val());
 
-            $.get("./view_merchant.php", {
+            $.get("<?php echo $site_url; ?>//view_merchant.php", {
 
                 q: "verifyAgentCode",
 
@@ -7644,6 +7932,10 @@ p.no_stock_add_to_cart {
     // filter items on button click
 
     $('.master_category_filter').on('click', function(e) {
+		
+		$('html, body').animate({
+                    scrollTop: $(".productsDiv").offset().top
+		}, 2000);
 
         e.preventDefault();
 
@@ -7662,6 +7954,44 @@ p.no_stock_add_to_cart {
            // console.log('am called');
 
        });
+	   
+	   // Start: Ajax call data
+		var indexNumber = $(this).attr('data-position');
+		var firstsubcategory = $(".subcategory_side_"+indexNumber).first().attr("data-subcategory");
+		console.log("firstsubcategory"+firstsubcategory);
+		
+			$(".all-grids").hide();
+			$(".show_ajax_loader").show();
+			
+			var categoryload = 'true';
+			var catIndex = indexNumber;
+			var merchant_id = $(this).attr("merchant_id");
+			var prduct_qty = $(this).attr("prduct_qty");
+			var hike_per = '<?php echo $merchant_detail["price_hike"];?>';
+			var product_id = '<?php echo $_GET["pd"];?>';
+			var one_product_offer ="<?php echo $merchant_detail['one_product_offer'];?>";	
+			var cart_merchant_number ="<?php echo $cart_merchant_id;?>";	
+			var  HTTP_REFERER= 'https://<?php echo $_SERVER["SERVER_NAME"];?>';
+			if(HTTP_REFERER == ''){
+				//console.log('http_link'+HTTP_REFERER);
+				var site_ajax_link = '<?php echo $site_url; ?>';
+			}else{
+				//console.log('else__http_link'+HTTP_REFERER);
+				var site_ajax_link = HTTP_REFERER;
+			}
+			$.ajax({
+				url: site_ajax_link+"/view_merchant_layout2_ajax.php?cats="+categoryload+"&catindex="+catIndex+"&id="+merchant_id+"&prduct_qty="+prduct_qty+"&hike_per="+hike_per+"&firstsubcategory="+firstsubcategory+"&product_id="+product_id+"&one_product_offer="+one_product_offer+"&cart_merchant_number="+cart_merchant_number,
+				context: document.body
+			}).done(function(response) {
+				$(".productmaindiv_"+product_id).hide();
+				$('.search_response').find(".productsDiv").html(response);
+				$(".show_ajax_loader").hide();
+				$(".all-grids").hide();
+				$(".prdd_div_"+firstsubcategory).show();
+				//$(filterValue).first().trigger('click');
+			});
+        // END : AJAX Call Data
+		
 
         $grid_sub.isotope({
             filter: filterValue
@@ -7699,6 +8029,9 @@ p.no_stock_add_to_cart {
         $('.sub_category_grid .category_filter button').removeClass("active_menu");
 
         $(this).addClass("active_menu");
+		
+		$(".all-grids").hide();
+		$(".prdd_div_"+subcateg_show).show();
 
         //console.log(filterValue);
 
@@ -7726,6 +8059,11 @@ $grid.isotope({
 </script>
 
 <style>
+@media screen and (max-width: 600px) {
+	.wickedpicker{
+		left:90px !important;
+	}
+}
 .sub_category_grid button {
     /* You Can Name it what you want*/
 
@@ -7892,7 +8230,7 @@ img.non_active {
 
     if ($shortcut_icon == '')
 
-        $shortcut_icon = 'https://koofamilies.com/img/logo_512x512.png';
+        $shortcut_icon = $site_url.'/img/logo_512x512.png';
 
     $start_url = $site_url . "/view_merchant.php?sid=" . $_GET['sid'];
 
@@ -7910,7 +8248,7 @@ img.non_active {
         var coupon_code="<?php echo $special_coupon_list['coupon_code']; ?>";
 		// alert(special_coupon_count);
 		// alert(coupon_code);    
-		 console.log('Specific Promo code'+special_coupon_count);
+		// console.log('Specific Promo code'+special_coupon_count);
 		if(special_coupon_count>0 && product_pre_exit>0) 
 		{
 			$('#coupon_code').val(coupon_code);
@@ -7953,7 +8291,7 @@ img.non_active {
 		var working_text_malay = "<?php echo $merchant_detail['working_text_malay']; ?>";
         var csv_import_merchant = "<?php echo $merchant_detail['csv_import']; ?>";
         
-		console.log(not_working_text_malay+"##===##"+working_text_malay);
+		//console.log(not_working_text_malay+"##===##"+working_text_malay);
         if(csv_import_merchant == 1){
             if (selected_lang == "chinese" && not_working_text_chiness != ''){
              console.log("check16110");
@@ -8172,15 +8510,21 @@ if (n == 0)
     // alert(total_work);
         // if ((currenttime > starttime && currenttime < endttime) && (starday <= n && endday >= n)) {
             if (total_work=="y") {
-
+				console.log("shop_status@@###");
                 const urlParams = new URLSearchParams(window.location.search)
-                if (urlParams.has("pd")) {
+                /*if (urlParams.has("pd")) {
                     let url_product_id = urlParams.get("pd");
                     setTimeout(() => {
                         $(document).find(`.text_add_cart[data-id='${url_product_id}']`).click();
                     }, 100);
+                }*/
+				var pdTag = "<?php echo $_GET['pd'];?>";
+				if(pdTag != ''){	
+						var url_product_id = pdTag;
+						setTimeout(() => { 
+							$(document).find(`.text_add_cart[data-id='${url_product_id}']`).click();
+						}, 100);
                 }
-
             } else {
 
 
@@ -8226,6 +8570,7 @@ if (n == 0)
                 console.log("shop_status##"+shop_status);
                 $('#shop_model').modal('show');
                 // setTimeout(function(){ $("#shop_model").modal("hide"); },5000); 
+				console.log("shop_status!!!###");
                 $("#shop_model").on("hide.bs.modal", function() {
                     const urlParams = new URLSearchParams(window.location.search)
                     if (urlParams.has("pd")) {
@@ -8297,7 +8642,7 @@ if (n == 0)
 
 
         $('.merchant_select').click(function(e) {
-           console.log('showing');
+           console.log('showing#####@@@@');
             // getLocation();
             var special_price_value="<?php echo $merchant_detail['special_price_value'] ?>";
             var koo_cashback_accept="<?php echo $merchant_detail['koo_cashback_accept'] ?>";
@@ -8616,7 +8961,7 @@ if (n == 0)
             // setTimeout(function(){ $("#free_trial_model").modal("hide"); },5000);
 
         }
-
+		console.log('same_order ====' + same_order);
         if (same_order == "y")
 
         {
@@ -8706,7 +9051,7 @@ if (n == 0)
 
                 $.ajax({
 
-                    url: "functions.php",
+                    url: "<?php echo $site_url; ?>/functions.php",
 
                     type: "post",
 
@@ -8872,7 +9217,7 @@ if (n == 0)
 
                             $.ajax({
 
-                                url: 'functions.php',
+                                url: '<?php echo $site_url; ?>/functions.php',
 
                                 type: 'POST',
 
@@ -8996,7 +9341,7 @@ if (n == 0)
 
                                                 $.ajax({
 
-                                                    url: 'functions.php',
+                                                    url: '<?php echo $site_url; ?>/functions.php',
 
                                                     type: 'POST',
 
@@ -9128,7 +9473,7 @@ $(".send_otp_button").click(function(){
    var user_mobile_number = $(this).attr('user_mobile_number');
 
    $.ajax({
-     url: 'functions.php',
+     url: '<?php echo $site_url; ?>/functions.php',
      type: 'POST',
      dataType: 'json',
      data: {
@@ -9186,7 +9531,7 @@ $(".send_otp_button").click(function(){
 
 
 
-                            url: 'login.php',
+                            url: '<?php echo $site_url; ?>/login.php',
 
                             type: 'POST',
 
@@ -9289,7 +9634,7 @@ $(".send_otp_button").click(function(){
                     };
                     $.ajax({
 
-                        url: 'functions.php',
+                        url: '<?php echo $site_url; ?>/functions.php',
                         type: 'POST',
                         dataType: 'json',
                         data: data,
@@ -9485,7 +9830,7 @@ $(".send_otp_button").click(function(){
             console.log('aaa');
             if (passwd_length_valid) {
 
-                $.post("./login.php", {
+                $.post("<?php echo $site_url; ?>/login.php", {
 
                     mobile_phone: phone_num,
 
@@ -9521,7 +9866,7 @@ $(".send_otp_button").click(function(){
 
                         $(".credentials-container").remove();
 
-                        $("form[action='guest_user.php']").attr("action", "order_place.php");
+                        $("form[action='<?php echo $site_url; ?>/guest_user.php']").attr("action", "<?php echo $site_url; ?>/order_place.php");
 
                     } else if (status_code == 2) {
 
@@ -9635,7 +9980,7 @@ $(".send_otp_button").click(function(){
 
                 $.ajax({
 
-                    url: "functions.php",
+                    url: "<?php echo $site_url; ?>/functions.php",
 
                     type: "post",
 
@@ -9655,7 +10000,7 @@ $(".send_otp_button").click(function(){
 
                             html += "<div class='well col-md-4 element-item Cham鸳鸯'>";
 
-                            html += " <form action='product_view.php' method='post' class='set_calss input-has-value' data-id='" + result[i]['id'] + "' data-code='C005' data-pr='39' style='background: #51d2b7;    padding: 12px;    border: 1px solid #e3e3e3;    border-radius: 4px;    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05); box-shadow: inset 0 1px 1px rgba(0,0,0,.05);'>";
+                            html += " <form action='<?php echo $site_url; ?>/product_view.php' method='post' class='set_calss input-has-value' data-id='" + result[i]['id'] + "' data-code='C005' data-pr='39' style='background: #51d2b7;    padding: 12px;    border: 1px solid #e3e3e3;    border-radius: 4px;    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05); box-shadow: inset 0 1px 1px rgba(0,0,0,.05);'>";
 
                             if (isActive(result[i]['active_time'])) {
 
@@ -9693,12 +10038,13 @@ $(".send_otp_button").click(function(){
 
                             html += "<div class='common_quant'>";
 
-
+							var add_to_cart_lang = '<?php echo $language["add_to_cart1"];?>';
+		
                             if (isActive(result[i]['active_time'])) {
 
                                 if (result[i]['on_stock'] == 1) {
 
-                                    html += "<p class='text_add_cart' data-id='" + result[i]['id'] + "' data-code='" + result[i]['type'] + "' data-pr='" + result[i]['price'] + "' data-name='" + result[i]['product_name'] + "'>Add to Cart</p>";
+                                    html += "<p class='text_add_cart' data-id='" + result[i]['id'] + "' data-code='" + result[i]['type'] + "' data-pr='" + result[i]['price'] + "' data-name='" + result[i]['product_name'] + "'>"+add_to_cart_lang+"</p>";
 
                                     html += "<div style='display:grid;grid-template-columns:.2fr 1fr;align-content:center;vertical-align:center;' class='input-has-value'>";
 
@@ -9733,6 +10079,8 @@ $(".send_otp_button").click(function(){
                         $(".new_grid").html(html);
 
                         $(".text_add_cart").on("click", function() {
+							
+							console.log('text_add_cart11');
 
                             var id = $(this).data("id");
 
@@ -9752,7 +10100,7 @@ $(".send_otp_button").click(function(){
 
                             var remark_lable = '<?php echo $language["remarks"] ?>';
 
-                            $("#test").append("<tr>  <td><button type='button' class='removebutton'>X</button> </td><td>" + name + "</td><td><input style='width:50px;'  onchange='UpdateTotal(" + id + " ," + p_price + ")'  type=number name='qty[]'  min='1' class='product_qty' maxlength='3'  value=" + quantity + " id='" + id + "_test_athy'><input type= hidden name='p_id[]' value= " + id + "><input type= hidden name='p_code[]' value= " + code + "><input type='hidden' name='ingredients'/></td><td>" + code + "</td><td><a href='#remarks_area' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal'>Remarks</a><input type='hidden' name='extra' value='" + p_extra + "'></td><td><input style='width:70px;text-align:right;' type='text' name='p_extra' value='0' readonly></td>  <td><input style='width:70px;' type='text' name='p_price[]' value= " + p_price + " readonly></td><td><input type='text' style='width:70px;' name='p_total[]' value= " + p_total + " readonly  id='" + id + "_cat_total'></td> </tr>");
+                            $("#test").append("<tr>  <td><button type='button' class='removebutton'>X</button> </td><td>" + name + "</td><td><input style='width:50px;' mychk  onchange='UpdateTotal(" + id + " ," + p_price + ")'  type=number name='qty[]'  min='1' class='mw2 product_qty' maxlength='3'  value=" + quantity + " id='" + id + "_test_athy'><input type= hidden name='p_id[]' value= " + id + "><input type= hidden name='p_code[]' value= " + code + "><input type='hidden' name='ingredients'/></td><td>" + code + "</td><td><a href='#remarks_area' role='button' class='introduce-remarks btn btn-large btn-primary hideLoader' data-toggle='modal'>"+remark_lable+"</a><input type='hidden' name='extra' value='" + p_extra + "'></td><td><input style='width:70px;text-align:right;' type='text' name='p_extra' value='0' readonly></td>  <td><input style='width:70px;' type='text' name='p_price[]' value= " + p_price + " readonly></td><td><input type='text' style='width:70px;' name='p_total[]' value= " + p_total + " readonly  id='" + id + "_cat_total'></td> </tr>");
 
                             alert('The product added');
 
@@ -9819,6 +10167,7 @@ $("#confm").click(function(e) {
                 $('#mobile_number').focus();
                 $('#mobile_error').show();
                 var s_flag = false;
+				return false;
             }
             if ($('#table_type').prop('required')) {
                 if (table_type == '') {
@@ -9833,6 +10182,9 @@ $("#confm").click(function(e) {
                 if (mapSearch == '') {
                     $('#location_error').show();
                     $('#mapSearch').focus();
+					$('html, body').animate({
+					scrollTop: $("#mapSearch").offset().top
+				}, 2000);
                     var s_flag = false;
                 } else {
                     $('#location_error').hide();
@@ -10005,9 +10357,7 @@ $("#confm").click(function(e) {
 
                 $.ajax({
 
-
-
-                    url: 'login.php',
+                    url: '<?php echo $site_url; ?>/login.php',
 
                     type: 'POST',
 
@@ -10136,7 +10486,7 @@ $("#confm").click(function(e) {
 
 
 
-                    url: 'login.php',
+                    url: '<?php echo $site_url; ?>/login.php',
 
                     type: 'POST',
 
@@ -10176,6 +10526,8 @@ console.log('wallet1');
                             $('#login_for_wallet_id').val(login_user_id);
 
                             $('#newmodel_check').modal('hide');
+							
+							//$('#login-success-popup').modal('show');
 
 
 
@@ -10266,7 +10618,7 @@ console.log('wallet1');
 
 
 
-                    url: 'passwordsave.php',
+                    url: '<?php echo $site_url; ?>/passwordsave.php',
 
                     type: 'POST',
 
@@ -10352,7 +10704,7 @@ console.log('wallet1');
 
 
 
-                url: 'functions.php',
+                url: '<?php echo $site_url; ?>/functions.php',
 
                 type: 'POST',
 
@@ -10373,6 +10725,7 @@ console.log('wallet1');
                         $("#otp_count").val(otp_count);
                         $("#system_otp").val(data.otp);
                         $('#newmodel_check').modal('hide');
+						$('#login-success-popup').modal('show');
                         $('#forgot_msg_new').show();
                         $('.forgot_otp_form').show();
                         $('.forgot_footer').show();
@@ -10577,7 +10930,7 @@ console.log('wallet1');
 
                     dataType: 'json',
 
-                    url: 'order_payal_cash.php',
+                    url: '<?php echo $site_url; ?>/order_payal_cash.php',
 
                     data: $('#order_place').serialize(),
 
@@ -10806,6 +11159,7 @@ $(".internet_banking").click(function(e) {
         $('#mobile_error').show();
         $('#mobile_number').focus();
         var s_flag = false;
+		return false;
     }
     if ($('#table_type').prop('required')) {
         if (table_type == '') {
@@ -10867,6 +11221,7 @@ $(".internet_banking").click(function(e) {
         $('#delivery_cart_amount').val(delivery_charges);
         var final_charge = parseFloat(total_amount) + parseFloat(delivery_charges);
         $('#final_cart_amount').val(final_charge);
+		console.log('chk21##');
         var final_charge = final_charge.toFixed(2);
         $('#final_cart_amount_label').html(final_charge);
         var total_order_amount = 0;
@@ -10946,6 +11301,7 @@ $(".online_pay").click(function(e) {
                 $('#mobile_number').focus();
 
                 var s_flag = false;
+				return false;
 
             }
 
@@ -10973,6 +11329,8 @@ $(".online_pay").click(function(e) {
                     $('html, body').animate({
                         scrollTop: $("#mapSearch").offset().top
                     }, 2000);
+					
+					
                     var s_flag = false;
                 } else {
                     $('#location_error').hide();
@@ -11123,7 +11481,7 @@ console.log(total_amount);
                     var final_charge = parseFloat(total_amount) + parseFloat(delivery_charges);
 
                     $('#final_cart_amount').val(final_charge);
-
+					console.log('chk11##');
                     var final_charge = final_charge.toFixed(2);
                     $('#delivery_cart_amount_label').html(delivery_charges);
                     $('#final_cart_amount_label').html(final_charge);
@@ -11162,7 +11520,7 @@ console.log(total_amount);
 
                             $.ajax({
 
-                                url: 'functions.php',
+                                url: '<?php echo $site_url; ?>/functions.php',
 
                                 type: 'POST',
 
@@ -11860,6 +12218,14 @@ $(".make_payment").click(function() {
    $(this).removeClass(" btn-danger").addClass("btn-default");
    $('#wallet_order_process').show();
    $('.back_to_last').hide();
+   
+   $('.page_loader').removeAttr('style');
+   $("#load").removeAttr('style');
+  // var imageUrl = 'https://www.koofamilies.com/loader.gif';
+   //$("#load").css("background-image", "url(" + imageUrl + ")");
+   $("#ProccedAmount").modal("hide"); 
+   $('.page_loader').show();
+   $("#load").show();
    $("#order_place").submit();
 
 });
@@ -11868,6 +12234,7 @@ $(".make_payment").click(function() {
 
 $(".wallet_final_payment").click(function() {
             // alert(2);
+			console.log('wallet_final_payment trigger');
             var sst_tax = "<?php echo $merchant_detail['sst_rate'] ?>";
 
             var delivery_tax = "<?php echo $merchant_detail['delivery_rate'] ?>";
@@ -12072,19 +12439,13 @@ $(".wallet_final_payment").click(function() {
             {
                 console.log("3");
                 $('.delivery_tax_amount_label').show();
-
                 $('.delivery_tax_amount_value').html(parseFloat(deliver_tax_amount).toFixed(2));
-
                 var total_amount = (parseFloat(total_amount) + parseFloat(deliver_tax_amount));
 
             } else
-
             {
-
                 $('.delivery_tax_amount_label').hide();
-
                 $('.delivery_tax_amount_value').html('');
-
             }
             var special_delivery_amount = $('#special_delivery_amount').val();
             if (parseFloat(special_delivery_amount) > 0) {
@@ -12094,7 +12455,6 @@ $(".wallet_final_payment").click(function() {
             if (parseFloat(speed_delivery_amount) > 0) {
                 var total_amount = (parseFloat(total_amount) + parseFloat(speed_delivery_amount));
             }
-            // alert(deliver_tax_amount);
 
             var donation_amount_value = $('#donation_amount_value').val();
             if (parseFloat(donation_amount_value) > 0) {
@@ -12251,7 +12611,9 @@ console.log('wallet4');
         if (location_order == 1)
 
         {
-
+	
+	
+			console.log("location order:"+location_order);
 
 
 
@@ -12289,9 +12651,9 @@ console.log('wallet4');
                         var delivery_charges = 2.99 - parseFloat(discount_offer_minus).toFixed(2);
                     }
 
-                    console.log("#1:"+delivery_charges);
-                    $('#delivery_charges').val(delivery_charges);
-                    $('#order_extra_charge').val(delivery_charges);
+                    console.log("#temp comment1:=="+delivery_charges);
+                   //temp comment: $('#delivery_charges').val(delivery_charges);
+                   //temp comment: $('#order_extra_charge').val(delivery_charges);
                 }
                 $('#delivery_info_label').show();
                 $('#delivery_info_label').html("</br>" + msg);
@@ -12600,7 +12962,7 @@ function clearhistory()
 
         $.ajax({
 
-            url: 'calculate_distance.php',
+            url: '<?php echo $site_url; ?>/calculate_distance.php',
 
             type: 'POST',
 
@@ -12655,7 +13017,7 @@ function clearhistory()
 
                 $('#show_msg').html(msg);
 
-                $('#AlerModel').modal('show');
+                //$('#AlerModel').modal('show');
 
                 setTimeout(function() {
                     $("#AlerModel").modal("hide");
@@ -12711,8 +13073,8 @@ function clearhistory()
 
 
                     // alert('Free Delivery Charges: '+free_delivery);
-
-                    $('#order_extra_label').html(parseFloat(delivery_charges).toFixed(2) - parseFloat(discount_offer_minus));
+console.log('asd5');
+                  //  $('#order_extra_label').html(parseFloat(delivery_charges).toFixed(2) - parseFloat(discount_offer_minus));
                     var dine_in = "<?php echo $dine_in; ?>";
                     if (parseFloat(delivery_charges) > 0)
 
@@ -12872,15 +13234,19 @@ function showPosition(position) {
                     audio.play();
                     $('#voice_recognition').modal('show');
                     $("#spin").hide();
+					var phone_number_lang = '<?php echo $language["phone_no_lang"]; ?>';
+					var tble_number_lang = '<?php echo $language["tble_number_lang"]; ?>';
+					var section_lang = '<?php echo $language["section_lang"]; ?>';
+					
                     var html = "";
-                    html += '<li class="list-group-item orderItem"><strong>Phone Number : </strong> <span id="tableNum" class="text-right">' + number + '</span></li>';
+                    html += '<li class="list-group-item orderItem"><strong>'+phone_number_lang+'</strong> <span id="tableNum" class="text-right">' + number + '</span></li>';
 
                     if (table_type != "") {
-                        html += '<li class="list-group-item orderItem"><strong>Table Number : </strong> <span id="tableNum" class="text-right">' + table_type + '</span></li>';
+                        html += '<li class="list-group-item orderItem"><strong>'+tble_number_lang+'</strong> <span id="tableNum" class="text-right">' + table_type + '</span></li>';
                     }
 
                     if (section_type != "") {
-                        html += '<li class="list-group-item orderItem"><strong>Section : </strong> <span id="section"class="text-right">' + section_text + '</span></li>';
+                        html += '<li class="list-group-item orderItem"><strong>'+section_lang+'</strong> <span id="section"class="text-right">' + section_text + '</span></li>';
                     }
                     $("#modal_list").html(html);
                     return true;
@@ -12912,7 +13278,7 @@ function showPosition(position) {
 
             $.ajax({
 
-                url: "functions.php",
+                url: "<?php echo $site_url; ?>/functions.php",
 
                 type: "post",
 
@@ -12996,13 +13362,13 @@ function showPosition(position) {
         var speed_delivery_amount = $('#speed_delivery_amount').val();
         var pickup_type = $('#pickup_type').val();
 
-
+		console.log('pickup_type===='+pickup_type);
 
 
 
 
         /*Free Delivery*/
-        console.log('#1--------------'+delivery_charges);
+        //console.log('#1--------------'+delivery_charges);
         var free_delivery_check = 0; 
         var pfree_delivery_check =  "<?php echo $merchant_detail['free_delivery_check'] ?>";
         if(pfree_delivery_check == 1){
@@ -13032,8 +13398,15 @@ function showPosition(position) {
 				//if (delivery_charges == 0) {
 					//console.log('free_delivery_check_in##');
 					if (fix_delivery_val){
-						console.log('fix');
-						var delivery_charges = parseFloat(fix_delivery_val) - parseFloat(discount_offer_minus);
+						console.log('fix====>>');
+						if($("#free_delivery_status").val() == 1){
+							var delivery_charges = '0.00';
+							//$('#delivery_charges').val('0');
+						}else{
+							var delivery_charges = parseFloat(fix_delivery_val) - parseFloat(discount_offer_minus);
+							//$('#delivery_charges').val(delivery_charges);
+						}
+						
 					}else {
 						console.log('notfix');
 						var additonal_delivery_charges = $('#additonal_delivery_charges').val();
@@ -13047,7 +13420,7 @@ function showPosition(position) {
 						}
 					}
 				//}
-				console.log(parseFloat(delivery_charges).toFixed(2));
+				console.log("434=="+parseFloat(delivery_charges).toFixed(2));
 				$("#order_extra_label").html(parseFloat(delivery_charges).toFixed(2));
 				$('#order_extra_charge').val(parseFloat(delivery_charges).toFixed(2));	
 			}
@@ -13060,7 +13433,7 @@ function showPosition(position) {
 
 		}
 		
-		console.log('==>>'+delivery_charges);
+		//console.log('==>>'+delivery_charges);
 		/*END FREE DELIVERY*/
 		
 
@@ -13130,11 +13503,13 @@ $('#delivery_charges').val(0);
 } else if (pickup_type == "takein")
 
 {
-   console.log('takein'+delivery_charges);
+   //console.log('takein'+delivery_charges);
 
            // var fix_delivery_val = "<?php echo $merchant_detail['order_extra_charge']; ?>";
            var fix_delivery_val = "<?php echo $merchant_detail['delivery_charges']; ?>";
-
+		   var mshop_id = "<?php echo $merchant_detail['id']; ?>";
+		   var mshop_order_extra_charge = "<?php echo $merchant_detail['order_extra_charge']; ?>";
+		   
            if (delivery_charges == 0  && free_delivery_check == 0) {
 			//if (delivery_charges == 0) {	
                 /*if (fix_delivery_val)
@@ -13147,19 +13522,27 @@ $('#delivery_charges').val(0);
                         var delivery_charges = 2.99;
                 }*/
                 /*Check new1*/
+				console.log('in_loop');
                 if (fix_delivery_val){
                   console.log('fix_takein');
                   var delivery_charges = parseFloat(fix_delivery_val) - parseFloat(discount_offer_minus);
               }else {
-                  console.log('notfix_takein');
+                  
                   var additonal_delivery_charges = $('#additonal_delivery_charges').val();
                   if (additonal_delivery_charges){
-                   console.log('addfix_takein');
+                   console.log(additonal_delivery_charges+'addfix_takein'+discount_offer_minus);
                    var delivery_charges = parseFloat(additonal_delivery_charges) - parseFloat(discount_offer_minus);
+				   console.log('notfix_takein=='+delivery_charges);
                }else{
-                   console.log('notaddfix_takein'+delivery_charges);
+                   //console.log('notaddfix_takein'+delivery_charges);
 							//var delivery_charges = 2.99  - parseFloat(discount_offer_minus);
 							var delivery_charges = $('#delivery_charges').val() - parseFloat(discount_offer_minus);
+							//if(mshop_id == '1107'){ //for 3rd junction
+								console.log('notaddfix_takein'+fix_delivery_val);
+								var delivery_charges = mshop_order_extra_charge - parseFloat(discount_offer_minus);
+								
+								console.log('notaddfix_takein'+delivery_charges);
+							//}
 						}
 					}
                     /*End new1*/
@@ -13191,6 +13574,12 @@ $('#delivery_charges').val(0);
         }
 
     }
+	//console.log(pickup_type+"===========delivery_charges_loop==="+delivery_charges);
+    
+	if(pickup_type == 'divein'){
+		delivery_charges = '0';
+	}
+	//console.log(pickup_type+"===========delivery_charges_loop==="+delivery_charges);
         // alert(pickup_type);    
         // alert(delivery_charges);    
 
@@ -13200,6 +13589,7 @@ $('#delivery_charges').val(0);
         var coupon_discount = 0;
 
         var final_charge = parseFloat(totalsale) + parseFloat(delivery_charges) + parseFloat(special_delivery_amount)+ parseFloat(speed_delivery_amount) + parseFloat(donation_amount_value);
+			//console.log("final_charge1==="+final_charge.toFixed(2));
 
         // alert(final_charge); 
 
@@ -13246,7 +13636,7 @@ $('#delivery_charges').val(0);
                             var coupon_discount = totalsale;
 
                         var final_charge = parseFloat(totalsale) + parseFloat(delivery_charges) + parseFloat(special_delivery_amount)+ parseFloat(speed_delivery_amount)+ parseFloat(donation_amount_value) - parseFloat(coupon_discount);
-
+		
 
 
                         $('#coupon_discount').val(coupon_discount);
@@ -13302,7 +13692,7 @@ $('#delivery_charges').val(0);
         $('#final_cart_amount').val(final_charge);
 
         var final_charge = parseFloat(final_charge).toFixed(2);
-
+		console.log("final_charge1==="+delivery_charges);
 
         if (delivery_charges > 0)
 
@@ -13393,15 +13783,17 @@ $('#delivery_charges').val(0);
             $('.sst_amount_label').show();
             $('.sst_amount_value').html(parseFloat(sst_amount).toFixed(2));
             var final_charge = (parseFloat(final_charge) + parseFloat(sst_amount));
+			//console.log("sst_tax==="+final_charge.toFixed(2));
         }
         // alert(deliver_tax_amount);
         if (parseFloat(deliver_tax_amount) > 0)
         {
-			//console.log("1");
+			console.log("121");
 			//console.log(pickup_type);    
             $('.delivery_tax_amount_label').show();
             $('.delivery_tax_amount_value').html(parseFloat(deliver_tax_amount).toFixed(2));
             var final_charge = (parseFloat(final_charge) + parseFloat(deliver_tax_amount));
+			//console.log("deliver_tax_amount==="+final_charge.toFixed(2));
         } else
         {
             $('.delivery_tax_amount_label').hide();
@@ -13411,27 +13803,36 @@ $('#delivery_charges').val(0);
 		//postcode value
        var terr_amount = $("#postcode_delivery_charge_price").html();
        if(terr_amount != '0.00'){
-        final_charge = parseFloat(final_charge) + parseFloat(terr_amount)
+        final_charge = parseFloat(final_charge) + parseFloat(terr_amount);
+		//console.log("terr_amount==="+final_charge.toFixed(2));
     }
 
     $('.final_amount_label').show();
     $('#deliver_tax_amount').val(deliver_tax_amount);
     $('#final_cart_amount_label').html(final_charge);
-    console.log("check3");
+	console.log('chk31## '+totalsale);
+    //console.log("check3==="+final_charge.toFixed(2));
     $('.final_amount_value').html(parseFloat(final_charge).toFixed(2));
 	$('.total-cart-wrapper').hide();
 	$('.empty_cart').hide();
 	$(".empty-text-box").show();
 	if(totalsale.toFixed(2) != '0.00'){
-$(".empty-text-box").hide();
+		$(".empty-text-box").hide();
 		$('#total_cart_amount_label_show').show();
 		$('.total-cart-wrapper').show();
 		$('.empty_cart').show();
-		
-		
 	}
     
     $('#total_cart_value').html(totalsale.toFixed(2));
+	
+	/*$0.50 discount on internet bankinf free */
+	var actual_payment_mode1 = $("#actual_payment_mode").val();
+	if(actual_payment_mode1 == 'internet_banking_free'){
+		var internet_price_value1 = $(".internet_free_modal_amount").html();
+		var chk_price = internet_price_value1 - 0.50;
+		$(".internet_free_modal_amount").html(parseFloat(chk_price).toFixed(2));
+	}
+	
 }
 function UpdateTotal(id, uprice = 0) {
    var qty = $("#" + id + "_test_athy").val();
@@ -13450,7 +13851,7 @@ var total = parseFloat(Number(qty * p_t).toFixed(2));
         cartData['id'] = id;
         cartData['total'] = total;
         cartData['qty'] = qty;
-        jQuery.post('/ajaxcartresponse.php', cartData, function (result) {
+        jQuery.post('<?php echo $site_url; ?>/ajaxcartresponse.php', cartData, function (result) {
 			//var response = jQuery.parseJSON(result);
 			//console.log(result);
 		});
@@ -13506,7 +13907,7 @@ console.log("1");
       cartData['merchant_mbl_id'] = merchant_mbl_id;
       cartData['no_order_msg'] = no_order_msg;
 
-      jQuery.post('/ajaxcartresponse.php', cartData, function (result) {
+      jQuery.post('<?php echo $site_url; ?>/ajaxcartresponse.php', cartData, function (result) {
        $("#cartsection").html(result);
        totalcart();
    });
@@ -13519,11 +13920,12 @@ console.log("1");
 		cartData['type'] = 'empty_cart';
 		$('.total-cart-wrapper').hide();
 		//cartData['id'] = id;
-		jQuery.post('/ajaxcartresponse.php', cartData, function (result) {
+		jQuery.post('<?php echo $site_url; ?>/ajaxcartresponse.php', cartData, function (result) {
 			//var response = jQuery.parseJSON(result);
 			//$("#ajaxresDiv").find('tr').remove();
 			//$("#test").find('tr').remove();
 			$(".producttr").remove();
+			$(".text_add_cart").show();
 			
 			totalcart();
 		});
@@ -13639,7 +14041,7 @@ console.log("1");
         var total_amount = sum;
             // alert(merchant_id);
             $.ajax({
-                url: 'apply_coupon.php',
+                url: '<?php echo $site_url; ?>/apply_coupon.php',
                 type: 'POST',
                 data: {
                     coupon: coupon,
@@ -13709,6 +14111,7 @@ console.log("1");
 			$('#mobile_number').focus();
 			$('#mobile_error').show();
 			var s_flag = false;
+			return false;
 		}
 		/*var postcode_main_div = $('.postcode_main_div').val();
 		$(".postcode_main_div").removeAttr('css');
@@ -13729,6 +14132,10 @@ console.log("1");
 			if (mapSearch == '') {
 				$('#location_error').show();
 				$('#mapSearch').focus();
+				$('html, body').animate({
+					scrollTop: $("#mapSearch").offset().top
+				}, 2000);
+				
 				var s_flag = false;
 			} else {
 				$('#location_error').hide();
@@ -13792,7 +14199,7 @@ console.log("1");
 		//return false;
 		$.ajax({  
 			type: "POST",  
-			url: "temp_order_save.php",  
+			url: "<?php echo $site_url; ?>/temp_order_save.php",  
 			data: str,  
 			success: function(value) { 
 				
@@ -13830,7 +14237,7 @@ $(document).ready(function(){
 			//console.log(merchant_territory_hidden_id);
 			$.ajax({
                type: "POST",
-               url: "ajaxcartresponse.php",
+               url: "<?php echo $site_url; ?>/ajaxcartresponse.php",
                data:'type=searchpostcode&delivery_price='+delivery_price+'&merchant_territory_hidden_id='+merchant_territory_hidden_id+'&keyword='+$(this).val(),
                beforeSend: function(){
                 $("#postcode").css("background","#FFF url(ajax-loader.gif) no-repeat 165px");
@@ -13855,9 +14262,10 @@ $(document).ready(function(){
 			//console.log(terr_id_last_order+"-------"+terr_id);
 			var free_delivery_status = $("#free_delivery_status").val();
 			//console.log(free_delivery_status);
+			console.log('asd66');
 			if(free_delivery_status == 1){
 				if(terr_id_last_order == terr_id){
-					//console.log('#same');
+					console.log('#same');
 					$("#territory_hidden_id").val(terr_id);
 					$("#delivery_charges").val('0.00');
 					$("#delivery_label").show();
@@ -13885,9 +14293,9 @@ $(document).ready(function(){
 				$("#suggesstion-box").hide();
 				var d_charges = "<?php echo $merchant_detail['order_extra_charge'];?>";
 				$("#delivery_label").show();
-				
+				console.log('asd1');
 				if(d_charges != ''){
-					//console.log(d_charges);
+					console.log('asd');
 					$("#delivery_charges").val(d_charges);
 					$("#order_extra_label").html(d_charges);
 					$("#order_extra_charge").val(d_charges);
@@ -13934,7 +14342,7 @@ $(document).ready(function(){
 			$(".err_payment_proof").html('Please wait...');
 			$.ajax({
              type: "POST",
-             url: "action_image_ajax.php",
+             url: "<?php echo $site_url; ?>/action_image_ajax.php",
              data: formData,
 			  //data: new FormData(this), // Data sent to server, a set of key/value pairs (i.e. form fields and values)
 			  contentType: false, // The content type used when sending data to the server.
@@ -14002,10 +14410,14 @@ $('input[type="file"]').change(function(e) {
 	//$('.moreless-button').click(function() {
 		var product_id  = $(this).attr('product_id');
 		$('#moretext_'+product_id).slideToggle();
-		if ($('.moreless-button_'+product_id).text() == "Read more") {
-			$(this).text("Read less")
+		
+		var lang_readmore = "<?php echo $language['read_more1'];?>";
+		var lang_readless = "<?php echo $language['read_less1'];?>";
+
+		if ($('.moreless-button_'+product_id).text() == lang_readmore) {
+			$(this).text(lang_readless)
 		} else {
-			$(this).text("Read more")
+			$(this).text(lang_readmore)
 		}
 	});
 
@@ -14017,11 +14429,14 @@ $('input[type="file"]').change(function(e) {
 		var dataRedirectLink  = $(this).attr("dataRedirectLink");
 		var merchant_id = $(this).attr("merchant_id");
 		var prduct_qty = $(this).attr("prduct_qty");
+		var price_hike = $(this).attr("price_hike");
+		
 		$(".fullmenu_option").show();
 		if(search_bar != ''){
 			$.ajax({
-			  url: viewFile+"?prduct_qty="+prduct_qty+"&id="+merchant_id+"&search_bar="+search_bar+"&redirect="+dataRedirectLink,
-			  context: document.body
+				crossDomain: true,
+				url: viewFile+"?prduct_qty="+prduct_qty+"&id="+merchant_id+"&search_bar="+search_bar+"&redirect="+dataRedirectLink+"&price_hike="+price_hike,
+				context: document.body
 			}).done(function(response) {
 			  $('.search_response').html(response);
 			  $('.parent-category-menu').hide();
@@ -14034,6 +14449,59 @@ $('input[type="file"]').change(function(e) {
 		}		
 	});
 	 
+	 
+	$(function () {
+		$('[data-toggle="tooltip"]').tooltip()
+	}) 
+	
+	
+	$(".del_type").click(function(){
+		var del_type = $(this).attr('del_type');
+		$(".later_box").hide();
+		$("#od_delivery_date").val('');
+		$("#od_delivery_time").val('');
+		
+		if(del_type == 'later_type'){
+			//console.log("del_type"+del_type);
+			$('#od_delivery_time option[class="chk_hide"]').each(function() {
+				//console.log("chk_val"+$(this).val());
+				$(this).hide();
+			});
+			$("#od_delivery_date").val($("#od_delivery_date option:first").val());
+			
+			var ddate = $("#od_delivery_date").val();
+			if(ddate == $("#od_delivery_date option:first").val()){
+				$("#od_delivery_time").val($("#od_delivery_time option[class='shows']:first").val());
+			}else{
+				$("#od_delivery_time").val($("#od_delivery_time option:first").val());
+			}
+			$(".cashbtn_offer_timezone").hide();
+			$(".actual_cashbutton").show();
+			$(".date_later_div").show();
+			
+			
+			//class_chk
+			$(".later_box").show();
+		}
+	});
+	
+	$("#od_delivery_date").change(function(){
+		var deliveryDate = $(this).val();
+		//console.log($("#od_delivery_date option:first").val()+"=="+deliveryDate);
+		$('#od_delivery_time option[class="chk_hide"]').show();
+		if($("#od_delivery_date option:first").val() == deliveryDate){
+			//console.log('check-cc');
+			$('option[class="chk_hide"]').each(function() {
+				$(this).hide();
+			});
+			
+			$("#od_delivery_time").val($("#od_delivery_time option[class='shows']:first").val());
+			
+		}else{
+			$("#od_delivery_time").val($("#od_delivery_time option:first").val());
+
+		}
+	});
  
 });
 
@@ -14044,12 +14512,10 @@ $('input[type="file"]').change(function(e) {
 
          totalcart();
      });
-
  </script>
 <?php }?>
-<script src="js/recorder.js" defer></script>
-<script src="js/sketch_new.js" defer></script>
-<script>
+<script src="<?php echo $site_url; ?>/js/recorder.js" defer></script>
+<script src="<?php echo $site_url; ?>/js/sketch_new.js" defer></script>
     <!-- Facebook Pixel Code -->
     <script>
     !function(f,b,e,v,n,t,s)

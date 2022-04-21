@@ -74,7 +74,7 @@ $me="dashboard";
 		   // print_R($profile_data);
 				// die;
 			 $login_user_id=$_SESSION['login'];
-			  $lastt="select t.sender_id,t.amount,t.created_on,s.name as sender_name,s.mobile_number as sender_mobile,r.name as receiver_name,r.mobile_number as reciver_mobile,w.special_coin_name from tranfer as t inner join users as s on s.id=t.sender_id 
+			  $lastt="select t.remark,t.sender_id,t.amount,t.created_on,s.name as sender_name,s.mobile_number as sender_mobile,r.name as receiver_name,r.mobile_number as reciver_mobile,w.special_coin_name from tranfer as t inner join users as s on s.id=t.sender_id 
 			inner join users as r on r.id=t.receiver_id inner join users as w on w.id=t.coin_merchant_id where (t.sender_id='$login_user_id' or t.receiver_id='$login_user_id') order by t.id desc limit 0,1";
             $lastq=mysqli_query($conn,$lastt);
 			$l=mysqli_fetch_assoc($lastq);
@@ -85,22 +85,23 @@ $me="dashboard";
 				if($l['receiver_name']=='')
 					$l['receiver_name']=$l['reciver_mobile'];
 				$date_label=$l['created_on'];
+				$remark_label=$l['remark'];
 				$time_label=date('h:i A',$date_label)." on ".date('d/m/Y',$date_label);
 				if($login_user_id==$l['sender_id'])
 				{
 					if($_SESSION['langfile']=="chinese")
-					$s_msg="RM <span class='spancls'>".$l['amount']."</span> 的 <span class='spancls'>".$l['special_coin_name']."</span> 已经成功装入 <span class='spancls' style='color:#51d2b7;'>".$l['receiver_name']."</span> 于 ".$time_label;
+					$s_msg="RM <span class='spancls'>".$l['amount']."</span> 的 <span class='spancls'>".$l['special_coin_name']."</span> 已经成功装入 <span class='spancls' style='color:#51d2b7;'>".$l['receiver_name']."</span> 于 ".$time_label." </br> Remark :".$remark_label;
 					else
-					$s_msg="RM <span class='spancls'>".$l['amount']."</span> of <span class='spancls'>".$l['special_coin_name']."</span> has been successfully transfer to <span class='spancls' style='color:#51d2b7;'>".$l['receiver_name']."</span> at ".$time_label;
+					$s_msg="RM <span class='spancls'>".$l['amount']."</span> of <span class='spancls'>".$l['special_coin_name']."</span> has been successfully transfer to <span class='spancls' style='color:#51d2b7;'>".$l['receiver_name']."</span> at ".$time_label." </br> Remark :".$remark_label;
 				
 				}
 				else
 				{
 					if($_SESSION['langfile']=="chinese")
 					// $s_msg="RM <span class='spancls'>".$l['amount']."</span> 的 <span class='spancls'>".$l['special_coin_name']."</span> 已经成功装入 <span class='spancls' style='color:#51d2b7;'>".$l['receiver_name']."</span> 于 ".$time_label;
-				    $s_msg="RM <span class='spancls'>".$l['amount']."</span> 的 <span class='spancls'>".$l['special_coin_name']."</span> 已成功从 <span class='spancls' style='color:#51d2b7;'>".$l['receiver_name']."</span>在 ".$time_label." 加载";
+				    $s_msg="RM <span class='spancls'>".$l['amount']."</span> 的 <span class='spancls'>".$l['special_coin_name']."</span> 已成功从 <span class='spancls' style='color:#51d2b7;'>".$l['receiver_name']."</span>在 ".$time_label." 加载"." </br> Remark :".$remark_label;
 					else
-					$s_msg="RM <span class='spancls'>".$l['amount']."</span> of <span class='spancls'>".$l['special_coin_name']."</span> has been successfully Received From  <span class='spancls' style='color:#51d2b7;'>".$l['sender_name']."</span> at ".$time_label;   
+					$s_msg="RM <span class='spancls'>".$l['amount']."</span> of <span class='spancls'>".$l['special_coin_name']."</span> has been successfully Received From  <span class='spancls' style='color:#51d2b7;'>".$l['sender_name']."</span> at ".$time_label." </br> Remark :".$remark_label;   
 				}
 			}
 			if($_SESSION['login'])
@@ -347,7 +348,7 @@ $me="dashboard";
 
     <!-- /.content-wrapper -->
 	<?php include("includes1/footer.php"); ?>
-	<div class=" modal fade" id="AlerModel" role="dialog" style="width:80%;min-height: 200px;text-align: center;margin:8%;">
+	<div class=" modal fade" id="AlerModel" role="dialog" style="width:80%;min-height: 200px;text-align: center;margin:8%;overflow-y:auto;">
         <div class="element-item modal-dialog modal-dialog-centered" style="position: absolute;top: 0;bottom: 0;left: 0;right: 0;display: grid;align-content: center;">
             <!-- Modal content-->
             <div class="element-item modal-content">
@@ -361,8 +362,38 @@ $me="dashboard";
                                 </div>
                             </div>
     </div>
-	
-	<div class="modal fade" id="TModel" role="dialog" style="">  
+	<div class="modal fade" id="BeforeTrasfer" role="dialog" style="">  
+   <div class="modal-dialog">
+          
+
+            <!-- Modal content-->
+            <div class="modal-content">
+              
+                <div class="modal-header">
+                    <button type="button" class="close final_done" data-dismiss="modal">&times;</button>
+					
+                </div>
+                 
+                    <div class="modal-body" style="padding-bottom:0px;margin-bottom:0px;">
+				
+      
+	  <p id="before_trasfer_text" style="font-size:15px;font-weight:bold;"></p>
+	  <p id="remark_confirm_text" style="font-size:20px;"></p>  
+      <div class="clearfix" style="margin-bottom: 30px;text-align: center;">
+        <button type="button" class="btn btn-waring" id="cancel_trasfer">Cancel</button>
+        <button type="button" class="btn btn-primary" id="final_confirm">Confirm</button>
+      </div>
+					  
+						
+                    </div>
+                   
+                  
+            </div>
+        </div>
+  </div>  
+
+
+	<div class="modal fade" id="TModel" role="dialog" style="overflow-y: auto;">  
    <div class="modal-dialog">
           
 
@@ -375,7 +406,7 @@ $me="dashboard";
                 </div>
                  
                     <div class="modal-body" style="padding-bottom:0px;">
-					     <p id="show_msg_t" style="font-size:22px;font-weight:bold;"><?php echo $s_msg; ?></p>
+					     <p id="show_msg_t" style="font-size:15px;font-weight:bold;"><?php echo $s_msg; ?></p>
 						<p><?php echo $language['cache_msg']; ?></p>
 						
                     </div>
@@ -433,6 +464,56 @@ $me="dashboard";
 		
   
  });
+ $("#transfer_to").on("focusout", function() {
+		var multi_wallet = $("#multiple_wallet").is(":checked");
+		var telVal=$('#transfer_to').val();
+		var sender_id="<?php echo $_SESSION['login']; ?>";
+		// alert(multi_wallet);
+		if(telVal!='')
+		{
+			$("#error_must_fill_no").hide();
+			$.ajax({
+						url: "acceptedwalletlist.php",
+					 	type:'POST',
+						 cache: false,
+					  	data: {transfer_to:telVal,sender_id:sender_id,multi_wallet:multi_wallet},   
+					  	success:function(response){
+							  if(response){
+								  
+									$('#confirm_transfer').show();
+										if(multi_wallet)
+										{
+											$('#wallet_amounts').html(response);
+											$("#wallet_amounts").show();
+											$("#autofill-wallets").show();
+											$("#transfer_wallet_type").hide();
+
+										}
+										else if(multi_wallet==false)
+										{
+											$("#wallet_amounts").hide();
+											$("#transfer_wallet_type").show();
+											$("#autofill-wallets").hide();
+											$('#transfer_wallet_type').html(response);
+
+										}
+									
+							}
+							
+							
+						 
+						}
+					});
+			
+
+		}
+		else
+		{
+			$("#error_must_fill_no").show();
+			$("#wallet_amounts").hide();
+		}
+	
+	})
     $('.last_tras').click(function (){
 		$('#TModel').modal('show');  
 	});
@@ -573,7 +654,7 @@ $me="dashboard";
 </script>  
 </html>
 
-<script>
+
 <!-- Facebook Pixel Code -->
 <script>
   !function(f,b,e,v,n,t,s)
@@ -589,4 +670,3 @@ $me="dashboard";
 </script>
 
 <!-- End Facebook Pixel Code -->
-</script>

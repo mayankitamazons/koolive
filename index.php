@@ -1,10 +1,9 @@
 <?php 
 include('config.php');
-/*
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-*/
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
+
 session_start();
 
 
@@ -59,7 +58,7 @@ if(isset($_SESSION["langfile"]) && $_SESSION["langfile"] !=''){
 
 
 if(isset($_REQUEST['locationsort'])){
-	$_SESSION["locationsort"] = @$_GET['locationsort'];
+	$_SESSION["locationsort"] = @$_REQUEST['locationsort'];
 	//echo 'here'.$_GET['locationsort'];
 }
 $LocaSt=$_SESSION['locationsort'];
@@ -117,7 +116,11 @@ if(isset($_POST['merchant_select_form']))
 	{
 		$sid=$_POST['merchant_select'];
 		
-		$url="https://www.koofamilies.com/view_merchant.php?sid=".$sid."&ms=".md5(rand());
+		$check_slug_exists = mysqli_fetch_assoc(mysqli_query($conn, "SELECT SQL_NO_CACHE * FROM users WHERE slug='".$sid."' AND user_roles = 2"));
+		$m_languge = $check_slug_exists['default_lang'];
+		//$url="http://k00families.com/view_merchant.php?sid=".$sid."&ms=".md5(rand());
+		$url="http://koofamilies.com/merchant/".$m_languge."/".$sid."/".md5(rand());
+			
 		header("Location:$url");
 		exit();
 }
@@ -134,6 +137,9 @@ if($_GET['force_refresh'] == 'yes'){
 <html lang="en">
 
 <head>
+<!-- Google Tag Manager -->
+<?php include("includes1/head_google_script.php"); ?>
+<!-- End Google Tag Manager -->
 	<title>KooFamilies - Food & Grocery Delivery Service Near Me in Malaysia - Order Now Online</title>
 	
     <meta charset="utf-8">
@@ -146,7 +152,7 @@ if($_GET['force_refresh'] == 'yes'){
     <meta name="author" content="Ansonika">
    
 	<meta name="google-site-verification" content="Z6bJ5nn73VFsUqndnr_-_5PamtATM-aN9iVSKGZmo0E" />
-	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<!-- Global site tag (gtag.js) - Google Analytics
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-R5Q7NVYRCL"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
@@ -155,7 +161,7 @@ if($_GET['force_refresh'] == 'yes'){
 
 	  gtag('config', 'G-R5Q7NVYRCL');
 	</script>
-
+ -->
 
     <!-- Favicons-->
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
@@ -216,6 +222,7 @@ if($_GET['force_refresh'] == 'yes'){
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 <script src="jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
 </head>
 
 
@@ -313,7 +320,7 @@ if($_GET['force_refresh'] == 'yes'){
 <?php  Language Model - 18/01/2021 */?>
 
 <?php /* END: INDEX OLD CODE -28-08-2021*/?>
-<?php /*NEW INDEX CODE*/?>
+<?php /*NEW INDEX CODE?>
 <?php if(empty(@$_SESSION["locationsort"]) && empty(@$_SESSION["statesort"])) { ?>
 	<script>
 		$(document).ready(function(){
@@ -419,8 +426,13 @@ if($_GET['force_refresh'] == 'yes'){
 								if(strtolower($_SESSION["statesort"]) == strtolower($data['StateName'])){
 									$ss_style = "display:block;";
 								}
+								
+								$count_shops1 = mysqli_fetch_assoc(mysqli_query($conn,"SELECT count(*) as shop_count FROM `users` as u WHERE u.isLocked = '0' AND u.user_roles = '2' AND u.show_merchant = 1 and u.city = '".$data['CityName']."' and u.m_state = '".$data['StateName']."' "));
+								//echo "SELECT count(*) as shop_count FROM `users` as u WHERE u.isLocked = '0' AND u.user_roles = '2' AND u.show_merchant = 1 and u.city = '".$data['CityName']."'";
+								$temp_city_name = $data['CityName'];
+								
 								?>
-								<p class="<?php echo strtolower($data['StateName']);?> aa_city" style="<?php echo $ss_style;?>"><a href="javascript:void(0);" link="https://www.koofamilies.com/index.php?locationsort=<?php echo $data['CityName'];?>&statesort=<?php echo $data['StateName']; ?>&language=<?php echo $_SESSION["langfile"];?>" class="locationbutton btn btn-primary"><?php echo $data['CityName'] ?></a></p>
+								<p class="<?php echo strtolower($data['StateName']);?> aa_city" style="<?php echo $ss_style;?>"><a href="javascript:void(0);" link="https://koofamilies.com/index.php?vs=<?php echo md5(rand()); ?>&locationsort=<?php echo $data['CityName'];?>&statesort=<?php echo $data['StateName']; ?>&language=<?php echo $_SESSION["langfile"];?>" class="locationbutton btn btn-primary"><?php echo $temp_city_name;//$data['CityName'] ?> (<?php echo $count_shops1['shop_count'];?>  <?php echo $language['shops'];?>)</a> </p>
 								<?php	
 							}	
 							?>
@@ -441,8 +453,10 @@ if($_GET['force_refresh'] == 'yes'){
 							$selected1 = '';
 							while($data1 = mysqli_fetch_array($sql1))
 							{
+								$count_shops_state = mysqli_fetch_assoc(mysqli_query($conn,"SELECT count(*) as shop_count FROM `users` as u WHERE u.isLocked = '0' AND u.user_roles = '2' AND u.show_merchant = 1 and u.m_state = '".$data1['StateName']."'"));
+								
 								?>
-								<p><a href="javascript:void(0);" link="https://www.koofamilies.com/index.php?statesort=<?php echo $data1['StateName']; ?>&onlystate=1&language=<?php echo $_SESSION["langfile"];?>" class="locationbutton btn btn-primary"><?php echo $data1['StateName'] ?></a></p>
+								<p><a href="javascript:void(0);" link="https://www.koofamilies.com/index.php?statesort=<?php echo $data1['StateName']; ?>&onlystate=1&language=<?php echo $_SESSION["langfile"];?>" class="locationbutton btn btn-primary"><?php echo $data1['StateName'] ?> (<?php echo $count_shops_state['shop_count'];?>  <?php echo $language['shops'];?>)</a></p>
 								
 								
 								<?php	
@@ -462,7 +476,346 @@ if($_GET['force_refresh'] == 'yes'){
 </div>
 </div>
 
+<?php */?>
+<?php /*NEW INDEX CODE*/?>
+<?php if(empty(@$_SESSION["locationsort"]) && empty(@$_SESSION["statesort"])) { ?>
+	<script>
+		$(document).ready(function(){
+			$("#myModal").modal('show');
+		});
+	</script>
+<?php } ?>
+<script>
+$(document).ready(function(){
+	$(".ree_seelectlocation").click(function(){
+		$("#myModal").modal('show');
+		$("#dontseeLocation").modal('hide');
+	});
+});
+		
+function toggle(n) {
+    var menus = document.getElementsByClassName("submenu");
+	var element = document.getElementsByClassName("submenuparent");
+	
+	for(var i=0;i<menus.length;i++){
+		  console.log(element[i]+"===="+i);
+        if((i == (n-1)) && (menus[i].style.display != "block")){
+            menus[i].style.display = "block";
+			if (typeof element[i] === 'undefined') {}else{element[i].classList.add("active_city");}
+        }else{
+            menus[i].style.display = "none";
+			if (typeof element[i] === 'undefined') {}else{element[i].classList.remove("active_city");}
+		}
+    } 
+};
+</script>
+<div id="myModal" class="modal fade" style="">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header pt-1 pl-2 pr-2 pb-2" style="padding:unset">
+				<?php 
+				$h_name = $_SESSION["statesort"];
+				if($_SESSION["locationsort"] != ''){
+					$h_name = $_SESSION["statesort"].", ".$_SESSION["locationsort"];
+				}?>
+				<h5 class="modal-title">Select Ordering location <?php echo $h_name; ?></h5>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<div class="modal-body">
 
+				<style>
+
+				.tabs {
+					margin: 2px 5px 0px 5px;
+					padding-bottom: 10px;
+					cursor: pointer
+				}
+
+				.tabs:hover,
+				.tabs a.active {
+					border-bottom: 1px solid #2196F3
+				}
+				.tab-pannel-box a.tabs {
+					margin: 0 4px 0px 0;
+					background: #dee2e6;
+					color: #000;
+					padding: 6px 20px;
+					border: 0 !important;
+					text-decoration: none !important;
+				}
+
+				.tab-pannel-box  a.tabs.active ,.tab-pannel-box  a.tabs:hover {background: #e75480;color: #fff;}
+				.tab-pannel-box  .nav-tabs {
+					border-bottom: 1px solid #dee2e6;
+					height: 29px;
+				}
+				.modal-content {
+					z-index: 9;
+				}
+				.tab-content h6 {
+					margin-top: 10px;
+					color: red;
+				}
+				@media screen and (max-width: 991px){
+					.tab-pannel-box a.tabs {
+						padding: 6px 9px;
+					}
+				}
+				.submenu {
+					display: none;
+					list-style-type: none;
+				}
+				.locationNewbutton {
+					margin-top: 2%;
+					background-color: unset !important;
+					padding: unset !important;
+					color: #000;
+					font-size: unset !important;
+				}
+				.locationSubNewbutton{
+					margin-top: 2%;
+					background-color: unset !important;
+					padding: unset !important;
+					color: #000;
+					font-size: unset !important;
+				}
+				.dont_see_location{
+					font-weight: bold;
+					color: #cb6678;
+					cursor: pointer;
+					margin-bottom: unset !important;
+				}
+				.list-group-item{
+					padding:unset !important;
+				}
+				.city_pp{
+					margin: 3px !important;
+				}
+				.active_city{
+					background:#f7dee3 !important;
+					font-weight:bold !important;
+				}
+			</style>
+
+
+			<div role="tabpanel" class="tab-pannel-box">
+				<!-- Nav tabs -->
+				<ul class="nav nav-tabs" role="tablist">
+					
+					<li role="presentation" ><a href="#browseTab" class="tabs active" aria-controls="browseTab" role="tab" data-toggle="tab">Search By City</a>
+
+					</li>
+					<li role="presentation" class="active "><a href="#uploadTab" class="tabs " aria-controls="uploadTab" role="tab" data-toggle="tab">Search By State</a>
+
+					</li>
+				</ul>
+				<!-- Tab panes -->
+				<div class="tab-content">
+						<div role="tabpanel" class="tab-pane active" id="browseTab">
+						<!--<h6><strong>Note :</strong> lorem</h6>-->
+						<form>
+							
+							<select class='m_state_drop form-control ' name="m_state" style="height: auto;width: 100%; margin-top: 10px;font-size: 18px;font-weight: bold;" data-id="<?php echo $row['id']; ?>">
+								<option value="1">Select State</option>
+								<?php
+								$sql11 = mysqli_query($conn, "SELECT StateName FROM city GROUP BY StateName order by StateName asc");
+								while($data11 = mysqli_fetch_array($sql11))
+								{
+									if($_SESSION["statesort"] == $data11['StateName']){
+										echo'<option value="'.strtolower($data11['StateName']).'" selected>'.$data11['StateName'].'</option>';
+									}else{
+										echo'<option value="'.strtolower($data11['StateName']).'" selected>'.$data11['StateName'].'</option>';
+									}
+
+								}
+								?>
+							</select>
+
+							<ul  class="list-group pt-3 text-center main_ul_sec" 
+							<?php //if(!isset($_SESSION["statesort"])){ echo 'style="list-style-type: none;display:none"';}else{echo 'style="list-style-type: none;"';}?>>
+							<?php 
+							$sql = mysqli_query($conn, "SELECT CityID,StateName,CityName  FROM city WHERE 0=0 GROUP BY CityName");
+							$selected = '';
+							$ck= 1;
+							while($data = mysqli_fetch_array($sql))
+							{
+								$ss_style = "display:block;";
+								if(strtolower($_SESSION["statesort"]) == strtolower($data['StateName'])){
+									$ss_style = "display:block;";
+								}else if(strtolower($data['StateName']) == 'johar'){
+									$ss_style = "display:block;";
+								}
+								
+								$count_shops1 = mysqli_fetch_assoc(mysqli_query($conn,"SELECT count(*) as shop_count FROM `users` as u WHERE u.isLocked = '0' AND u.user_roles = '2' AND u.show_merchant = 1 and u.city = '".$data['CityName']."' and u.m_state = '".$data['StateName']."' "));
+								$temp_city_name = $data['CityName'];
+								
+							
+								?>
+								<li class="list-group-item submenuparent aa_city <?php echo strtolower($data['StateName']);?>" id="submenu_<?php echo $ck;?>">
+								<p class="city_pp <?php echo strtolower($data['StateName']);?>" style="font-size:18px;font-weight:bold;<?php echo $ss_style;?>"><a href="javascript:void(0);" link="https://koofamilies.com/index.php?vs=<?php echo md5(rand()); ?>&locationsort=<?php echo $data['CityName'];?>&statesort=<?php echo $data['StateName']; ?>&language=<?php echo $_SESSION["langfile"];?>" class="locationbutton locationNewbutton"><?php echo $temp_city_name;//$data['CityName'] ?> (<?php echo $count_shops1['shop_count'];?>  <?php echo $language['shops'];?>)</a> 
+								<a href="#" onclick="toggle(<?php echo $ck;?>);" >
+									<span class="align-items-center">
+										  <span class="fa fa-info-circle mr-3"></span>
+									</span>
+								</a>
+								</p>
+								<ul class="submenu list-group" style="background-color:white;">
+									<?php $sql_location = mysqli_query($conn, "select * from location where l_status =1 and l_city_id=".$data['CityID']);
+									while($data_location = mysqli_fetch_array($sql_location)){?>
+										<li class="list-group-item locationbutton locationSubNewbutton" style="font-weight:normal;cursor:pointer;text-decoration: underline;" link="https://koofamilies.com/index.php?vs=<?php echo md5(rand()); ?>&locationsort=<?php echo $data['CityName'];?>&statesort=<?php echo $data['StateName']; ?>&language=<?php echo $_SESSION["langfile"];?>" ><?php echo $data_location['l_name'];?></li>
+									<?php }?>
+								</ul>
+							</li>
+							<?php $ck++;}?>
+							</ul>
+						</form>
+						<p  class="ajx_location_resp" style="display:none;">
+						<img src="ajax-loader.gif" class="ajx_location_resp" />
+						&nbsp;
+						<span class="please_wait_text1" style="display:none;color:red">Please wait ....</span>
+						</p>
+					</div>
+			
+			
+					<div role="tabpanel" class="tab-pane " id="uploadTab">
+						<!--<h6><strong>Note :</strong> lorem</h6>-->
+						<h6><?php echo $language['the_state_notes'];?></h6>
+						<form>
+							<?php 
+							$sql1 = mysqli_query($conn, "SELECT StateName FROM city GROUP BY StateName order by StateName asc");
+							$selected1 = '';
+							while($data1 = mysqli_fetch_array($sql1))
+							{
+								$count_shops_state = mysqli_fetch_assoc(mysqli_query($conn,"SELECT count(*) as shop_count FROM `users` as u WHERE u.isLocked = '0' AND u.user_roles = '2' AND u.show_merchant = 1 and u.m_state = '".$data1['StateName']."'"));
+								
+								?>
+								<p><a href="javascript:void(0);" link="https://www.koofamilies.com/index.php?statesort=<?php echo $data1['StateName']; ?>&onlystate=1&language=<?php echo $_SESSION["langfile"];?>" class="locationbutton btn btn-primary"><?php echo $data1['StateName'] ?> (<?php echo $count_shops_state['shop_count'];?>  <?php echo $language['shops'];?>)</a></p>
+								
+								
+								<?php	
+							}	  
+							?>
+						</form>
+						<p  class="ajx_location_resp" style="display:none;">
+						<img src="ajax-loader.gif" class="ajx_location_resp" style="display:none;"/>
+						&nbsp;
+						<span class="please_wait_text1" style="display:none;color:red">Please wait ....</span>
+						</p>
+					</div>
+					<p class="dont_see_location text-center" style="">Don't see your location here?</p>
+					<p style="text-align: center;margin-bottom: 1px;font-weight: bold;">OR</p><p style="text-align: center;margin-bottom: 1px;">
+					<button type="button"  id="" style="margin-top:2%;background-color:#589442;color;black;padding: 7px;color: black;border-radius: 4px;" class="btn btn-primary search_location"><?php echo $language['search_by_location']; ?></button>
+					</p>
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+</div>
+</div>
+
+
+<?php /* Don't see location popup*/?>
+<script>
+	$(document).ready(function(){
+		
+		$(".close_dontsee").click(function(){
+			console.log('close');
+			$("#myModal").modal('hide');
+			$("#dontseeLocation").modal('hide');
+		});
+		$(".dont_see_location").click(function(){
+			$("#myModal").modal('hide');
+			$("#dontseeLocation").modal('show');
+		});
+		
+		$("#locationsList").keyup(function(){
+			$("#submit_user_area").css('background-color','#e75480');
+			$("#submit_user_area").css('border-color','#e75480');
+		});
+		
+		$("#submit_user_area").click(function (){
+			var locationsList = $("#locationsList").val();
+			$(".user_match_city").hide();
+			$(".contact_admin_location").hide();
+			$("#locationsList").css('border','');
+			if(locationsList == ''){
+				$("#locationsList").css('border','1px solid red');
+				return false;
+			}
+			$('.please_wait_text1').show();
+			$('.ajx_location_resp').show();
+			$.ajax({
+				url :'functions.php',
+				 type:"post",
+				 data:{locationsList:locationsList,method:"locationsList"},     
+				 dataType:'json',
+				 success:function(result){  
+					$("#submit_user_area").css('background-color','pink');
+					$("#submit_user_area").css('border-color','pink');
+					$('.please_wait_text1').hide();
+					$('.ajx_location_resp').hide();
+					var data = JSON.parse(JSON.stringify(result));  
+					if(data.status==true)
+					{  
+					   $(".user_match_city").show();
+					   $(".user_match_city").html(data.msg);
+					   $(".contact_admin_location").hide();
+					}
+					else
+					{
+						$(".user_match_city").hide();
+						$(".contact_admin_location").show();
+					}
+					
+				}
+			});   
+			
+		});
+	});
+</script>
+<div class="modal fade" id="dontseeLocation" tabindex="-1" role="dialog" aria-labelledby="dontseeLocation" aria-hidden="true">
+  <div class="modal-dialog  modal-sm modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Can't find your location?</h5>
+        <button type="button" class="close close_dontsee">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>We will help you to search for the city.!!</p>
+		<form>
+          <div class="form-group">
+		    <label for="recipient-name" class="col-form-label">Your Area:</label>
+              <input list="locationsLists" name="locationsList" id="locationsList" placeholder="">
+			  <datalist id="locationsLists">
+			  <?php $sql_location_1 = mysqli_query($conn, "select * from location where l_status =1");
+				while($data_location_1 = mysqli_fetch_array($sql_location_1)){?>
+				<option value="<?php echo $data_location_1['l_name'];?>">
+			  <?php }?>
+			  </datalist>
+          </div>
+			<p class="ajx_location_resp" style="display:none;">
+			<img src="ajax-loader.gif"  />
+			&nbsp;
+			<span class="please_wait_text1" style="display:none;color:red">Please wait ....</span>
+			</p>
+		  <p class="user_match_city" style="display:none"><p>
+		  <p style="display:none" class="contact_admin_location text-danger"> Sorry ! We can't able to find you location. Please contact the <a class="" target="_blank" href="https://chat.whatsapp.com/BNE7IoWEfwq5hWagQ2J9Fy" style="text-decoration:underline">support team</a><p>
+		  
+        </form>
+      </div>
+      <div class="pb-2 text-center">
+        <button type="button" class="btn btn-secondary close_dontsee" >Close</button>
+        <button type="button" class="btn btn-primary" id="submit_user_area" style="background: #e75480;border-color: #e75480;">Submit</button>
+		<!--<button type="button" class="btn btn-primary" id="contact_admin_support" style="display:none">Contact Support</button>-->
+      </div>
+    </div>
+  </div>
+</div>
+<?php /* END Don't see location popup*/?>
 <?php /* Language Model - 18/01/2021 */?>
 <?php if($open_language_modal == 1 && ($_SESSION["locationsort"] != '' || $_SESSION["statesort"] != '')){?>
 	<script>
@@ -556,6 +909,10 @@ if($_GET['force_refresh'] == 'yes'){
 
 
 <body>
+<!-- Google Tag Manager (noscript) -->
+<?php include("includes1/body_google_script.php"); ?>
+<!-- End Google Tag Manager (noscript) -->
+
 	<div class="page_loader">
 		<span id="load"></span>
 	</div>
@@ -630,12 +987,23 @@ if($_GET['force_refresh'] == 'yes'){
 		background: "transparent" !important;
 		z-index: "-1" !important;
 	}
+	.login_mbl_button{
+	display:none ;
+}
 	@media (max-width: 991px){
 #logo {
     float: none;
     width: 76%; !important;
     text-align: center;
 }
+#logo img {
+   margin-top:11px;
+}
+
+.login_mbl_button {
+	display: block !important;
+}
+	
 }
 </style>
 	
@@ -742,6 +1110,11 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 			</a>
 		</div>
 		 <ul id="top_menu">
+			<li style="">
+			<?php if(!isset($_SESSION['login'])){	?>
+					<a href="login.php" class="login_mbl_button btn btn-primary" style="font-size:16px"><?php echo $language['login']; ?></a>
+			<?php }?>
+			</li>
 			<li style="color: white;font-size: 40px;border-radius: 14px;">
 				<!--<a href="index.php?vs=<?php echo md5(rand()); ?>&force_refresh=yes"  title="Refresh" class="myrefresh"><i class="fa fa-refresh" style="padding-right:8px"></i></a>-->
 				<a href="javascript:void(0)"  title="Refresh" class="myrefresh"><i class="fa fa-refresh" style="padding-right:8px"></i></a>
@@ -816,9 +1189,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 					
 					<div class="row justify-content-center" style="margin-top: 170px;">
 					
-						
-					
-					<?php #echo "SELECT SQL_NO_CACHE  u.id  as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 $where_shoponusers  and u.user_roles=2 $l_state $LOCSTATESQL and (day = '".date(l)."' OR '".date('H:i')."' NOT BETWEEN start_time and end_time) group by u.id order by order_count desc";;?>
+				
 					
 						<div class="col-xl-9 col-lg-10 col-md-8">
 							<form method="post" id="merchant_submit_form" action="#">
@@ -843,13 +1214,13 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 															//don't show the chinese merchnt shop
 															$q_shop = "SELECT SQL_NO_CACHE  name,user_language,id,mobile_number FROM users WHERE name LIKE isLocked='0' and show_merchant=1 and default_lang !='2' and user_roles=2 $LOCSQL $LOCSTATESQL";
 															//$q_shop = "(SELECT SQL_NO_CACHE  u.id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'on' as tstatus FROM users as u Inner JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.default_lang !='2' and u.user_roles=2 $l_state and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time group by od.merchant_id order by order_count desc) UNION ALL (SELECT SQL_NO_CACHE  u.id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u Inner JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.default_lang !='2' and u.user_roles=2 $l_state and day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN start_time and end_time group by od.merchant_id order by order_count desc)";
-															$q_shop_on = "SELECT SQL_NO_CACHE  u.id as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'on' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.default_lang !='2' and u.user_roles=2 $l_state $LOCSTATESQL and ((day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time)  OR (day = '' )) group by u.id order by order_count desc";
+															$q_shop_on = "SELECT SQL_NO_CACHE  u.default_lang,u.slug,u.id as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'on' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.default_lang !='2' and u.user_roles=2 $l_state $LOCSTATESQL and ((day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time)  OR (day = '' )) group by u.id order by order_count desc";
 															
 														}else{
 															$q_shop = "SELECT SQL_NO_CACHE  name,user_language,id,mobile_number FROM users WHERE name LIKE isLocked='0' and show_merchant=1  and user_roles=2 $LOCSQL $LOCSTATESQL";
 															//$q_shop = "(SELECT SQL_NO_CACHE  u.id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'on' as tstatus FROM users as u Inner JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.user_roles=2 $l_state and day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time group by od.merchant_id order by order_count desc) UNION ALL (SELECT SQL_NO_CACHE  u.id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u Inner JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.user_roles=2 $l_state and day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN start_time and end_time group by od.merchant_id order by order_count desc)";
 															
-															$q_shop_on = "SELECT SQL_NO_CACHE  u.id  as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'on' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1  and u.user_roles=2 $l_state $LOCSTATESQL and ((day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time)  OR (day = '' ))  group by u.id order by order_count desc";
+															$q_shop_on = "SELECT SQL_NO_CACHE  u.default_lang,u.slug,u.id  as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'on' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1  and u.user_roles=2 $l_state $LOCSTATESQL and ((day = '".date(l)."' AND '".date('H:i')."' BETWEEN start_time and end_time)  OR (day = '' ))  group by u.id order by order_count desc";
 															
 															
 															#echo $q_shop_off;
@@ -879,7 +1250,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 														{
 															$shop_openArray[$row_on['user_id']] = $row_on['user_id'];
 														 ?>
-														 <option value="<?php echo $row_on['mobile_number']; ?>" ><?php echo $row_on['name'];?> <?php //echo $row_on['order_count'];?> </option>
+														 <option m_languge="<?php echo $row_on['default_lang'] ;?>" value="<?php echo $row_on['slug']; ?>" ><?php echo $row_on['name'];?> <?php //echo $row_on['order_count'];?> </option>
 														<?php } ?>
 														
 														
@@ -890,9 +1261,12 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 															$where_shoponusers = "and u.id NOT IN ($alreay_exits_shop)";
 														}
 														if($_SESSION['langfile'] == 'malaysian'){
-															$q_shop_off = "SELECT SQL_NO_CACHE  u.id as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.default_lang !='2' $where_shoponusers  and u.user_roles=2 $l_state $LOCSTATESQL and (day = '".date(l)."' OR '".date('H:i')."' NOT BETWEEN start_time and end_time ) group by u.id order by order_count desc";
+															$q_shop_off = "SELECT SQL_NO_CACHE u.default_lang, u.slug, u.id as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 and u.default_lang !='2' $where_shoponusers  and u.user_roles=2 $l_state $LOCSTATESQL and (day = '".date(l)."' OR '".date('H:i')."' NOT BETWEEN start_time and end_time ) group by u.id order by order_count desc";
 														}else{
-															$q_shop_off = "SELECT SQL_NO_CACHE  u.id  as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 $where_shoponusers  and u.user_roles=2 $l_state $LOCSTATESQL and (day = '".date(l)."' OR '".date('H:i')."' NOT BETWEEN start_time and end_time) group by u.id order by order_count desc";
+															//$q_shop_off = "SELECT SQL_NO_CACHE u.default_lang, u.slug, u.id  as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id WHERE name LIKE u.isLocked='0' and u.show_merchant=1 $where_shoponusers  and u.user_roles=2 $l_state $LOCSTATESQL and (day = '".date(l)."' OR '".date('H:i')."' NOT BETWEEN start_time and end_time) group by u.id order by order_count desc";
+															
+															$q_shop_off = "SELECT SQL_NO_CACHE u.default_lang, u.slug, u.id  as user_id,u.name,u.user_language,u.id,u.mobile_number,count(od.id) as order_count,'off' as tstatus FROM users as u LEFT JOIN order_list as od ON od.merchant_id = u.id LEFT JOIN timings on u.id=timings.merchant_id and (day = '".date(l)."' OR '".date('H:i')."' NOT BETWEEN start_time and end_time) WHERE name LIKE u.isLocked='0' and u.show_merchant=1 $where_shoponusers  and u.user_roles=2 $l_state $LOCSTATESQL  group by u.id order by order_count desc";
+															
 														}
 														
 														#echo $q_shop_off;
@@ -903,7 +1277,7 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 														{
 															
 														 ?>
-														 <option value="<?php echo $row_off['mobile_number']; ?>"  style="color:red"><?php echo $row_off['name'];?>  <?php //echo  $row_on['order_count'];?>  <span ><?php //echo $language['shop_index_status'];?></span> </option>
+														 <option m_languge="<?php echo $row_off['default_lang'] ;?>" value="<?php echo $row_off['slug']; ?>"  style="color:red"><?php echo $row_off['name'];?>  <?php //echo  $row_on['order_count'];?>  <span ><?php //echo $language['shop_index_status'];?></span> </option>
 														<?php }
 														
 														
@@ -926,12 +1300,19 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 					<div style="margin-top:2px;">
 					
 				    <span id="please_wait_location" style="color:red;display:none;">Please wait.....</span>
-					<button type="button"  id="search_location" style="margin-top:2%;background-color:#589442;color;black;padding: 7px;width: 250px;color: black;border-radius: 4px;" class="btn btn-primary"><?php echo $language['search_by_location']; ?></button>
+					
+					<?php 
+					//count the shops
+					
+					$count_shops = mysqli_fetch_assoc(mysqli_query($conn,"SELECT count(*) as shop_count FROM `users` as u WHERE u.isLocked = '0' AND u.user_roles = '2' AND u.show_merchant = 1 $l_state $LOCSTATESQL"));
+					//echo "SELECT count(*) as shop_count FROM `users` as u WHERE u.isLocked = '0' AND u.user_roles = '2' AND u.show_merchant = 1 $l_state $LOCSTATESQL";
+					?>
+					<button type="button"  id="" style="margin-top:2%;background-color:#589442;color;black;padding: 7px;color: black;border-radius: 4px;" class="btn btn-primary search_location"><?php echo $language['search_by_location']; ?> <!--(<label class="nshops_count"><?php echo $count_shops['shop_count'];?></label>  <?php echo $language['shops'];?>)--></button>
 					<!--span id="search_location" style="margin-top: 2%;background-color: #589442;padding: 13px;" class="btn btn-primary">Search by location</span!--> 
 					</div>
 					
 					<div class="col-xl-12 col-lg-12 col-md-12">
-					<button type="button" data-toggle="modal" data-target="#myModal" style="margin-top:2%;background-color:pink;padding: 7px;width: 250px;color: black;border-radius: 4px;color;black" >
+					<button type="button"class="ree_seelectlocation" style="margin-top:2%;background-color:pink;padding: 7px;width: 250px;color: black;border-radius: 4px;color;black" >
 					<?php
 					//echo $_SESSION['locationsort']."==".$open_language_modal;
 								/*if($_SESSION['locationsort'] == 'Kulai'){
@@ -945,7 +1326,13 @@ if(isset($_GET['code']) && isset($_GET['id']) && is_numeric($_GET['id']))
 						<?php 
 						$h2_name = $_SESSION["statesort"];
 						if($_SESSION["locationsort"] != ''){
-							$h2_name = $_SESSION["statesort"].",".$_SESSION["locationsort"];
+							if($_SESSION["locationsort"]  == 'Skudai/Tmn Rini'){
+								//$temp_city_name = 'JB/Skudai/M.Austin/Gelang P. (50Km)';
+								$h2_name = $_SESSION["locationsort"].", ".$_SESSION["statesort"];
+							}else{
+								$h2_name = $_SESSION["locationsort"].", ".$_SESSION["statesort"];
+							}
+							
 						}?>
 						<b><?php echo "(".$h2_name.")";?></b>
 						
@@ -1239,29 +1626,251 @@ if($row_class['image'] != ''){
 		
 		<!----END CODE 10.02.2021------------->
 		
+		<!----START CODE 27.10.2021------------->
+		<style>
+		.special_product_div .strip {
+			max-width: 300px;
+			width: 50%;
+			margin: 00 auto;
+		}
+		</style>
+		<?php 
+		function ceiling($number, $significance = 1)
+{
+    return (is_numeric($number) && is_numeric($significance)) ? (ceil(round($number / $significance)) * $significance) : false;
+}
+$LOCSQL11 = '';
+//echo $_SESSION['locationsort'];
+if($_SESSION['locationsort'])
+{
+	$LOCSQL11 = " and u.city='".$_SESSION['locationsort']."'" ;
+}
+
+$sprod = 'select *,u.id as u_id,u.slug as user_slug,prd.image AS p_image
+from users as u
+INNER JOIN products as prd ON prd.user_id = u.id
+INNER JOIN about ON prd.user_id = about.userid
+where u.user_roles = 2 and prd.show_index_page = 1 and u.shop_open=1 '.$LOCSQL11.'';
+$q11 = mysqli_query($conn, $sprod);
+$longitude = isset($_GET['lng']) ? floatval($_GET['lng']) : null;
+$latitude = isset($_GET['lat']) ? floatval($_GET['lat']) : null;
+$sprodrecords = mysqli_num_rows($q11);
+
+
+
+		?>
+		<div class="container special_product_div" <?php if($sprodrecords <= 0){?>style="display:none"<?php }?>>
+			<div class="row special_product_div1">
+				<div class="col-12">
+					<div class="main_title version_2">
+						<span><em></em></span>
+						<div class="row">
+							<div class="col-md-8">
+								<h2><?php echo $language['special_products']; ?></h2>
+							</div>
+							
+							<div class="owl-carousel owl-theme carousel_4">
+
+<?php
+
+while ($product = mysqli_fetch_assoc($q11)) {
+		if ($longitude && $latitude)
+		$user_id = $product['u_id'];
+		//$avgRating = $product['avg_rating'];
+		//$number_ratings = $product['ratings'];
+		$wk_query_on = mysqli_query($conn,"select start_time , end_time , merchant_id, DAY FROM `timings` WHERE merchant_id = ".$user_id." and  timings.day = '".date(l)."' AND '".date('H:i')."' BETWEEN timings.start_time and timings.end_time");
+		$onrecords = mysqli_num_rows($wk_query_on);
 		
-		<!-- popular restaurants  -->
-		<div class="container margin_60_40 search_location_div">
+		$wk_query_off = mysqli_query($conn,"select start_time , end_time , merchant_id, DAY FROM `timings` WHERE merchant_id = ".$user_id." and  timings.day = '".date(l)."' AND '".date('H:i')."' NOT BETWEEN timings.start_time and timings.end_time");
+		$offrecords = mysqli_num_rows($wk_query_off);
+		
+		$get_workingHr = mysqli_fetch_assoc(mysqli_query($conn, "SELECT start_time , end_time , merchant_id, DAY FROM `timings` WHERE   DAY = DAYNAME( NOW() )AND  merchant_id = '$user_id' "));
+		/*$get_workingHr = mysqli_fetch_assoc(mysqli_query($conn, "SELECT start_time , end_time , merchant_id, DAY FROM `timings` WHERE   DAY = DAYNAME( NOW() )AND  merchant_id = '$user_id' "));
+		$inWorkingHours = false;
+						
+		if (!empty($get_workingHr['start_time']) && !empty($get_workingHr['end_time'])) {
+			$currentTime    = strtotime(date("H:i"));
+			if (strtotime($get_workingHr['start_time']) < $currentTime && $currentTime < strtotime(	$get_workingHr['end_time'])) {
+				$inWorkingHours = true;
+			}else{
+				$work_str="Working Time :".$get_workingHr['start_day']." ".$get_workingHr['start_time']." to "." ".$get_workingHr['end_day']." ".$get_workingHr['end_time'];
+			}
+		}*/
+		?>
+		<div class="item" >
+			<div class="card strip showLoader6">
+				<?php if($product['free_delivery_check'] ==1 || $product['order_min_charge'] > 0){?>
+				<style>
+					figure {
+						position: relative;
+					}
+					.tooo {
+						position: absolute;
+						z-index: 2;
+						top: 0;
+						left: 0;
+						right: auto;
+						transform: none;
+						background-color: #e06b80;
+						margin: 0 auto;
+						height: 34px;
+						width: 183px;
+					}
+					.tooo p{
+					  color : white;
+					  font-weight:bold;
+					  font-size : 16px;
+					  padding : 5px
+					}
+				</style>
+				<?php }?>
+								
+				<figure class="showLoader6" style="border-radius: 5px 5px 0 0;height:200px">
+					<?php if($product['free_delivery_check'] ==1){?>
+						<div class="tooo" style="width:140px;height: 27px;">
+						  <p style="font-size:12px;"><?php echo $language['free_delivery_40']; ?></p>
+						</div>
+					<?php }?>
+					<?php if($product['order_min_charge'] > 0){?>
+						<div class="tooo" <?php if($product['free_delivery_check'] == 1){?>style="width:140px;background:red;top:27px;height: 27px;"<?php }else{?>style="width:140px;background:red;height: 27px;"<?php }?>>
+						  <p style="font-size:12px;"><?php echo $language['mini_order_value']; ?> RM <?php echo $product['order_min_charge'];?></p>
+						</div>
+					<?php }?>
+					
+					<?php if($product['one_product_offer'] == 1 && $product['one_qty_prd_offer'] == 1){?>
+					<div class="tooo" <?php if($product['free_delivery_check'] == 1 && $product['order_min_charge'] > 0){?>style="width:140px;background:#cd7011;top:54px;height: 27px;"<?php }else if($product['order_min_charge'] > 0 || $product['free_delivery_check'] == 1 ){?>style="width:140px;background:#cd7011;height: 27px;top:27px;"<?php }else{?>style="width:140px;background:#cd7011;height: 27px;"<?php }?>>
+						  <p style="font-size:12px;"><?php echo $language['limit_1_order']; ?></p>
+					</div>
+					<?php }?>
+						
+						
+					<?php if ($product['p_image']) {?>
+						<img src="<?= "{$image_cdn}product/{$product['p_image']}" ?>" data-src="<?= "{$image_cdn}about_images/{$product['image']}" ?>" class="img-fluid lazy loaded" alt="" data-was-processed="true">
+					<?php } else {?>
+                        <img src="<?= "{$image_cdn}about_images/{$product['image']}" ?>" data-src="<?= "{$image_cdn}about_images/{$product['image']}" ?>" class="img-fluid lazy loaded" alt="" data-was-processed="true">
+                    <?php } ?>
+					<?php 
+						$default_lang = $product['default_lang'];  
+						if($default_lang==1)
+						{
+						  $langfile="english";
+						} else if($default_lang==2)
+						{
+						  $langfile="chinese";
+						} else if($default_lang==3)
+						{
+						  $langfile="malaysian";
+						}
+						$new_URL = $site_url .'/merchant/'.$langfile.'/'.$product['user_slug'].'/'.$product['product_slug'].'/'.md5(rand());
+					?>
+						<a href="<?php echo $new_URL?>" class="strip_info">
+						<div class="item_title index_hotel">
+						<h3><?= $product['name'] ?></h3><small><br></small>
+						</div>
+						
+						</a>
+				</figure>
+				
+				
+				<div class="card-body pt-0 pl-2 pr-2 pb-2">
+					<div class="row mr-0 ml-0">
+						<?php /*if ($avgRating) {?>
+                            <div class="col-md-12 p-0">
+                                <div class="score float-right">
+                                    <span class="text-secondary">Merchant<br />rating</span>
+                                    <strong><?= ($avgRating) ? number_format($avgRating, 1) + 0 : '-' ?> / 5</strong>
+                                </div>
+                                <?= $product['name'] ?>
+                            </div>
+							
+							<div class="col-md-12 p-0">
+								<div class="float-right">
+									<small>Has <?= $number_ratings ?> reviews</small>
+								</div>
+							</div>
+                        <?php } else {*/ ?>
+							
+						<?php //} ?>
+						
+                        <?php if($offrecords > 0){?>
+                            <div class="col-md-12 p-0 text-danger">
+								<?php echo $product['working_text'];?> 
+								<?php if($product['not_working_text'] != ''){
+									echo ",".$product['not_working_text'];
+								}?>
+							</div>
+                        <?php  } ?>
+						
+						<?php 
+							if($product['price_hike'] > 0){
+								//echo '1<br/>';
+								$product_price_hike = $product['product_price'] *(($product['price_hike'] / 100) + 1);
+							}else{
+								//echo '2<br/>';
+								$product_price_hike = $product['product_price'];
+							}
+							//echo $product['product_price']."====".$product['price_hike']."<<>>".$product_price_hike;
+						?>
+						
+						
+						<div class="col-md-12 p-0" >
+							<p><b><?= $product['product_name'] ?></b> <span class="text-info" style="    float: right;background: none; width: auto; height: auto;">( Rm <?= ceiling($product_price_hike, 0.05); ?> ) </span></p>
+						</div>
+						
+						<?php /*if($product['one_product_offer'] == 1 && $product['one_qty_prd_offer'] == 1){?>
+							<br/><?php echo $language['only_one_qty_per_order'];?>
+						<?php }*/?>
+						<?php
+							$start_day_diminutive = date('D',strtotime($working_hours->start_day));
+							$end_day_diminutive = date('D',strtotime($working_hours->end_day));
+						?>
+						<!--
+                            <div class="col-md-12 p-0"><b>Delivery hours:</b> 
+								<span class="text-info" style="float:right;background:none"><?= $get_workingHr['start_time'] ?> - <?= $get_workingHr['end_time'] ?></span>
+                            </div>-->
+                                      
+                                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <?php }?>
+							</div>
+							
+						</div>	
+					</div>	
+				</div>
+			</div>
+		</div>	
+					
+								
+		<!----END CODE  27.10.2021------------->
+		
+		
+		
+		<!-- popular restaurants  margin_60_40-->
+		<div class="container  search_location_div">
 			<div class="row all_merchant_list">
 				<div class="col-12">
 					<div class="main_title version_2">
 						<span><em></em></span>
 						<div class="row">
-							  <div class="col-md-8"><h2><?php echo $language['near_by_shop_2']; ?>
-							  &nbsp;
-							  <img src="ajax-loader.gif" class="ajx_shop_resp" style="display:none"/>
-							  </h2>
+							  <div class="col-md-8">
+							  <button type="button"  id="search_location" style="margin-top:2%;background-color:#589442;color;black;padding: 7px;color: black;border-radius: 4px;" class="btn btn-primary search_location"><?php echo $language['search_by_location']; ?> <!--(<label class="nshops_count"><?php echo $count_shops['shop_count'];?></label>  <?php echo $language['shops'];?>)--></button>
+								<span id="please_wait_location_footer" style="color:red;display:none;">
+								<img src="ajax-loader.gif" class="ajx_shop_resp" style="display:none;"/>Please wait.....</span>
+							  
 							  
 							  </div>   
 							
 							  <div style="margin: 20px 0 0 0;float: right;" class="col-md-2">
 							  <select class="form-control all_restro_sort">
-								<option value="sort_name" selected>Sort By Name</option>
-								   <option value="sort_distance">Search nearby</option>
+								<option value="sort_name" selected><?php echo $language['sort_by_name'];?></option>
+								   <option value="sort_distance"><?php echo $language['sort_by_nearby'];?></option>
 							  </select>
 							</div>
 							  <div style="margin: 20px 0 0 0;float: left;" class="col-md-2">
-							<a href="merchant_find.php">View All</a>
+							<a href="merchant_find.php"><?php echo $language['view_all_text'] ;?></a>
 							</div>
 						</div>
 						
@@ -1687,13 +2296,14 @@ if ('serviceWorker' in navigator) {
             placeholder: "https://koofamilies.com/img/logo.png"
         });
 		if ("geolocation" in navigator){ //check geolocation available 
-			navigator.geolocation.watchPosition(function(position) {
-
+		
+			/*navigator.geolocation.watchPosition(function(position) {
+				console.log('geolocation0');
 			
 			},
 
 			function(error) {
-
+console.log('geolocation###########');
 			if (error.code == error.PERMISSION_DENIED)
 
 			{
@@ -1703,7 +2313,7 @@ if ('serviceWorker' in navigator) {
 
 			}
 
-			});
+			});*/
 		//try to get user current location using getCurrentPosition() method
 		/*navigator.geolocation.getCurrentPosition(function(position){ 
 			var latitude=position.coords.latitude;
@@ -1738,10 +2348,13 @@ if ('serviceWorker' in navigator) {
 		   $('#please_wait').show();
 		  // alert(this.value);
 		  var selected_merchant_id=this.value;
+		  var m_languge = '<?php echo $_SESSION["langfile"];?>';
 		  if(selected_merchant_id!='-1')
 		  {
 			  var s_token=generatetokenno(6);
-			var m_url="https://www.koofamilies.com/view_merchant.php?sid="+selected_merchant_id+"&ms="+s_token;
+			//var m_url="https://www.koofamilies.com/view_merchant.php?sid="+selected_merchant_id+"&ms="+s_token;
+			var m_url="<?php echo $site_url;?>/merchant/"+m_languge+"/"+selected_merchant_id+"/"+s_token;
+			
 			// alert(m_url);
 			if(window.location.href.includes('orderview.php')) return false;
 			$('.page_loader').removeAttr('style');
@@ -1756,6 +2369,7 @@ if ('serviceWorker' in navigator) {
 			window.location.href =m_url;			
 		  }
 		});
+		
 		 $("#merchant_submit_form").on("submit", function(e){
             if($(".merchant_select").val() == "-1"){
                 e.preventDefault();
@@ -1924,13 +2538,24 @@ if ('serviceWorker' in navigator) {
 		});
 		
 	
-		$( "#search_location").click(function() {
+		
+
+		$( ".search_location").click(function() {
 			 var sort_by="sort_distance";
+			 $('#myModal').modal('hide');
 			 $('#please_wait_location').show();
+			 $('#please_wait_location_footer').show();
 			$('.all_restro_sort').val("sort_distance");
+		console.log('click==='+sort_by);
 		 // alert(sort_by);
 		 // return false;
-		  $("#search_location").css("background-color", "gray");
+		  $(".search_location").css("background-color", "gray");
+		  setTimeout(function(){
+			$(".search_location").css("background-color", '#589442');
+			$('#please_wait_location').hide();
+			$('#please_wait_location_footer').hide();
+		  },7000);
+		
       
 		 if(sort_by=="sort_name")
 		 {   
@@ -1948,55 +2573,66 @@ if ('serviceWorker' in navigator) {
 		 }  
 		 else  if(sort_by=="sort_distance")
 		 {
-			  $('html, body').animate({
+				$('html, body').animate({
 					'scrollTop' : $(".search_location_div").position().top
 				});
-			if ("geolocation" in navigator){ //check geolocation available 
-			navigator.geolocation.watchPosition(function(position) {
-
-			
-			},
-
-			function(error) {
-
-			if (error.code == error.PERMISSION_DENIED)
-
-			{
-
-			  // $('#location_model').modal('show');
-
-
-			}
-
-			});
-		//try to get user current location using getCurrentPosition() method
-		/*navigator.geolocation.getCurrentPosition(function(position){ 
-			var latitude=position.coords.latitude;
-			var longitude=position.coords.longitude;
-
-			if(latitude && longitude)
-			{
 				
-				$.ajax({
-				  type: "POST",
-				  url: "r_list.php",
-				  data: {latitude:latitude, longitude:longitude,sort_by:sort_by,type:"all"},
-				  cache: false,
-				  success: function(data) {
-					   $('#please_wait_location').hide();
-					 $('.all_merchant_list').html(data);     
-				  }
-				  });	
-			}
-			else
-			{
-				// $('#location_model').modal('show');
+				if ("geolocation" in navigator){ //check geolocation available 
+					/*navigator.geolocation.watchPosition(
+						function(position) {},
+						function(error) {
+							if (error.code == error.PERMISSION_DENIED){}
+						}
+					);*/
+					//try to get user current location using getCurrentPosition() method
+					navigator.geolocation.getCurrentPosition(function(position){ 
+						var latitude=position.coords.latitude;
+						var longitude=position.coords.longitude;
+						if(latitude && longitude){
+							$('.page_loader').show();
+							console.log("5");
+							$(".ajx_shop_resp").show();
+							$.ajax({
+				  				type: "POST",
+				  				url: "config_r_list.php",
+				  				data: {latitude:latitude, longitude:longitude,sort_by:sort_by,type:"all"},
+				  				cache: false,
+				  				success: function(data) {
+									$(".ajx_shop_resp").hide();
+					 				$('.config_all_merchant_list').html(data);     
+					 				$('.page_loader').hide();
+				  				}
+				  			});	
+						}
+						else{
+							// $('#location_model').modal('show');
+						}
+					});
+				}
+				else{
+					console.log("Browser doesn't support geolocation!");
+				}
+				
+				/*if ("geolocation" in navigator){ //check geolocation available 
+					navigator.geolocation.watchPosition(function(position) {
+				},
 
-			}
-		});*/
+				function(error) {
+					if (error.code == error.PERMISSION_DENIED)
+					{
+					  // $('#location_model').modal('show');
+					  //alert(error.code+"==="+error.PERMISSION_DENIED);
+					}
+				});
+				//try to get user current location using getCurrentPosition() method
+				navigator.geolocation.getCurrentPosition(function(position){ 
+					var latitude=position.coords.latitude;
+					var longitude=position.coords.longitude;
+				});
 			}else{
 				console.log("Browser doesn't support geolocation!");
-			}
+			}*/
+			
 		 }  
 			 
 		});
@@ -2010,7 +2646,10 @@ if ('serviceWorker' in navigator) {
 			var page = $('.config_all_merchant_list').attr('data-page');
 
 			$(".ajx_shop_resp").show();
+			//alert(sort_by+'sort__BY___geolocation0');
 			if(sort_by == "sort_name"){   
+			console.log('sort_name_1');
+			
 			// location.reload(true);	
 				var sort_by="sort_name";
 
@@ -2028,6 +2667,8 @@ if ('serviceWorker' in navigator) {
 				});
 		 	}  
 		 	else if(sort_by=="sort_distance"){
+				console.log('sort_distance_1');
+				
 				if ("geolocation" in navigator){ //check geolocation available 
 					/*navigator.geolocation.watchPosition(
 						function(position) {},
@@ -2052,6 +2693,8 @@ if ('serviceWorker' in navigator) {
 									$(".ajx_shop_resp").hide();
 					 				$('.config_all_merchant_list').html(data);     
 					 				$('.page_loader').hide();
+									//$('.nshops_count').html($('.no_of_searchs_shops').val());
+									
 				  				}
 				  			});	
 						}
@@ -2144,6 +2787,9 @@ if ('serviceWorker' in navigator) {
 		*/}); 
 		});
 		
+		
+		
+	
 		//ajax shop response
 		$(document).ready(function(){
 			$(".shop_cat_round").click(function(){
@@ -2317,11 +2963,10 @@ if(isset($_GET['stores']) && $_GET['stores'] != ''){
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4BfDrt-mCQCC1pzrGUAjW_2PRrGNKh_U&libraries=places" async defer></script> 
 <script src="https://scripts.sirv.com/sirv.js" defer></script> 
 		 <script type="text/javascript" src="extra/js/jquery.lazy.min_74facba505554b93155d59a4d2d7e78b.js" defer></script>
- <a href="https://chat.whatsapp.com/FdbA1lt6YQVBNDeXuY7uWd" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
+ <a href="<?php echo $helpLink ;?>" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
 
 </body>
 </html>
-<script>
 <!-- Facebook Pixel Code -->
 <script>
   !function(f,b,e,v,n,t,s)

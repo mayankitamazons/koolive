@@ -1,5 +1,6 @@
 <?php
-$hike_per=$merchant_detail['price_hike'];    
+$hike_per=$merchant_detail['price_hike'];   
+#echo $hike_per; 
 $_SESSION['price_hike']=$hike_per;
 $product_google_image=$merchant_detail['product_google_image'];
 function ceiling($number, $significance = 1)
@@ -13,6 +14,8 @@ if($_GET['search_bar'] != ''){
 	include("config.php");
 	$id = $_GET['id'];
 	$product['pro_ct'] = $_GET['prduct_qty'];
+	$hike_per=$_GET['price_hike'];    
+	$_SESSION['price_hike']=$hike_per;
 }
 
 ?>
@@ -186,12 +189,13 @@ if($product['pro_ct'] > 0) { ?>
 			$pcount=mysqli_num_rows($pquery);
             foreach ($categories as $category)
             {
-				
+				if($category != ''){
                 ?>
-                 <a href="#" class="master_category_filter" data-position="<?php echo $index; ?>" data-filter=".<?php echo $index; ?>"><?php echo str_replace("-", " ", $category);?></a>
+                 <a href="#" class="master_category_filter" merchant_id = "<?php echo $id;?>" prduct_qty ="<?php echo $product['pro_ct'];?>" data-position="<?php echo $index; ?>" data-filter=".<?php echo $index; ?>"><?php echo str_replace("-", " ", $category);?></a>
                
 			   <?php
                 $index++;
+				}
             }
             $index = 1;
             ?>
@@ -217,7 +221,7 @@ if($product['pro_ct'] > 0) { ?>
                         while ($row = mysqli_fetch_assoc($sub_categories_q))
                         {
 							
-							
+							 $sub_catArray[$index][$row['id']] = $row['id'];
 							if($s==0)
 							{
 								 $sub_cat=$row['category_name'];
@@ -225,7 +229,7 @@ if($product['pro_ct'] > 0) { ?>
                             if($row['category_name'] == "") continue;
                             ?>
                                                         <div class="<?php echo $index; ?> category_filter">
-                                <button class="btn btn-primary" type="button" data-filter=".<?php echo $row['id'];?>" data-subcategory='<?php echo $row['id']; ?>'><?php echo str_replace("-", " ", $row['category_name']);?></button>
+                                <button class="btn btn-primary subcategory_side_<?php echo $index; ?>" type="button" data-filter=".<?php echo $row['id'];?>" data-subcategory='<?php echo $row['id']; ?>'><?php echo str_replace("-", " ", $row['category_name']);?></button>
                             </div>
                         <?php $s++;  }
                         $index++;
@@ -247,6 +251,9 @@ if($product['pro_ct'] > 0) { ?>
 			
             <div class="col-8 col-sm-9 pl-2 productsDiv">
                 <div class="grid">
+					<div class="show_ajax_loader" style="display:none;padding: 13px;text-align: center;">
+                        <img src="<?php echo $site_url; ?>/ajax-loader-view.gif" alt="Loading.." />
+                    </div>
                     <?php
 					$products_id_global = [];
                     $subproducts_global = [];
@@ -256,12 +263,31 @@ if($product['pro_ct'] > 0) { ?>
 						$search_bar_query = " prd.product_name LIKE '%$searchProduct%' and ";
 						
 					}
+					
+					$loadCategory = '';
+                    if($_GET['cats'] == 'true'){
+                        $catIndex = $_GET['catindex'];
+                        $categoryFirst = implode(",",$sub_catArray[$catIndex]);
+                        $loadCategory = " and prd.category_id IN(".$categoryFirst.")";
+                    }else{
+                        $categoryFirst = implode(",",$sub_catArray[1]);
+                        $loadCategory = " and prd.category_id IN(".$categoryFirst.")";
+                    }
+					
+					
 					if($pcount>0)
 					{
 					    
 						$q="select GROUP_CONCAT(sub.id SEPARATOR '^') as subproduct_id,GROUP_CONCAT(sub.name SEPARATOR '^') as subproduct,GROUP_CONCAT(sub.product_price SEPARATOR '^') as subprice, prd.*,arrange_system.shift_pos from products as prd left join sub_products as sub ON 
 							sub.product_id = prd.id inner join arrange_system on prd.id=arrange_system.entity_id and arrange_system.user_id = '".$id."' 
-							where $search_bar_query prd.user_id='".$id."' AND prd.status=0  and arrange_system.page_type='p' group by arrange_system.entity_id order by arrange_system.shift_pos asc";
+							where $search_bar_query prd.user_id='".$id."' AND prd.status=0  and arrange_system.page_type='p' $loadCategory group by arrange_system.entity_id order by arrange_system.shift_pos asc";
+						
+						if($_GET['pd']){
+							#echo '1';
+							$q = "	(select GROUP_CONCAT(sub.id SEPARATOR '^') as subproduct_id,GROUP_CONCAT(sub.name SEPARATOR '^') as subproduct,GROUP_CONCAT(sub.product_price SEPARATOR '^') as subprice, prd.*,arrange_system.shift_pos from products as prd left join sub_products as sub ON sub.product_id = prd.id inner join arrange_system on prd.id=arrange_system.entity_id and arrange_system.user_id = '".$id."' 
+							where $search_bar_query prd.user_id='".$id."' AND prd.status=0  and arrange_system.page_type='p' $loadCategory group by arrange_system.entity_id order by arrange_system.shift_pos asc) UNION (select GROUP_CONCAT(sub.id SEPARATOR '^') as subproduct_id,GROUP_CONCAT(sub.name SEPARATOR '^') as subproduct,GROUP_CONCAT(sub.product_price SEPARATOR '^') as subprice, prd.*,arrange_system.shift_pos from products as prd left join sub_products as sub ON sub.product_id = prd.id inner join arrange_system on prd.id=arrange_system.entity_id and arrange_system.user_id = '".$id."' 
+							where $search_bar_query prd.user_id='".$id."' AND prd.status=0  and arrange_system.page_type='p' and prd.id ='".$_GET['pd']."' group by arrange_system.entity_id order by arrange_system.shift_pos asc)	";
+						}	
 						
 					
 					}
@@ -269,10 +295,21 @@ if($product['pro_ct'] > 0) { ?>
 					{
 						$q="select GROUP_CONCAT(sub.id SEPARATOR '^') as subproduct_id,GROUP_CONCAT(sub.name SEPARATOR '^') as subproduct,GROUP_CONCAT(sub.product_price SEPARATOR '^') as subprice, prd.* from products as prd left join sub_products as sub ON 
 							sub.product_id = prd.id 
-							where $search_bar_query prd.user_id='$id'  AND prd.status=0 group by prd.id";
+							where $search_bar_query prd.user_id='$id'  AND prd.status=0 $loadCategory group by prd.id";
+							
+						
+						if($_GET['pd']){
+							$q="(select GROUP_CONCAT(sub.id SEPARATOR '^') as subproduct_id,GROUP_CONCAT(sub.name SEPARATOR '^') as subproduct,GROUP_CONCAT(sub.product_price SEPARATOR '^') as subprice, prd.* from products as prd left join sub_products as sub ON sub.product_id = prd.id where $search_bar_query prd.user_id='$id'  AND prd.status=0 $loadCategory  group by prd.id) UNION (select GROUP_CONCAT(sub.id SEPARATOR '^') as subproduct_id,GROUP_CONCAT(sub.name SEPARATOR '^') as subproduct,GROUP_CONCAT(sub.product_price SEPARATOR '^') as subprice, prd.* from products as prd left join sub_products as sub ON sub.product_id = prd.id where $search_bar_query prd.user_id='$id'  AND prd.status=0 and prd.id ='".$_GET['pd']."'  group by prd.id)";
+						}
+						
 						
 					}
 					
+					if($_GET['search_bar'] != ''){
+						$q="select GROUP_CONCAT(sub.id SEPARATOR '^') as subproduct_id,GROUP_CONCAT(sub.name SEPARATOR '^') as subproduct,GROUP_CONCAT(sub.product_price SEPARATOR '^') as subprice, prd.*,arrange_system.shift_pos from products as prd left join sub_products as sub ON 
+							sub.product_id = prd.id inner join arrange_system on prd.id=arrange_system.entity_id and arrange_system.user_id = '".$id."' 
+							where $search_bar_query prd.user_id='".$id."' AND prd.status=0  and arrange_system.page_type='p' group by arrange_system.entity_id order by arrange_system.shift_pos asc";
+					}
 					//echo $q;
 					$total_rows = mysqli_query($conn,$q);  
 					
@@ -360,7 +397,7 @@ if($product['pro_ct'] > 0) { ?>
                                     <div class="row no-gutters">
                                     <?php 
 									$variableA2=$row['product_price'];
-									if($hike_per>0)
+									if($hike_per > 0 || $hike_per < 0 )
 									{
 										$new_price_direct = (($hike_per / 100) * $variableA2)+$variableA2;
 										$new_price=ceiling($new_price_direct,0.05);
@@ -435,12 +472,33 @@ if($product['pro_ct'] > 0) { ?>
                                                  <p class="mBt10"><?php echo $language['price'].': Rm'.number_format($new_price,2); ?></p>
                                                  <?php if($total_sale > 0){ ?> <p class="mBt10"><?php echo "Total Sale: ".$total_sale; ?></p> <?php } ?>
                                              </div>   
+											 
+											 
+											 <?php
+$show_pop_cart = 'show';
+$only_one_qty1 = 'no'; 
+if($merchant_detail['one_product_offer'] == 1 && $row['one_qty_prd_offer'] == 1){
+	$show_pop_cart = 'show';
+	$only_one_qty1 = 'yes';
+	//print_r($_GET);
+	foreach($_SESSION['AjaxCartResponse'][$cart_merchant_id] as $cart_key1 => $cart_val1){
+		if($cart_val1['s_id'] == $row['id']){
+			$show_pop_cart = 'hide';
+		}
+	}
+}
+?>		
+<?php if($only_one_qty1 == 'yes'){?>									 
+	<p style="color:red"><?php echo $language['only_one_qty_per_order'];?></p>
+<?php }?>
+
+
                                             <div class="common_quant">
 											<?php if($row['varient_exit']=="y") { $cart_class="with_varient";} else { $cart_class="without_varient";} ?>
                                             <?php 
                                             if(!empty($row['image'])){
                                                 if(isActive($row['active_time']) && $row['on_stock']){ ?>
-                                                    <p id="product_child_<?php echo $row['id']?>" product_name="<?php echo $row['product_name'];?>" product_remark="<?php echo $row['remark']; ?>" product_price='<?php echo number_format($new_price,2);?>' style="<?php if($row['add_to_cart_button']=='0'){echo "display:none;";} ?>" data-rebate='<?php echo $row['product_discount'];?>' class="pro_status text_add_cart <?php echo $cart_class ?>"  data_varient_must='<?php echo $row['varient_must']; ?>' data-id = "<?php echo $row['id'] ?>" data-code = "<?php echo $row['product_type'] ?>"  data-pr = "<?php echo $new_price; ?>" data-name = "<?php echo $row['product_name'] ?>">
+                                                    <p id="product_child_<?php echo $row['id']?>" product_name="<?php echo $row['product_name'];?>" product_remark="<?php echo $row['remark']; ?>" show_pop_cart="<?php echo $show_pop_cart;?>" prd_one_offer="<?php echo $row['one_qty_prd_offer']; ?>" product_price='<?php echo number_format($new_price,2);?>' style="<?php if($row['add_to_cart_button']=='0'){echo "display:none;";} ?>" data-rebate='<?php echo $row['product_discount'];?>' class="pro_status text_add_cart <?php echo $cart_class ?>"  data_varient_must='<?php echo $row['varient_must']; ?>' data-id = "<?php echo $row['id'] ?>" data-code = "<?php echo $row['product_type'] ?>"  data-pr = "<?php echo $new_price; ?>" data-name = "<?php echo $row['product_name'] ?>">
 												    
 													<i  id="child_<?php echo $row['id']?>" class="fa fa-plus"></i></p>
 													
@@ -451,7 +509,7 @@ if($product['pro_ct'] > 0) { ?>
                                                     if(isActive($row['active_time'])){
                                                         if($row['on_stock']){
                                                 ?>
-                                                    <p  id="product_child_<?php echo $row['id']?>" product_name="<?php echo $row['product_name'];?>" product_remark="<?php echo $row['remark']; ?>" product_price='<?php echo number_format($new_price,2);?>' style="<?php if($row['add_to_cart_button']=='0'){echo "display:none;";} ?>" class="pro_status text_add_cart <?php echo $cart_class ?>" data-rebate='<?php echo $row['product_discount'];?>' data_varient_must='<?php echo $row['varient_must']; ?>'  data-id = "<?php echo $row['id'] ?>" data-code = "<?php echo $row['product_type'] ?>"  data-pr = "<?php echo $new_price; ?>" data-name = "<?php echo $row['product_name'] ?>">
+                                                    <p  id="product_child_<?php echo $row['id']?>" product_name="<?php echo $row['product_name'];?>" product_remark="<?php echo $row['remark']; ?>" show_pop_cart="<?php echo $show_pop_cart;?>" prd_one_offer="<?php echo $row['one_qty_prd_offer']; ?>" product_price='<?php echo number_format($new_price,2);?>' style="<?php if($row['add_to_cart_button']=='0'){echo "display:none;";} ?>" class="pro_status text_add_cart <?php echo $cart_class ?>" data-rebate='<?php echo $row['product_discount'];?>' data_varient_must='<?php echo $row['varient_must']; ?>'  data-id = "<?php echo $row['id'] ?>" data-code = "<?php echo $row['product_type'] ?>"  data-pr = "<?php echo $new_price; ?>" data-name = "<?php echo $row['product_name'] ?>">
 												    <i  id="child_<?php echo $row['id']?>" class="fa fa-plus"></i></p>
 													
                                                     <p class="quantity">

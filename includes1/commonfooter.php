@@ -2057,3 +2057,4 @@ $(document).ready(function(){
 });
 
 </script>
+ <a href="https://chat.whatsapp.com/JASeiw19xnG3gNKkyO5tBO" target="_blank"><img src ="images/iconfinder_support_416400.png" style="width:75px;height:75px;position: fixed;left:15px;bottom: 70px;z-index:999;"></a>
