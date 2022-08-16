@@ -1,4 +1,6 @@
 <?php 
+// echo "ddd";
+// die;
 include('config.php');
 // print_R($_SESSION);
 // die;
@@ -754,8 +756,7 @@ Payment Proof </a>
 
 			 
 			?>
-			<span id="codecontent_<?php echo $row['id']; ?>">
-			Yet-<?php echo $r['c1_code']; ?><span id="b1value_<?php echo $row['id']; ?>"><?php echo $bcode; ?></span><?php echo "-".$merchant_short_name.$fpcode."-".$row['invoice_no']."-".$pay_type.$odc_remark.$chinese_man1.$speed_man1.$odTime; ?>
+			<span id="codecontent_<?php echo $row['id']; ?>">Yet-<?php echo $r['c1_code']; ?><span id="b1value_<?php echo $row['id']; ?>"><?php echo $bcode; ?></span><?php echo "-".$merchant_short_name.$fpcode."-".$row['invoice_no']."-".$pay_type.$odc_remark.$chinese_man1.$speed_man1.$odTime; ?>
 			</span>
 			<a class="btn btn-primary copy-text gccopy_<?php echo $row['id'];?>" onclick="gccopy('#codecontent_<?php  echo $row['id'];?>','gccopy_<?php echo $row['id'];?>','<?php echo $row['id'];?>')"> Copy </a>
 		</p>
@@ -914,7 +915,10 @@ Payment Proof </a>
 			}else if($row['inform_mecnt_status'] == 7){
 				$labels = 'Sudah group order, guna Koo Family';
 				$lab_cls = 'red';
-			}else{
+			}else if($row['inform_mecnt_status'] == 8){
+				$labels = 'Dine In';
+				$lab_cls = 'red';
+			} else{
 				$labels = '';
 				$lab_cls = '';
 			} 
@@ -1002,6 +1006,7 @@ Payment Proof </a>
 			<option <?php if($row['cancel_reason'] == 7){echo 'selected';}?> value="7">Testing Order</option>
 			<option <?php if($row['cancel_reason'] == 5){echo 'selected';}?> value="5">Shop close today only</option>
 			<option <?php if($row['cancel_reason'] == 8){echo 'selected';}?> value="8">shop close forever</option>
+			
 		</select>
 		
 		<?php 
@@ -1090,7 +1095,8 @@ Payment Proof </a>
 				
 				?>
 		<p style="padding-bottom:10px">
-			 Code: <input type="text" class="<?php echo $cls_txt;?> form-control admin_code" name="admin_code" id="admin_code" value="<?php echo $row['admin_code'];?>" order_id="<?php echo $row['id']; ?>" style="width:50%;float:right;height:10%;background-color:white!important;"/>
+			 Code: <input type="text" class="<?php echo $cls_txt;?> form-control admin_code" name="admin_code" id="admin_code" value="<?php 
+			  echo $row['b1_code'];?>" order_id="<?php echo $row['id']; ?>" style="width:50%;float:right;height:10%;background-color:white!important;"/>
 			 </p>
 			 <p style="padding-bottom:10px">
 		Commission: <input type="number" class="form-control admin_commission_price acp_<?php echo $row['id']; ?>" name="admin_commission_price" id="admin_commission_price" value="<?php echo $row['admin_commission_price'];?>" order_id="<?php echo $row['id']; ?>" <?php echo $price_readonly;?> style="width:50%;float:right;height:10%;;background-color:white!important;" />	
@@ -1599,6 +1605,7 @@ Payment Proof </a>
 							<option value="4">FP & sudah Call guna 5670</option>
 							<option value="5">Semua beli sendiri</option>
 							<option value="6">Order Cancelled</option>
+							<option value="8">Dine In</option>
 							
 							
 							
@@ -2495,6 +2502,7 @@ function gccopy(element,clsn,orderid) {
 	var $temp = $("<textarea>");
 	$("body").append($temp);
 	$("#b1value_"+orderid).removeAttr('id');
+	//var element = $(element).find('br').remove();
 	var html = $(element).html();
 	html = html.replace(/<span><\/span>/g, ""); // or \r\n
 	html = html.replace(/<span>/g, ""); // or \r\n
@@ -2503,6 +2511,7 @@ function gccopy(element,clsn,orderid) {
 	$temp.val(html).select();
 	document.execCommand("copy");
 	$temp.remove();
+	// alert('copy data '+clsn);
 	$("."+clsn).html('Copied'); 	
 }
 
@@ -2631,7 +2640,7 @@ $(document).ready(function(){
 					data:{method:'cancelorder',orderid:orderid,cancel_reason:cancel_reason},
 					success:function(res){
 						//console.log(res);
-						location.reload(true);
+						// location.reload(true);
 					}
 				});	
 			}
@@ -2660,6 +2669,7 @@ $(document).ready(function(){
 				success:function(res){
 					$(".gc_main_"+orderid).hide();
 					$(".copycode_"+orderid).show();
+					$('#admin_code').val(b1_Code);
 					//location.reload(true);
 				}
 			});	
@@ -2675,7 +2685,7 @@ $(document).ready(function(){
 				data:{method:'inform_mecnt_status',orderid:orderid,code_admin_code:code_admin_code},
 				success:function(res){
 					//console.log(res);
-					location.reload(true);
+					// location.reload(true);
 				}
 			});	
 		
@@ -2720,7 +2730,7 @@ $(document).ready(function(){
 				data:{method:'cancelperson',orderid:orderid,cancel_person:cancel_person},
 				success:function(res){
 					//console.log(res);
-					location.reload(true);
+					// location.reload(true);
 				}
 			});	
 	});

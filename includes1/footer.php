@@ -653,7 +653,7 @@ $(document).ready(function(e){
 									$('#confirm_transfer').show();
 										if(multi_wallet)
 										{
-											$('.transfer_amount_div').hide();
+											// $('.transfer_amount_div').hide();
 											$('#wallet_amounts').html(response);
 											$("#wallet_amounts").show();
 											$("#autofill-wallets").show();
